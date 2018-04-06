@@ -1,10 +1,3 @@
----
-title: "PLETHEM Getting Started"
-author: "Salil N Pendse"
-date: "April 6, 2018"
-output: pdf_document
----
-
 ## PLETHEM INSTALLATION
 
 ### Installing R.
