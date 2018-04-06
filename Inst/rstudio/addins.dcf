@@ -1,0 +1,4 @@
+Name: IVIVE
+Description: Performs IVIVE to get scaled clearance for use in PBPK models
+Binding: iviveGadget
+Interactive: TRUE

@@ -1,0 +1,89 @@
+# This module for creating a new physiological, chemical or Exposure entry in the project database
+
+#'UI for saving a new physiological, chemical or exposure set to the project database
+#'@export
+saveAsParameterSetUI <- function(namespace, set_type){
+  shinyjs::useShinyjs()
+  ns <- NS(namespace)
+  set_name <- switch(set_type,
+                     "physio" = "Physiological",
+                     "chem" = "Chemical",
+                     "expo" = "Exposure")
+  showModal(modalDialog(title = paste0("Save ",set_name," Parameter Set"),easyClose = TRUE,
+                        tagList(
+                          textInput(ns("name"),"Parameter Set Name",placeholder = "Enter Name for the dataset"),
+                          textInput(ns("descrp"),"Description",placeholder = "Enter description for the dataset"),
+                          shinyjs::hidden(textInput(ns("cas"),"CAS Number",placeholder = "Enter CAS Number"))
+
+
+
+                        ),
+                        footer= tagList(
+                          shinyjs::disabled(bsButton(ns("add"),"Add",type = "action")),
+                          modalButton("Cancel")
+                        )
+                        )
+            )
+}
+
+#'server side function for saving a new physiological, chemical or exposure set to the project database
+#'@export
+saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df){
+
+  returnValues <- reactiveValues()
+  returnValues$savedat <- c("No","",0)
+  ns <- session$ns
+  if(set_type == "chem"){
+    shinyjs::show("cas")
+  }
+  set_name <- switch(set_type,
+                     "physio" = "Physiological",
+                     "chem" = "Chemical",
+                     "expo" = "Exposure")
+  id_name <- paste0(set_type,"id")
+  set_table_name <- paste0(set_name,"Set")
+  vals_table_name<- set_name
+
+  # get the current ID for the parameter set.
+  query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
+  id_list <- projectDbSelect(query)
+
+  if (length(id_list[[id_name]])==0){
+    id_num = 1
+  }else{
+    id_num = max(id_list[[id_name]])+1
+  }
+  returnValues$savedat<- eventReactive(input$add,{return(c("Yes",set_type,id_num))})
+
+  checkData <- reactive({
+    req(input$name,input$descrp,cancelOutput = TRUE)
+  })
+  observe({
+    if(checkData() != ""){
+      shinyjs::enable("add")
+    }
+  })
+
+  observeEvent(input$add,{
+    main_input <- reactiveValuesToList(main_input)
+
+    # write the name to correct "Set" table
+    query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
+                     set_table_name,id_name,id_num,input$name,input$descrp)
+    projectDbUpdate(query)
+
+    # get all values for parameter set
+    write_col_names <- sprintf("%s, param, value",id_name)
+    var_names <- name_df$Var#[! name_df$Var %in% c("gender","brep_flag","ivrep_flag")]
+    ui_names <- unlist(lapply(var_names,function(x){paste0("ms_",x)}))
+    values <- as.character(main_input[ui_names])
+    names(values) <- NULL
+    values <- paste0("'",values,"'")
+    all_values_string <- paste(paste0(sprintf('(%d,',id_num),sprintf("'%s'",var_names),',',values,')'),collapse = ", ")
+    #write the parameter set
+    query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",vals_table_name, write_col_names,all_values_string)
+    projectDbUpdate(query)
+    removeModal()
+  },ignoreNULL = T,ignoreInit = T)
+  return(returnValues$savedat)
+}
