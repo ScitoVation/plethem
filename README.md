@@ -12,16 +12,16 @@ Installing PLETHEM requires the latest version of 64 bit R-3.4.4 or higher[(link
 
 ### Installing the package
 Open Rstudio once all of the above are installed. On the Rstudio console type the following command
-```{r, eval = FALSE,echo = T}
+```r
 install.packages("devtools")
 ```
 This will install the package "devtools". This package is needed to install PELTHEM from the repos
 Then type one of the following commands
-```{r, eval = F, echo = T}
+```r
 devtools::install_github("ScitoVation/plethem")
 ``` 
 to install form Github or 
-```{r, eval = F, echo = T}
+```r
 devtools::install_bitbucket("ScivCompTox/plethem")
 ``` 
 to install from BitBucket.
@@ -29,7 +29,7 @@ to install from BitBucket.
 ## PBPK modeling in PLETHEM
 ### Load PLETHEM and start a project.
 To load plethem and start a new PBPK modeling project 
-```{r, eval =F, echo = T}
+```r
 library(plethem)
 newProject("Name of the project")
 ```
@@ -39,7 +39,7 @@ On exit, plethem will save all the data as a .Rdata file in the folder originall
 
 ### Load existing Projects
 To reload previously created projects just enter the following on the console.
-```{r, eval = F, echo = T}
+```r
 loadProject()
 ```
 This would popup an explorer window where you can select the .Rdata project file of any previously stored project. On exiting the interface, any changes made will overwrite this file. 
