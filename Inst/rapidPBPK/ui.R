@@ -48,6 +48,11 @@ expo_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
 ################################compartment sidebar
 comp_sidebar <- shinydashboard::dashboardSidebar(
   sidebarMenu(id="compsidebar",
+              tags$div(shinyWidgets::radioGroupButtons("sel_org",
+                                                       label = "Select Organism",
+                                                       choices = c("Human" = "ha","Rat"="ra"),
+                                                       selected = "ha",size = "normal",
+                                                       checkIcon = list(yes = icon('ok',lib ="glyphicon")))),
               menuItem(tags$h5(tags$span(style = "color:white",
                                          "Physiological Parameters")),
                        tabName = "physiolocal_parameters", selected = TRUE),
@@ -389,7 +394,7 @@ comp_body <- dashboardBody(
         column(4,
                numericInput("ms_bw","Body Weight (kg)",70,0.1,90,0.1)),
         column(4,
-               numericInput("ms_qcc","Cardiac Output (L/hr)",420,1,50,0.1)),
+               numericInput("ms_qcc","Cardiac Output (L/h)",420,1,50,0.1)),
         column(4,
                numericInput("ms_hct","Hematocrit Factor",0.441,0,1,0.001))
 

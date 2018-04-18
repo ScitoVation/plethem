@@ -14,9 +14,6 @@ saveAsParameterSetUI <- function(namespace, set_type){
                           textInput(ns("name"),"Parameter Set Name",placeholder = "Enter Name for the dataset"),
                           textInput(ns("descrp"),"Description",placeholder = "Enter description for the dataset"),
                           shinyjs::hidden(textInput(ns("cas"),"CAS Number",placeholder = "Enter CAS Number"))
-
-
-
                         ),
                         footer= tagList(
                           shinyjs::disabled(bsButton(ns("add"),"Add",type = "action")),

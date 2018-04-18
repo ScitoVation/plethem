@@ -218,7 +218,7 @@ getLifecourseBodyWeightMale <- function(age){
 #' Calculate body weight in kg of average human female using the lifecourse
 #' equation
 #' @description This function is not called directly by the user. See
-#'   \code{getLifeCourseBodyWeight}
+#' \code{getLifeCourseBodyWeight}
 #' @param age age in years
 #' @return Body weight in kg
 getLifecourseBodyWeightFemale <- function(age){

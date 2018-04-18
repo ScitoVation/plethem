@@ -35,7 +35,7 @@ performIVIVEUI<- function(namespace){
                           
                           fluidRow(
                                    tabsetPanel(id = ns("heptype"),
-                                          tabPanel(title = "Whole Hepatocyte",value = "hep_wh",
+                                          tabPanel(title = "Whole Hepatocyte",value = "hep_whole",
                                                    fluidRow(
                                                      column(4,
                                                             numericInput(ns("num_whcl"),"Hepatocyte Clearance",
@@ -118,9 +118,7 @@ performIVIVEUI<- function(namespace){
 #'@export
 performIVIVE <- function(input,output,session,km){
   returnValues <- reactiveValues()
-  returnValues$vmax <- 0
-  returnValues$vliv <- 0
-  returnValues$km <- km
+  returnValues$ret_data <- reactiveVal(c("No",0,0,1))
   ns <- session$ns
   if(km >0){
     updateNumericInput(session,"num_km",value = km)
@@ -128,7 +126,6 @@ performIVIVE <- function(input,output,session,km){
   observeEvent(input$sel_org,{
     if (input$sel_org == "ha"){
       MPCPPGL <- calcMPCPPGL(25)
-      print(MPCPPGL)
       mppgl <- signif(MPCPPGL$MPPGL,4)
       cppgl <- signif(MPCPPGL$CPPGL,4)
       hpgl <- 99
@@ -136,7 +133,7 @@ performIVIVE <- function(input,output,session,km){
       bw <- signif(getLifecourseBodyWeight(25,"M"),4)
     }else{
       mppgl <- 45
-      cppgl <- 80
+      cppgl <- 91
       hpgl <- 110
       liver_wt <- 0.012
       bw <- 0.3
@@ -147,7 +144,7 @@ performIVIVE <- function(input,output,session,km){
     updateNumericInput(session,"num_bw",value = bw)
     updateNumericInput(session,"num_livwt",value = liver_wt)
   })
-  returnValues<- eventReactive(input$btn_ivive,{
+  module_calcs <- function(){
     hepcl_type <- input$heptype
     liver_wt <- input$num_livwt
     hpgl <- input$num_hpgl
@@ -157,27 +154,29 @@ performIVIVE <- function(input,output,session,km){
     age <- ifelse(org == "ha",25,52)
     bw <- input$num_bw
     vliv <- switch(hepcl_type,
-                           "hep_sc"=calculateScaledSCClearence(c(input$num_mscl,input$num_cycl),
-                                                               c(input$sel_msunit,input$sel_cyunit),
-                                                               org,age,
-                                                               liver_wt,
-                                                               km,
-                                                               mpcppgl,
-                                                               return_total = T),
-                           "hep_s9"=calculateScaledS9Clearence(input$num_s9cl,
-                                                               input$sel_s9unit,
-                                                               org,age,
-                                                               liver_wt,
-                                                               km,
-                                                               mpcppgl),
-                           "hep_whole"=calculateScaledWholeHepClearance(input$num_whcl,input$sel_whunit,
-                                                                        liver_wt,hpgl,km),
-                          
-                           0
-                           
+                   "hep_sc"=calculateScaledSCClearance(c(input$num_mscl,input$num_cycl),
+                                                       c(input$sel_msunit,input$sel_cyunit),
+                                                       org,age,liver_wt,
+                                                       km,mpcppgl,
+                                                       return_total = T),
+                   "hep_s9"=calculateScaledS9Clearance(input$num_s9cl,input$sel_s9unit,
+                                                       org,age,liver_wt,
+                                                       km,mpcppgl),
+                   "hep_whole"=calculateScaledWholeHepClearance(input$num_whcl,
+                                                                input$sel_whunit,
+                                                                liver_wt,hpgl,km),
+                   0
     )
-    vmax <- vliv*km*liv_wt/(bw^0.75)
-    return(list("vliv"=vliv,"vmax" = vmax, "km" = km))
-  })
-}
+    vmax <- vliv*km*liver_wt/(bw^0.75)
+    #print(c(vliv,vmax,km))
+    return(c("Yes",vliv,vmax,km))
+  }
+  #returnValues$ret_data<- 
+  returnValues$ret_data<- eventReactive(input$btn_ivive,module_calcs(),ignoreInit = TRUE,ignoreNULL = TRUE)
   
+  
+  observeEvent(input$btn_ivive,{
+    removeModal()
+  })
+  return(returnValues$ret_data)
+}

@@ -17,8 +17,9 @@ shinyServer(function(input, output, session) {
 
   dataset <- reactiveValues()
   dataset$savedat <- reactiveVal(c("No","none"))
+  dataset$iviveDat <- reactiveVal(c("No",0,0,0))
   parameterSets <- reactiveValues()
-
+  
   parameterSets$savedat <- reactiveVal(c("No","",0))
   parameterSets$sverestdat <- reactiveVal(c("None",0))
   parameterSets$importdat <- reactiveVal(c("No","",0))
@@ -421,6 +422,17 @@ shinyServer(function(input, output, session) {
 
     }
   })
+  
+  # Handle radio buttons for changing organisms
+  observeEvent(input$sel_org,{
+    if(!(input$sel_org == "ha")){
+      shinyjs::disable("ms_gender")
+      shinyjs::disable("ms_age")
+    }else{
+      shinyjs::enable("ms_gender")
+      shinyjs::enable("ms_age")
+    }
+  })
 
   #update the inputs for the parameter set selected
   observeEvent(input$sel_physio,{
@@ -474,7 +486,17 @@ shinyServer(function(input, output, session) {
   ## This code chunk deals with performing IVIVE for the chemical
   observeEvent(input$btn_ivive_chem,{
     performIVIVEUI(input$btn_ivive_chem)
-    vals <- callModule(performIVIVE,input$btn_ivive_chem,input$ms_km)
+    dataset$iviveDat <<- callModule(performIVIVE,input$btn_ivive_chem,input$ms_km)
+  })
+  
+  observe({
+    ivive_val <- dataset$iviveDat()
+    print(ivive_val)
+    if(ivive_val[1]=="Yes"){
+      updateNumericInput(session,"ms_vkm1c",value = signif(as.numeric(ivive_val[2]),4))
+      updateNumericInput(session,"ms_vmaxc",value = signif(as.numeric(ivive_val[3]),4))
+      updateNumericInput(session,"ms_km",value = signif(as.numeric(ivive_val[4]),4))
+    }
   })
 
 
@@ -991,10 +1013,10 @@ observeEvent({input$chemScenFilter},{
     scenData <- list("scenName"=input$scenName, "scenDescription"=input$scenDescription, "chemId"=chemId, "qsarModel"=qsarModel, "expoType"=expoType)
     expoData <- list("oralDose"=input$ms_oralDose, "dbr"=input$ms_dbr, "blen"=input$ms_blen, "repTime"=input$ms_repTime, "inhDose"=input$ms_inhDose, "dermDose"=input$ms_dermDose, "expoType" = expoType)
     physiData <- list( "gender"=input$ms_gender, "age"=input$ms_age,  "qcc"=input$ms_qcc,  "bw"=input$ms_bw,    "vbc"=input$ms_vbc,  "qven"=input$ms_qven,"qart"=input$ms_qart,"vfat"=input$ms_vfat,   "qfat"=input$ms_qfat,
-                       "pfat"=input$ms_pfat,        "vskin"=input$ms_vskin, "qskin"=input$ms_qskin, "pskin"=input$ms_pskin, "vmusc"=input$ms_vmusc, "qmusc"=input$ms_qmusc, "pmusc"=input$ms_pmusc, "vmarr"=input$ms_vmarr, "qmarr"=input$ms_qmarr,
-                       "pmarr"=input$ms_pmarr,      "vbone"=input$ms_vbone, "qbone"=input$ms_qbone, "pbone"=input$ms_pbone, "vbrn"=input$ms_vbrn,   "qbrn"=input$ms_qbrn,   "pbrn"=input$ms_pbrn,   "vlng"=input$ms_vlng,   "qlng"=input$ms_qlng,
-                       "plng"=input$ms_plng,        "qhrt"=input$ms_qhrt,   "ahvnt"=input$ms_ahvnt, "alvnt"=input$ms_alvnt, "phrt"=input$ms_phrt,   "vhrt"=input$ms_vhrt,   "vgrt"=input$ms_vgrt,   "pgs"=input$ms_pgs,     "vliv"=input$ms_vliv,
-                       "qaliv"=input$ms_qaliv,      "qvliv"=input$ms_qvliv, "pliv"=input$ms_pliv,   "vkdn"=input$ms_vkdn,   "qkdn"=input$ms_qkdn,   "uflw"=input$ms_uflw,   "gfltr"=input$ms_gfltr,  "pkdn"=input$ms_pkdn)
+                       "pfat"=input$ms_pfat,"vskin"=input$ms_vskin, "qskin"=input$ms_qskin, "pskin"=input$ms_pskin, "vmusc"=input$ms_vmusc, "qmusc"=input$ms_qmusc, "pmusc"=input$ms_pmusc, "vmarr"=input$ms_vmarr, "qmarr"=input$ms_qmarr,
+                       "pmarr"=input$ms_pmarr,"vbone"=input$ms_vbone, "qbone"=input$ms_qbone, "pbone"=input$ms_pbone, "vbrn"=input$ms_vbrn,   "qbrn"=input$ms_qbrn,   "pbrn"=input$ms_pbrn,   "vlng"=input$ms_vlng,   "qlng"=input$ms_qlng,
+                       "plng"=input$ms_plng,"qhrt"=input$ms_qhrt,   "ahvnt"=input$ms_ahvnt, "alvnt"=input$ms_alvnt, "phrt"=input$ms_phrt,   "vhrt"=input$ms_vhrt,   "vgrt"=input$ms_vgrt,   "pgs"=input$ms_pgs,     "vliv"=input$ms_vliv,
+                       "qaliv"=input$ms_qaliv,"qvliv"=input$ms_qvliv, "pliv"=input$ms_pliv,   "vkdn"=input$ms_vkdn,   "qkdn"=input$ms_qkdn,   "uflw"=input$ms_uflw,   "gfltr"=input$ms_gfltr,  "pkdn"=input$ms_pkdn)
 
     if(is.null(scenData$chemId)){
       showNotification(tags$p(paste0("You may have forgot to select a chemical"), style="color: red"), duration = 10)

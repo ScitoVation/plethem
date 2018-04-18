@@ -1,7 +1,7 @@
 ## PLETHEM INSTALLATION
 
 ### Installing R.
-Installing PLETHEM requires the latest version of 64 bit R-3.4.4 or higher[(link)](https://www.r-project.org/), RStudio[(link)](https://www.rstudio.com/), and Rtools[(link)](https://cran.r-project.org/bin/windows/Rtools/)
+Installing PLETHEM requires the latest version of 64 bit R-3.4.4 or higher([link](https://www.r-project.org/)), RStudio([link](https://www.rstudio.com/)), and Rtools([link](https://cran.r-project.org/bin/windows/Rtools/))
 
 ### Installing the package
 Open Rstudio once all of the above are installed. On the Rstudio console type the following command
