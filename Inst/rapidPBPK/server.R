@@ -471,7 +471,8 @@ shinyServer(function(input, output, session) {
   ### This code chunk deals with updating pair using qsar models
   observeEvent(input$qsar4pair,{
     qsar_model <- input$qsarModelChem
-
+    org <- ifelse(input$sel_org=="ha","human","rat")
+    
     chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw,
                             "vpa"=input$ms_vpa, "dkow"=input$ms_dkow,
                             "lkow"=input$ms_lkow, "wsol"=input$ms_wsol,
@@ -479,7 +480,8 @@ shinyServer(function(input, output, session) {
                             "km"=input$ms_km)
     pair <- calculatePartitionCoefficients(qsar_model,
                                            chemical_params,
-                                           NULL)$pair
+                                           NULL,
+                                           org)$pair
     updateNumericInput(session,"ms_pair",value = pair)
   })
   
@@ -1111,6 +1113,7 @@ observeEvent({input$chemScenFilter},{
                  shinyBS::updateButton(session,"btn_useQSAR4partition",style = "primary")
                  chemid <- input$sel_chem4Partition
                  qsar_model <- input$sel_qsar4Partition
+                 org <- ifelse(input$sel_org=="ha","human","rat")
                  query <- sprintf("SELECT param,value FROM Chemical Where chemid = %i",
                                   as.integer(chemid))
                  ret_data <- projectDbSelect(query)
@@ -1122,7 +1125,7 @@ observeEvent({input$chemScenFilter},{
                  tissue_list$active <- active_tissues
                  tissue_list$spf <- c()
                  tissue_list$rpf <- c()
-                 calculatedCoeff <- calculatePartitionCoefficients(qsar_model, chemical_params,tissue_list)
+                 calculatedCoeff <- calculatePartitionCoefficients(qsar_model,chemical_params,tissue_list,org)
                  updateCoeffs(session, calculatedCoeff)
                  })
   # when chemical and/or model are changed, change the type of button to indicate things are out of sync
