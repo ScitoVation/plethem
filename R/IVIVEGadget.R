@@ -123,7 +123,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                              ),
                              fillRow(flex = c(2,1,2),
                                tags$div(),
-                               numericInput("num_pmcl","Precalculated Scaled clearence(L/h)",0),
+                               numericInput("num_pmcl","Precalculated Scaled clearance(L/h)",0),
                                tags$div()
                              )
                      )
@@ -133,7 +133,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                     fillCol(flex = c(3,1),
                             # fillRow(flex=c(6,1,6),
                             #         tags$div(),
-                            #         tags$h4("Clearence in uL/min/pmol"),
+                            #         tags$h4("clearance in uL/min/pmol"),
                             #         tags$div()
                             # ),
                             fillRow(flex = c(2,3,2),
@@ -142,7 +142,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                                     tags$div()
                                     ),
                             fillRow(flex = c(1,2,5),
-                              fileInput("cypCl_upload","Upload Cyp Clearence",
+                              fileInput("cypCl_upload","Upload Cyp clearance",
                                         multiple = F,placeholder = "Select CSV File",
                                         buttonLabel = icon("search"),
                                         accept = c("text/csv")
@@ -170,7 +170,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                                        fillRow(
                                                shinyWidgets::radioGroupButtons("ret_data","Select Data to return",
                                                                                   choiceNames = c("None",
-                                                                                                  "Total Clearence at reference age",
+                                                                                                  "Total clearance at reference age",
                                                                                                   "Total Clearance at all ages",
                                                                                                   "Detailed clearance data"),
                                                                                   choiceValues = c("none","cl_ref",
@@ -317,7 +317,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
 
 
     output$cypCl <- DT::renderDT(DT::datatable(cypCl(),
-                                               caption = "Clearence in \u00B5L/min/pmol",
+                                               caption = "clearance in \u00B5L/min/pmol",
                                                rowname = NULL,
                                                options= list(dom = "tp",pageLength = 5)),
                                  server = T

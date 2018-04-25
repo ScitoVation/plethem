@@ -82,12 +82,12 @@ preprocessUIData<- function(val){
                      0
                      )
   scaled_hepcl_bw <- signif(scaled_hepcl*km/(bw^0.75),4)
-  # calculate renal clearence
+  # calculate renal clearance
   scaled_rencl <- ifelse(val$ch_rencl,val$num_gfr*val$num_fup,0)
 
-  #calculate scaled Plasma clearence
+  #calculate scaled Plasma clearance
   scaled_plcl <- 0 # set it to zero till I have more clarification on units and their relation
-  #get clearence scaling type
+  #get clearance scaling type
   cl_type <- val$rdo_cltype
   ql <- val$num_ql
   qc <- val$num_qc
@@ -118,16 +118,16 @@ preprocessUIData<- function(val){
   return(calcualted_vals_list)
 }
 
-#' Calculate scaled in-vivo clearence if in-vitro clearence is meausured using Sub-cellular components
-#' @description In-vitro clearence is measured in microsomal and cytosolic fractions. The function uses measured in-vitro clearence
-#' and physiological parameters to estimate in-vivo clearence. This function is not called directly by the user
-#' @param clearance vector of (microsomal,cytosolic) clearence
-#' @param units vector of (microsomal,cytosolic) clearence units
+#' Calculate scaled in-vivo clearance if in-vitro clearance is meausured using Sub-cellular components
+#' @description In-vitro clearance is measured in microsomal and cytosolic fractions. The function uses measured in-vitro clearance
+#' and physiological parameters to estimate in-vivo clearance. This function is not called directly by the user
+#' @param clearance vector of (microsomal,cytosolic) clearance
+#' @param units vector of (microsomal,cytosolic) clearance units
 #' @param organism name of organism, "human" or "rat"
 #' @param age age of organism in "years" if "human" or "weeks" if "rat"
 #' @param liver_wt liver weight(kg)
 #' @param return_total logical, type of value to be returned,
-#' @return  Total scaled invivo clearence in L/h if return_total is TRUE, else a named list of individual clearances
+#' @return  Total scaled invivo clearance in L/h if return_total is TRUE, else a named list of individual clearances
 calculateScaledSCClearance <- function(clearance,units,organism="human",
                                        age,liver_wt,km,mpcppgl = list(),return_total = T){
   if (length(mpcppgl) == 0){
@@ -144,15 +144,15 @@ calculateScaledSCClearance <- function(clearance,units,organism="human",
   }
   
   if (units == "ummmP"){
-    clearence <- clearence/km
+    clearance <- clearance/km
     volume_multiplier <- 1
   }else{
-    # bsaed on units for the clearence get the volume multiplier vector
+    # bsaed on units for the clearance get the volume multiplier vector
     #i.e. multiply clerance by 10^-3 if expressed in mL or 10^-6 if expressed in uL
     volume_multiplier <- ifelse(substr(units,1,2)=="ml",10^-3,10^-6)
   }
-  # based on units for the clearence get the time multiplier vector
-  # i.e. multiply clearence by 60 if measured in uL/min/mg Protein
+  # based on units for the clearance get the time multiplier vector
+  # i.e. multiply clearance by 60 if measured in uL/min/mg Protein
   time_multiplier <- ifelse(units %in% c("ulmmP","mlmmP","ummmP"),60,1)
   # convert clerance from unit in UI to L/h
   # need to convert ml to Liters
@@ -171,15 +171,15 @@ calculateScaledSCClearance <- function(clearance,units,organism="human",
 
 }
 
-#' Calculate scaled in-vivo clearence if in-vitro clearence is meausured using S9 Fraction
-#' @description In-vitro clearence is measured in S9 fraction. The function uses measured in-vitro clearence
-#' and physiological parameters to estimate in-vivo clearence. This function is not called directly by the user
-#' @param clearance number for measured S9 clearence
-#' @param units string for S9 clearence units
+#' Calculate scaled in-vivo clearance if in-vitro clearance is meausured using S9 Fraction
+#' @description In-vitro clearance is measured in S9 fraction. The function uses measured in-vitro clearance
+#' and physiological parameters to estimate in-vivo clearance. This function is not called directly by the user
+#' @param clearance number for measured S9 clearance
+#' @param units string for S9 clearance units
 #' @param organism name of organism, "human" or "rat"
 #' @param age age of organism in "years" if "human" or "weeks" if "rat"
 #' @param liver_wt liver weight(kg)
-#' @return Scaled invivo clearence in L/h
+#' @return Scaled invivo clearance in L/h
 calculateScaledS9Clearance<- function(clearance,units,organism,
                                       age,liver_wt,km=1,mpcppgl=list()){
   
@@ -198,11 +198,11 @@ calculateScaledS9Clearance<- function(clearance,units,organism,
   }
   #assuming S9PPGL is the sum of MPPGL and CPPGL
   S9PPGL <- sum(MPCPPGL)
-  # bsaed on units for the clearence get the volume multiplier vector
+  # bsaed on units for the clearance get the volume multiplier vector
   #i.e. multiply clerance by 10^-3 if expressed in mL or 10^-6 if expressed in uL
   volume_multplier <- ifelse(substr(units,1,2)=="ml",10^-3,10^-6)
-  # based on units for the clearence get the time multiplier vector
-  # i.e. multiply clearence by 60 if measured in uL/min/mg Protein
+  # based on units for the clearance get the time multiplier vector
+  # i.e. multiply clearance by 60 if measured in uL/min/mg Protein
   time_multiplier <- ifelse(units=="ulmmP",60,1)
   # convert clerance from unit in UI to L/h
   # need to convert ml to Liters
@@ -218,13 +218,13 @@ calculateScaledS9Clearance<- function(clearance,units,organism,
 #' Calculate sclaed in-vivo clearance if in-vitro clearance is measured in whole hepatocytes
 #' @description The functionuses measured in-vitro clearance in whole hepatocytes, and phyiological parameters, 
 #' to estimate in-vivo clearance. This function is not called directly by the user.
-#' @param clearance number for measured whole hepatocyte clearence
-#' @param units string for whole hepatocyte clearence units
+#' @param clearance number for measured whole hepatocyte clearance
+#' @param units string for whole hepatocyte clearance units
 #' @param organism name of organism, "human" or "rat"
 #' @param age age of organism in "years" if "human" or "weeks" if "rat"
 #' @param liver_wt liver weight(kg),
 #' @param km michelis-menten constant for chemical
-#' @return Scaled invivo clearence in L/h
+#' @return Scaled invivo clearance in L/h
 calculateScaledWholeHepClearance <- function(clearance,units,liver_wt,hpgl,km = 1){
   if (units == "Lh"){ #Liters per hour
     scaled_hepcl <- clearance
@@ -236,18 +236,18 @@ calculateScaledWholeHepClearance <- function(clearance,units,liver_wt,hpgl,km = 
   return(scaled_hepcl)
 }
 
-#' Calculate scaled in-vivo clearence if in-vitro clearence is meausured using S9 Fraction
-#' @description In-vitro clearence is measured in S9 fraction. The function uses measured in-vitro clearence
-#' and physiological parameters to estimate in-vivo clearence. This function is not called directly by the user
-#' @param clearence number for measured S9 clearence
+#' Calculate scaled in-vivo clearance if in-vitro clearance is meausured using S9 Fraction
+#' @description In-vitro clearance is measured in S9 fraction. The function uses measured in-vitro clearance
+#' and physiological parameters to estimate in-vivo clearance. This function is not called directly by the user
+#' @param clearance number for measured S9 clearance
 #' @param organism name of organism, "human" or "rat"
 #' @param age age of organism in "years" if "human" or "weeks" if "rat"
 #' @param liver_wt liver weight(kg)
 #' @param cyp_data dataframe containing all the cyp values with column names (name,loc,abundance,isef,fumic)
 #' @param return_total logical, type of value to be returned,
-#' @return  Total scaled invivo clearence in L/h if return_total is TRUE, else a named list of individual clearances
+#' @return  Total scaled invivo clearance in L/h if return_total is TRUE, else a named list of individual clearances
 
-calculateRecombClearence <- function(clearance,organism,age,
+calculateRecombClearance <- function(clearance,organism,age,
                                      liver_wt,cyp_data,return_total = T){
   # get a vector of enzyme names
   cyp_names <- cyp_data[["name"]]
@@ -272,26 +272,26 @@ calculateRecombClearence <- function(clearance,organism,age,
   cyp_ontogeny <- ontogeny_table$Ontogeny
   names(cyp_ontogeny)<- as.character(ontogeny_table$Enzymes)
   cyp_ontogeny <- cyp_ontogeny[cyp_names]
-  # reorder the clearences to have the same order as the cyp data enzyme
-  clearence <- clearence[cyp_names]
+  # reorder the clearances to have the same order as the cyp data enzyme
+  clearance <- clearance[cyp_names]
 
-  clearence <- as.numeric(unlist(clearence[cyp_names]))
+  clearance <- as.numeric(unlist(clearance[cyp_names]))
 
 
-  scaled_clearence <- clearence*cyp_mgPgL*cyp_abundance*cyp_ontogeny*cyp_isef*liver_wt*1000*60*(10^-6)/cyp_fumic
+  scaled_clearance <- clearance*cyp_mgPgL*cyp_abundance*cyp_ontogeny*cyp_isef*liver_wt*1000*60*(10^-6)/cyp_fumic
 
   if (return_total){
-    total_hepcl <- sum(scaled_clearence)
+    total_hepcl <- sum(scaled_clearance)
     return(total_hepcl)
   }else{
-    names(scaled_clearence)<- cyp_names
-    return(scaled_clearence)
+    names(scaled_clearance)<- cyp_names
+    return(scaled_clearance)
   }
 
 
 }
 #'calculate steady state concentration of orally adminitered non volatile compounds
-#' based on steady state clearence for renal,#'hepatic and plasma clearence
+#' based on steady state clearance for renal,#'hepatic and plasma clearance
 #'
 calculateOralNonvolCss <- function(dose,bw,ql,qc,fup,cl_type,scaled_hepcl,
                                   scaled_rencl,scaled_plcl){
@@ -308,7 +308,7 @@ calculateOralNonvolCss <- function(dose,bw,ql,qc,fup,cl_type,scaled_hepcl,
   return(css)
 }
 #'calculate steady state concentration of orally administered volatile compounds
-#' based on steady state clearence for renal,#'hepatic and plasma clearence
+#' based on steady state clearance for renal,#'hepatic and plasma clearance
 #'
 calculateOralVolCss <- function(dose,bw,ql,qc,pair,scaled_hepcl,scaled_plcl){
 
@@ -324,7 +324,7 @@ calculateOralVolCss <- function(dose,bw,ql,qc,pair,scaled_hepcl,scaled_plcl){
   return(css)
 }
 #'calculate steady state concentration of inhaled volatile compounds
-#' based on steady state clearence for renal,#'hepatic and plasma clearence
+#' based on steady state clearance for renal,#'hepatic and plasma clearance
 #'
 calculateInhVolCss <- function(dose,ql,qc,qp,pair,scaled_hepcl,scaled_plcl){
 
