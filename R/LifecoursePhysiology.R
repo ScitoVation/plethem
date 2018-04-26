@@ -39,7 +39,7 @@ getLifecourseTissueVolumes<- function(age = 25, gender = "M",nonperf_frct = 0.85
   tissue_vol_list <- NULL
   available_tissues <- c("blood","fat","skin","muscle","bone","brain","lung",
                          "heart","gi","kidney","liver","rpf","spf")
-  spf_tissues <- c("fat","skin","muscle")
+  spf_tissues <- c("fat","skin","muscle","bone")
   rpf_tissues <- available_tissues[!(available_tissues %in% c(spf_tissues,"rpf","spf"))]
   inactive_tissues <- dplyr::setdiff(available_tissues,tissues)
   rpf_inactive_tissues <- inactive_tissues[inactive_tissues %in% rpf_tissues]
