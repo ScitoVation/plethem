@@ -4,10 +4,12 @@
 \alias{qsarModelDefault}
 \title{Calculate Partition Coefficient using the default QSAR model}
 \usage{
-qsarModelDefault(chem_params, tissue_list)
+qsarModelDefault(chem_params, selected_org, tissue_list)
 }
 \arguments{
 \item{chem_params}{A named list of parameters needed to run the model}
+
+\item{selected_org}{Either "human" or "rat"}
 
 \item{tissue_list}{List of tissues for which partition coefficients have to be calculated}
 }

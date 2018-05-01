@@ -2,11 +2,7 @@
 title: "PLETHEM Design Manual"
 author: "Salil N Pendse"
 date: "`r Sys.Date()`"
-output: 
-  rmarkdown::pdf_document:
-    toc: TRUE
-    toc_depth: 3
-    fig_caption: TRUE
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{PLETHEM Design Manual}
   %\VignetteEngine{knitr::rmarkdown}

@@ -3,12 +3,12 @@
 \name{calculateOralNonvolCss}
 \alias{calculateOralNonvolCss}
 \title{calculate steady state concentration of orally adminitered non volatile compounds
-based on steady state clearence for renal,#'hepatic and plasma clearence}
+based on steady state clearance for renal,#'hepatic and plasma clearance}
 \usage{
 calculateOralNonvolCss(dose, bw, ql, qc, fup, cl_type, scaled_hepcl,
   scaled_rencl, scaled_plcl)
 }
 \description{
 calculate steady state concentration of orally adminitered non volatile compounds
-based on steady state clearence for renal,#'hepatic and plasma clearence
+based on steady state clearance for renal,#'hepatic and plasma clearance
 }

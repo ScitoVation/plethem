@@ -4,7 +4,7 @@
 \alias{getDbConn}
 \title{Gets the connection to the pDb to run all the queries against}
 \usage{
-getDbConn(db_path)
+getDbConn(db_path, internal = T)
 }
 \arguments{
 \item{db_path}{The location of the project databse.

@@ -3,11 +3,11 @@
 \name{calculateInhVolCss}
 \alias{calculateInhVolCss}
 \title{calculate steady state concentration of inhaled volatile compounds
-based on steady state clearence for renal,#'hepatic and plasma clearence}
+based on steady state clearance for renal,#'hepatic and plasma clearance}
 \usage{
 calculateInhVolCss(dose, ql, qc, qp, pair, scaled_hepcl, scaled_plcl)
 }
 \description{
 calculate steady state concentration of inhaled volatile compounds
-based on steady state clearence for renal,#'hepatic and plasma clearence
+based on steady state clearance for renal,#'hepatic and plasma clearance
 }

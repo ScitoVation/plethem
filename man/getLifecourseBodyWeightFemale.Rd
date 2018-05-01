@@ -15,5 +15,5 @@ Body weight in kg
 }
 \description{
 This function is not called directly by the user. See
-  \code{getLifeCourseBodyWeight}
+\code{getLifeCourseBodyWeight}
 }
