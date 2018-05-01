@@ -138,10 +138,10 @@ mainDbSelect <- function(query, db_path ="database/plethemdb.sqlite"){
 #'
 #' @export
 userDbSelect <- function(query){
-  ###### TO DO ADD PLETHEM USER DB path to main database ########
-  db_path = "database/plethemUserDb.sqlite"
-  ###################
-  conn <- getDbConn(db_path)
+  # get user dbPath
+  
+  db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
+  conn <- getDbConn(db_path,internal = F)
   res <- RSQLite::dbSendQuery(conn,query)
   res_df <- RSQLite::dbFetch(res)
   RSQLite::dbClearResult(res)
@@ -155,10 +155,8 @@ userDbSelect <- function(query){
 #' This function will not be called by the user directly
 #' @export
 userDbUpdate <- function(query){
-  ###### TO DO ADD PLETHEM USER DB path to main database ########
-  db_path = "database/plethemUserDb.sqlite"
-  ###################
-  conn <- getDbConn(db_path)
+  db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
+  conn <- getDbConn(db_path,internal = F)
   RSQLite::dbExecute(conn,query)
   RSQLite::dbDisconnect(conn)
 }
@@ -168,9 +166,11 @@ userDbUpdate <- function(query){
 #' @param db_path The location of the project databse.
 #' This function will not be called by the user directly
 #'
-getDbConn<- function(db_path){
-  db <- system.file(db_path,package = "plethem")
-  conn <- RSQLite::dbConnect(RSQLite::SQLite(),db)
+getDbConn<- function(db_path,internal = T){
+  if (internal){
+    db_path <- system.file(db_path,package = "plethem")
+  }
+  conn <- RSQLite::dbConnect(RSQLite::SQLite(),db_path)
   return(conn)
 }
 
