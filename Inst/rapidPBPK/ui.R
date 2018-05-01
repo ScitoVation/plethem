@@ -48,7 +48,7 @@ expo_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
 ################################compartment sidebar
 comp_sidebar <- shinydashboard::dashboardSidebar(
   sidebarMenu(id="compsidebar",
-              tags$div(shinyWidgets::radioGroupButtons("sel_org",
+              tags$div(shinyWidgets::radioGroupButtons("ms_org",
                                                        label = "Select Organism",
                                                        choices = c("Human" = "ha","Rat"="ra"),
                                                        selected = "ha",size = "normal",

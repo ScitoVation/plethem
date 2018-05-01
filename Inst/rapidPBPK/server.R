@@ -424,13 +424,24 @@ shinyServer(function(input, output, session) {
   })
   
   # Handle radio buttons for changing organisms
-  observeEvent(input$sel_org,{
-    if(!(input$sel_org == "ha")){
-      shinyjs::disable("ms_gender")
-      shinyjs::disable("ms_age")
-    }else{
+  observeEvent(input$ms_org,{
+    if(input$ms_org == "ha"){
       shinyjs::enable("ms_gender")
       shinyjs::enable("ms_age")
+    }else{
+      #shinyjs::disable("ms_gender")
+      #shinyjs::disable("ms_age")
+      physioid <- 1
+      query <- sprintf("Select param,value from Physiological where physioid = 1;")
+      param_values <- mainDbSelect(query)
+      param_names <- param_values$param
+      param_values <- param_values$value
+      names(param_values)<- param_names
+      # get all numeric values in the physio names dataframe
+      params_df <- physio_name_df
+      params_df$Val <- param_values[physio_name_df$Var]
+      updateUIInputs(session,params_df)
+      
     }
   })
 
@@ -471,7 +482,7 @@ shinyServer(function(input, output, session) {
   ### This code chunk deals with updating pair using qsar models
   observeEvent(input$qsar4pair,{
     qsar_model <- input$qsarModelChem
-    org <- ifelse(input$sel_org=="ha","human","rat")
+    org <- ifelse(input$ms_org=="ha","human","rat")
     
     chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw,
                             "vpa"=input$ms_vpa, "dkow"=input$ms_dkow,
@@ -1113,7 +1124,7 @@ observeEvent({input$chemScenFilter},{
                  shinyBS::updateButton(session,"btn_useQSAR4partition",style = "primary")
                  chemid <- input$sel_chem4Partition
                  qsar_model <- input$sel_qsar4Partition
-                 org <- ifelse(input$sel_org=="ha","human","rat")
+                 org <- ifelse(input$ms_org=="ha","human","rat")
                  query <- sprintf("SELECT param,value FROM Chemical Where chemid = %i",
                                   as.integer(chemid))
                  ret_data <- projectDbSelect(query)

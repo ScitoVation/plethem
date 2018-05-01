@@ -32,7 +32,11 @@ updateUIInputs <- function(session, param_df){
     } else if (type == "CheckboxGroup"){
       var <- paste0("ms_",varname)
       updateCheckboxGroupInput(session,var,selected =eval(parse(text = val)))
+    } else if (type == "RadioGroupButtons"){
+      var <- paste0("ms_",varname)
+      updateRadioGroupButtons(session,var,selected =val)
     }
+    
   })
 
 }
