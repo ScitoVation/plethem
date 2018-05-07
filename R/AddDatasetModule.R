@@ -16,7 +16,7 @@ addDataSetUI <- function(namespace, data_type){
                           fluidRow(
                             column(6,
                                    shinyWidgets::radioGroupButtons(ns("type"),"Select Data Type",
-                                                                   choices = c("Tissue Concentration"="conc","Amount"="amt"))
+                                                                   choices = c("Tissue Concentration"="conc"))
                                    ),
                             column(6,
                                    uiOutput(ns("unit_ui"))
@@ -53,9 +53,9 @@ addDataSet <- function(input,output,session,data_type){
   observeEvent(input$type,{
     #print(input$dtype)
     if(input$type == "conc"){
-      choices = c("ng/ml"="ngml","\u00B5Molar" = "umolar")
+      choices = c("mg/l"="mgl")
     }else{
-      choices = c("ng"="ng","\u00B5moles"="umoles")
+      choices = c("mg"="mg")
     }
     output$unit_ui <- renderUI({
       shinyWidgets::radioGroupButtons(ns("unit"),label = "Select Data Unit",choices = choices)

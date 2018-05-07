@@ -35,12 +35,10 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
 
 
   name_list <- names(UI_values)
-
-  temp_unique_list <- lapply(name_list,
+  name_list <- name_list[!name_list == "cmplist"]
+  temp_unique_list <- unname(lapply(name_list,
                              function(x,a=UI_values,b=set_values){
-                               a[[x]]==b[x]})
-
-
+                               a[[x]]==b[x]}))
   param_data<-t(as.data.frame(UI_values[temp_unique_list == FALSE]))
 
   if (dim(param_data)[1]==0){

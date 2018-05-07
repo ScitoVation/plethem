@@ -264,7 +264,7 @@ plot_body <- fluidPage(
                                                            )
                                                          ),
                                                          fluidRow(
-                                                           plotOutput("concplt")
+                                                           plotly::plotlyOutput("concplt")
                                                          )
                                                 ),
                                                 tabPanel("Table",
@@ -307,7 +307,7 @@ plot_body <- fluidPage(
                                                                 )
                                                               ),
                                                               fluidRow(
-                                                                plotOutput("amtplt")
+                                                                plotly::plotlyOutput("amtplt")
                                                               )
                                                      ),
                                                      tabPanel("Table",
@@ -805,7 +805,7 @@ shinyUI(fluidPage(
   includeCSS("www/styles.css"),
   shinyjs::extendShinyjs(text = jscode),
   shinyjs::inlineCSS(css),
-  titlePanel(title="", windowTitle = "Plethem CEFIC"),
+  titlePanel(title="", windowTitle = "PLETHEM rapidPBPK"),
   tags$head(
     tags$meta(charset="utf-8"),
     tags$meta(name="viewport", content="width=device-width, initial-scale=1"),
@@ -1097,7 +1097,7 @@ shinyUI(fluidPage(
                                              # ),
                                              fluidRow(tags$h4("")),
                                              fluidRow(
-                                               column(2,
+                                               column(3,
                                                       shinyWidgets::dropdownButton(
                                                         tagList(
                                                           textInput("sim_name","Name"),
@@ -1112,12 +1112,12 @@ shinyUI(fluidPage(
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")
                                                         ),
-                                                        icon = icon("plus"),circle = F,
-                                                        tooltip = F,size = "default",
+                                                        icon = icon("plus"),circle = F, 
+                                                        tooltip = F,size = "default",right = F,
                                                         width = validateCssUnit("100%"),
                                                         label = "Create new simulation",
                                                         status = "default" )),
-                                               column(2,
+                                               column(3,
                                                       shinyBS::bsButton("run_sim","Run Simulation",
                                                                                style = "primary",block = TRUE))
                                              ),

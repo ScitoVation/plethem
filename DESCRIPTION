@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: person("Salil", "Pendse", email = "salil.pendse@scitovation.com", role = c("aut", "cre"))
 Description: PLETHEM is a PBPK modeling package written in R to faciliate rapidPBPK modeling and High-throughput IVIVE
 Depends:
-  R (>= 3.1.3),
+  R (>= 3.4.5),
   shiny,
   shinydashboard,
   shinyjs,
@@ -28,7 +28,9 @@ Imports:
 	gdata,
 	devtools,
 	RSQLite,
-	formatR
+	formatR,
+	plotly,
+	magrittr
 Suggests: testthat,
     knitr,
     rmarkdown

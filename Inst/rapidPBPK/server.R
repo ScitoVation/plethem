@@ -1,14 +1,6 @@
-#library(shiny)
-#library(ggplot2)
-#library(shinyjs)
-#library(shinydashboard)
-#library(ggplot2)
-#library(RSQLite)
-#library(shinyBS)
-#library(rintrojs)
-#library(DT)
-
-# Define server logic for random distribution application
+#' Server logic for RapidPBPK Model
+#' @importFrom plotly renderPlotly plot_ly add_trace
+#' @importFrom magrittr %>%
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
   # this dataframe is only used to display the metabolism data.
@@ -379,22 +371,13 @@ shinyServer(function(input, output, session) {
       val_df <- data.frame("var"=result_vector[2],"val"= result_vector[4],stringsAsFactors = FALSE,row.names = NULL)
 
       # create the query
-      query <-paste(mapply(function(var,val,tbl_nme,id_nme,id){
-        temp <- sprintf("UPDATE %s SET value = %s WHERE %s = %i AND param = '%s'",
+      query_list <-mapply(function(var,val,tbl_nme,id_nme,id){
+        temp <- sprintf("UPDATE %s SET value = %s WHERE %s = %i AND param = '%s';",
                         tbl_nme,val,id_nme,id,var)
         return(temp)
       },
-      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = T),
-      collapse = ";")
-      # set_string <- sprintf("value = %f",result_vector[3])
-      # where_string <- sprintf("param = %s",result_vector[2])
-      # print(set_string)
-      # print(table_name)
-      # print(id_name)
-      # print(input_id)
-      #Create the Query
-      # query <- sprintf("UPDATE %s SET %s WHERE %s = %d ;",table_name,set_string,id_name,input_id)
-      projectDbUpdate(query)
+      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = T)
+      lapply(query_list,projectDbUpdate)
 
     }else if (ops_type == "restore"){
       type <- result_vector[5]
@@ -504,7 +487,6 @@ shinyServer(function(input, output, session) {
   
   observe({
     ivive_val <- dataset$iviveDat()
-    print(ivive_val)
     if(ivive_val[1]=="Yes"){
       updateNumericInput(session,"ms_vkm1c",value = signif(as.numeric(ivive_val[2]),4))
       updateNumericInput(session,"ms_vmaxc",value = signif(as.numeric(ivive_val[3]),4))
@@ -1396,8 +1378,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       obsid <- input$cplt_data
       query <- sprintf("SELECT units, obs_tble FROM Observation WHERE obsid = %i",
                        as.integer(obsid))
-      return_data <- projectDbSelect(query)
-      dataset <- unserialize(charToRaw(return_data$obs_tble))
+      obs_data <- projectDbSelect(query)
+      dataset <- unserialize(charToRaw(obs_data$obs_tble))
       if (ncol(dataset)<3){
         dataset[,"sd"]<- 0
       }
@@ -1406,6 +1388,17 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return(dataset)
     }
 
+  })
+  concDatasetName <- reactive({
+    if (input$cplt_data=="none"){
+      return("No Dataset Selected")#data.frame("time"=NULL,"mean"=NULL,"sd"=NULL))
+    }else{
+      obsid <- input$cplt_data
+      query <- sprintf("SELECT name FROM ObservationSet WHERE obsid = %i",
+                       as.integer(obsid))
+      obs_name <- projectDbSelect(query)
+      return(obs_name)
+    }
   })
 
 
@@ -1587,23 +1580,36 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     return(plot_frame)
   })
 
-  output$concplt <- renderPlot(ggplot()
-                               +geom_line(data = concData(), aes(x=time,y=value,color = variable))
-                               +geom_pointrange(data = concDataset(),aes(x = time,y = mean, ymin = mean-sd ,ymax = mean+sd,fill = "Dataset"))
+  # output$concplt <- plotly::renderPlotly(plotly::ggplotly(ggplot()
+  #                              +geom_line(data = concData(), aes(x=time,y=value,color = variable))
+  #                              +geom_pointrange(data = concDataset(),aes(x = time,y = mean, ymin = mean-sd ,ymax = mean+sd,fill = "Dataset (mg/L)"))
+  # 
+  #                              +labs(x="Time (h)",y="Concentration")
+  #                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
 
-                               +labs(x="Time (h)",y="Concentration")
-                               +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank()))
-
-
+  output$concplt <- plotly::renderPlotly(plotly::plot_ly()%>%
+                                           plotly::add_trace(data = concData(),x = ~time,
+                                                             y = ~value,color = ~variable,
+                                                             type = "scatter",mode = "lines") %>%
+                                           plotly::add_trace(data = concDataset(),x = ~time,y  = ~mean,
+                                                             type = "scatter",mode = "markers",
+                                                             name = concDatasetName(),
+                                                             marker = list(color = "#000"),
+                                                             error_y = list(array= ~sd,
+                                                                            color = '#000')
+                                                             )%>%
+                                           plotly::layout(xaxis = list(title = ('Time(h)')),
+                                                  yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
+                                                                               'Concentration (mg/L)')))))
   output$exposureplt <- renderPlot(ggplot()
                                    +geom_line(data = exposureData(), aes(x=time,y=value,color = variable))
                                    +labs(x="Time (h)",y="Amount (umoles)")
                                    +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank()))
 
 
-  output$amtplt <- renderPlot(ggplot(amtData(), aes(x=time,y=value,color = variable))+geom_line()
+  output$amtplt <- plotly::renderPlotly(plotly::ggplotly(ggplot(amtData(), aes(x=time,y=value,color = variable))+geom_line()
                               +labs(x="Time (h)",y="Amount")
-                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank()))
+                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
 
   # output$aucplt <- renderPlot(ggplot(AUCData(), aes(x=time,y=value,color = variable))+geom_line()
   #                             +labs(x="Time (h)",y="AUC (mg*h/L)")
@@ -1680,7 +1686,6 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
   })
   observeEvent(input$close_dialog,{
-    print(input$close_dialog)
     if (input$close_dialog){
       saveProject()
       stopApp()

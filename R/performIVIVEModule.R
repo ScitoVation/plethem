@@ -167,9 +167,9 @@ performIVIVE <- function(input,output,session,km){
                                                                 liver_wt,hpgl,km),
                    0
     )
-    vmax <- vliv*km*liver_wt/(bw^0.75)
+    vmax <- vliv*km/(bw^0.75)
     #print(c(vliv,vmax,km))
-    return(c("Yes",vliv,vmax,km))
+    return(c("Yes",vliv/liver_wt,vmax,km))
   }
   #returnValues$ret_data<- 
   returnValues$ret_data<- eventReactive(input$btn_ivive,module_calcs(),ignoreInit = TRUE,ignoreNULL = TRUE)
