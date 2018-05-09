@@ -73,10 +73,21 @@ getMetabData <- function(metabid,physioid,chemid){
 getAllParamValuesForModel <- function(simid,model){
   simid <- as.integer(simid)
   # get the param names that are a part of the model
-  query <- sprintf("SELECT Var FROM ParamNames WHERE modelParams = 'TRUE' AND ( Model = '%s' OR Model = 'All') ;",
+  # get physiological parameter names
+  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Physiological' AND Model = '%s';",
                    model)
   result <- mainDbSelect(query)
   param_names <- result$Var
+  # get Chemical parameter names
+  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Chemical';")
+  result <- mainDbSelect(query)
+  param_names <- c(param_names,result$Var)
+  # get Esposure parameter names
+  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Exposure';")
+  result <- mainDbSelect(query)
+  param_names <- c(param_names,result$Var)
+
+
 
   # get the physiological values for the simulation
   query <- sprintf("Select metabid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
@@ -133,7 +144,8 @@ getAllParamValuesForModel <- function(simid,model){
   # print(length(uiParamNames))
   # params[!(names(params) %in% uiParamNames )]<- NULL
 
-  return(params)
+
+  return(list("vals" = params,"names" =param_names))
 
 }
 

@@ -78,7 +78,7 @@ qsarModelDefault <- function(chem_params,selected_org,tissue_list){
     
   }else if(selected_org == "rat"){
     # pbair calculation
-    if (lhen<-0.7){
+    if (lhen< -0.7){
       pbair <- 0.19338*(1/10^lhen)+(0.002592*10^lkoair)
     }else{
       pbair <- 2.32245*(1/10^lhen)+(0.0067389*10^lkoair)

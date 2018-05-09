@@ -8,6 +8,7 @@
 #' This function can be used from the console if all the inputs are provided
 #' @param initial_values A list containing initial values needed to run the model
 #' @param model The name of the PBPK model to simulate
+#' @useDynLib plethem ,.registration = TRUE
 #' @export
 runFDPBPK<- function(initial_values,model ="rapidPBPK"){
 
@@ -56,8 +57,11 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
 
   times <- sort(c(deSolve::cleanEventTimes(times,event_data[["time"]]),
                   event_data[["time"]]))
+  print(names(initial_params))
+  state <- rapidPBPK_initStates(initial_params,state)
+  initial_params <- rapidPBPK_initParms(initial_params)
   modelOutput<- deSolve::ode(y = state, times = times,method = "vode",
-                    func = genericPBPKModel, parms = initial_params,
+                    func = "derivs", dllName = "plethem",parms = initial_params,
                     events = list(data = event_data))
 
   dfModelOutput <- as.data.frame(modelOutput)

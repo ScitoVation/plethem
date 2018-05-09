@@ -848,7 +848,7 @@ shinyServer(function(input, output, session) {
 
 
     withProgress({
-      tempDF <- runFDPBPK(initial_values)
+      tempDF <- runFDPBPK(initial_values,"rapidPBPK")
 
       results$pbpk<- tempDF$pbpk
     })
@@ -1695,10 +1695,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
 })
 
-calculateInitialValues <- function(params,total_vol){
-
+calculateInitialValues <- function(params_list,total_vol){
+  params <- params_list$vals
   brep_flag <- as.logical(params[["brep_flag"]])
   iv_flag <- as.logical(params[["ivrep_flag"]])
+ 
   params <- params[which(grepl("[-]?[0-9]+[.]?[0-9]*|[-]?[0-9]+[L]?|[-]?[0-9]+[.]?[0-9]*[eE][0-9]+",params))]
   params <- lapply(params,function(x){as.numeric(x)})
 
@@ -1944,9 +1945,10 @@ calculateInitialValues <- function(params,total_vol){
     abspf=0,atspf=0,
     # Clearance
     ametliv1=0,ametliv2=0,aclbld=0,auexc=0,anabsgut=0)
+  print(params_list$names)
 
   initial_values <- list("evnt_data"= eventDat,
-                         "initial_params"= initial_params,
+                         "initial_params"= initial_params[params_list$names],
                          "times"=times,
                          "tstop"=tstop,"tstart"=tstart,
                          "state"= state)
