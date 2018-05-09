@@ -12,9 +12,9 @@
 #' @export
 runFDPBPK<- function(initial_values,model ="rapidPBPK"){
 
-  if (model== "rapidPBPK"){
-    print("Running Rapid PBPK")
-  }
+  # if (model== "rapidPBPK"){
+  #   print("Running Rapid PBPK")
+  # }
 
   #get all input
 
@@ -57,11 +57,10 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
 
   times <- sort(c(deSolve::cleanEventTimes(times,event_data[["time"]]),
                   event_data[["time"]]))
-  print(names(initial_params))
   state <- rapidPBPK_initStates(initial_params,state)
   initial_params <- rapidPBPK_initParms(initial_params)
   modelOutput<- deSolve::ode(y = state, times = times,method = "vode",
-                    func = "derivs", dllName = "plethem",parms = initial_params,
+                    func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
                     events = list(data = event_data))
 
   dfModelOutput <- as.data.frame(modelOutput)
