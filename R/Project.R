@@ -76,8 +76,11 @@ listProjects <- function(type = NULL){
 #' Load the project with the given name
 #' @description Loads the project data in the PLETHEM project database.
 #' @export
-loadProject <- function(){
-  file_path <- choose.files(caption = "Select PLETHEM project file",multi = F)
+loadProject <- function(file_path = ""){
+  if(file_path == ""){
+    file_path <- choose.files(caption = "Select PLETHEM project file",multi = F)
+  }
+  
   load(file_path)
   # set the project details to match where the current file was loaded from
   # this will be helpful if the user changes the location/name of the files outside the package

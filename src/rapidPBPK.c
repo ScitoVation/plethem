@@ -1,9 +1,9 @@
-/* rapidPBPK.model.c for R deSolve package
+/* rapidPBPK.c for R deSolve package
    ___________________________________________________
 
    Model File:  rapidPBPK.model
 
-   Date:  Tue Apr 03 15:51:57 2018
+   Date:  Fri May 11 16:11:51 2018
 
    Created by:  "C:/MCSIM-~1.6/mod/.libs/mod.exe v5.6.6"
     -- a model preprocessor by Don Maszle
@@ -108,7 +108,8 @@
 
    0 Inputs:
 
-   131 Parameters:
+   125 Parameters:
+     mw = 0,
      bdose = 0,
      blen = 0,
      breps = 0,
@@ -184,14 +185,8 @@
      vspfc = 0,
      qspfc = 0,
      pspf = 0,
-     mw = 0,
      res = 0,
-     vmaxc = 0,
-     km = 0,
      fupls = 0,
-     vkm1c = 0,
-     tstart = 0,
-     sim_dur = 0,
      vbld = 0,
      vpls = 0,
      vfat = 0,
@@ -235,11 +230,10 @@
      paspf = 0,
      vkm1 = 0,
      vmaxliv = 0,
-     kmliv = 0,
-     tstop = 0,
+     km = 0,
      cinh = 0,
      qalv = 0,
-     pair = 1e-10,
+     pair = 1e10,
 */
 
 #include <R.h>
@@ -341,139 +335,133 @@
 #define ID_mbal 0x00030
 
 /* Parameters */
-static double parms[131];
+static double parms[125];
 
-#define bdose parms[0]
-#define blen parms[1]
-#define breps parms[2]
-#define totbreps parms[3]
-#define drdose parms[4]
-#define vdw parms[5]
-#define dreps parms[6]
-#define inhdose parms[7]
-#define inhtlen parms[8]
-#define inhdays parms[9]
-#define ivdose parms[10]
-#define ivlen parms[11]
-#define bw parms[12]
-#define qcc parms[13]
-#define hct parms[14]
-#define vbldc parms[15]
-#define perfc parms[16]
-#define kbld parms[17]
-#define respr parms[18]
-#define tv parms[19]
-#define ds parms[20]
-#define uflw parms[21]
-#define gfr parms[22]
-#define wsol parms[23]
-#define fatvtbc parms[24]
-#define vfatc parms[25]
-#define qfatc parms[26]
-#define pfat parms[27]
-#define skinvtbc parms[28]
-#define vskinc parms[29]
-#define qskinc parms[30]
-#define pskin parms[31]
-#define muscvtbc parms[32]
-#define vmuscc parms[33]
-#define qmuscc parms[34]
-#define pmusc parms[35]
-#define bonevtbc parms[36]
-#define vbonec parms[37]
-#define qbonec parms[38]
-#define pbone parms[39]
-#define brnvtbc parms[40]
-#define vbrnc parms[41]
-#define qbrnc parms[42]
-#define pbrn parms[43]
-#define lngvtbc parms[44]
-#define vlngc parms[45]
-#define qlngc parms[46]
-#define plng parms[47]
-#define hrtvtbc parms[48]
-#define vhrtc parms[49]
-#define qhrtc parms[50]
-#define phrt parms[51]
-#define givtbc parms[52]
-#define vgic parms[53]
-#define qgic parms[54]
-#define pgi parms[55]
-#define fa parms[56]
-#define ka parms[57]
-#define livvtbc parms[58]
-#define vlivc parms[59]
-#define qalivc parms[60]
-#define qvlivc parms[61]
-#define pliv parms[62]
-#define kdnvtbc parms[63]
-#define vkdnc parms[64]
-#define qkdnc parms[65]
-#define pkdn parms[66]
-#define rpfvtbc parms[67]
-#define vrpfc parms[68]
-#define qrpfc parms[69]
-#define prpf parms[70]
-#define spfvtbc parms[71]
-#define vspfc parms[72]
-#define qspfc parms[73]
-#define pspf parms[74]
-#define mw parms[75]
+#define mw parms[0]
+#define bdose parms[1]
+#define blen parms[2]
+#define breps parms[3]
+#define totbreps parms[4]
+#define drdose parms[5]
+#define vdw parms[6]
+#define dreps parms[7]
+#define inhdose parms[8]
+#define inhtlen parms[9]
+#define inhdays parms[10]
+#define ivdose parms[11]
+#define ivlen parms[12]
+#define bw parms[13]
+#define qcc parms[14]
+#define hct parms[15]
+#define vbldc parms[16]
+#define perfc parms[17]
+#define kbld parms[18]
+#define respr parms[19]
+#define tv parms[20]
+#define ds parms[21]
+#define uflw parms[22]
+#define gfr parms[23]
+#define wsol parms[24]
+#define fatvtbc parms[25]
+#define vfatc parms[26]
+#define qfatc parms[27]
+#define pfat parms[28]
+#define skinvtbc parms[29]
+#define vskinc parms[30]
+#define qskinc parms[31]
+#define pskin parms[32]
+#define muscvtbc parms[33]
+#define vmuscc parms[34]
+#define qmuscc parms[35]
+#define pmusc parms[36]
+#define bonevtbc parms[37]
+#define vbonec parms[38]
+#define qbonec parms[39]
+#define pbone parms[40]
+#define brnvtbc parms[41]
+#define vbrnc parms[42]
+#define qbrnc parms[43]
+#define pbrn parms[44]
+#define lngvtbc parms[45]
+#define vlngc parms[46]
+#define qlngc parms[47]
+#define plng parms[48]
+#define hrtvtbc parms[49]
+#define vhrtc parms[50]
+#define qhrtc parms[51]
+#define phrt parms[52]
+#define givtbc parms[53]
+#define vgic parms[54]
+#define qgic parms[55]
+#define pgi parms[56]
+#define fa parms[57]
+#define ka parms[58]
+#define livvtbc parms[59]
+#define vlivc parms[60]
+#define qalivc parms[61]
+#define qvlivc parms[62]
+#define pliv parms[63]
+#define kdnvtbc parms[64]
+#define vkdnc parms[65]
+#define qkdnc parms[66]
+#define pkdn parms[67]
+#define rpfvtbc parms[68]
+#define vrpfc parms[69]
+#define qrpfc parms[70]
+#define prpf parms[71]
+#define spfvtbc parms[72]
+#define vspfc parms[73]
+#define qspfc parms[74]
+#define pspf parms[75]
 #define res parms[76]
-#define vmaxc parms[77]
-#define km parms[78]
-#define fupls parms[79]
-#define vkm1c parms[80]
-#define tstart parms[81]
-#define sim_dur parms[82]
-#define vbld parms[83]
-#define vpls parms[84]
-#define vfat parms[85]
-#define vskin parms[86]
-#define vmusc parms[87]
-#define vbone parms[88]
-#define vbrn parms[89]
-#define vlng parms[90]
-#define vhrt parms[91]
-#define vkdn parms[92]
-#define vgi parms[93]
-#define vliv parms[94]
-#define vrpf parms[95]
-#define vspf parms[96]
-#define total_perf parms[97]
-#define qcp parms[98]
-#define qfat parms[99]
-#define qskin parms[100]
-#define qmusc parms[101]
-#define qbone parms[102]
-#define qbrn parms[103]
-#define qlng parms[104]
-#define qhrt parms[105]
-#define qkdn parms[106]
-#define qvliv parms[107]
-#define qgi parms[108]
-#define qaliv parms[109]
-#define qrpf parms[110]
-#define qspf parms[111]
-#define pafat parms[112]
-#define paskin parms[113]
-#define pamusc parms[114]
-#define pabone parms[115]
-#define pabrn parms[116]
-#define palng parms[117]
-#define pahrt parms[118]
-#define pakdn parms[119]
-#define pagi parms[120]
-#define paliv parms[121]
-#define parpf parms[122]
-#define paspf parms[123]
-#define vkm1 parms[124]
-#define vmaxliv parms[125]
-#define kmliv parms[126]
-#define tstop parms[127]
-#define cinh parms[128]
-#define qalv parms[129]
-#define pair parms[130]
+#define fupls parms[77]
+#define vbld parms[78]
+#define vpls parms[79]
+#define vfat parms[80]
+#define vskin parms[81]
+#define vmusc parms[82]
+#define vbone parms[83]
+#define vbrn parms[84]
+#define vlng parms[85]
+#define vhrt parms[86]
+#define vkdn parms[87]
+#define vgi parms[88]
+#define vliv parms[89]
+#define vrpf parms[90]
+#define vspf parms[91]
+#define total_perf parms[92]
+#define qcp parms[93]
+#define qfat parms[94]
+#define qskin parms[95]
+#define qmusc parms[96]
+#define qbone parms[97]
+#define qbrn parms[98]
+#define qlng parms[99]
+#define qhrt parms[100]
+#define qkdn parms[101]
+#define qvliv parms[102]
+#define qgi parms[103]
+#define qaliv parms[104]
+#define qrpf parms[105]
+#define qspf parms[106]
+#define pafat parms[107]
+#define paskin parms[108]
+#define pamusc parms[109]
+#define pabone parms[110]
+#define pabrn parms[111]
+#define palng parms[112]
+#define pahrt parms[113]
+#define pakdn parms[114]
+#define pagi parms[115]
+#define paliv parms[116]
+#define parpf parms[117]
+#define paspf parms[118]
+#define vkm1 parms[119]
+#define vmaxliv parms[120]
+#define km parms[121]
+#define cinh parms[122]
+#define qalv parms[123]
+#define pair parms[124]
 
 /* Forcing (Input) functions */
 static double forc[0];
@@ -509,7 +497,7 @@ double CalcDelay(int hvar, double dTime, double delay) {
 /*----- Initializers */
 void initmod (void (* odeparms)(int *, double *))
 {
-  int N=131;
+  int N=125;
   odeparms(&N, parms);
 }
 
@@ -551,20 +539,8 @@ void getParms (double *inParms, double *out, int *nout) {
 void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, int *ip)
 {
   /* local */ double afat;
-  /* local */ double cfat_mg;
   /* local */ double askin;
-  /* local */ double cskin_mg;
   /* local */ double amusc;
-  /* local */ double cmusc_ng;
-  /* local */ double cbone_ng;
-  /* local */ double cbrn_ng;
-  /* local */ double clng_ng;
-  /* local */ double chrt_ng;
-  /* local */ double ckdn_ng;
-  /* local */ double cgi_ng;
-  /* local */ double cliv_ng;
-  /* local */ double crpf_ng;
-  /* local */ double cspf_ng;
   /* local */ double dose_in_gut;
   /* local */ double available_dose;
   /* local */ double raabsgut;
@@ -591,8 +567,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cfat_um] = ( y[ID_atfat] + y[ID_abfat] ) / vfat ;
 
-  cfat_mg = ( y[ID_atfat] + y[ID_abfat] ) * mw / vfat ;
-
   yout[ID_ctskin] = y[ID_atskin] / ( skinvtbc * vskin ) ;
 
   yout[ID_cbskin] = y[ID_abskin] / ( ( 1 - skinvtbc ) * vskin ) ;
@@ -600,8 +574,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   askin = y[ID_atskin] + y[ID_abskin] ;
 
   yout[ID_cskin_um] = ( y[ID_atskin] + y[ID_abskin] ) / vskin ;
-
-  cskin_mg = ( y[ID_atskin] + y[ID_abskin] ) * mw / vskin ;
 
   yout[ID_ctmusc] = y[ID_atmusc] / ( muscvtbc * vmusc ) ;
 
@@ -611,8 +583,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cmusc_um] = ( y[ID_atmusc] + y[ID_abmusc] ) / vmusc ;
 
-  cmusc_ng = ( y[ID_atmusc] + y[ID_abmusc] ) * mw / vmusc ;
-
   yout[ID_ctbone] = y[ID_atbone] / ( bonevtbc * vbone ) ;
 
   yout[ID_cbbone] = y[ID_abbone] / ( ( 1 - bonevtbc ) * vbone ) ;
@@ -620,8 +590,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   yout[ID_abone] = y[ID_atbone] + y[ID_abbone] ;
 
   yout[ID_cbone_um] = ( y[ID_atbone] + y[ID_abbone] ) / vbone ;
-
-  cbone_ng = ( y[ID_atbone] + y[ID_abbone] ) * mw / vbone ;
 
   yout[ID_ctbrn] = y[ID_atbrn] / ( brnvtbc * vbrn ) ;
 
@@ -631,8 +599,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cbrn_um] = ( y[ID_atbrn] + y[ID_abbrn] ) / vbrn ;
 
-  cbrn_ng = ( y[ID_atbrn] + y[ID_abbrn] ) * mw / vbrn ;
-
   yout[ID_ctlng] = y[ID_atlng] / ( lngvtbc * vlng ) ;
 
   yout[ID_cblng] = y[ID_ablng] / ( ( 1 - lngvtbc ) * vlng ) ;
@@ -640,8 +606,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   yout[ID_alng] = y[ID_atlng] + y[ID_ablng] ;
 
   yout[ID_clng_um] = ( y[ID_atlng] + y[ID_ablng] ) / vlng ;
-
-  clng_ng = ( y[ID_atlng] + y[ID_ablng] ) * mw / vlng ;
 
   yout[ID_cthrt] = y[ID_athrt] / ( hrtvtbc * vhrt ) ;
 
@@ -651,8 +615,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_chrt_um] = ( y[ID_athrt] + y[ID_abhrt] ) / vhrt ;
 
-  chrt_ng = ( y[ID_athrt] + y[ID_abhrt] ) * mw / vhrt ;
-
   yout[ID_ctkdn] = y[ID_atkdn] / ( kdnvtbc * vkdn ) ;
 
   yout[ID_cbkdn] = y[ID_abkdn] / ( ( 1 - kdnvtbc ) * vkdn ) ;
@@ -660,8 +622,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   yout[ID_akdn] = y[ID_atkdn] + y[ID_abkdn] ;
 
   yout[ID_ckdn_um] = ( y[ID_atkdn] + y[ID_abkdn] ) / vkdn ;
-
-  ckdn_ng = ( y[ID_atkdn] + y[ID_abkdn] ) * mw / vkdn ;
 
   yout[ID_ctgi] = y[ID_atgi] / ( givtbc * vgi ) ;
 
@@ -671,8 +631,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cgi_um] = ( y[ID_atgi] + y[ID_abgi] ) / vgi ;
 
-  cgi_ng = ( y[ID_atgi] + y[ID_abgi] ) * mw / vgi ;
-
   yout[ID_ctliv] = y[ID_atliv] / ( livvtbc * vliv ) ;
 
   yout[ID_cbliv] = y[ID_abliv] / ( ( 1 - livvtbc ) * vliv ) ;
@@ -680,8 +638,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   yout[ID_aliv] = y[ID_atliv] + y[ID_abliv] ;
 
   yout[ID_cliv_um] = ( y[ID_atliv] + y[ID_abliv] ) / vliv ;
-
-  cliv_ng = ( y[ID_atliv] + y[ID_abliv] ) * mw / vliv ;
 
   yout[ID_ctrpf] = y[ID_atrpf] / ( rpfvtbc * vrpf ) ;
 
@@ -691,8 +647,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_crpf_um] = ( y[ID_atrpf] + y[ID_abrpf] ) / vrpf ;
 
-  crpf_ng = ( y[ID_atrpf] + y[ID_abrpf] ) * mw / vrpf ;
-
   yout[ID_ctspf] = y[ID_atspf] / ( spfvtbc * vspf ) ;
 
   yout[ID_cbspf] = y[ID_abspf] / ( ( 1 - spfvtbc ) * vspf ) ;
@@ -700,8 +654,6 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   yout[ID_aspf] = y[ID_atspf] + y[ID_abspf] ;
 
   yout[ID_cspf_um] = ( y[ID_atspf] + y[ID_abspf] ) / vspf ;
-
-  cspf_ng = ( y[ID_atspf] + y[ID_abspf] ) * mw / vspf ;
 
   yout[ID_cv] = ( qfat * yout[ID_cbfat] + qskin * yout[ID_cbskin] + qmusc * yout[ID_cbmusc] + qbone * yout[ID_cbbone] + qbrn * yout[ID_cbbrn] + qlng * yout[ID_cblng] + qhrt * yout[ID_cbhrt] + qkdn * yout[ID_cbkdn] + qvliv * yout[ID_cbliv] + qrpf * yout[ID_cbrpf] + qspf * yout[ID_cbspf] ) / qcp ;
 
@@ -785,7 +737,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_ametliv1] = rametliv1 ;
 
-  rametliv2 = vmaxliv * ( yout[ID_ctliv] * fupls / pliv ) / ( ( yout[ID_ctliv] / pliv ) + kmliv ) ;
+  rametliv2 = vmaxliv * ( yout[ID_ctliv] * fupls / pliv ) / ( ( yout[ID_ctliv] / pliv ) + km ) ;
 
   ydot[ID_ametliv2] = rametliv2 ;
 

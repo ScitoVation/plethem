@@ -26,6 +26,10 @@ saveRestoreParameterSetUI <- function(namespace){
   ))
 }
 
+
+#' Server for the restore/save dialog
+#' @export
+
 saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,param_names,type){
   returnValues <- reactiveValues()
   returnValues$retData <- reactiveVal(c("None"))
@@ -35,12 +39,12 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
 
 
   name_list <- names(UI_values)
-  name_list <- name_list[!name_list == "cmplist"]
+  name_list <- name_list[!(name_list == "cmplist")]
   temp_unique_list <- unname(lapply(name_list,
                              function(x,a=UI_values,b=set_values){
                                a[[x]]==b[x]}))
   param_data<-t(as.data.frame(UI_values[temp_unique_list == FALSE]))
-
+  
   if (dim(param_data)[1]==0){
     param_data <- data.frame(matrix(ncol = 4, nrow = 0))
 

@@ -1,5 +1,6 @@
 rapidPBPK_initParms <- function(newParms = NULL) {
   parms <- c(
+    mw = 0,
     bdose = 0,
     blen = 0,
     breps = 0,
@@ -75,14 +76,8 @@ rapidPBPK_initParms <- function(newParms = NULL) {
     vspfc = 0,
     qspfc = 0,
     pspf = 0,
-    mw = 0,
     res = 0,
-    vmaxc = 0,
-    km = 0,
     fupls = 0,
-    vkm1c = 0,
-    tstart = 0,
-    sim_dur = 0,
     vbld = 0,
     vpls = 0,
     vfat = 0,
@@ -126,11 +121,10 @@ rapidPBPK_initParms <- function(newParms = NULL) {
     paspf = 0,
     vkm1 = 0,
     vmaxliv = 0,
-    kmliv = 0,
-    tstop = 0,
+    km = 0,
     cinh = 0,
     qalv = 0,
-    pair = 1e-10
+    pair = 1e10
   )
 
   if (!is.null(newParms)) {
@@ -150,7 +144,7 @@ rapidPBPK_initParms <- function(newParms = NULL) {
   out
 }
 
-Outputs <- c(
+rapidPBPK_Outputs <- c(
     "abone",
     "abrn",
     "alng",

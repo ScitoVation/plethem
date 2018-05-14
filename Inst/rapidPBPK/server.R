@@ -49,19 +49,19 @@ shinyServer(function(input, output, session) {
   #master_conn <- RSQLite::dbConnect(RSQLite::SQLite(),db)
 
   # get the parameter table for physiological and exposure variables.
-  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Physiological';"
+  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';"
   physio_name_df <- mainDbSelect(query)
   # res <- RSQLite::dbSendQuery(master_conn,query)
   # physio_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Exposure';"
+  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';"
   expo_name_df <- mainDbSelect(query)
   # res <- RSQLite::dbSendQuery(master_conn,query)
   # expo_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='All' AND ParamSet = 'Chemical';"
+  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='All' AND ParamSet = 'Chemical'AND UIParams = 'TRUE';"
   chem_name_df <- mainDbSelect(query)
 
   #### Update the parameter set dropdowns if they exist for physiological and exposure sets
@@ -1562,6 +1562,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
 
   balData<- reactive({
+    result<- as.data.frame(results$pbpk)
     # check if model was ever run
     if (dim(result)[1]==0){
       x<- 1:10
@@ -1756,13 +1757,12 @@ calculateInitialValues <- function(params_list,total_vol){
 
     vkm1 <- vkm1c*vliv
     vmaxliv <- vmaxc*bw**0.75
-    kmliv <- km
 
     tstop <- tstart+sim_dur
 
     cinh <- inhdose/24.45
     qalv <- (tv-ds)*respr
-    pair <- ifelse(pair >0,pair,1e-10)
+    pair <- ifelse(pair >0,pair,1E-10)
   })
 
   #function for dosing
@@ -1774,7 +1774,7 @@ calculateInitialValues <- function(params_list,total_vol){
   breps <- initial_params[["breps"]]
   blen <- initial_params[["blen"]]
 
-  totbreps <- breps*blen
+  totbreps <- initial_params[["totbreps"]]<-breps*blen
   #Drinking Water
   ddose <- initial_params[["drdose"]]
   vdw <- initial_params[["vdw"]]
@@ -1945,7 +1945,6 @@ calculateInitialValues <- function(params_list,total_vol){
     abspf=0,atspf=0,
     # Clearance
     ametliv1=0,ametliv2=0,aclbld=0,auexc=0,anabsgut=0)
-  print(params_list$names)
 
   initial_values <- list("evnt_data"= eventDat,
                          "initial_params"= initial_params[params_list$names],

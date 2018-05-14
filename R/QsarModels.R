@@ -9,7 +9,6 @@ calculatePartitionCoefficients<- function(selected_qsar = "default",chem_params 
                                           tissue_list,selected_org = "human"){
 
   partCoefficients <- list()
-  print(selected_org)
   #decide which qsar model to run
   if(selected_qsar == "one"){
     partCoefficients <- qsarModelDefault(chem_params,selected_org,tissue_list)

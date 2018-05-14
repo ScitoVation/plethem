@@ -4,7 +4,7 @@
 \alias{loadProject}
 \title{Load the project with the given name}
 \usage{
-loadProject()
+loadProject(file_path = "")
 }
 \description{
 Loads the project data in the PLETHEM project database.
