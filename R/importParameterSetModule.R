@@ -12,7 +12,7 @@ importParameterSetUI <- function(namespace,set_type){
                      "expo" = "Exposure")
   showModal(modalDialog(
     title =paste0("Import ",set_name),size = "m",
-    tagList(tabsetPanel(id = ns("src_type"),
+    tagList(tabsetPanel(id = ns("src_type"),selected = "new",
                         tabPanel("New",value = "new",
                                  DT::DTOutput(ns("new_tble"))),
                         tabPanel("User Database",value = "user",
@@ -25,7 +25,6 @@ importParameterSetUI <- function(namespace,set_type){
                                  selectizeInput(ns("sel_main"),
                                                 label = "Select Chemical",
                                                 choices = NULL),
-
                                  dataTableOutput(ns("main_tble")))
 
 
@@ -46,7 +45,7 @@ importParameterSetUI <- function(namespace,set_type){
   ))
 }
 
-#'Servder for import parameter module
+#'Server for import parameter module
 #'@export
 importParameterSet <- function(input,output,session,set_type){
   if(set_type == "chem"){
@@ -109,7 +108,7 @@ importParameterSet <- function(input,output,session,set_type){
                                                         selection = "none",
                                                         colnames = c("Variable","Original Value","Imported Value"),
                                                         autoHideNavigation = T,
-                                                        editable = T,
+                                                        editable = F,
                                                         options = list(dom = "tp",pageLength=5)
 
   )
@@ -141,7 +140,7 @@ importParameterSet <- function(input,output,session,set_type){
     vals_query <- sprintf("SELECT param,value FROM %s where %s = %s;",
                           set_name,id_name,id)
     table <- mainDbSelect(vals_query)
-    table <-cbind(table,table[2])
+    #table <-cbind(table,table[2])
     colnames(table)<- NULL
     if (set_type == "chem"){
       meta_query <- sprintf("SELECT name,cas FROM %s where %s = %s",set_table_name,id_name,id)
@@ -158,17 +157,17 @@ importParameterSet <- function(input,output,session,set_type){
     tables$main_store<<-reactiveVal(table)
     },ignoreInit = T,ignoreNULL = T)
 
-    output$main_tble <- DT::renderDataTable(DT::datatable(tables$main_disp(),
-                                                          rownames = F,
-                                                          escape = T,
-                                                          selection = "none",
-                                                          colnames = c("Variable","Original Value","Imported Value"),
-                                                          autoHideNavigation = T,
-                                                          editable = T,
-                                                          options = list(dom = "tp",pageLength=5)
+  output$main_tble <- DT::renderDataTable(DT::datatable(tables$main_disp(),
+                                                        rownames = F,
+                                                        escape = T,
+                                                        selection = "none",
+                                                        colnames = c("Variable","Value"),
+                                                        autoHideNavigation = T,
+                                                        editable = F,
+                                                        options = list(dom = "tp",pageLength=10)
 
-                                                          )
-                                            ,server = TRUE)
+                                                        )
+                                          ,server = TRUE)
     main_proxy = DT::dataTableProxy('main_tble')
 
   observeEvent(input$main_tble_cell_edit,{
@@ -197,7 +196,7 @@ importParameterSet <- function(input,output,session,set_type){
     vals_query <- sprintf("SELECT param,value FROM %s where %s = %s;",
                           set_name,id_name,id)
     table <- userDbSelect(vals_query)
-    table <-cbind(table,table[2])
+    #table <-cbind(table,table[2])
     colnames(table)<- NULL
     if (set_type == "chem"){
       meta_query <- sprintf("SELECT name,cas FROM %s where %s = %s",
@@ -205,7 +204,10 @@ importParameterSet <- function(input,output,session,set_type){
       metadata <- userDbSelect(meta_query)
       if (input$src_type != "new"){
         updateTextInput(session,"cas",value = metadata$cas)
+      }else{
+        updateTextInput(session,"cas",value = NULL,placeholder = "Enter CAS-RN")
       }
+      
 
     }else{
       meta_query <- sprintf("SELECT name FROM %s where %s = %s",set_table_name,id_name,id)
@@ -213,19 +215,21 @@ importParameterSet <- function(input,output,session,set_type){
     }
     if (input$src_type != "new"){
       updateTextInput(session,"name",value = metadata$name)
+    }else{
+      updateTextInput(session,"name",value = NULL,placeholder = "Enter Chemical Name")
     }
 
     ids$sel_user_id_num <<- reactiveVal(id)
     #table <- table[,c(3,1,2)]
     tables$user_disp<<-reactiveVal(table)
     tables$user_store<<-reactiveVal(table)
-  })
+  },ignoreInit = T,ignoreNULL = T)
 
   output$user_tble <- DT::renderDataTable(DT::datatable(tables$user_disp(),
                                                         rownames = F,escape = T,selection = "none",
-                                                        colnames = c("Variable","Original Value","Imported Value"),
+                                                        colnames = c("Variable","Original Value"),
                                                         autoHideNavigation = T,
-                                                        editable = T,
+                                                        editable = F,
                                                         options = list(dom = "tp",pageLength=5)
 
   )
@@ -264,7 +268,7 @@ importParameterSet <- function(input,output,session,set_type){
       tble <- tables$new_store()
       current_id_num <- 0
     }
-    tble <- tble[c(1,3)]
+    tble <- tble[c(1,2)]
     colnames(tble)<- c("var","val")
     # Conver table values to query that can be used with dbs
     write_col_names <- sprintf("%s, param, value",id_name)

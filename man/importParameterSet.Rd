@@ -2,10 +2,10 @@
 % Please edit documentation in R/importParameterSetModule.R
 \name{importParameterSet}
 \alias{importParameterSet}
-\title{Servder for import parameter module}
+\title{Server for import parameter module}
 \usage{
 importParameterSet(input, output, session, set_type)
 }
 \description{
-Servder for import parameter module
+Server for import parameter module
 }

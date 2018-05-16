@@ -179,8 +179,8 @@ chem_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
                           choices = c("QSAR model one" = 'one',
                                       "QSAR model two" = 'two'),
                           width = "99%"),
-  shinyBS::bsButton("qsar4pair","Calculate Pair",style = "primary"),
-  shinyBS::bsButton("btn_ivive_chem","IVIVE",style = "primary")
+  shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary"),
+  shinyBS::bsButton("btn_ivive_chem","Perform IVIVE",style = "primary")
 )
   #actionButton("newChem", "Modify Chemical DB"),
   #selectizeInput("selectedChem", "Select a chemical", choices = getAllMainChemicals(), width = validateCssUnit("99%")),
@@ -698,42 +698,51 @@ chem_body <- dashboardBody(
             tags$h4("Chemical Parameters", class="pager-header"),
             fluidRow(
               column(6,
-                     numericInput("ms_den","Density (g/L)",0,0,1500,1)),
+                     numericInput("ms_den","Density (g/L)",1,0,1500,1)),
               column(6,
-                     numericInput("ms_mw","Molecular Weight",0,0,250,0.01))
+                     numericInput("ms_mw","Molecular Weight",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_vpa","Vapor Pressure (Pa)",0,0,250,0.01)),
+                     numericInput("ms_vpa","Vapor Pressure (Pa)",1,0,250,0.01)),
               column(6,
-                     numericInput("ms_dkow","logKow in skin at pH5.5",-10,0,250,0.01))
+                     numericInput("ms_dkow","logKow in skin at pH5.5",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_lkow","logKow in Octanol:Water Coefficient",-10,0,250,0.01)),
+                     numericInput("ms_lkow","logKow in Octanol:Water Coefficient",1,0,250,0.01)),
               column(6,
-                     numericInput("ms_wsol","Water Solubility (mg/L)",0,0,250,0.01))
+                     numericInput("ms_wsol","Water Solubility (mg/L)",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_res","Estimated Fraction Resorpbed in Kidney",1,0,1,0.01)),
+                     numericInput("ms_res","Fraction Resorpbed in Kidney",1,0,1,0.01)),
               column(6,
-                     numericInput("ms_fupls", label = "Fraction Unbound in Palsma", value = 0, 0, 1, 0.001))
+                     numericInput("ms_fupls", label = "Fraction Unbound in Palsma", value = 1, 0, 1, 0.001))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_pair", label = "Plasma-Air Partition Coefficient", value = 1,0,10,0.01)),
+                     numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μM/h/kg)"),1,0,250,0.01)),
               column(6,
-                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver", value = 0, step = 0.01))
+                     numericInput("ms_km","Michelis Menton Constant for Metabolism",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μM/h/kg)"),0,0,250,0.01)),
+                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver", value = 1, step = 0.01))
+            ),
+            fluidRow(
               column(6,
-                     numericInput("ms_km","Michelis Menton Constant for Metabolism",0,0,250,0.01))
+                     numericInput("ms_pair", label = "Plasma-Air Partition Coefficient", value = 1,
+                                  min = 0)
+                     ),
+              column(6,
+                     numericInput("ms_frwsol", label = "Fraction dissolved in water", value = 1,
+                                  min=0,max = 1,step = 0.01)
+                     )
+              )
             )
   )
-)
+
 
 
 ######################exposure Body

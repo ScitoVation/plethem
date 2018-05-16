@@ -40,6 +40,8 @@ qsarModelDefault <- function(chem_params,selected_org,tissue_list){
   lhen <- log(VPa*mw/wsol/8.314/(temp+273.15))/log(10)
   lkoair <- lkow-lhen
   
+  frwsol <- 0.993 / (0.993 + 0.007 * 10^lkow)
+  
   if (selected_org == "human"){
     if (lhen < -1){
       pbair <- 0.4445*(1/10^lhen)+0.005189*10^lkoair
@@ -116,7 +118,7 @@ qsarModelDefault <- function(chem_params,selected_org,tissue_list){
   partCoefficients <- NULL
   partCoefficients <- list("pfat"=pfat, "pskin"=pskin, "pmusc"=pmusc, "pbone"=pmarr, "pbone"=pbne,
                            "pbrn"=pbrn, "plng"=plng, "phrt"=phrt, "pgi"=pgs, "pliv"=pliv, "pkdn"=pkdn,
-                           "prpf"= pliv,"pspf"= pmusc,"pair"= pbair)
+                           "prpf"= pliv,"pspf"= pmusc,"pair"= pbair,"frwsol"= frwsol)
   partCoefficients <- lapply(partCoefficients,function(x){signif(x,4)})
 
   return(partCoefficients)

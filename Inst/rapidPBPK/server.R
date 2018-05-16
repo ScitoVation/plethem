@@ -463,7 +463,7 @@ shinyServer(function(input, output, session) {
   },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   ### This code chunk deals with updating pair using qsar models
-  observeEvent(input$qsar4pair,{
+  observeEvent(input$qsar4chem_props,{
     qsar_model <- input$qsarModelChem
     org <- ifelse(input$ms_org=="ha","human","rat")
     
@@ -472,11 +472,14 @@ shinyServer(function(input, output, session) {
                             "lkow"=input$ms_lkow, "wsol"=input$ms_wsol,
                             "res"=input$ms_res,  "vmaxc"=input$ms_vmaxc,
                             "km"=input$ms_km)
-    pair <- calculatePartitionCoefficients(qsar_model,
-                                           chemical_params,
-                                           NULL,
-                                           org)$pair
+    partitions <- calculatePartitionCoefficients(qsar_model,
+                                                 chemical_params,
+                                                 NULL,
+                                                 org)
+    pair <- partitions$pair
+    frwsol <- partitions$frwsol
     updateNumericInput(session,"ms_pair",value = pair)
+    updateNumericInput(session,"ms_frwsol",value = frwsol)
   })
   
   ## This code chunk deals with performing IVIVE for the chemical

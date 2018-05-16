@@ -3,7 +3,7 @@
 
    Model File:  rapidPBPK.model
 
-   Date:  Fri May 11 16:11:51 2018
+   Date:  Wed May 16 09:45:38 2018
 
    Created by:  "C:/MCSIM-~1.6/mod/.libs/mod.exe v5.6.6"
     -- a model preprocessor by Don Maszle
@@ -133,7 +133,7 @@
      ds = 0,
      uflw = 0,
      gfr = 0,
-     wsol = 0,
+     frwsol = 0,
      fatvtbc = 0,
      vfatc = 0,
      qfatc = 0,
@@ -361,7 +361,7 @@ static double parms[125];
 #define ds parms[21]
 #define uflw parms[22]
 #define gfr parms[23]
-#define wsol parms[24]
+#define frwsol parms[24]
 #define fatvtbc parms[25]
 #define vfatc parms[26]
 #define qfatc parms[27]
@@ -721,7 +721,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_athrt] = pahrt * yout[ID_cbhrt] - pahrt * yout[ID_cthrt] / phrt ;
 
-  rauexc = gfr * wsol * ( 1 - res ) * yout[ID_ctkdn] / pkdn ;
+  rauexc = gfr * frwsol * ( 1 - res ) * yout[ID_ctkdn] / pkdn ;
 
   ydot[ID_auexc] = rauexc ;
 
