@@ -48,11 +48,11 @@ expo_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
 ################################compartment sidebar
 comp_sidebar <- shinydashboard::dashboardSidebar(
   sidebarMenu(id="compsidebar",
-              tags$div(shinyWidgets::radioGroupButtons("ms_org",
-                                                       label = "Select Organism",
-                                                       choices = c("Human" = "ha","Rat"="ra"),
-                                                       selected = "ha",size = "normal",
-                                                       checkIcon = list(yes = icon('ok',lib ="glyphicon")))),
+              # tags$div(shinyWidgets::radioGroupButtons("ms_org",
+              #                                          label = "Select Organism",
+              #                                          choices = c("Human" = "ha","Rat"="ra"),
+              #                                          selected = "ha",size = "normal",
+              #                                          checkIcon = list(yes = icon('ok',lib ="glyphicon")))),
               menuItem(tags$h5(tags$span(style = "color:white",
                                          "Physiological Parameters")),
                        tabName = "physiolocal_parameters", selected = TRUE),
@@ -380,12 +380,17 @@ comp_body <- dashboardBody(
     tabItem(
       tabName = "physiolocal_parameters",
       fluidRow(
-        column(6,
+        column(4,
+               selectInput("ms_org", label = "Organism",
+                           choices = list("Human" = "ha","Rat"= "ra"),
+                           selected = "ha")
+               ),
+        column(4,
                selectInput("ms_gender", label = "Gender",
                            choices = list("Male" = "M", "Female" = "F"),
                            selected = "M")
         ),
-        column(6,
+        column(4,
                numericInput("ms_age","Age",25,0.5,80,1)
         )
       ),
@@ -417,10 +422,22 @@ comp_body <- dashboardBody(
                numericInput("ms_ds","Dead Space",min =0 , max =10, value =0.154))
       ),
       fluidRow(
-        column(6,
+        column(4,
                numericInput("ms_uflw","Urinary Flow Rate (L/kg/day)",min =0 , max =1, value =0.0214)),
+        column(4,
+               numericInput("ms_gfr","Glomerular Filtearation",min =0 , max =1, value =0.08)
+               ),
+          column(4,
+                 numericInput("ms_pair", label = "Plasma-Air Partition Coefficient", value = 1,
+                              min = 0)
+          )
+        
+      ),
+      fluidRow(
         column(6,
-               numericInput("ms_gfr","Glomerular Filtearation",min =0 , max =1, value =0.08))
+               numericInput("ms_fa","Fraction Absorbed in the Gut Lumen",1)),
+        column(6,
+               numericInput("ms_ka",label = "Rate of absorption in Gut Lumen (/h)", value = 1, step = 0.01))
       )
     ),
 
@@ -588,12 +605,6 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_qgic","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
-      fluidRow(
-        column(6,
-               numericInput("ms_fa","Fraction Absorbed in the Gut Lumen",1)),
-        column(6,
-               numericInput("ms_ka",label = "Rate of absorption in Gut Lumen (/h)", value = 1, step = 0.01))
-      ),
 
       fluidRow(class="",
                column(6,
@@ -728,18 +739,13 @@ chem_body <- dashboardBody(
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver", value = 1, step = 0.01))
-            ),
-            fluidRow(
-              column(6,
-                     numericInput("ms_pair", label = "Plasma-Air Partition Coefficient", value = 1,
-                                  min = 0)
+                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver", value = 1, step = 0.01)
                      ),
               column(6,
                      numericInput("ms_frwsol", label = "Fraction dissolved in water", value = 1,
                                   min=0,max = 1,step = 0.01)
-                     )
               )
+            )
             )
   )
 
@@ -953,8 +959,8 @@ shinyUI(fluidPage(
                                                                                 openOnFocus = T))),
                                                column(width = 3, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
-                                                        c("btn_sverest_physio","btn_saveas_physio"),
-                                                        c("Save/Restore","Save As"),
+                                                        c("btn_import_physio","btn_sverest_physio","btn_saveas_physio"),
+                                                        c("Import","Save/Restore","Save As"),
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T

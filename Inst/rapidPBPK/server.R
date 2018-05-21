@@ -164,6 +164,12 @@ shinyServer(function(input, output, session) {
      parameterSets$importdat <- callModule(importParameterSet,input$btn_import_chem,"chem")
 
    })
+   #### Chunk for handling physiological tab
+   observeEvent(input$btn_import_physio,{
+     importParameterSetUI(input$btn_import_physio,"physio")
+     parameterSets$importdat <- callModule(importParameterSet,input$btn_import_physio,"physio")
+     
+   })
 
 
    # update the paramter set dropdown if it is changed
@@ -183,6 +189,10 @@ shinyServer(function(input, output, session) {
        # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
      }
    })
+   
+   
+   
+  
 
   #Save a new physiological parameter set
   observeEvent(input$btn_saveas_physio,{
@@ -478,7 +488,7 @@ shinyServer(function(input, output, session) {
                                                  org)
     pair <- partitions$pair
     frwsol <- partitions$frwsol
-    updateNumericInput(session,"ms_pair",value = pair)
+   
     updateNumericInput(session,"ms_frwsol",value = frwsol)
   })
   
@@ -1123,6 +1133,7 @@ observeEvent({input$chemScenFilter},{
                  tissue_list$rpf <- c()
                  calculatedCoeff <- calculatePartitionCoefficients(qsar_model,chemical_params,tissue_list,org)
                  updateCoeffs(session, calculatedCoeff)
+                 updateNumericInput(session,"ms_pair",value = calculatedCoeff$pair)
                  })
   # when chemical and/or model are changed, change the type of button to indicate things are out of sync
   observeEvent({input$sel_chem4partition ;input$sel_qsar4Partition},{

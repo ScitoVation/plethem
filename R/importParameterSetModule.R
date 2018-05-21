@@ -12,9 +12,9 @@ importParameterSetUI <- function(namespace,set_type){
                      "expo" = "Exposure")
   showModal(modalDialog(
     title =paste0("Import ",set_name),size = "m",
-    tagList(tabsetPanel(id = ns("src_type"),selected = "new",
-                        tabPanel("New",value = "new",
-                                 DT::DTOutput(ns("new_tble"))),
+    tagList(tabsetPanel(id = ns("src_type"),selected = "user",
+                        # tabPanel("New",value = "new",
+                        #          DT::DTOutput(ns("new_tble"))),
                         tabPanel("User Database",value = "user",
                                  selectizeInput(ns("sel_user"),
                                                 label = "Select Chemical",
@@ -94,40 +94,44 @@ importParameterSet <- function(input,output,session,set_type){
   names(main_chem_list)<-main_vals$name
   updateSelectizeInput(session,"sel_main", choices = main_chem_list)
 
-  # populate the new chemical table
-  # get all the chemical variables
-  query <- "SELECT Var FROM ParamNames Where ParamSet = 'Chemical' and ParamType = 'Numeric';"
-  all_chem_params <- mainDbSelect(query)$Var
-  new_chem_table <- data.frame("Var" = all_chem_params,
-                               "org_val"=rep(0,length(all_chem_params)),
-                               "import_val"=rep(0,length(all_chem_params)),
-                               stringsAsFactors = F)
-  output$new_tble <- DT::renderDataTable(DT::datatable(new_chem_table,
-                                                        rownames = F,
-                                                        escape = T,
-                                                        selection = "none",
-                                                        colnames = c("Variable","Original Value","Imported Value"),
-                                                        autoHideNavigation = T,
-                                                        editable = F,
-                                                        options = list(dom = "tp",pageLength=5)
-
-  )
-  ,server = TRUE)
-  new_proxy = DT::dataTableProxy('new_tble')
-
-  observeEvent(input$new_tble_cell_edit,{
-    databck <- input$new_tble_cell_edit
-    row <- databck$row
-    col <- databck$col+1
-    val <- databck$value
-    old_table <- new_chem_table
-    old_table[row,col]<- val
-    new_chem_table<<- old_table
-    tables$new_store<-reactiveVal(old_table)
-    #tables$new_disp<-reactiveVal(old_table)
-    DT::replaceData(new_proxy,old_table,resetPaging = F,rownames = F)
-  })
-
+  # # populate the new chemical table
+  # # get all the chemical variables
+  # if (set_name == "Chemical"){
+  #   query <- "SELECT Var FROM ParamNames Where ParamSet = 'Chemical' and ParamType = 'Numeric';"
+  #   all_chem_params <- mainDbSelect(query)$Var
+  # }
+  # query <- "SELECT Var FROM ParamNames Where ParamSet = 'Chemical' and ParamType = 'Numeric';"
+  # all_chem_params <- mainDbSelect(query)$Var
+  # new_chem_table <- data.frame("Var" = all_chem_params,
+  #                              "org_val"=rep(0,length(all_chem_params)),
+  #                              "import_val"=rep(0,length(all_chem_params)),
+  #                              stringsAsFactors = F)
+  # output$new_tble <- DT::renderDataTable(DT::datatable(new_chem_table,
+  #                                                       rownames = F,
+  #                                                       escape = T,
+  #                                                       selection = "none",
+  #                                                       colnames = c("Variable","Original Value","Imported Value"),
+  #                                                       autoHideNavigation = T,
+  #                                                       editable = F,
+  #                                                       options = list(dom = "tp",pageLength=5)
+  # 
+  # )
+  # ,server = TRUE)
+  # new_proxy = DT::dataTableProxy('new_tble')
+  # 
+  # observeEvent(input$new_tble_cell_edit,{
+  #   databck <- input$new_tble_cell_edit
+  #   row <- databck$row
+  #   col <- databck$col+1
+  #   val <- databck$value
+  #   old_table <- new_chem_table
+  #   old_table[row,col]<- val
+  #   new_chem_table<<- old_table
+  #   tables$new_store<-reactiveVal(old_table)
+  #   #tables$new_disp<-reactiveVal(old_table)
+  #   DT::replaceData(new_proxy,old_table,resetPaging = F,rownames = F)
+  # })
+  # 
 
 
 
@@ -153,11 +157,10 @@ importParameterSet <- function(input,output,session,set_type){
     updateTextInput(session,"name",value = metadata$name)
     ids$sel_user_id_num <<- reactiveVal(id)
     #table <- table[,c(3,1,2)]
-    tables$main_disp<<-reactiveVal(table)
-    tables$main_store<<-reactiveVal(table)
+    tables$main<<-reactiveVal(table)
     },ignoreInit = T,ignoreNULL = T)
 
-  output$main_tble <- DT::renderDataTable(DT::datatable(tables$main_disp(),
+  output$main_tble <- DT::renderDataTable(DT::datatable(tables$main(),
                                                         rownames = F,
                                                         escape = T,
                                                         selection = "none",
@@ -168,19 +171,19 @@ importParameterSet <- function(input,output,session,set_type){
 
                                                         )
                                           ,server = TRUE)
-    main_proxy = DT::dataTableProxy('main_tble')
+    # main_proxy = DT::dataTableProxy('main_tble')
 
-  observeEvent(input$main_tble_cell_edit,{
-    databck <- input$main_tble_cell_edit
-    row <- databck$row
-    col <- databck$col+1
-    val <- databck$value
-    old_table <- tables$main_store()
-    old_table[row,col]<- val
-    tables$main_store<-reactiveVal(old_table)
-    tables$main_disp<-reactiveVal(old_table)
-    DT::replaceData(main_proxy,tables$main_disp(),resetPaging = F,rownames = F)
-  })
+  # observeEvent(input$main_tble_cell_edit,{
+  #   databck <- input$main_tble_cell_edit
+  #   row <- databck$row
+  #   col <- databck$col+1
+  #   val <- databck$value
+  #   old_table <- tables$main_store()
+  #   old_table[row,col]<- val
+  #   tables$main_store<-reactiveVal(old_table)
+  #   tables$main<-reactiveVal(old_table)
+  #   DT::replaceData(main_proxy,tables$main(),resetPaging = F,rownames = F)
+  # })
   #Server operations for user table
   user_vals <- userDbSelect(all_sets_query)
   user_chem_list <- as.list(user_vals[[id_name]])
@@ -221,11 +224,10 @@ importParameterSet <- function(input,output,session,set_type){
 
     ids$sel_user_id_num <<- reactiveVal(id)
     #table <- table[,c(3,1,2)]
-    tables$user_disp<<-reactiveVal(table)
-    tables$user_store<<-reactiveVal(table)
+    tables$user<<-reactiveVal(table)
   },ignoreInit = T,ignoreNULL = T)
 
-  output$user_tble <- DT::renderDataTable(DT::datatable(tables$user_disp(),
+  output$user_tble <- DT::renderDataTable(DT::datatable(tables$user(),
                                                         rownames = F,escape = T,selection = "none",
                                                         colnames = c("Variable","Original Value"),
                                                         autoHideNavigation = T,
@@ -234,19 +236,19 @@ importParameterSet <- function(input,output,session,set_type){
 
   )
   ,server = TRUE)
-  user_proxy = DT::dataTableProxy('user_tble')
-
-  observeEvent(input$user_tble_cell_edit,{
-    databck <- input$user_tble_cell_edit
-    row <- databck$row
-    col <- databck$col+1
-    val <- databck$value
-    old_table <- tables$user_store()
-    old_table[row,col]<- val
-    tables$user_store<-reactiveVal(old_table)
-    tables$user_disp<-reactiveVal(old_table)
-    DT::replaceData(user_proxy,tables$user_disp(),resetPaging = F,rownames = F)
-  })
+  # user_proxy = DT::dataTableProxy('user_tble')
+  # 
+  # observeEvent(input$user_tble_cell_edit,{
+  #   databck <- input$user_tble_cell_edit
+  #   row <- databck$row
+  #   col <- databck$col+1
+  #   val <- databck$value
+  #   old_table <- tables$user()
+  #   old_table[row,col]<- val
+  #   tables$user<-reactiveVal(old_table)
+  #   tables$user_disp<-reactiveVal(old_table)
+  #   DT::replaceData(user_proxy,tables$user_disp(),resetPaging = F,rownames = F)
+  # })
 
   checkData <- reactive({
     req(input$name,input$descrp)
@@ -259,10 +261,10 @@ importParameterSet <- function(input,output,session,set_type){
 
   observeEvent(input$import,{
     if(input$src_type == "main"){
-      tble <- tables$main_store()
+      tble <- tables$main()
       current_id_num <- 0
     }else if (input$src_type == "user"){
-      tble <- tables$user_store()
+      tble <- tables$user()
       current_id_num <- as.integer(ids$sel_user_id_num())
     }else{
       tble <- tables$new_store()
@@ -299,17 +301,29 @@ importParameterSet <- function(input,output,session,set_type){
       userDbUpdate(query)
     }
     # update project database
+    if (set_type == "chem"){
+      query <- sprintf("INSERT INTO %s (%s,%s, name, descrp,cas) VALUES (%d,%d, '%s' , '%s','%s' );",
+                       set_table_name,
+                       id_name,
+                       "extchemid",
+                       id_num,
+                       ifelse(input$add2Db == T,user_id_num,current_id_num),
+                       input$name,
+                       input$descrp,
+                       input$cas)
+      projectDbUpdate(query)
+      
+    }else{
+      query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
+                       set_table_name,
+                       id_name,
+                       id_num,
+                       input$name,
+                       input$descrp)
+      projectDbUpdate(query)
+    }
 
-    query <- sprintf("INSERT INTO %s (%s,%s, name, descrp,cas) VALUES (%d,%d, '%s' , '%s','%s' );",
-                     set_table_name,
-                     id_name,
-                     "extchemid",
-                     id_num,
-                     ifelse(input$add2Db == T,user_id_num,current_id_num),
-                     input$name,
-                     input$descrp,
-                     input$cas)
-    projectDbUpdate(query)
+    
     query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
                      vals_table_name,
                      write_col_names,
