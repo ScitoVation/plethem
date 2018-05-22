@@ -416,27 +416,27 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  # Handle radio buttons for changing organisms
-  observeEvent(input$ms_org,{
-    if(input$ms_org == "ha"){
-      shinyjs::enable("ms_gender")
-      shinyjs::enable("ms_age")
-    }else{
-      #shinyjs::disable("ms_gender")
-      #shinyjs::disable("ms_age")
-      physioid <- 1
-      query <- sprintf("Select param,value from Physiological where physioid = 1;")
-      param_values <- mainDbSelect(query)
-      param_names <- param_values$param
-      param_values <- param_values$value
-      names(param_values)<- param_names
-      # get all numeric values in the physio names dataframe
-      params_df <- physio_name_df
-      params_df$Val <- param_values[physio_name_df$Var]
-      updateUIInputs(session,params_df)
-      
-    }
-  })
+  # # Handle radio buttons for changing organisms
+  # observeEvent(input$ms_org,{
+  #   if(input$ms_org == "ha"){
+  #     shinyjs::enable("ms_gender")
+  #     shinyjs::enable("ms_age")
+  #   }else{
+  #     #shinyjs::disable("ms_gender")
+  #     #shinyjs::disable("ms_age")
+  #     physioid <- 1
+  #     query <- sprintf("Select param,value from Physiological where physioid = 1;")
+  #     param_values <- mainDbSelect(query)
+  #     param_names <- param_values$param
+  #     param_values <- param_values$value
+  #     names(param_values)<- param_names
+  #     # get all numeric values in the physio names dataframe
+  #     params_df <- physio_name_df
+  #     params_df$Val <- param_values[physio_name_df$Var]
+  #     updateUIInputs(session,params_df)
+  #     
+  #   }
+  # })
 
   #update the inputs for the parameter set selected
   observeEvent(input$sel_physio,{
