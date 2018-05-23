@@ -1,15 +1,3 @@
-#library(shiny)
-#library(shinyjs)
-#library(shinydashboard)
-#library(shinyBS)
-#library(formatR)
-#library(shinythemes)
-#library(rintrojs)
-#library(shinyWidgets)
-#library(DT)
-#source("./Rsource/SwitchButton.R")
-#("Helpers/QueryHelperCefic.R")
-
 jscode <- "
 shinyjs.disableTab = function(name) {
   var tab = $('#'+name);
