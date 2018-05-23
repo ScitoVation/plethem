@@ -45,13 +45,7 @@ saveProject <- function(){
 #' @export
 newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "FD"){
   save_path <- gsub("\\\\","/",choose.dir(caption = sprintf("Select folder where %s will be saved",name)))
-  query <- "SELECT name FROM sqlite_master WHERE type = 'table';"
-  table_names_list <- projectDbSelect(query)$name
-  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = T)]
-  # can use apply here but tables are small and for is more readable
-  for (x in table_names_list){
-    projectDbUpdate(sprintf("DELETE FROM %s ;",x))
-  }
+  clearProjectDb()
   # write new project details to the project table
   query <- sprintf("INSERT INTO Project (name, path, type, model, mode) Values ('%s','%s','%s','%s','%s');",
                    name,save_path,type,model,mode)
@@ -99,5 +93,20 @@ loadProject <- function(file_path = ""){
   }
   if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
     shiny::runApp(system.file("rapidPBPK",package="plethem"))
+  }
+}
+
+
+#' Clear Project Db
+#' @description This function clears the project Db. It is called internally when a new project is created. 
+#' It is also used by developers to make a clean project db
+#' 
+clearProjectDb <- function(){
+  query <- "SELECT name FROM sqlite_master WHERE type = 'table';"
+  table_names_list <- projectDbSelect(query)$name
+  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = T)]
+  # can use apply here but tables are small and for is more readable
+  for (x in table_names_list){
+    projectDbUpdate(sprintf("DELETE FROM %s ;",x))
   }
 }
