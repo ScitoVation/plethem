@@ -200,7 +200,7 @@ plot_body <- fluidPage(
                                                                     selected = "act"))
                                               ),
                                               fluidRow(
-                                                plotOutput("exposureplt")
+                                                plotly::plotlyOutput("exposureplt")
                                               )
                                      ),
                                      tabPanel("Table",
@@ -715,7 +715,7 @@ chem_body <- dashboardBody(
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_res","Fraction Resorpbed in Kidney",1,0,1,0.01)),
+                     numericInput("ms_res","Fraction Resorpbed in Kidney",1,0,0,0.01)),
               column(6,
                      numericInput("ms_fupls", label = "Fraction Unbound in Palsma", value = 1, 0, 1, 0.001))
             ),

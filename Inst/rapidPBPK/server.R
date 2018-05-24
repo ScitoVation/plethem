@@ -1616,10 +1616,9 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                            plotly::layout(xaxis = list(title = ('Time(h)')),
                                                   yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
                                                                                'Concentration (mg/L)')))))
-  output$exposureplt <- renderPlot(ggplot()
-                                   +geom_line(data = exposureData(), aes(x=time,y=value,color = variable))
-                                   +labs(x="Time (h)",y="Amount (umoles)")
-                                   +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank()))
+  output$exposureplt <- plotly::renderPlotly(plotly::ggplotly(ggplot(exposureData(), aes(x=time,y=value,color = variable))+geom_line()
+                                                              +labs(x="Time (h)",y="Amount(umoles)")
+                                                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
 
 
   output$amtplt <- plotly::renderPlotly(plotly::ggplotly(ggplot(amtData(), aes(x=time,y=value,color = variable))+geom_line()
