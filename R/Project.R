@@ -52,7 +52,7 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
   projectDbUpdate(query)
   # run the appropriate UI
   if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
-    shiny::runApp(system.file("rapidPBPK",package="plethem"))
+    shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
   }
   #interactivePBPK(model)
   return(NULL)
