@@ -19,9 +19,9 @@ to install from BitBucket.
 
 ## Initial Setup
 
-PLETHEM pulls data from three databases. The master database is installed with the package and cannot be modified by the user. The User database is a local copy that is a subset of the master database. This table is used to store user specific paramters that may be needed across different projects (Like a set of chemicals that are frequently used by the user but are not a part of the main database). The final database is project database. This is used by PLETHEM internally to keep track of all the data while the used is working on a specifc project in PLETHEM. When the project is closed, the database is saved out as an .Rproj file that can be used to recreate the project on any other PLETHEM installation. 
+PLETHEM pulls data from three databases. The master database is installed with the package and cannot be modified by the user. The User database is a local copy that is a subset of the master database. This table is used to store user specific parameters that may be needed across different projects (Like a set of chemicals that are frequently used by the user but are not a part of the main database). The final database is project database. This is used by PLETHEM internally to keep track of all the data while the used is working on a specific project in PLETHEM. When the project is closed, the database is saved out as an .Rproj file that can be used to recreate the project on any other PLETHEM installation. 
 
-To complete the initial setup, the user needs to define the location where they want to store the user database. If they are updating a previous installation of Plethem or want to use the user databse from another installation, they can just point to the database file instead. To either create a new database or to use an existing file run the follwing command and follow the prompts that come up
+To complete the initial setup, the user needs to define the location where they want to store the user database. If they are updating a previous installation of PLETHEM or want to use the user database from another installation, they can just point to the database file instead. To either create a new database or to use an existing file run the following command and follow the prompts that come up
   >setUserDb()
   
 This only needs to be done once.
