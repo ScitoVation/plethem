@@ -998,7 +998,7 @@ shinyUI(fluidPage(
 
 
                                   ),
-                                  tabPanel("Population",
+                                  tabPanel("Variability",
                                            fluidPage(
                                              
                                              fluidRow(
@@ -1006,11 +1006,12 @@ shinyUI(fluidPage(
                                                       div(style = "height:15px")
                                                )
                                              ),
+                                             fluidRow(tags$h5("Physiology")),
                                              fluidRow(
                                                column(width = 9, offset = 0,
-                                                      selectizeInput("sel_population",NULL,
+                                                      selectizeInput("sel_mc_physio",NULL,
                                                                      choices = NULL,
-                                                                     options= list(placeholder = "Population",
+                                                                     options= list(placeholder = "Population Parameter Set",
                                                                                    openOnFocus = T))),
                                                column(width = 3, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
@@ -1021,7 +1022,18 @@ shinyUI(fluidPage(
                                                         fullwidth = T
                                                         
                                                       ))
-                                             ))
+                                             ),
+                                             fluidRow(
+                                               pickerInput("param_names",label = "Select Parameters to assign variability",
+                                                           choices = NULL,multiple = T,
+                                                           options = list('selected-text-format' = "count > 3"))
+                                               
+                                             )
+                                             
+                        
+                                             
+                                           )
+                                           ),
                                   tabPanel("Metabolism",
 
                                            fluidPage(

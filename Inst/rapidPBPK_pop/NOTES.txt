@@ -1,0 +1,117 @@
+####################create NEw chemical
+# createNewChemical <- function(session, CNAME, CCAS, CFUP, CDEN, CMW, CVPA, CDKNOW, CLKNOW, CWSOW,CRES, CFHPRT, CVMXC, CKM)
+#   {
+#     conn <- dbConnect(SQLite(), dbname = "./Database/cefic.sqlite")
+#     
+#     vars <- paste0(sprintf("'%s', '%s', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",  CNAME, CCAS, CFUP, CDEN, CMW, CVPA, CDKNOW, CLKNOW, CWSOW, CRES, CFHPRT, CVMXC, CKM))
+#     query <- paste0("INSERT INTO Chemical (name, cas, fup, den, mw, vpa, dkow, lkow, wsol, res, fhprt, vmaxc, km) VALUES(", paste0(sprintf("%s", vars)),")")
+#     newChem <- dbSendQuery(conn, query)
+#     dbClearResult(newChem)
+#     return("Chemical created successfully")
+# }
+# 
+# 
+# ##################update chemical
+# updateChemical <- function(session, chemID, CNAME, CCAS, CFUP, CDEN, CMW, CVPA, CDKOW, CLKOW, CWSOL, CRES, CFHPRT, CVMXC, CKM){
+#   conn <- dbConnect(SQLite(), dbname = "./Database/cefic.sqlite")
+#   query <- paste0(sprintf("UPDATE Chemical SET name ='%s', cas = '%s', fup = '%s', den ='%s', mw ='%s', vpa ='%s', dkow ='%s', lkow ='%s', wsol ='%s', res ='%s', fhprt ='%s', vmaxc ='%s', km ='%s',  WHERE id == '%s'", 
+#                          CNAME, CCAS, CFUP, CDEN, CMW, CVPA, CDKOW, CLKOW, CWSOL, CRES, CFHPRT, CVMXC, CKM, chemID))
+#   updateChem <- dbSendQuery(conn, query)
+#   dbClearResult(updateChem)
+#   return("Chemical updated successfully")
+# }
+# 
+# ##########delete Chemical
+# deleteChemical <- function(session, chemID){
+#   conn <- dbConnect(SQLite(), dbname = "./Database/cefic.sqlite")
+#   query <- paste0(sprintf("DELETE FROM Chemical WHERE id=='%s'", chemID))
+#   deleteChem <- dbSendQuery(conn, query)
+#   dbClearResult(deleteChem)
+#   
+#   return("Chemical deleted successfully")
+# }
+
+
+###############creating nerw Chemical
+  # observeEvent({input$submitNewChem},{
+  #   chemField <- list("Mname"= input$Mname, "Mfup"=input$Mfup, "Mden"=input$Mden, "Mmw"= input$Mmw,"Mvpa"= input$Mvpa, "Mdkow"= input$Mdkow,  "Mlkow"=input$Mlkow, "Mwsol"= input$Mwsol, "Mres"=  input$Mres, "Mfhprt"= input$Mfhprt, "Mvmaxc" =input$Mvmaxc, "Mkm"=input$Mkm, "Mcas" = input$Mcas)
+  #   
+  #   if(input$modalAction == 'new'){
+  #     created <- createNewChemical(session, chemField$Mname, chemField$Mcas, chemField$Mfup, chemField$Mden, chemField$Mmw, chemField$Mvpa, chemField$Mdkow, chemField$Mlkow, chemField$Mwsol, chemField$Mres, chemField$Mfhprt, chemField$Mvmaxc, chemField$Mkm)
+  #     showNotification(paste0(sprintf("%s", created)), duration = 5)
+  #   }else if(input$modalAction == 'update'){
+  #     updated <- updateChemical(session, input$selectedChem, chemField$Mname, chemField$Mcas, chemField$Mfup, chemField$Mden, chemField$Mmw, chemField$Mvpa, chemField$Mdkow, chemField$Mlkow, chemField$Mwsol, chemField$Mres, chemField$Mfhprt, chemField$Mvmaxc, chemField$Mkm)
+  #     showNotification(paste0(sprintf("%s", updated)), duration = 5)
+  #   }else if(input$modalAction == 'delete'){
+  #     deleted <- deleteChemical(session, input$selectedChem)
+  #     showNotification(paste0(sprintf("%s", deleted)), duration = 5)
+  #   }
+  # })
+  
+  
+
+
+      # conditionalPanel(condition = "input.modalAction == 'new'",
+      #                   tags$h3("New Chemical", class="text-center pager-header")
+      # ),
+      # conditionalPanel(condition = "input.modalAction == 'update'",
+      #                   tags$h3("Update Chemical", class="text-center pager-header")
+      # ),
+      # conditionalPanel(condition = "input.modalAction == 'delete'",
+      #                   tags$h3("Delete Chemical", class="text-center pager-header")
+      # ),
+      # fluidRow(
+      #   column(12,
+      #          radioButtons("modalAction", "Choose Action", choices = list("New" = 'new', "Update" = 'update', "delete"='delete'),
+      #                       selected = "new", inline = TRUE )
+      #   )
+      # ),
+      # 
+      # conditionalPanel(condition ="input.modalAction != 'new'",
+      #                  fluidRow(
+      #                    column(12,
+      #                           selectizeInput("chooseChem","Select a Chemical",choices = c(), width = validateCssUnit("99%")))
+      # )),
+      # fluidRow(
+      #   column(6,
+      #          textInput("Mname", label = "New Chemical Name", value = "")),
+      #   column(6,
+      #          numericInput("Mfup", label = "Fraction Unboud in Palsma", value = 0, 0, 1, 0.001))
+      # ),
+      # fluidRow(
+      #   column(6,
+      #          numericInput("Mden","Density (g/L)",0,0,1500,1)),
+      #   column(6,
+      #          numericInput("Mmw","Molecular Weight",0,0,250,0.01))
+      # ),
+      # fluidRow(
+      #   column(6,
+      #          numericInput("Mvpa","Vapor Pressure (Pa)",0,0,250,0.01)),
+      #   column(6,
+      #          numericInput("Mdkow","logKow in skin at pH5.5",0,0,250,0.01))
+      # ),
+      # fluidRow(
+      #   column(6,
+      #          numericInput("Mlkow","logKow in Octanol:Water Coefficient",0,0,250,0.01)),
+      #   column(6,
+      #          numericInput("Mwsol","Water Solubility (mg/L)",0,0,250,0.01))
+      # ),
+      # fluidRow(
+      #   column(6,
+      #          numericInput("Mres","Estimated Fraction Resorpbed in Kidney",0,0,1,0.01)),
+      #   column(6,
+      #          numericInput("Mfhprt","Fraction of Enterohepatic Circulation",0,0,1,0.01))
+      # ),
+      # fluidRow(
+      #   column(6,
+      #          numericInput("Mvmaxc", paste("Maximum Metabolism Rate (","μM/h/kg)"),0,0,250,0.01)),
+      #   column(6,
+      #          numericInput("Mkm","Michelis Menton Constant for Metabolism",0,0,250,0.01))
+      # ),
+      # fluidRow(
+      #   column(6,
+      #          textInput("Mcas", label = "Chemical CAS Registration Number", value = ""))
+      # ),
+      # ########end inputField
+      # 
+      # actionButton("submitNewChem", "Submit"),

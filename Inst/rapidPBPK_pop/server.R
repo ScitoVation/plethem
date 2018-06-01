@@ -49,7 +49,7 @@ shinyServer(function(input, output, session) {
   #master_conn <- RSQLite::dbConnect(RSQLite::SQLite(),db)
 
   # get the parameter table for physiological and exposure variables.
-  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';"
+  query <- "SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';"
   physio_name_df <- mainDbSelect(query)
   # res <- RSQLite::dbSendQuery(master_conn,query)
   # physio_name_df <- RSQLite::dbFetch(res)
@@ -94,6 +94,7 @@ shinyServer(function(input, output, session) {
                       choices = c("No Dataset"="none",obs_conc_set),
                       selected = "none")
   }
+  
 
 
 
@@ -415,6 +416,9 @@ shinyServer(function(input, output, session) {
 
     }
   })
+  var_params_physio = physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
+  ### Variability Tab
+  updatePickerInput(session,"param_names",choices = var_params_physio)
   
   # # Handle radio buttons for changing organisms
   # observeEvent(input$ms_org,{
@@ -1105,8 +1109,8 @@ observeEvent({input$chemScenFilter},{
     updateNumericInput(session,"ms_tv",value = tidal_volume)
     ds <- getLifecourseLungDeadSpace(age,gender)
     updateNumericInput(session,"ms_ds",value = ds)
-    gfr <- getLifecourseGlomerularFiltrationRate(age,gender)
-    updateNumericInput(session,"ms_gfr",value = gfr)
+    gfr<- getLifecourseGlomerularFiltrationRate(age,gender)
+    updateNumericInput(session,"ms_gfr",value = signif(gfr,4))
 
     })
 
