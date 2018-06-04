@@ -16,6 +16,7 @@ shinyServer(function(input, output, session) {
   parameterSets$sverestdat <- reactiveVal(c("None",0))
   parameterSets$importdat <- reactiveVal(c("No","",0))
   parameterSets$sim_table <- data.frame("Col1"="","Col2"=0,"Col3"=0,row.names = NULL)
+  parameterSets$vardat <- reactiveVal(c("None",0))
   expo_set <- getAllSetChoices("expo")
   physio_set <- getAllSetChoices("physio")
   chem_set <- getAllSetChoices("chem")
@@ -416,6 +417,8 @@ shinyServer(function(input, output, session) {
 
     }
   })
+  
+  observeEvent()
   var_params_physio = physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
   ### Variability Tab
   updatePickerInput(session,"param_names",choices = var_params_physio)

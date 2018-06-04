@@ -933,6 +933,7 @@ shinyUI(fluidPage(
 
 
                                            fluidPage(
+                                            
 
                                              fluidRow(
                                                column(12,
@@ -999,40 +1000,107 @@ shinyUI(fluidPage(
 
                                   ),
                                   tabPanel("Variability",
-                                           fluidPage(
-                                             
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:15px")
+                                           dashboardPage(
+                                             dashboardHeader(disable = T),
+                                             dashboardSidebar(
+                                               sidebarMenu(
+                                                 menuItem("Physiological",
+                                                          tabName = "var_physio"),
+                                                 menuItem("Chemical",
+                                                          tabName = "var_chem"),
+                                                 menuItem("Exposure",
+                                                          tabName = "var_expo")
                                                )
                                              ),
-                                             fluidRow(tags$h5("Physiology")),
-                                             fluidRow(
-                                               column(width = 9, offset = 0,
-                                                      selectizeInput("sel_mc_physio",NULL,
-                                                                     choices = NULL,
-                                                                     options= list(placeholder = "Population Parameter Set",
-                                                                                   openOnFocus = T))),
-                                               column(width = 3, offset = 0,
-                                                      shinyWidgets::actionGroupButtons(
-                                                        c("btn_import_pop","btn_sverest_pop","btn_saveas_pop"),
-                                                        c("Import","Save/Restore","Save As"),
-                                                        direction = "horizontal",
-                                                        status = "info",
-                                                        fullwidth = T
-                                                        
-                                                      ))
-                                             ),
-                                             fluidRow(
-                                               pickerInput("param_names",label = "Select Parameters to assign variability",
-                                                           choices = NULL,multiple = T,
-                                                           options = list('selected-text-format' = "count > 3"))
-                                               
-                                             )
-                                             
-                        
-                                             
+                                             dashboardBody(tabItems(
+                                               tabItem(tabName = "var_physio",
+                                                         fluidRow(
+                                                           column(width = 4, offset = 0,
+                                                                  selectizeInput("sel_mc_physio",NULL,
+                                                                                 choices = NULL,
+                                                                                 options= list(placeholder = "Population Parameter Set",
+                                                                                               openOnFocus = T))),
+                                                           column(width = 8, offset = 0,
+                                                                  shinyWidgets::actionGroupButtons(
+                                                                    c("btn_new_varphys","btn_edit_varphys","btn_import_varphys"),
+                                                                    c("New","Edit","Import"),
+                                                                    direction = "horizontal",
+                                                                    status = "info",
+                                                                    fullwidth = T)
+                                                                  )
+                                                           )
+                                                       ),
+                                               tabItem(tabName = "var_chem",
+                                                       fluidRow(
+                                                         column(width = 4, offset = 0,
+                                                                selectizeInput("sel_mc_chem",NULL,
+                                                                               choices = NULL,
+                                                                               options= list(placeholder = "Metabolism Parameter Set",
+                                                                                             openOnFocus = T))),
+                                                         column(width = 8, offset = 0,
+                                                                shinyWidgets::actionGroupButtons(
+                                                                  c("btn_new_varchem","btn_edit_varchem","btn_import_varchem"),
+                                                                  c("New","Edit","Import"),
+                                                                  direction = "horizontal",
+                                                                  status = "info",
+                                                                  fullwidth = T)
+                                                         )
+                                                       )
+                                                       ),
+                                               tabItem(tabName = "var_expo",
+                                                       fluidRow(
+                                                         column(width = 4, offset = 0,
+                                                                selectizeInput("sel_mc_expo",NULL,
+                                                                               choices = NULL,
+                                                                               options= list(placeholder = "Exposure Parameter Set",
+                                                                                             openOnFocus = T))),
+                                                         column(width = 8, offset = 0,
+                                                                shinyWidgets::actionGroupButtons(
+                                                                  c("btn_new_varexpo","btn_edit_varexpo","btn_import_varexpo"),
+                                                                  c("New","Edit","Import"),
+                                                                  direction = "horizontal",
+                                                                  status = "info",
+                                                                  fullwidth = T)
+                                                         )
+                                                       )
+                                               )
+                                               )
+                                               )
                                            )
+                                           # fluidPage(
+                                           #   
+                                           #   fluidRow(
+                                           #     column(12,
+                                           #            div(style = "height:15px")
+                                           #     )
+                                           #   ),
+                                           #   fluidRow(tags$h5("Physiology")),
+                                           #   fluidRow(
+                                           #     column(width = 9, offset = 0,
+                                           #            selectizeInput("sel_mc_physio",NULL,
+                                           #                           choices = NULL,
+                                           #                           options= list(placeholder = "Population Parameter Set",
+                                           #                                         openOnFocus = T))),
+                                           #     column(width = 3, offset = 0,
+                                           #            shinyWidgets::actionGroupButtons(
+                                           #              c("btn_import_pop","btn_sverest_pop","btn_saveas_pop"),
+                                           #              c("Import","Save/Restore","Save As"),
+                                           #              direction = "horizontal",
+                                           #              status = "info",
+                                           #              fullwidth = T
+                                           #              
+                                           #            ))
+                                           #   ),
+                                           #   fluidRow(
+                                           #     pickerInput("param_names",label = "Select Parameters to assign variability",
+                                           #                 choices = NULL,multiple = T,
+                                           #                 options = list('selected-text-format' = "count > 3"))
+                                           #     
+                                           #   )
+                                           #   
+                                           # 
+                                           #   
+                                           # )
                                            ),
                                   tabPanel("Metabolism",
 
