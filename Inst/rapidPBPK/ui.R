@@ -998,30 +998,7 @@ shinyUI(fluidPage(
 
 
                                   ),
-                                  tabPanel("Population",
-                                           fluidPage(
-                                             
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:15px")
-                                               )
-                                             ),
-                                             fluidRow(
-                                               column(width = 9, offset = 0,
-                                                      selectizeInput("sel_population",NULL,
-                                                                     choices = NULL,
-                                                                     options= list(placeholder = "Population",
-                                                                                   openOnFocus = T))),
-                                               column(width = 3, offset = 0,
-                                                      shinyWidgets::actionGroupButtons(
-                                                        c("btn_import_pop","btn_sverest_pop","btn_saveas_pop"),
-                                                        c("Import","Save/Restore","Save As"),
-                                                        direction = "horizontal",
-                                                        status = "info",
-                                                        fullwidth = T
-                                                        
-                                                      ))
-                                             ))
+                                 
                                   tabPanel("Metabolism",
 
                                            fluidPage(
