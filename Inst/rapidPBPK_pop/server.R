@@ -418,10 +418,16 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  observeEvent()
-  var_params_physio = physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
-  ### Variability Tab
-  updatePickerInput(session,"param_names",choices = var_params_physio)
+  observeEvent(input$btn_new_varphys,{
+    param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
+    param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
+    names(param_vars) <- param_names
+    ns <- input$btn_new_varphys
+    newEditVariabilityUI(ns)
+    callModule(newEditVariability,ns,"physio","new",param_vars)
+    ### Variability Tab
+  },ignoreInit = T, ignoreNULL = T)
+
   
   # # Handle radio buttons for changing organisms
   # observeEvent(input$ms_org,{
