@@ -23,16 +23,16 @@ newEditVariabilityUI <- function(namespace){
                )
       ),
       textOutput(ns("debug_text")),
-      tags$div(id = ns("cv_ui"),
+      tags$div(id = ns("added_ui"),
                fluidRow(
                  column(4,
-                        tags$h3("Parameter Name")
+                        tags$h4("Parameter Name")
                         ),
                  column(3,
-                        tags$h3("Coefficient of Variation")
+                        tags$h4("Coefficient of Variation")
                         ),
                  column(3,
-                        tags$h3("Type of Distribution")
+                        tags$h4("Type of Distribution")
                         )
                ))
     ),
@@ -43,15 +43,38 @@ newEditVariabilityUI <- function(namespace){
   ))
 }
 
-newEditVariability <- function(input,output,session,set_type,ops_type,var_params_list){
+newEditVariability <- function(input,output,session,set_type,ops_type,var_params_list,set_id = 0){
   
   ns <- session$ns
   param_names <- names(var_params_list)
-  div_id <-paste0("#",ns(""),"cv_ui") 
-  data4module  <- list()
+  div_id <-paste0("#",ns(""),"added_ui")
+  data4module  <- list("")
   data4module$current_list <- list()
-  updatePickerInput(session,"param_names",choices = var_params_list)
+  # type list for distribution
+  type_var2name <- list("norm"= "Normal","lnorm"="Log-normal")
+  type_name2var <- list("Normal" = "norm","Log-normal"="lnorm")
+  if (ops_type == "edit"){
+    query <- sprintf("Select name,descrp,var_tble from Variability where varid = %d",set_id)
+    ret_data <- projectDbSelect(query)
+    var_data <- unserialize(charToRaw(ret_data[["var_tble"]]))
+    selected_vals <- var_data$Parameter
+    data4module$current_list <<- selected_vals
+    updatePickerInput(session,"param_names",choices = var_params_list,selected = selected_vals)
+  }else{
+    # get the current ID for the parameter set.
+    query <- sprintf("SELECT varid FROM Variability;")
+    id_list <- projectDbSelect(query)
+    
+    if (length(id_list[["varid"]])==0){
+      set_id = 1
+    }else{
+      set_id = max(id_list[["varid"]])+1
+    }
+    updatePickerInput(session,"param_names",choices = var_params_list)
+  }
+  
   output$debug_text <- renderText({input$param_names})
+  
   observeEvent(input$update,{
     current_list <- data4module$current_list
     print(current_list)
@@ -94,6 +117,25 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
     data4module$current_list <<- input$param_names
 
   })
-  
+  # Save the table
+  observeEvent(input$ok,{
+    input_list <- reactiveValuesToList(input)
+    # get the ui elements that start with "cv" to find out which parameters to save
+    # this is because not all elements in the drop down list may actually be present
+    save_vars <- unlist(sub("cv_","",names(input_list )[which(startsWith(names(input_list ),"cv_"))]))
+    save_names <- unlist(param_names[which(var_params_list %in% save_vars)])
+    cvs <- unlist(input_list[paste0("cv_",save_vars)])
+    types <- unlist(lapply(input_list[paste0("type_",save_vars)],function(x){type_var2name[[x]]}))
+    var_tble <- data.frame("Name"=save_names,
+                           "Parameter"=save_vars,
+                           "CV" = cvs,"Type" = types,
+                           stringsAsFactors = F)
+    var_tble_serialized<- rawToChar(serialize(var_tble,NULL,T))
+    name <- "test1"#input$name
+    descrp <- "test1 descrp"#input$descrp
+    query <-sprintf("Insert Into Variability (varid,name,descrp,type,var_tble) Values (%d,'%s','%s','%s','%s');",
+                    set_id,name,descrp,set_type,var_tble_serialized)
+    projectDbUpdate(query)
+  })
   
 }

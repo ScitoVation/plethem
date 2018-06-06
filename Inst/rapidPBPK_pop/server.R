@@ -22,12 +22,14 @@ shinyServer(function(input, output, session) {
   chem_set <- getAllSetChoices("chem")
   metab_set <- getAllSetChoices("metab")
   sim_set <- getAllSetChoices("sim")
+  physiovar <-getVariabilitySetChoices("physio")
 
   parameterSets$expo <- reactiveVal(expo_set)
   parameterSets$physio <- reactiveVal(physio_set)
   parameterSets$chem <- reactiveVal(chem_set)
   parameterSets$metab <- reactiveVal(metab_set)
   parameterSets$sim <- reactiveVal(sim_set)
+  parameterSets$physiovar <- reactiveVal(physiovar)
 
   # conc_datasets <- c("none",getDatasetNames("conc"))
   # updateSelectizeInput(session,"cplt_data",choices = conc_datasets)
@@ -56,13 +58,13 @@ shinyServer(function(input, output, session) {
   # physio_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';"
+  query <- "SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';"
   expo_name_df <- mainDbSelect(query)
   # res <- RSQLite::dbSendQuery(master_conn,query)
   # expo_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-  query <- "SELECT Name,Var,Units,ParamType FROM ParamNames Where Model='All' AND ParamSet = 'Chemical'AND UIParams = 'TRUE';"
+  query <- "SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='All' AND ParamSet = 'Chemical'AND UIParams = 'TRUE';"
   chem_name_df <- mainDbSelect(query)
 
   #### Update the parameter set dropdowns if they exist for physiological and exposure sets
@@ -94,6 +96,11 @@ shinyServer(function(input, output, session) {
     updatePickerInput(session,"cplt_data",
                       choices = c("No Dataset"="none",obs_conc_set),
                       selected = "none")
+  }
+  set_choices<- getVariabilitySetChoices("physio")
+  if (length(set_choices)>0){
+    updateSelectizeInput(session,"sel_physio_var",
+                      choices = set_choices)
   }
   
 
@@ -427,6 +434,35 @@ shinyServer(function(input, output, session) {
     callModule(newEditVariability,ns,"physio","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
+  
+  observeEvent(input$btn_new_varchem,{
+    param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
+    param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
+    names(param_vars) <- param_names
+    ns <- input$btn_new_varchem
+    newEditVariabilityUI(ns)
+    callModule(newEditVariability,ns,"chem","new",param_vars)
+    ### Variability Tab
+  },ignoreInit = T, ignoreNULL = T)
+  
+  observeEvent(input$btn_new_varexpo,{
+    param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
+    param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
+    names(param_vars) <- param_names
+    ns <- input$btn_new_varexpo
+    newEditVariabilityUI(ns)
+    callModule(newEditVariability,ns,"expo","new",param_vars)
+    ### Variability Tab
+  },ignoreInit = T, ignoreNULL = T)
+  
+  observeEvent(input$sel_physio_var,{
+    varid <- input$sel_physio_var
+    query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
+    var_data <- projectDbSelect(query)
+    dataset <- unserialize(charToRaw(var_data$var_tble))
+    output$physio_var_tble <- renderTable(dataset)
+    
+  },ignoreInit = TRUE, ignoreNULL =  TRUE)
 
   
   # # Handle radio buttons for changing organisms

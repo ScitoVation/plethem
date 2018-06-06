@@ -1016,7 +1016,7 @@ shinyUI(fluidPage(
                                                tabItem(tabName = "var_physio",
                                                          fluidRow(
                                                            column(width = 4, offset = 0,
-                                                                  selectizeInput("sel_mc_physio",NULL,
+                                                                  selectizeInput("sel_physio_var",NULL,
                                                                                  choices = NULL,
                                                                                  options= list(placeholder = "Population Parameter Set",
                                                                                                openOnFocus = T))),
@@ -1028,7 +1028,11 @@ shinyUI(fluidPage(
                                                                     status = "info",
                                                                     fullwidth = T)
                                                                   )
-                                                           )
+                                                           ),
+                                                       fluidRow(
+                                                         column(8, offset = 2,
+                                                                tableOutput("physio_var_tble"))
+                                                       )
                                                        ),
                                                tabItem(tabName = "var_chem",
                                                        fluidRow(

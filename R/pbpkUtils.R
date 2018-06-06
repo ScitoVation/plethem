@@ -219,6 +219,20 @@ getObservationSetChoices <- function(obs_type){
   }
 }
 
+#' Get all variability sets
+#' @description Get all the variability datasets in a given projects. Variabilities need to
+#' be handled differently from the other set types since they can themselves be of multiple types
+#' @param var_type type of Variability set to return, can be "physio","chem" or "expo" or "conc"
+#' @return named list of all sets of the var_type
+#' @export
+getVariabilitySetChoices <- function(var_type="physio"){
+  query <- sprintf("Select varid,name From Variability where type = '%s'",var_type)
+  set_choices <- projectDbSelect(query)
+  set_list <- as.list(set_choices[["varid"]])
+  names(set_list)<- set_choices$name
+  return(set_list)
+}
+
 #' reshape plotted data to create wide form
 #' @description Reshapes plot data in long form to wide form. The plot data has time as the id
 #' @param plotData Plot Data in long form
