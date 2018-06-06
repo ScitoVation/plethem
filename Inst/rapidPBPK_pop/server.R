@@ -102,6 +102,16 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session,"sel_physio_var",
                       choices = set_choices)
   }
+  set_choices<- getVariabilitySetChoices("chem")
+  if (length(set_choices)>0){
+    updateSelectizeInput(session,"sel_chem_var",
+                         choices = set_choices)
+  }
+  set_choices<- getVariabilitySetChoices("expo")
+  if (length(set_choices)>0){
+    updateSelectizeInput(session,"sel_expo_var",
+                         choices = set_choices)
+  }
   
 
 
@@ -455,15 +465,6 @@ shinyServer(function(input, output, session) {
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
-  observeEvent(input$sel_physio_var,{
-    varid <- input$sel_physio_var
-    query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
-    var_data <- projectDbSelect(query)
-    dataset <- unserialize(charToRaw(var_data$var_tble))
-    output$physio_var_tble <- renderTable(dataset)
-    
-  },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
   observe({
     result_vector <- parameterSets$vardat
     if (result_vector()[1]=="Yes"){
@@ -476,6 +477,35 @@ shinyServer(function(input, output, session) {
                            selected = as.integer(varid))
     }
   })
+  
+  observeEvent(input$sel_physio_var,{
+    varid <- input$sel_physio_var
+    query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
+    var_data <- projectDbSelect(query)
+    dataset <- unserialize(charToRaw(var_data$var_tble))
+    output$physio_var_tble <- DT::renderDT(DT::datatable(dataset))
+    
+  },ignoreInit = TRUE, ignoreNULL =  TRUE)
+  
+  observeEvent(input$sel_chem_var,{
+    varid <- input$sel_chem_var
+    query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
+    var_data <- projectDbSelect(query)
+    dataset <- unserialize(charToRaw(var_data$var_tble))
+    output$chem_var_tble <- renderTable(dataset)
+    
+  },ignoreInit = TRUE, ignoreNULL =  TRUE)
+  
+  observeEvent(input$sel_expo_var,{
+    varid <- input$sel_expo_var
+    query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
+    var_data <- projectDbSelect(query)
+    dataset <- unserialize(charToRaw(var_data$var_tble))
+    output$expo_var_tble <- renderTable(dataset)
+    
+  },ignoreInit = TRUE, ignoreNULL =  TRUE)
+  
+  
 
   
   # # Handle radio buttons for changing organisms

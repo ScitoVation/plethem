@@ -1031,13 +1031,14 @@ shinyUI(fluidPage(
                                                            ),
                                                        fluidRow(
                                                          column(8, offset = 2,
-                                                                tableOutput("physio_var_tble"))
+                                                                DT::DTOutput("physio_var_tble")
+                                                         )
                                                        )
                                                        ),
                                                tabItem(tabName = "var_chem",
                                                        fluidRow(
                                                          column(width = 4, offset = 0,
-                                                                selectizeInput("sel_mc_chem",NULL,
+                                                                selectizeInput("sel_chem_var",NULL,
                                                                                choices = NULL,
                                                                                options= list(placeholder = "Metabolism Parameter Set",
                                                                                              openOnFocus = T))),
@@ -1049,12 +1050,16 @@ shinyUI(fluidPage(
                                                                   status = "info",
                                                                   fullwidth = T)
                                                          )
+                                                       ),
+                                                       fluidRow(
+                                                         column(8, offset = 2,
+                                                                tableOutput("chem_var_tble"))
                                                        )
                                                        ),
                                                tabItem(tabName = "var_expo",
                                                        fluidRow(
                                                          column(width = 4, offset = 0,
-                                                                selectizeInput("sel_mc_expo",NULL,
+                                                                selectizeInput("sel_expo_var",NULL,
                                                                                choices = NULL,
                                                                                options= list(placeholder = "Exposure Parameter Set",
                                                                                              openOnFocus = T))),
@@ -1066,6 +1071,10 @@ shinyUI(fluidPage(
                                                                   status = "info",
                                                                   fullwidth = T)
                                                          )
+                                                       ),
+                                                       fluidRow(
+                                                         column(8, offset = 2,
+                                                                tableOutput("expo_var_tble"))
                                                        )
                                                )
                                                )
