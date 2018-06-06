@@ -16,7 +16,7 @@ shinyServer(function(input, output, session) {
   parameterSets$sverestdat <- reactiveVal(c("None",0))
   parameterSets$importdat <- reactiveVal(c("No","",0))
   parameterSets$sim_table <- data.frame("Col1"="","Col2"=0,"Col3"=0,row.names = NULL)
-  parameterSets$vardat <- reactiveVal(c("None",0))
+  parameterSets$vardat <- reactiveVal(c("None","",0))
   expo_set <- getAllSetChoices("expo")
   physio_set <- getAllSetChoices("physio")
   chem_set <- getAllSetChoices("chem")
@@ -431,7 +431,7 @@ shinyServer(function(input, output, session) {
     names(param_vars) <- param_names
     ns <- input$btn_new_varphys
     newEditVariabilityUI(ns)
-    callModule(newEditVariability,ns,"physio","new",param_vars)
+    parameterSets$vardat <- callModule(newEditVariability,ns,"physio","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
@@ -441,7 +441,7 @@ shinyServer(function(input, output, session) {
     names(param_vars) <- param_names
     ns <- input$btn_new_varchem
     newEditVariabilityUI(ns)
-    callModule(newEditVariability,ns,"chem","new",param_vars)
+    parameterSets$vardat <- callModule(newEditVariability,ns,"chem","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
@@ -451,7 +451,7 @@ shinyServer(function(input, output, session) {
     names(param_vars) <- param_names
     ns <- input$btn_new_varexpo
     newEditVariabilityUI(ns)
-    callModule(newEditVariability,ns,"expo","new",param_vars)
+    parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
@@ -463,6 +463,19 @@ shinyServer(function(input, output, session) {
     output$physio_var_tble <- renderTable(dataset)
     
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
+  
+  observe({
+    result_vector <- parameterSets$vardat
+    if (result_vector()[1]=="Yes"){
+      set_type <- result_vector()[2]
+      varid <- result_vector()[3]
+      set_list <- getVariabilitySetChoices(set_type)
+      updateSelectizeInput(session,
+                           paste0("sel_",set_type,"_var"),
+                           choices = set_list,
+                           selected = as.integer(varid))
+    }
+  })
 
   
   # # Handle radio buttons for changing organisms

@@ -9,6 +9,13 @@ newEditVariabilityUI <- function(namespace){
     size = "l",
     tagList(
       fluidRow(
+        column(4,
+               textInput(ns("name"),"Parameter Name")
+               ),
+        column(8,
+               textInput(ns("descrp"),"Description"))
+        ),
+      fluidRow(
         column(8,
                pickerInput(ns("param_names"),
                            label = "Select Parameters to assign variability",
@@ -19,7 +26,8 @@ newEditVariabilityUI <- function(namespace){
                         )
                ),
         column(4,
-               actionButton(ns("update"),"Update list",color = "default")
+               actionButton(ns("update"),
+                            "Update list",color = "default")
                )
       ),
       textOutput(ns("debug_text")),
@@ -45,6 +53,8 @@ newEditVariabilityUI <- function(namespace){
 
 newEditVariability <- function(input,output,session,set_type,ops_type,var_params_list,set_id = 0){
   
+  returnValues <- reactiveValues()
+  returnValues$savedat <- c("No","",0)
   ns <- session$ns
   param_names <- names(var_params_list)
   div_id <-paste0("#",ns(""),"added_ui")
@@ -131,11 +141,15 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
                            "CV" = cvs,"Type" = types,
                            stringsAsFactors = F)
     var_tble_serialized<- rawToChar(serialize(var_tble,NULL,T))
-    name <- "test1"#input$name
-    descrp <- "test1 descrp"#input$descrp
+    name <- input$name
+    descrp <- input$descrp
     query <-sprintf("Insert Into Variability (varid,name,descrp,type,var_tble) Values (%d,'%s','%s','%s','%s');",
                     set_id,name,descrp,set_type,var_tble_serialized)
     projectDbUpdate(query)
+    removeModal()
   })
-  
+  returnValues$savedat<- eventReactive(input$ok,{
+    return(c("Yes",set_type,set_id))
+    })
+  return(returnValues$savedat)
 }
