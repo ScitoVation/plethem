@@ -37,9 +37,9 @@ scale_cellular_enzymatic<- function(out_ages,tot_scaled_hepcl,tot_scaled_recomcl
 scale_enzymatic<- function(out_ages,tot_scaled_recomcl,cypDb,cypCl,gender){
   liver_wt_list <- lapply(out_ages,getLifecourseLiverVolume,gender)
   names(liver_wt_list)<- out_ages
-  agewise_enzyme_cl <- mapply(calculateRecombClearence,
+  agewise_enzyme_cl <- mapply(calculateRecombClearance,
                                "liver_wt" = liver_wt_list,"age"=out_ages,
-                               MoreArgs = list(clearence = cypCl,
+                               MoreArgs = list(clearance = cypCl,
                                                organism="human",
                                                cyp_data=cypDb,
                                                return_total = F))
