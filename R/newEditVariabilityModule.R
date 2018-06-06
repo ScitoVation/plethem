@@ -58,18 +58,47 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
   ns <- session$ns
   param_names <- names(var_params_list)
   div_id <-paste0("#",ns(""),"added_ui")
-  data4module  <- list("")
+  data4module  <- list()
   data4module$current_list <- list()
   # type list for distribution
   type_var2name <- list("norm"= "Normal","lnorm"="Log-normal")
   type_name2var <- list("Normal" = "norm","Log-normal"="lnorm")
   if (ops_type == "edit"){
-    query <- sprintf("Select name,descrp,var_tble from Variability where varid = %d",set_id)
+    query <- sprintf("Select name,descrp,var_tble from Variability where varid = %d",
+                     as.integer(set_id))
     ret_data <- projectDbSelect(query)
     var_data <- unserialize(charToRaw(ret_data[["var_tble"]]))
     selected_vals <- var_data$Parameter
-    data4module$current_list <<- selected_vals
+    data4module$current_list <- selected_vals
     updatePickerInput(session,"param_names",choices = var_params_list,selected = selected_vals)
+    for (x in seq(dim(var_data)[1])){
+      param <- var_data$Parameter[x]
+      name <- var_data$Name[x]
+      cv <-var_data$CV[x]
+      type <- type_name2var[[var_data$Type[x]]]
+      print(type)
+      insertUI(selector = div_id,
+               ui = tagList(
+                 tags$div(id = ns(paste0("div_",param)),
+                          fluidRow(
+                            column(4,
+                                   name
+                            ),
+                            column(3,
+                                   numericInput(ns(paste0("cv_",param)),label = NULL,value = as.numeric(cv))
+                            ),
+                            column(3,
+                                   selectInput(ns(paste0("type_",param)),label = NULL,selected = as.character(type),
+                                               choices = c("Normal"="norm",
+                                                           "Log-normal"="lnorm"))
+                            )
+                          )
+                 )
+               )
+      )
+    }
+    updateTextInput(session,"name",value = ret_data$name)
+    updateTextInput(session,"descrp",value = ret_data$descrp)
   }else{
     # get the current ID for the parameter set.
     query <- sprintf("SELECT varid FROM Variability;")
@@ -143,8 +172,15 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
     var_tble_serialized<- rawToChar(serialize(var_tble,NULL,T))
     name <- input$name
     descrp <- input$descrp
-    query <-sprintf("Insert Into Variability (varid,name,descrp,type,var_tble) Values (%d,'%s','%s','%s','%s');",
-                    set_id,name,descrp,set_type,var_tble_serialized)
+    if (ops_type == "new"){
+      query <-sprintf("Insert Into Variability (varid,name,descrp,type,var_tble) Values (%d,'%s','%s','%s','%s');",
+                      set_id,name,descrp,set_type,var_tble_serialized)
+    }else{
+      print("Update is query")
+      query <- sprintf("Update Variability Set name = '%s', descrp = '%s',type = '%s',var_tble = '%s' Where varid = %d;",
+                       name,descrp,set_type,var_tble_serialized,as.integer(set_id))
+    }
+    
     projectDbUpdate(query)
     removeModal()
   })

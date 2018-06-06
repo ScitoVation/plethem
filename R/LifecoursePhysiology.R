@@ -1379,6 +1379,7 @@ getLifecourseSlowlyPerfusedVolumeMale <- function(age,perf_frct=0.85){
                      getLifecourseMuscleVolume(age,"M")+
                      getLifecourseRapidlyPerfusedVolume(age,"M"))
   vol <- perfused_bw- total_volume
+  vol <- ifelse(vol < 0, 1e-5,vol)
   return(vol)
 
 }
@@ -1400,6 +1401,7 @@ getLifecourseSlowlyPerfusedVolumeFemale <- function(age,perf_frct=0.85){
                      getLifecourseMuscleVolume(age,"F")+
                      getLifecourseRapidlyPerfusedVolume(age,"F"))
   vol <- perfused_bw- total_volume
+  vol <- ifelse(vol < 0, 1e-5,vol)
   return(vol)
 
 }

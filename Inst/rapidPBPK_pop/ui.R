@@ -1217,17 +1217,47 @@ shinyUI(fluidPage(
                                              # ),
                                              fluidRow(tags$h4("")),
                                              fluidRow(
-                                               column(3,
+                                               column(5,
                                                       shinyWidgets::dropdownButton(
                                                         tagList(
                                                           textInput("sim_name","Name"),
                                                           textAreaInput("sim_descrp","Description",rows = 2,resize = "none"),
-                                                          selectizeInput("sel_set_chem","Select Chemical",choices = NULL),
-                                                          selectizeInput("sel_set_expo","Select Exposure",choices = NULL),
-                                                          selectizeInput("sel_set_physio","Select Compartment",choices = NULL),
+                                                          fluidRow(
+                                                            column(6,
+                                                                   selectizeInput("sel_set_chem","Select Chemical",choices = NULL)
+                                                                   ),
+                                                            column(6,
+                                                                   selectizeInput("sel_set_chemvar","Select Variability",choices = NULL)
+                                                                   )
+                                                          ),
+                                                          fluidRow(
+                                                            column(6,
+                                                                   selectizeInput("sel_set_expo","Select Exposure",choices = NULL)
+                                                            ),
+                                                            column(6,
+                                                                   selectizeInput("sel_set_expovar","Select Variability",choices = NULL)
+                                                            )
+                                                          ),
+                                                          fluidRow(
+                                                            column(6,
+                                                                   selectizeInput("sel_set_physio","Select Compartment",choices = NULL)
+                                                            ),
+                                                            column(6,
+                                                                   selectizeInput("sel_set_physiovar","Select Variability",choices = NULL)
+                                                            )
+                                                          ),
                                                           selectizeInput("sel_set_metab","Select Metabolism",choice = NULL),
-                                                          numericInput("sim_start","Simulation Start Time (h)",0),
-                                                          numericInput("sim_dur","Simulation Duration (h)",0),
+                                                          fluidRow(
+                                                            column(4,
+                                                                   numericInput("sim_start","Simulation Start Time (h)",0)
+                                                                   ),
+                                                            column(4,
+                                                                   numericInput("sim_dur","Simulation Duration (h)",0)
+                                                                   ),
+                                                            column(4,
+                                                                   numericInput("mc_num","Number of Montecarlo Runs",1000)
+                                                                   )
+                                                          ),
                                                           shinyWidgets::actionBttn("save_sim",NULL,
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")

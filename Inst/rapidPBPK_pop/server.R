@@ -23,6 +23,8 @@ shinyServer(function(input, output, session) {
   metab_set <- getAllSetChoices("metab")
   sim_set <- getAllSetChoices("sim")
   physiovar <-getVariabilitySetChoices("physio")
+  chemvar <-getVariabilitySetChoices("chem")
+  expovar <-getVariabilitySetChoices("expo")
 
   parameterSets$expo <- reactiveVal(expo_set)
   parameterSets$physio <- reactiveVal(physio_set)
@@ -30,6 +32,8 @@ shinyServer(function(input, output, session) {
   parameterSets$metab <- reactiveVal(metab_set)
   parameterSets$sim <- reactiveVal(sim_set)
   parameterSets$physiovar <- reactiveVal(physiovar)
+  parameterSets$chemvar <- reactiveVal(chemvar)
+  parameterSets$expovar <- reactiveVal(expovar)
 
   # conc_datasets <- c("none",getDatasetNames("conc"))
   # updateSelectizeInput(session,"cplt_data",choices = conc_datasets)
@@ -44,6 +48,15 @@ shinyServer(function(input, output, session) {
     metabset<- parameterSets$metab()
     metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",metabset)
     updateSelectizeInput(session,"sel_set_metab",choices = metabset)
+    physiovar <- parameterSets$physiovar()
+    physiovar <- c("None"="0",physiovar)
+    updateSelectizeInput(session,"sel_set_physiovar",choices = physiovar)
+    chemvar <- parameterSets$chemvar()
+    chemvar <- c("None"="0",chemvar)
+    updateSelectizeInput(session,"sel_set_chemvar",choices = chemvar)
+    expovar <- parameterSets$expovar()
+    expovar <- c("None"="0",expovar)
+    updateSelectizeInput(session,"sel_set_expovar",choices = expovar)
   })
   # get global variables needed to run the model
 
@@ -439,9 +452,20 @@ shinyServer(function(input, output, session) {
     param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
     param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
     names(param_vars) <- param_names
-    ns <- input$btn_new_varphys
+    ns <- paste0("vpn_",input$btn_new_varphys)
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","new",param_vars)
+    ### Variability Tab
+  },ignoreInit = T, ignoreNULL = T)
+  
+  observeEvent(input$btn_edit_varphys,{
+    param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
+    param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
+    names(param_vars) <- param_names
+    ns <- paste0("vpe_",input$btn_edit_varphys)
+    newEditVariabilityUI(ns)
+    parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
+                                       param_vars,input$sel_physio_var)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
@@ -449,9 +473,20 @@ shinyServer(function(input, output, session) {
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
     param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
     names(param_vars) <- param_names
-    ns <- input$btn_new_varchem
+    ns <- paste0("vcn_",input$btn_new_varchem)
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","new",param_vars)
+    ### Variability Tab
+  },ignoreInit = T, ignoreNULL = T)
+  
+  observeEvent(input$btn_edit_varchem,{
+    param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
+    param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
+    names(param_vars) <- param_names
+    ns <- paste0("vce_",input$btn_edit_varchem)
+    newEditVariabilityUI(ns)
+    parameterSets$vardat <- callModule(newEditVariability,ns,"chem","edit",
+                                       param_vars,input$sel_chem_var)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
@@ -459,9 +494,20 @@ shinyServer(function(input, output, session) {
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
     param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
     names(param_vars) <- param_names
-    ns <- input$btn_new_varexpo
+    ns <- paste0("ven_",input$btn_new_varexpo)
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
+    ### Variability Tab
+  },ignoreInit = T, ignoreNULL = T)
+  
+  observeEvent(input$btn_edit_varexpo,{
+    param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
+    param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
+    names(param_vars) <- param_names
+    ns <- paste0("vee_",input$btn_edit_varexpo)
+    newEditVariabilityUI(ns)
+    parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
+                                       param_vars,input$sel_expo_var)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
@@ -471,6 +517,8 @@ shinyServer(function(input, output, session) {
       set_type <- result_vector()[2]
       varid <- result_vector()[3]
       set_list <- getVariabilitySetChoices(set_type)
+      parameterSets[[paste0(set_type,"var")]] <- reactiveVal(set_list)
+      updateSelectizeInput(session,paste0("sel_",set_type,"_var"),choices = NULL)
       updateSelectizeInput(session,
                            paste0("sel_",set_type,"_var"),
                            choices = set_list,
@@ -858,17 +906,23 @@ shinyServer(function(input, output, session) {
       sim_descrp <- input$sim_descrp
       sim_start <- input$sim_start
       sim_dur <- input$sim_dur
+      mc_num <- input$mc_num
       chemid <- as.integer(input$sel_set_chem)
       physioid <- as.integer(input$sel_set_physio)
       expoid <- as.integer(input$sel_set_expo)
       metabid <- as.integer(input$sel_set_metab)
+      physiovarid <- as.integer(input$sel_set_physiovar)
+      chemvarid <- as.integer(input$sel_set_chemvar)
+      expovarid <- as.integer(input$sel_set_expovar)
       query <- paste(strwrap(sprintf("INSERT INTO SimulationsSet (simid,name,descrp,expoid,physioid,
-                                     chemid,metabid,tstart,sim_dur) Values
-                                     (%d,'%s','%s',%i,%i,%i,%i,%f,%f) ;",
+                                     chemid,metabid,physiovarid, chemvarid,expovarid,tstart,sim_dur,mc_num) Values
+                                     (%d,'%s','%s',%i,%i,%i,%i,%i,%i,%i,%f,%f,%i) ;",
                                      simid,sim_name,sim_descrp,
                                      expoid,physioid,
                                      chemid,metabid,
-                                     sim_start,sim_dur),
+                                     physiovarid,chemvarid,
+                                     expovarid,
+                                     sim_start,sim_dur,mc_num),
                              simplify = T),
                      sep = " ",collapse = "")
       projectDbUpdate(query)

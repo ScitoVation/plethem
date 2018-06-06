@@ -6,7 +6,7 @@ Installing PLETHEM requires the latest version of 64 bit R-3.4.4 or higher([link
 ### Installing the package
 Open Rstudio once all of the above are installed. On the Rstudio console type the following command
 ---
-  >install.packages("devtools")
+  >install.packages("devtools",dependencies = T)lilib
   
 This will install the package "devtools". This package is needed to install PELTHEM from the repos
 Then type one of the following commands

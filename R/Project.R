@@ -54,6 +54,9 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
   if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
     shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
   }
+  if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
+    shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
+  }
   #interactivePBPK(model)
   return(NULL)
 }
@@ -93,6 +96,9 @@ loadProject <- function(file_path = ""){
   }
   if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
     shiny::runApp(system.file("rapidPBPK",package="plethem"))
+  }
+  if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
+    shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
   }
 }
 
