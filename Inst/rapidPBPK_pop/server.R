@@ -1000,19 +1000,24 @@ shinyServer(function(input, output, session) {
                                      })
                             )
                      )
-    #rep_flag <- all_params["rep_flag"]
-    #model_params <- all_params["model_params"]
-    initial_values <- calculateInitialValues(model_params,
-                                             total_vol)
-
-
-    withProgress({
-      tempDF <- runFDPBPK(initial_values,"rapidPBPK")
-
-      results$pbpk<- tempDF$pbpk
-    })
-    results$simid <- as.integer(simid)
-    updateNavbarPage(session,"menu","output")
+    model_params[["total_vol"]]<- total_vol
+    if (input$mc_mode){
+      cv_params <- getAllVariabilityValuesForModel(simid)
+    }else{
+      #rep_flag <- all_params["rep_flag"]
+      #model_params <- all_params["model_params"]
+      initial_values <- calculateInitialValues(model_params)
+      
+      
+      withProgress({
+        tempDF <- runFDPBPK(initial_values,"rapidPBPK")
+        
+        results$pbpk<- tempDF$pbpk
+      })
+      results$simid <- as.integer(simid)
+      updateNavbarPage(session,"menu","output")
+    }
+    
 
 
   })
@@ -1857,7 +1862,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
 })
 
-calculateInitialValues <- function(params_list,total_vol){
+calculateInitialValues <- function(params_list){
   params <- params_list$vals
   brep_flag <- as.logical(params[["brep_flag"]])
   iv_flag <- as.logical(params[["ivrep_flag"]])

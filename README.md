@@ -1,18 +1,21 @@
 ## PLETHEM INSTALLATION
 
 ### Installing R.
-Installing PLETHEM requires the latest version of 64 bit R-3.4.4 or higher([link](https://www.r-project.org/)), RStudio([link](https://www.rstudio.com/)), and Rtools([link](https://cran.r-project.org/bin/windows/Rtools/))
+Installing PLETHEM requires the latest version of 64 bit R-3.5 or higher([link](https://www.r-project.org/)), RStudio([link](https://www.rstudio.com/)), and Rtools([link](https://cran.r-project.org/bin/windows/Rtools/)).
+While installing Rtools make sure the box that says "Add Rtools to System Path" is checked.
 
 ### Installing the package
 Open Rstudio once all of the above are installed. On the Rstudio console type the following command
 ---
-  >install.packages("devtools",dependencies = T)lilib
+  >install.packages("devtools",dependencies = T)
   
-This will install the package "devtools". This package is needed to install PELTHEM from the repos
+This will install the package "devtools". This package is needed to install PLETHEM from the repos
 Then type one of the following commands
+
   >devtools::install_github("ScitoVation/plethem")
   
 to install form Github or 
+
   > devtools::install_bitbucket("ScivCompTox/plethem")
 
 to install from BitBucket.

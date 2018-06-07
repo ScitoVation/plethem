@@ -61,8 +61,8 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
   data4module  <- list()
   data4module$current_list <- list()
   # type list for distribution
-  type_var2name <- list("norm"= "Normal","lnorm"="Log-normal")
-  type_name2var <- list("Normal" = "norm","Log-normal"="lnorm")
+  type_var2name <- list("norm"= "Normal","lnorm"="Log-normal","uform"="Uniform")
+  type_name2var <- list("Normal" = "norm","Log-normal"="lnorm","Uniform"="uform")
   if (ops_type == "edit"){
     query <- sprintf("Select name,descrp,var_tble from Variability where varid = %d",
                      as.integer(set_id))
@@ -90,7 +90,8 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
                             column(3,
                                    selectInput(ns(paste0("type_",param)),label = NULL,selected = as.character(type),
                                                choices = c("Normal"="norm",
-                                                           "Log-normal"="lnorm"))
+                                                           "Log-normal"="lnorm",
+                                                           "Unifrom"= "uform"))
                             )
                           )
                  )
@@ -137,7 +138,8 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
                               column(3,
                                      selectInput(ns(paste0("type_",x)),label = NULL,
                                                  choices = c("Normal"="norm",
-                                                             "Log-normal"="lnorm"))
+                                                             "Log-normal"="lnorm",
+                                                             "Uniform","uform"))
                                      )
                    )
                    )

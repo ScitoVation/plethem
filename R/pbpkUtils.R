@@ -149,6 +149,40 @@ getAllParamValuesForModel <- function(simid,model){
 
 }
 
+#' Gets all the variability values for the model. This data returned by the function is not meant to be understandable by the user
+#' @description Get all the variability values required for creating paramter sets for 
+#' montecarlo analysis. The values are obtained from the Project database. 
+#' @param simid Integer The id for simulation selected to run
+#' @return list List that can be passed to the server function to setup MC matrices
+#' @export
+getAllVariabilityValuesForModel<- function(simid){
+  # get the ids for variability sets
+  query <- sprintf("Select expovarid,physiovarid,chemvarid,mc_num FROM SimulationsSet Where simid = %i;",
+                   simid)
+  result <- projectDbSelect(query)
+  mc_num <- as.integer(result[["mc_num"]])
+  chemvarid <- as.integer(result[["chemvarid"]])
+  expovarid <- as.integer(result[["expovarid"]])
+  physiovarid <- as.integer(result[["physiovarid"]])
+  varid_list <- c(chemvarid,expovarid,physiovarid)
+  for(varid in varid_list){
+    if(varid != 0){
+      # get the data associated with varid
+      query <- sprintf("Select var_tble from Variability where varid = %d",varid)
+      ret_data <- projectDbSelect(query)
+      var_tble <- unserialize(charToRaw(ret_data[["var_tble"]]))
+      param_names <- var_tble$Parameter
+      cvs <- var_tble$CV
+      types <- type_name2var[[var_data$Type[x]]]
+      ubound_flag <- sample(c(TRUE,FALSE),length(cvs),replace = T)
+      lbound <- rep(1e-10,length(cvs))
+      ubound <- rep(10,length(cvs))
+      
+    }
+  }
+  
+}
+
 #' Get the values for parameters in a given set
 #' @description Get all the parameter values for a given dataset and id
 #' @param set_type Either "physio","chem"or "expo"

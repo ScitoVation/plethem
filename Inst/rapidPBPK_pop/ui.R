@@ -999,7 +999,7 @@ shinyUI(fluidPage(
 
 
                                   ),
-                                  tabPanel("Variability",
+                                  tabPanel("Uncertanity and Variability",
                                            dashboardPage(
                                              dashboardHeader(disable = T),
                                              dashboardSidebar(
@@ -1258,6 +1258,7 @@ shinyUI(fluidPage(
                                                                    numericInput("mc_num","Number of Montecarlo Runs",1000)
                                                                    )
                                                           ),
+                                                          checkboxInput("mc_mode","Run Monte Carlo Simulation",T),
                                                           shinyWidgets::actionBttn("save_sim",NULL,
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")

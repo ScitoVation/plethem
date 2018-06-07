@@ -17,7 +17,7 @@ Depends:
   miniUI,
   ggplot2,
   rintrojs,
-    rhandsontable
+  rhandsontable
 License: (TBD)
 Encoding: UTF-8
 LazyData: true
