@@ -1000,9 +1000,12 @@ shinyServer(function(input, output, session) {
                                      })
                             )
                      )
-    model_params[["total_vol"]]<- total_vol
+    model_params$vals[["total_vol"]]<- total_vol
     if (input$mc_mode){
-      cv_params <- getAllVariabilityValuesForModel(simid)
+      mc_data <- getAllVariabilityValuesForModel(simid,model_params$vals)
+      MC.matrix <- mc_data$mat
+      mc_num <- mc_data$mc_num
+      print(MC.matrix)
     }else{
       #rep_flag <- all_params["rep_flag"]
       #model_params <- all_params["model_params"]

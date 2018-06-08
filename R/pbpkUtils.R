@@ -153,34 +153,93 @@ getAllParamValuesForModel <- function(simid,model){
 #' @description Get all the variability values required for creating paramter sets for 
 #' montecarlo analysis. The values are obtained from the Project database. 
 #' @param simid Integer The id for simulation selected to run
-#' @return list List that can be passed to the server function to setup MC matrices
+#' @param params list of model parameters
+#' @return matrix of parameters that will be used for individual montecarlo runs
+#' 
 #' @export
-getAllVariabilityValuesForModel<- function(simid){
+getAllVariabilityValuesForModel<- function(simid, params){
+  params <- lapply(params,function(x){as.numeric(x)})
   # get the ids for variability sets
   query <- sprintf("Select expovarid,physiovarid,chemvarid,mc_num FROM SimulationsSet Where simid = %i;",
-                   simid)
+                   as.integer(simid))
   result <- projectDbSelect(query)
   mc_num <- as.integer(result[["mc_num"]])
   chemvarid <- as.integer(result[["chemvarid"]])
   expovarid <- as.integer(result[["expovarid"]])
   physiovarid <- as.integer(result[["physiovarid"]])
   varid_list <- c(chemvarid,expovarid,physiovarid)
+  type_name2var <- list("Normal" = "norm","Log-normal"="lnorm","Uniform"="uform")
+  mc_param_names <- list()
+  cvs <- list()
+  types <- list()
+  bound_flag <- list()
+  lbound <- list()
+  ubound <- list()
   for(varid in varid_list){
     if(varid != 0){
       # get the data associated with varid
       query <- sprintf("Select var_tble from Variability where varid = %d",varid)
       ret_data <- projectDbSelect(query)
       var_tble <- unserialize(charToRaw(ret_data[["var_tble"]]))
-      param_names <- var_tble$Parameter
-      cvs <- var_tble$CV
-      types <- type_name2var[[var_data$Type[x]]]
-      ubound_flag <- sample(c(TRUE,FALSE),length(cvs),replace = T)
-      lbound <- rep(1e-10,length(cvs))
-      ubound <- rep(10,length(cvs))
-      
+      mc_param_names <- c(mc_param_names,var_tble$Parameter)
+      cvs <- c(cvs,setNames(as.numeric(var_tble$CV),var_tble$Parameter))
+      types <- c(types,setNames(type_name2var[unlist(var_tble$Type)],var_tble$Parameter))
+      bound_flag <- c(bound_flag,setNames(sample(c(TRUE,FALSE),length(var_tble$CV),replace = T),var_tble$Parameter))
+      lbound <- c(lbound,setNames(rep(1e-10,length(var_tble$CV)),var_tble$Parameter))
+      ubound <- c(ubound,setNames(rep(10,length(var_tble$CV)),var_tble$Parameter))
     }
   }
-  
+  # set up mc matrix
+  MC.matrix <- matrix(NA, nrow = mc_num, ncol = (length(cvs) ))
+  colnames(MC.matrix) <- mc_param_names
+  sample.vec <- rep(NA, mc_num)
+  for (this.param in mc_param_names){
+    if (!(this.param %in% names(params)))
+      stop(paste("Cannot find cv.params parameter", this.param,
+                 "in parameter list."))
+    if (params[[this.param]] > 0){
+      mean <- params[[this.param]]
+      cv <- cvs[[this.param]]
+      sd <- mean*cv
+      dist_type <- types[[this.param]]
+      flag <- bound_flag[[this.param]]
+      if (dist_type=="norm"){
+        if (flag){
+          upperlim = ubound[[this.param]]
+          lowerlim = lbound[[this.param]]
+        }else{
+          upperlim = mean+2*sd
+          lowerlim = mean-2*sd
+        }
+        MC.matrix[,this.param]<- truncdist::rtrunc(mc_num,"norm",a = lowerlim, 
+                                        b = upperlim, mean = mean, 
+                                        sd = sd)
+      }else if(dist_type == "lnorm"){
+        sdlog = sqrt(log(1+sd^2/mean^2))
+        meanlog = log(mean)-(0.5*sdlog^2)
+       
+        if (flag){
+          upperlim = ubound[[this.param]]
+          lowerlim = lbound[[this.param]]
+        }else{
+          upperlim = exp(meanlog+2*sdlog)
+          lowerlim = exp(meanlog-2*sdlog)
+        }
+        MC.matrix[,this.param]<- truncdist::rtrunc(mc_num,"lnorm",a = lowerlim, 
+                                        b = upperlim, mean = meanlog, 
+                                        sd = sdlog)
+      }else{
+        stop(sprintf("Undefined distribution %s",dist_type))
+      }
+      
+    }else{
+      MC.matrix[, this.param] <- 0
+      warning(paste(this.param,
+                    "has mean of zero, yielding SD of zero for fixed cv.  Parameter value fixed at zero.")
+              )
+    }
+  }
+  return(list("mat" = MC.matrix,"mc_num"=mc_num))
 }
 
 #' Get the values for parameters in a given set
