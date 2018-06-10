@@ -157,13 +157,12 @@ getAllParamValuesForModel <- function(simid,model){
 #' @return matrix of parameters that will be used for individual montecarlo runs
 #' 
 #' @export
-getAllVariabilityValuesForModel<- function(simid, params){
+getAllVariabilityValuesForModel<- function(simid, params,mc_num){
   params <- lapply(params,function(x){as.numeric(x)})
   # get the ids for variability sets
-  query <- sprintf("Select expovarid,physiovarid,chemvarid,mc_num FROM SimulationsSet Where simid = %i;",
-                   as.integer(simid))
+  query <- sprintf("Select expovarid,physiovarid,chemvarid FROM SimulationsSet Where simid = %i;",
+                   simid)
   result <- projectDbSelect(query)
-  mc_num <- as.integer(result[["mc_num"]])
   chemvarid <- as.integer(result[["chemvarid"]])
   expovarid <- as.integer(result[["expovarid"]])
   physiovarid <- as.integer(result[["physiovarid"]])
@@ -239,7 +238,7 @@ getAllVariabilityValuesForModel<- function(simid, params){
               )
     }
   }
-  return(list("mat" = MC.matrix,"mc_num"=mc_num))
+  return(MC.matrix)
 }
 
 #' Get the values for parameters in a given set

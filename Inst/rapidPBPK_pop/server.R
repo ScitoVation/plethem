@@ -3,6 +3,9 @@
 #' @importFrom magrittr %>%
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
+  # define the model name once here. It will be used throughout this server file
+  # this will make it easier to create new model UI/SERVERS
+  model <- "rapidPBPK"
   # this dataframe is only used to display the metabolism data.
   #The actual model uses values stored in the database
   metabolism_dataframe <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F)
@@ -65,13 +68,15 @@ shinyServer(function(input, output, session) {
   #master_conn <- RSQLite::dbConnect(RSQLite::SQLite(),db)
 
   # get the parameter table for physiological and exposure variables.
-  query <- "SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';"
+  query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';",
+                   model)
   physio_name_df <- mainDbSelect(query)
   # res <- RSQLite::dbSendQuery(master_conn,query)
   # physio_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-  query <- "SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='rapidPBPK' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';"
+  query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';",
+                   model)
   expo_name_df <- mainDbSelect(query)
   # res <- RSQLite::dbSendQuery(master_conn,query)
   # expo_name_df <- RSQLite::dbFetch(res)
@@ -906,7 +911,7 @@ shinyServer(function(input, output, session) {
       sim_descrp <- input$sim_descrp
       sim_start <- input$sim_start
       sim_dur <- input$sim_dur
-      mc_num <- input$mc_num
+      mc_num <- ifelse(input$mc_mode,input$mc_num,0)
       chemid <- as.integer(input$sel_set_chem)
       physioid <- as.integer(input$sel_set_physio)
       expoid <- as.integer(input$sel_set_expo)
@@ -986,11 +991,12 @@ shinyServer(function(input, output, session) {
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
 
   # Code chunk to run the simulation.
-  results <- reactiveValues(pbpk=NULL,simid = NULL)
+  results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
   observeEvent(input$run_sim,{
-    simid <- input$sel_sim
+    simid <- as.integer(input$sel_sim)
+    results$simid <- simid
     # get the parameters needed to run the model
-    model_params <- getAllParamValuesForModel(simid,"rapidPBPK")
+    model_params <- getAllParamValuesForModel(simid,model)
     #get total volume
     active_comp <- input$ms_cmplist
     vol_comps <- c(active_comp,"blood")
@@ -1000,24 +1006,32 @@ shinyServer(function(input, output, session) {
                                      })
                             )
                      )
+    query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
+    mc_num <- as.integer(projectDbSelect(query)$mc_num)
     model_params$vals[["total_vol"]]<- total_vol
-    if (input$mc_mode){
-      mc_data <- getAllVariabilityValuesForModel(simid,model_params$vals)
-      MC.matrix <- mc_data$mat
-      mc_num <- mc_data$mc_num
-      print(MC.matrix)
+    if (mc_num > 1){
+      MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+      for (i in 1:mc_num){
+        model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
+        initial_values <- calculateInitialValues(model_params)
+        tempDF <- runFDPBPK(initial_values,model)
+        print(max(tempDF$pbpk[["cpls"]]))
+        
+      }
+      results$mode <- "MC"
     }else{
       #rep_flag <- all_params["rep_flag"]
       #model_params <- all_params["model_params"]
       initial_values <- calculateInitialValues(model_params)
-      
+
       
       withProgress({
-        tempDF <- runFDPBPK(initial_values,"rapidPBPK")
+        tempDF <- runFDPBPK(initial_values,model)
         
         results$pbpk<- tempDF$pbpk
       })
-      results$simid <- as.integer(simid)
+      
+      results$mode <- "FD"
       updateNavbarPage(session,"menu","output")
     }
     
@@ -1298,7 +1312,7 @@ observeEvent({input$chemScenFilter},{
 
 #Current Parameters table under Model output
 current_params <-  reactive({
-    temp <- getAllParamValuesForModel(input$sel_sim,model = "rapidPBPK")
+    temp <- getAllParamValuesForModel(input$sel_sim,model = model)
     # get exposure paramteres
     expo_list <- temp[expo_name_df$Var]
     expo_params <- data.frame("var" = expo_name_df$Var, "val" = temp[expo_name_df$Var],
@@ -1577,12 +1591,15 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     result <- results$pbpk
     units <- input$r_cplt_type
     simid <- results$simid
+    mode <- results$mode
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
+      mode <- "FD"
     }else{
-      query <- sprintf("SELECT chemid FROM SimulationsSet Where simid = %i ;",
+      query <- sprintf("SELECT mc_num,chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
       chemid <- projectDbSelect(query)$chemid
+      mc_num <- projectDbSelect(query)$mc_num
       query <- sprintf("Select value FROM Chemical WHERE chemid = %i AND param = 'mw';",
                        chemid)
       mw <- projectDbSelect(query)$value
@@ -1597,6 +1614,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     result<- as.data.frame(result)
     values <- c()
+    
+    # query <- sprintf("Select model_var,plot_var,name from ResultNames where model='%s' AND set = 'conc' AND mode = '%s';",model,mode)
+    # legend_df <- mainDbSelect(query)
+    # legend_names <- setNames(legend_df$name,legend_df$model_var)
+    # var_names <- setNames(legend_df$model_var,legend_df$plot_var)
 
     legend_temp<-c("Arterial Blood"="cpls","Venous Blood"="cv",
                    "Fat Total"="cfat_um","Fat Tissue"="ctfat","Fat Exchange"="cbfat",
