@@ -1011,13 +1011,29 @@ shinyServer(function(input, output, session) {
     model_params$vals[["total_vol"]]<- total_vol
     if (mc_num > 1){
       MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+      query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
+                       model)
+      mc_vars<- mainDbSelect(query)$model_var
+      mc_results <- lapply(mc_vars,function(x,n){
+        return(x = rep(NA,n))
+        },mc_num)
+      names(mc_results)<- mc_vars
       for (i in 1:mc_num){
         model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
         initial_values <- calculateInitialValues(model_params)
         tempDF <- runFDPBPK(initial_values,model)
-        print(max(tempDF$pbpk[["cpls"]]))
+        max_list <- unlist(lapply(mc_vars,function(x,data){
+          var_name <- gsub("_max","",x)
+ 
+          return(max(data[var_name]))
+        },tempDF$pbpk))
+        names(max_list)<- mc_vars
+        for (x in mc_vars){
+          mc_results[[x]][[i]]<- max_list[[x]]
+        }
         
       }
+      results$pbpk <- as.data.frame(mc_results)
       results$mode <- "MC"
     }else{
       #rep_flag <- all_params["rep_flag"]
@@ -1592,9 +1608,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     units <- input$r_cplt_type
     simid <- results$simid
     mode <- results$mode
+ 
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
-      mode <- "FD"
+
     }else{
       query <- sprintf("SELECT mc_num,chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
@@ -1615,44 +1632,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     result<- as.data.frame(result)
     values <- c()
     
-    # query <- sprintf("Select model_var,plot_var,name from ResultNames where model='%s' AND set = 'conc' AND mode = '%s';",model,mode)
-    # legend_df <- mainDbSelect(query)
-    # legend_names <- setNames(legend_df$name,legend_df$model_var)
-    # var_names <- setNames(legend_df$model_var,legend_df$plot_var)
+    query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s';",model,mode)
+    legend_df <- mainDbSelect(query)
+    legend_names <- setNames(legend_df$name,legend_df$model_var)
+    var_names <- setNames(legend_df$model_var,legend_df$plot_var)
 
-    legend_temp<-c("Arterial Blood"="cpls","Venous Blood"="cv",
-                   "Fat Total"="cfat_um","Fat Tissue"="ctfat","Fat Exchange"="cbfat",
-                   "Skin Total"="cskin_um","Skin Tissue"="ctskin","Skin Exchange"="cbskin",
-                   "Bone Total"="cbone_um","Bone Tissue"="ctbone","Bone Exchange"="cbbone",
-                   "Muscle Total"="cmusc_um","Muscle Tissue"="ctmusc","Muscle Exchange"="cbmusc",
-                   "Brain Total"="cbrn_um","Brain Tissue"="ctbrn","Brain Exchange"="cbbrn",
-                   "Lungs Total"="clng_um","Lungs Tissue"="ctlng","Lungs Exchange"="cblng",
-                   "Heart Total"="chrt_um","Heart Tissue"="cthrt","Heart Exchange"="cbhrt",
-                   "GI Total"="cgi_um","GI Tissue"="ctgi","GI Exchange"="cbgi",
-                   "Liver Total"="cliv_um","Liver Tissue"="ctliv","Liver Exchange"="cbliv",
-                   "Kidney Total"="ckdn_um","Kidney Tissue"="ctkdn","Kidney Exchange"="cbkdn",
-                   "Rapidly Perused Total"="crpf_um",
-                   "Rapidly Perused Tissue"="ctrpf","Rapidly Perused Exchange"="cbrpf",
-                   "Slowly Perused Total"="cspf_um",
-                   "Slowly Perused Tissue"="ctspf","Slowly Perused Exchange"="cbspf")
-
-    var_names <- c("art_bld"="cpls", "ven_bld"="cv",
-                   "to_fat"="cfat_um","ti_fat"="ctfat", "bl_fat"="cbfat",
-                   "to_skn"="cskin_um","ti_skn"="ctskin", "bl_skn"="cbskin",
-                   "to_musc"="cmusc_um","ti_musc"="ctmusc", "bl_musc"="cbmusc",
-                   "to_bne"="cbone_um","ti_bne"="ctbone", "bl_bne"="cbbone",
-                   "to_brn"="cbrn_um","ti_brn"="ctbrn", "bl_brn"="cbbrn",
-                   "to_lng"="clng_um","ti_lng"="ctlng", "bl_lng"="cblng",
-                   "to_hrt"="chrt_um","ti_hrt"="cthrt", "bl_hrt"="cbhrt",
-                   "to_kdn"="ckdn_um","ti_kdn"="ctkdn", "bl_kdn"="cbkdn",
-                   "to_gi"="cgi_um","ti_gi"="ctgi", "bl_gi"="cbgi",
-                   "to_liv"="cliv_um","ti_liv"="ctliv", "bl_liv"="cbliv",
-                   "to_rpf"="crpf_um","ti_rpf"="ctrpf", "bl_rpf"="cbrpf",
-                   "to_spf"="cspf_um","ti_spf"="ctspf", "bl_spf"="cbspf")
-
-    names <- names(legend_temp)
-    legend_names <- names
-    names(legend_names) <- legend_temp
     plot_vals<- input$cplt_comp
     values <- unlist(lapply(plot_vals,function(x){var_names[x]}))
     names(values)<- NULL
@@ -1662,11 +1646,19 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
     # check if model was ever run
     if (dim(result)[1]==0){
-      x<- 1:10
+      plot_frame<- 1:10
     }else{
-      x<- result$time
+      if(mode == "FD"){
+        x<- result$time
+        plot_frame <- data.frame("time" = result$time,
+                                 stringsAsFactors = F)
+      }else{
+        x <- 1:nrow(result)
+        plot_frame <- data.frame("sample" = 1:nrow(result),
+                                 stringsAsFactors = F)
+      }
     }
-    plot_frame <- data.frame(time = x)
+   
     # select appropriate variables to plot
     if (dim(result)[1]==0){
       plot_frame["Model not yet run"]<-rep(0,length(x))
@@ -1679,60 +1671,72 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }else{
       plot_frame["No Data Selected"]<-rep(0,length(x))
     }
-    plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
+    if (mode == "FD"){
+      plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
+    }else{
+      plot_frame <- reshape2::melt(plot_frame,id.vars = "sample")
+    }
+    return(plot_frame)
 
     })
 
   amtData <- reactive({
-    result<- as.data.frame(results$pbpk)
+    result <- results$pbpk
+    simid <- results$simid
+    mode <- results$mode
+
     values <- c()
-
-    legend_temp<-c("Arterial Blood"="abld",
-                   "Fat Total"="afat","Fat Tissue"="atfat","Fat Exahange"="abfat",
-                   "Skin Total"="askin","Skin Tissue"="atskin","Skin Exahange"="abskin",
-                   "Bone Total"="abone","Bone Tissue"="atbone","Bone Exahange"="abbone",
-                   "Musale Total"="amusc","Muscle Tissue"="atmusc","Muscle Exahange"="abmusc",
-                   "Brain Total"="abrn","Brain Tissue"="atbrn","Brain Exahange"="abbrn",
-                   "Lungs Total"="alng","Lungs Tissue"="atlng","Lungs Exahange"="ablng",
-                   "Heart Total"="ahrt","Heart Tissue"="athrt","Heart Exahange"="abhrt",
-                   "GI Total"="agi","GI Tissue"="atgi","GI Exahange"="abgi",
-                   "Liver Total"="aliv","Liver Tissue"="atliv","Liver Exahange"="abliv",
-                   "Kidney Total"="akdn","Kidney Tissue"="atkdn","Kidney Exahange"="abkdn",
-                   "Rapidly Perfused Total"="arpf",
-                   "Rapidly Perfused Tissue"="atrpf","Rapidly Perfused Exahange"="abrpf",
-                   "Slowly Pefrused Total"="aspf",
-                   "Slowly Perfused Tissue"="atspf","Slowly Perfused Exahange"="abspf")
-
-    var_names <- c("art_bld"="abld",
-                   "to_fat"="afat","ti_fat"="atfat", "bl_fat"="abfat",
-                   "to_skn"="askin","ti_skn"="atskin", "bl_skn"="abskin",
-                   "to_musc"="amusc","ti_musc"="atmusc", "bl_musc"="abmusc",
-                   "to_bne"="abone","ti_bne"="atbone", "bl_bne"="abbone",
-                   "to_brn"="abrn","ti_brn"="atbrn", "bl_brn"="abbrn",
-                   "to_lng"="alng","ti_lng"="atlng", "bl_lng"="ablng",
-                   "to_hrt"="ahrt","ti_hrt"="athrt", "bl_hrt"="abhrt",
-                   "to_kdn"="akdn","ti_kdn"="atkdn", "bl_kdn"="abkdn",
-                   "to_gi"="agi","ti_gi"="atgi", "bl_gi"="abgi",
-                   "to_liv"="aliv","ti_liv"="atliv", "bl_liv"="abliv",
-                   "to_rpf"="arpf","ti_rpf"="atrpf", "bl_rpf"="abrpf",
-                   "to_spf"="aspf","ti_spf"="atspf", "bl_spf"="abspf")
-
-    names <- names(legend_temp)
-    legend_names <- names
-    names(legend_names) <- legend_temp
+    query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'amt' AND model='%s' AND mode = '%s';",model,mode)
+    legend_df <- mainDbSelect(query)
+    legend_names <- setNames(legend_df$name,legend_df$model_var)
+    var_names <- setNames(legend_df$model_var,legend_df$plot_var)
     plot_vals<- input$aplt_comp
     values <- unlist(lapply(plot_vals,function(x){var_names[x]}))
     names(values)<- NULL
+    # 
+    # if (exists("plot_frame")){
+    #   rm(plot_frame)
+    # }
+    # # check if model was ever run
+    # if (dim(result)[1]==0){
+    #   x<- 1:10
+    # }else{
+    #   x<- result$time
+    # }
+    # plot_frame<- data.frame(time = x)
+    # # select appropriate variables to plot
+    # if (dim(result)[1]==0){
+    #   plot_frame["Model not yet run"]<-rep(0,length(x))
+    # }
+    # else if(length(values) >0 ){
+    #   for (plt_name in values){
+    #     y<- result[[plt_name]]
+    #     plot_frame[[legend_names[plt_name]]] <-y
+    #   }
+    # }else{
+    #   plot_frame["No Data Selected"]<-rep(0,length(x))
+    # }
+    # plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
+    # return(plot_frame)
+    
     if (exists("plot_frame")){
       rm(plot_frame)
     }
     # check if model was ever run
     if (dim(result)[1]==0){
-      x<- 1:10
+      plot_frame<- 1:10
     }else{
-      x<- result$time
+      if(mode == "FD"){
+        x<- result$time
+        plot_frame <- data.frame("time" = result$time,
+                                 stringsAsFactors = F)
+      }else{
+        x <- 1:nrow(result)
+        plot_frame <- data.frame("sample" = 1:nrow(result),
+                                 stringsAsFactors = F)
+      }
     }
-    plot_frame<- data.frame(time = x)
+    
     # select appropriate variables to plot
     if (dim(result)[1]==0){
       plot_frame["Model not yet run"]<-rep(0,length(x))
@@ -1745,7 +1749,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }else{
       plot_frame["No Data Selected"]<-rep(0,length(x))
     }
-    plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
+    if (mode == "FD"){
+      plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
+    }else{
+      plot_frame <- reshape2::melt(plot_frame,id.vars = "sample")
+    }
     return(plot_frame)
   })
 
@@ -1779,29 +1787,54 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   # 
   #                              +labs(x="Time (h)",y="Concentration")
   #                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
-
-  output$concplt <- plotly::renderPlotly(plotly::plot_ly()%>%
-                                           plotly::add_trace(data = concData(),x = ~time,
-                                                             y = ~value,color = ~variable,
-                                                             type = "scatter",mode = "lines") %>%
-                                           plotly::add_trace(data = concDataset(),x = ~time,y  = ~mean,
-                                                             type = "scatter",mode = "markers",
-                                                             name = concDatasetName(),
-                                                             marker = list(color = "#000"),
-                                                             error_y = list(array= ~sd,
-                                                                            color = '#000')
-                                                             )%>%
-                                           plotly::layout(xaxis = list(title = ('Time(h)')),
-                                                  yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
-                                                                               'Concentration (mg/L)')))))
+  concplt <- reactive({
+    if (results$mode == "FD"){
+      plotly::plot_ly()%>%
+        plotly::add_trace(data = concData(),x = ~time,
+                          y = ~value,color = ~variable,
+                          type = "scatter",mode = "lines") %>%
+        plotly::add_trace(data = concDataset(),x = ~time,y  = ~mean,
+                          type = "scatter",mode = "markers",
+                          name = concDatasetName(),
+                          marker = list(color = "#000"),
+                          error_y = list(array= ~sd,
+                                         color = '#000')
+        )%>%
+        plotly::layout(xaxis = list(title = ('Time(h)')),
+                       yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
+                                                    'Concentration (mg/L)'))))
+      
+    }else{
+      plotly::plot_ly()%>%
+        plotly::add_trace(data = concData(),
+                          y = ~value,color = ~variable,
+                          type = "box")
+    }
+  })
+  
+  amtplt <- reactive({
+    if (results$mode == "FD"){
+      plotly::plot_ly() %>%
+        plotly::add_trace(data = amtData(),x =~time,
+                          y= ~value,color = ~variable,
+                          type = "scatter",mode="lines")
+      # plotly::ggplotly(ggplot(amtData(), aes(x=time,y=value,color = variable))+geom_line()
+      #                  +labs(x="Time (h)",y="Amount")
+      #                  +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank()))
+    }else{
+      plotly::plot_ly()%>%
+        plotly::add_trace(data = amtData(),
+                          y = ~value,color = ~variable,
+                          type = "box")
+    }
+  })
+  output$concplt <- plotly::renderPlotly(concplt())
   output$exposureplt <- plotly::renderPlotly(plotly::ggplotly(ggplot(exposureData(), aes(x=time,y=value,color = variable))+geom_line()
                                                               +labs(x="Time (h)",y="Amount(umoles)")
                                                               +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
 
 
-  output$amtplt <- plotly::renderPlotly(plotly::ggplotly(ggplot(amtData(), aes(x=time,y=value,color = variable))+geom_line()
-                              +labs(x="Time (h)",y="Amount")
-                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
+  output$amtplt <- plotly::renderPlotly(amtplt())
 
   # output$aucplt <- renderPlot(ggplot(AUCData(), aes(x=time,y=value,color = variable))+geom_line()
   #                             +labs(x="Time (h)",y="AUC (mg*h/L)")

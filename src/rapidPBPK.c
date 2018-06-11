@@ -1,9 +1,9 @@
-/* rapidPBPK.c for R deSolve package
+/* rapidPBPK.model.c for R deSolve package
    ___________________________________________________
 
    Model File:  rapidPBPK.model
 
-   Date:  Wed May 16 09:45:38 2018
+   Date:  Sun Jun 10 15:10:21 2018
 
    Created by:  "C:/MCSIM-~1.6/mod/.libs/mod.exe v5.6.6"
     -- a model preprocessor by Don Maszle
@@ -55,7 +55,7 @@
      auexc = 0.0,
      anabsgut = 0.0,
 
-   49 Outputs:
+   52 Outputs:
     "abone",
     "abrn",
     "alng",
@@ -65,6 +65,9 @@
     "aliv",
     "arpf",
     "aspf",
+    "afat",
+    "askin",
+    "amusc",
     "cpls",
     "cv",
     "cfat_um",
@@ -293,46 +296,49 @@
 #define ID_aliv 0x00006
 #define ID_arpf 0x00007
 #define ID_aspf 0x00008
-#define ID_cpls 0x00009
-#define ID_cv 0x0000a
-#define ID_cfat_um 0x0000b
-#define ID_ctfat 0x0000c
-#define ID_cbfat 0x0000d
-#define ID_cskin_um 0x0000e
-#define ID_ctskin 0x0000f
-#define ID_cbskin 0x00010
-#define ID_cmusc_um 0x00011
-#define ID_ctmusc 0x00012
-#define ID_cbmusc 0x00013
-#define ID_cbone_um 0x00014
-#define ID_ctbone 0x00015
-#define ID_cbbone 0x00016
-#define ID_cbrn_um 0x00017
-#define ID_ctbrn 0x00018
-#define ID_cbbrn 0x00019
-#define ID_clng_um 0x0001a
-#define ID_ctlng 0x0001b
-#define ID_cblng 0x0001c
-#define ID_chrt_um 0x0001d
-#define ID_cthrt 0x0001e
-#define ID_cbhrt 0x0001f
-#define ID_ckdn_um 0x00020
-#define ID_ctkdn 0x00021
-#define ID_cbkdn 0x00022
-#define ID_cgi_um 0x00023
-#define ID_ctgi 0x00024
-#define ID_cbgi 0x00025
-#define ID_cliv_um 0x00026
-#define ID_ctliv 0x00027
-#define ID_cbliv 0x00028
-#define ID_crpf_um 0x00029
-#define ID_ctrpf 0x0002a
-#define ID_cbrpf 0x0002b
-#define ID_cspf_um 0x0002c
-#define ID_ctspf 0x0002d
-#define ID_cbspf 0x0002e
-#define ID_InstInhDose 0x0002f
-#define ID_mbal 0x00030
+#define ID_afat 0x00009
+#define ID_askin 0x0000a
+#define ID_amusc 0x0000b
+#define ID_cpls 0x0000c
+#define ID_cv 0x0000d
+#define ID_cfat_um 0x0000e
+#define ID_ctfat 0x0000f
+#define ID_cbfat 0x00010
+#define ID_cskin_um 0x00011
+#define ID_ctskin 0x00012
+#define ID_cbskin 0x00013
+#define ID_cmusc_um 0x00014
+#define ID_ctmusc 0x00015
+#define ID_cbmusc 0x00016
+#define ID_cbone_um 0x00017
+#define ID_ctbone 0x00018
+#define ID_cbbone 0x00019
+#define ID_cbrn_um 0x0001a
+#define ID_ctbrn 0x0001b
+#define ID_cbbrn 0x0001c
+#define ID_clng_um 0x0001d
+#define ID_ctlng 0x0001e
+#define ID_cblng 0x0001f
+#define ID_chrt_um 0x00020
+#define ID_cthrt 0x00021
+#define ID_cbhrt 0x00022
+#define ID_ckdn_um 0x00023
+#define ID_ctkdn 0x00024
+#define ID_cbkdn 0x00025
+#define ID_cgi_um 0x00026
+#define ID_ctgi 0x00027
+#define ID_cbgi 0x00028
+#define ID_cliv_um 0x00029
+#define ID_ctliv 0x0002a
+#define ID_cbliv 0x0002b
+#define ID_crpf_um 0x0002c
+#define ID_ctrpf 0x0002d
+#define ID_cbrpf 0x0002e
+#define ID_cspf_um 0x0002f
+#define ID_ctspf 0x00030
+#define ID_cbspf 0x00031
+#define ID_InstInhDose 0x00032
+#define ID_mbal 0x00033
 
 /* Parameters */
 static double parms[125];
@@ -538,9 +544,6 @@ void getParms (double *inParms, double *out, int *nout) {
 
 void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, int *ip)
 {
-  /* local */ double afat;
-  /* local */ double askin;
-  /* local */ double amusc;
   /* local */ double dose_in_gut;
   /* local */ double available_dose;
   /* local */ double raabsgut;
@@ -563,7 +566,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cbfat] = y[ID_abfat] / ( ( 1 - fatvtbc ) * vfat ) ;
 
-  afat = y[ID_atfat] + y[ID_abfat] ;
+  yout[ID_afat] = y[ID_atfat] + y[ID_abfat] ;
 
   yout[ID_cfat_um] = ( y[ID_atfat] + y[ID_abfat] ) / vfat ;
 
@@ -571,7 +574,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cbskin] = y[ID_abskin] / ( ( 1 - skinvtbc ) * vskin ) ;
 
-  askin = y[ID_atskin] + y[ID_abskin] ;
+  yout[ID_askin] = y[ID_atskin] + y[ID_abskin] ;
 
   yout[ID_cskin_um] = ( y[ID_atskin] + y[ID_abskin] ) / vskin ;
 
@@ -579,7 +582,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cbmusc] = y[ID_abmusc] / ( ( 1 - muscvtbc ) * vmusc ) ;
 
-  amusc = y[ID_atmusc] + y[ID_abmusc] ;
+  yout[ID_amusc] = y[ID_atmusc] + y[ID_abmusc] ;
 
   yout[ID_cmusc_um] = ( y[ID_atmusc] + y[ID_abmusc] ) / vmusc ;
 
@@ -761,7 +764,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   totdose = y[ID_totodose] + y[ID_totddose] + y[ID_ainh] + y[ID_aiv] ;
 
-  totbody = y[ID_abld] + afat + askin + amusc + yout[ID_abone] + yout[ID_abrn] + yout[ID_alng] + yout[ID_ahrt] + yout[ID_agi] + yout[ID_aliv] + yout[ID_akdn] + yout[ID_arpf] + yout[ID_aspf] + y[ID_odose] + y[ID_ddose] ;
+  totbody = y[ID_abld] + yout[ID_afat] + yout[ID_askin] + yout[ID_amusc] + yout[ID_abone] + yout[ID_abrn] + yout[ID_alng] + yout[ID_ahrt] + yout[ID_agi] + yout[ID_aliv] + yout[ID_akdn] + yout[ID_arpf] + yout[ID_aspf] + y[ID_odose] + y[ID_ddose] ;
 
   totclear = y[ID_ametliv1] + y[ID_ametliv2] + y[ID_aclbld] + y[ID_auexc] + y[ID_anabsgut] + y[ID_aexh] ;
 
