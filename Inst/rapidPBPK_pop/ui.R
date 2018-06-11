@@ -820,6 +820,9 @@ shinyUI(fluidPage(
                       includeHTML("www/home.html")),
              tabPanel("Model Setup",value = "setup",
                       icon = icon("flask"),
+                      fluidRow(
+                        progressBar(id = "pb",value = 0, status = "success",striped = T)
+                      ),
                       # fluidRow(
                       #   column(4,
                       #          bsButton("run","Run Simulation", style = "primary", block = TRUE)

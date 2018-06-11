@@ -887,6 +887,8 @@ shinyServer(function(input, output, session) {
 
         set_list <- getAllSetChoices(set_type)
         updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = id_num)
+        metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",set_list)
+        updateSelectizeInput(session,"sel_set_metab",choices = metabset)
         removeModal()
       }
 
@@ -1031,21 +1033,21 @@ shinyServer(function(input, output, session) {
         for (x in mc_vars){
           mc_results[[x]][[i]]<- max_list[[x]]
         }
-        
+        updateProgressBar(session,"pb",value = i, total = mc_num)
       }
       results$pbpk <- as.data.frame(mc_results)
       results$mode <- "MC"
+      updateNavbarPage(session,"menu","output")
     }else{
       #rep_flag <- all_params["rep_flag"]
       #model_params <- all_params["model_params"]
       initial_values <- calculateInitialValues(model_params)
-
+      updateProgressBar(session,"pb",value = 100, total = 100,
+                        status = "info")
+      tempDF <- runFDPBPK(initial_values,model)
       
-      withProgress({
-        tempDF <- runFDPBPK(initial_values,model)
-        
-        results$pbpk<- tempDF$pbpk
-      })
+      results$pbpk<- tempDF$pbpk
+      
       
       results$mode <- "FD"
       updateNavbarPage(session,"menu","output")
