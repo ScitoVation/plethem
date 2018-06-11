@@ -73,7 +73,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                                      ),
                              fillRow(flex = c(1,1),
                                      fillCol(
-                                       fillRow(flex = c(1,3,3,1),
+                                       fillRow(flex = c(1,5,3,1),
                                                tags$div(),
 
                                                numericInput("num_whcl",
@@ -83,7 +83,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                                                                           "L/h/10^6 Hepatocytes"="LhmH")),
                                                tags$div()
                                        ),
-                                       fillRow(flex = c(1,3,3,1),
+                                       fillRow(flex = c(1,5,3,1),
                                                tags$div(),
                                                numericInput("num_S9cl",
                                                             "Measured S9 Fraction Clearance",0),
@@ -97,7 +97,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
 
                                      ),
                                      fillCol(
-                                       fillRow(flex = c(1,3,3,1),
+                                       fillRow(flex = c(1,4,3,1),
                                                tags$div(),
                                                numericInput("num_mscl","Measure Microsomal Clearance",0),
                                                selectInput("sel_msunit",label = "Units",
@@ -108,7 +108,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                                                                           "mL/h/mg Protein"="mlhmP")),
                                                tags$div()
                                        ),
-                                       fillRow(flex = c(1,3,3,1),
+                                       fillRow(flex = c(1,4,3,1),
                                                tags$div(),
                                                numericInput("num_cycl","Measure Cytosolic Clearance",0),
                                                selectInput("sel_cyunit",label = "Units",
@@ -141,8 +141,8 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                                     DT::DTOutput("cypCl"),
                                     tags$div()
                                     ),
-                            fillRow(flex = c(1,2,5),
-                              fileInput("cypCl_upload","Upload Cyp clearance",
+                            fillRow(flex = c(2,2,5),
+                              fileInput("cypCl_upload","Upload Cyp Clearance",
                                         multiple = F,placeholder = "Select CSV File",
                                         buttonLabel = icon("search"),
                                         accept = c("text/csv")
@@ -317,7 +317,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
 
 
     output$cypCl <- DT::renderDT(DT::datatable(cypCl(),
-                                               caption = "clearance in \u00B5L/min/pmol",
+                                               caption = "Clearance in \u00B5L/min/pmol",
                                                rowname = NULL,
                                                options= list(dom = "tp",pageLength = 5)),
                                  server = T

@@ -784,7 +784,7 @@ shinyServer(function(input, output, session) {
                                                                  fluidRow(
                                                                  column(width = 6,
                                                                         shinyBS::popify(numericInput("metab_ref_age",
-                                                                                     "Referance age in Years",
+                                                                                     "Reference age in Years",
                                                                                      value = 25, min = 0),
                                                                                      title = "",
                                                                                      content = "If age defined in the physiological parameters is not a part of the table, the value at this age will be used")
@@ -1284,11 +1284,11 @@ observeEvent({input$chemScenFilter},{
     flows["qc"]<- getLifecourseCardiacOutput(age,gender)
     updateRatios(session, flows)
     ventilation_rate <- getLifecourseVentilationRate(age,gender)
-    updateNumericInput(session,"ms_respr",value = ventilation_rate)
+    updateNumericInput(session,"ms_respr",value = signif(ventilation_rate,4))
     tidal_volume <- getLifecourseTidalVolume(age,gender)
-    updateNumericInput(session,"ms_tv",value = tidal_volume)
+    updateNumericInput(session,"ms_tv",value = signif(tidal_volume,4))
     ds <- getLifecourseLungDeadSpace(age,gender)
-    updateNumericInput(session,"ms_ds",value = ds)
+    updateNumericInput(session,"ms_ds",value = signif(ds,4))
     gfr<- getLifecourseGlomerularFiltrationRate(age,gender)
     updateNumericInput(session,"ms_gfr",value = signif(gfr,4))
 

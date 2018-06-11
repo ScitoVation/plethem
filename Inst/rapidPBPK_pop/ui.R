@@ -212,7 +212,7 @@ plot_body <- fluidPage(
                                         tabsetPanel(
                                           tabPanel("Model",value  = "model",
                                                    shinyWidgets::multiInput("cplt_comp",label = tags$h4("Select Compartment"),
-                                                              choices = list("Aretial Plasma"="art_bld","Venous Plasma"="ven_bld",
+                                                              choices = list("Arterial Plasma"="art_bld","Venous Plasma"="ven_bld",
                                                                              "Fat Total"="to_fat","Fat Tissue"="ti_fat","Fat Exchange"="bl_fat",
                                                                              "Skin Total"="to_skn","Skin Tissue"="ti_skn","Skin Exchange"="bl_skn",
                                                                              "Bone Total"="to_bne","Bone Tissue"="ti_bne","Bone Exchange"="bl_bne",
@@ -396,24 +396,24 @@ comp_body <- dashboardBody(
         column(4,
                numericInput("ms_vbldc","Fractional Blood Compartment Volume",0.0832,0.01,1,0.01)),
         column(4,
-               numericInput("ms_perfc","Total fractional perfused tissue",1,0.75,0.95,0.01)
+               numericInput("ms_perfc","Total Fractional Perfused Tissue",1,0.75,0.95,0.01)
                ),
         column(4,
                numericInput("ms_kbld","First Order Metabolism in Blood",0,0.75,0.95,0.01))
       ),
       fluidRow(
         column(4,
-               numericInput("ms_respr","Respiration Rate",min =0 , max =10, value =490)),
+               numericInput("ms_respr","Respiration Rate (L/h)",min =0 , max =10, value =490)),
         column(4,
-               numericInput("ms_tv","Tidal Volume",min =0 , max =10, value =0.623)),
+               numericInput("ms_tv","Tidal Volume (L)",min =0 , max =10, value =0.623)),
         column(4,
-               numericInput("ms_ds","Dead Space",min =0 , max =10, value =0.154))
+               numericInput("ms_ds","Dead Space (L)",min =0 , max =10, value =0.154))
       ),
       fluidRow(
         column(4,
                numericInput("ms_uflw","Urinary Flow Rate (L/kg/day)",min =0 , max =1, value =0.0214)),
         column(4,
-               numericInput("ms_gfr","Glomerular Filtearation",min =0 , max =1, value =0.08)
+               numericInput("ms_gfr","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
                ),
           column(4,
                  numericInput("ms_pair", label = "Plasma-Air Partition Coefficient", value = 1,
@@ -425,7 +425,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_fa","Fraction Absorbed in the Gut Lumen",1)),
         column(6,
-               numericInput("ms_ka",label = "Rate of absorption in Gut Lumen (/h)", value = 1, step = 0.01))
+               numericInput("ms_ka",label = "Rate of Absorption in Gut Lumen (per hour)", value = 5, step = 0.01))
       )
     ),
 
@@ -699,7 +699,7 @@ chem_body <- dashboardBody(
               column(6,
                      numericInput("ms_den","Density (g/L)",1,0,1500,1)),
               column(6,
-                     numericInput("ms_mw","Molecular Weight",1,0,250,0.01))
+                     numericInput("ms_mw","Molecular Weight (g/mol)",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
@@ -709,25 +709,25 @@ chem_body <- dashboardBody(
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_lkow","logKow in Octanol:Water Coefficient",1,0,250,0.01)),
+                     numericInput("ms_lkow","logKow (Octanol:Water Coefficient)",1,0,250,0.01)),
               column(6,
                      numericInput("ms_wsol","Water Solubility (mg/L)",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_res","Fraction Resorpbed in Kidney",1,0,0,0.01)),
+                     numericInput("ms_res","Fraction Resorped in Kidney",1,0,0,0.01)),
               column(6,
                      numericInput("ms_fupls", label = "Fraction Unbound in Palsma", value = 1, 0, 1, 0.001))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μM/h/kg)"),1,0,250,0.01)),
+                     numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)),
               column(6,
-                     numericInput("ms_km","Michelis Menton Constant for Metabolism",1,0,250,0.01))
+                     numericInput("ms_km","Michelis Menton Constant for Metabolism (μM)",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver", value = 1, step = 0.01)
+                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
                      ),
               column(6,
                      numericInput("ms_frwsol", label = "Fraction dissolved in water", value = 1,

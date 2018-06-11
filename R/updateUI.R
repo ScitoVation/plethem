@@ -16,7 +16,7 @@ updateUIInputs <- function(session, param_df){
     if (type == "Numeric"){
       var <- paste0("ms_",varname)
       val <- as.numeric(df_row$Val)
-      updateNumericInput(session,var,value = val)
+      updateNumericInput(session,var,value = signif(val,4))
     } else if(type == "TabItem"){
       var <- paste0("ms_", varname)
       updateTabItems(session,var,selected = val)
