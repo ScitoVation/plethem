@@ -28,133 +28,23 @@ expo_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
   id="ms_expo_sidebar",
   tags$div(actionButton("clear_expo","Reset exposures")),
   menuItem("Oral", tabName = "oral", selected = TRUE),
-  menuItem("Drinking Water", tabName = "dw"),
-  menuItem("Inhalation", tabName = "inh"),
   menuItem("Intravenous", tabName = "iv")
 ))
 
 ################################compartment sidebar
 comp_sidebar <- shinydashboard::dashboardSidebar(
   sidebarMenu(id="compsidebar",
-              # tags$div(shinyWidgets::radioGroupButtons("ms_org",
-              #                                          label = "Select Organism",
-              #                                          choices = c("Human" = "ha","Rat"="ra"),
-              #                                          selected = "ha",size = "normal",
-              #                                          checkIcon = list(yes = icon('ok',lib ="glyphicon")))),
+              
               menuItem(tags$h5(tags$span(style = "color:white",
                                          "Physiological Parameters")),
                        tabName = "physiolocal_parameters", selected = TRUE),
-              tags$div(class = "comp_checkboxes",
-                       tags$h4(tags$span(style = "color:white","Model Compartments")),
-                       checkboxGroupInput("ms_cmplist",NULL,
-                                          selected = c("fat","skin","muscle",
-                                                       "bone","brain",
-                                                       "lung","heart","gi",
-                                                       "liver","kidney","rpf","spf"),
-                                          choiceNames = list(tags$div(id = "fat",class = "comp_tabs",
-                                                                      menuItem("Fat",tabName = "fat",
-                                                                               icon = icon("plus",class = "pull-right"),
-                                                                               menuSubItem("Tissue",
-                                                                                           tabName = "fat_tissue"),
-                                                                               menuSubItem("Compartment",
-                                                                                           tabName = "fat_blood")
-                                                                      )
-                                          ),
-                                          tags$div(id = "skin",class = "comp_tabs",
-                                                   menuItem("Skin",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "skin_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "skin_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "muscle",class = "comp_tabs",
-                                                   menuItem("Muscle",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "muscle_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "muscle_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "bone",class = "comp_tabs",
-                                                   menuItem("Bone",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "bone_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "bone_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "brain",class = "comp_tabs",
-                                                   menuItem("Brain",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "brain_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "brain_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "lung",class = "comp_tabs",
-                                                   menuItem("Lungs",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "lung_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "lung_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "heart",class = "comp_tabs",
-                                                   menuItem("Heart",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "heart_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "heart_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "gi",class = "comp_tabs",
-                                                   menuItem("GI",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "gi_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "gi_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "liver",class = "comp_tabs",
-                                                   menuItem("Liver",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "liver_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "liver_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "kidney",class = "comp_tabs",
-                                                   menuItem("Kidney",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "kidney_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "kidney_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "rpf",class = "comp_tabs",
-                                                   menuItem("Rapidly Perfused",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "rpf_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "rpf_blood")
-                                                   )
-                                          ),
-                                          tags$div(id = "spf",class = "comp_tabs",
-                                                   menuItem("Slowly Perfused",icon = icon("plus",class = "pull-right"),
-                                                            menuSubItem("Tissue",
-                                                                        tabName = "spf_tissue"),
-                                                            menuSubItem("Compartment",
-                                                                        tabName = "spf_blood")
-                                                   )
-                                          )
-                                          ),
-                                          choiceValues = list("fat","skin","muscle",
-                                                              "bone","brain",
-                                                              "lung","heart","gi",
-                                                              "liver","kidney","rpf","spf")
-                                          )
-                       )
+              menuItem("Blood",tabName="blood"),
+              menuItem("Gut",tabName = "gut"),
+              menuItem("Liver",tabName = "liver"),
+              menuItem("Kidney",tabName = "kidney"),
+              menuItem("Lungs",tabName="lung"),
+              menuItem("Rest of the body",tabName="rob")
+             
               )
 
   )
@@ -385,308 +275,115 @@ comp_body <- dashboardBody(
 
       fluidRow(
         column(4,
-               numericInput("ms_bw","Body Weight (kg)",70,0.1,90,0.1)),
+               numericInput("ms_BW","Body Weight (kg)",70,0.1,90,0.1)),
         column(4,
-               numericInput("ms_qcc","Cardiac Output (L/h)",420,1,50,0.1)),
+               numericInput("ms_Qcardiacc","Cardiac Output (L/h)",420,1,50,0.1)),
         column(4,
-               numericInput("ms_hct","Hematocrit Factor",0.441,0,1,0.001))
+               numericInput("ms_hematocrit","Hematocrit Factor",0.441,0,1,0.001))
 
       ),
       fluidRow(
-        column(4,
-               numericInput("ms_vbldc","Fractional Blood Compartment Volume",0.0832,0.01,1,0.01)),
-        column(4,
-               numericInput("ms_perfc","Total Fractional Perfused Tissue",1,0.75,0.95,0.01)
-               ),
-        column(4,
-               numericInput("ms_kbld","First Order Metabolism in Blood",0,0.75,0.95,0.01))
-      ),
-      fluidRow(
-        column(4,
-               numericInput("ms_respr","Respiration Rate (L/h)",min =0 , max =10, value =490)),
-        column(4,
-               numericInput("ms_tv","Tidal Volume (L)",min =0 , max =10, value =0.623)),
-        column(4,
-               numericInput("ms_ds","Dead Space (L)",min =0 , max =10, value =0.154))
-      ),
-      fluidRow(
-        column(4,
-               numericInput("ms_uflw","Urinary Flow Rate (L/kg/day)",min =0 , max =1, value =0.0214)),
-        column(4,
-               numericInput("ms_gfr","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
-               ),
-          column(4,
-                 numericInput("ms_pair", label = "Plasma-Air Partition Coefficient", value = 1,
-                              min = 0)
-          )
         
+        column(4,
+               numericInput("ms_Qgfrc","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
+               ),
+        column(4,
+               numericInput("ms_Fgutabs","Fraction of the oral dose absorbed",1)
+               ),
+        column(4,
+               numericInput("ms_kgutabs","Rate that chemical enters the gut from gutlumen (1/h)",1)
+        )
+        )
       ),
-      fluidRow(
-        column(6,
-               numericInput("ms_fa","Fraction Absorbed in the Gut Lumen",1)),
-        column(6,
-               numericInput("ms_ka",label = "Rate of Absorption in Gut Lumen (per hour)", value = 5, step = 0.01))
-      )
-    ),
-
     tabItem(
-      tabName = "fat_tissue",
+      tabName = "gut",
       fluidRow(
         column(6,
-               numericInput("ms_pafat","Pearmeability Area Coefficient",1000,1,1000,1)),
+               numericInput("ms_Vgutc","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
         column(6,
-               numericInput("ms_fatvtbc","Fat Tissue to Total Fat Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "fat_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vfatc","Volume Ratio",min =0, max = 1, value =0.1841, step = 0.01)),
-        column(6,
-               numericInput("ms_qfatc","Blood Flow Ratio",min =0 , max =1, value =0.08226))
+               numericInput("ms_Qgutf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
+      
       fluidRow(class="",
                column(6,
-                      numericInput("ms_pfat","Partition Coefficient",0.5,0,2, 0.01)))
+                      numericInput("ms_Kgut2pu","Partition Coefficient",0.5,0,2, 0.01)))
     ),
     tabItem(
-      tabName = "skin_tissue",
+      tabName = "liver",
       fluidRow(
         column(6,
-               numericInput("ms_paskin","Pearmeability Area Coefficient",1000,1,1000,1)),
+               numericInput("ms_Vliverc","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
         column(6,
-               numericInput("ms_skinvtbc","Skin Tissue to Total Skin Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "skin_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vskinc","Volume Ratio",min =0, max = 1, value =0.0553, step = 0.01)),
-        column(6,
-               numericInput("ms_qskinc","Blood Flow Ratio",min =0 , max =1, value =0.06783))
+               numericInput("ms_Qliverf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
+      
       fluidRow(class="",
                column(6,
-                      numericInput("ms_pskin","Partition Coefficient",0.5,0,2, 0.01)))
+                      numericInput("ms_Kliver2pu","Partition Coefficient",0.5,0,2, 0.01)
+                      ),
+               column(6,
+                      numericInput("ms_million.cells.per.gliver","Hepatocellularity",110)
+                      )
+               )
     ),
     tabItem(
-      tabName = "muscle_tissue",
+      tabName = "blood",
       fluidRow(
         column(6,
-               numericInput("ms_pamusc","Pearmeability Area Coefficient",1000,1,1000,1)),
+               numericInput("ms_Vartc","Arterial Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)
+               ),
         column(6,
-               numericInput("ms_muscvtbc","Muscle Tissue to Total Muscle Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "muscle_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vmuscc","Volume Ratio",min =0, max = 1, value =0.4576, step = 0.01)),
-        column(6,
-               numericInput("ms_qmuscc","Blood Flow Ratio",min =0 , max =1, value =0.13711))
+               numericInput("ms_Vvenc","Venous Volume Ratio",min =0 , max =1, value =0.1139)
+               )
       ),
+      
       fluidRow(class="",
                column(6,
-                      numericInput("ms_pmusc","Partition Coefficient",0.5,0,2, 0.01)))
+                      numericInput("ms_Krbc2pu","RBC to Plasma Partition Coefficient",0.5,0,2, 0.01)
+                      ),
+               column(6,
+                      numericInput("ms_Rblood2plasma","Ratio of Chemical in Blood to Plasma",1)
+                      )
+               )
     ),
     tabItem(
-      tabName = "bone_tissue",
+      tabName = "kidney",
       fluidRow(
         column(6,
-               numericInput("ms_pabone","Pearmeability Area Coefficient",1000,1,1000,1)),
+               numericInput("ms_Vkidneyc","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
         column(6,
-               numericInput("ms_bonevtbc","Bone Tissue to Total Bone Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "bone_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vbonec","Volume Ratio",min =0, max = 1, value =0.1318, step = 0.01)),
-        column(6,
-               numericInput("ms_qbonec","Blood Flow Ratio",min =0 , max =1, value =0.1266))
+               numericInput("ms_Qkidneyf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
+      
       fluidRow(class="",
                column(6,
-                      numericInput("ms_pbone","Partition Coefficient",0.5,0,2, 0.01)))
+                      numericInput("ms_Kkidney2pu","Partition Coefficient",0.5,0,2, 0.01)))
     ),
     tabItem(
-      tabName = "brain_tissue",
+      tabName = "lung",
       fluidRow(
         column(6,
-               numericInput("ms_pabrn","Pearmeability Area Coefficient",1000,1,1000,1)),
+               numericInput("ms_Vlungc","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
         column(6,
-               numericInput("ms_brnvtbc","Brain Tissue to Total Brain Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "brain_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vbrnc","Volume Ratio",min =0, max = 1, value =0.0192, step = 0.01)),
-        column(6,
-               numericInput("ms_qbrnc","Blood Flow Ratio",min =0 , max =1, value =0.098))
+               numericInput("ms_Qlungf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
+      
       fluidRow(class="",
                column(6,
-                      numericInput("ms_pbrn","Partition Coefficient",0.5,0,2, 0.01)))
+                      numericInput("ms_Klung2pu","Partition Coefficient",0.5,0,2, 0.01)))
     ),
     tabItem(
-      tabName = "lung_tissue",
+      tabName = "rob",
       fluidRow(
         column(6,
-               numericInput("ms_palng","Pearmeability Area Coefficient",1000,1,1000,1)),
+               numericInput("ms_Vrestc","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
         column(6,
-               numericInput("ms_lngvtbc","Lung Tissue to Total Lung Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "lung_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vlngc","Volume Ratio",min =0, max = 1, value =0.0144, step = 0.01)),
-        column(6,
-               numericInput("ms_qlngc","Blood Flow Ratio",min =0 , max =1, value =0.0234))
+               numericInput("ms_Qrestf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
+      
       fluidRow(class="",
                column(6,
-                      numericInput("ms_plng","Partition Coefficient",0.5,0,2, 0.01)))
-    ),
-    tabItem(
-      tabName = "heart_tissue",
-      fluidRow(
-        column(6,
-               numericInput("ms_pahrt","Pearmeability Area Coefficient",1000,1,1000,1)),
-        column(6,
-               numericInput("ms_hrtvtbc","Heart Tissue to Total Heart Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "heart_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vhrtc","Volume Ratio",min =0, max = 1, value =0.0051, step = 0.01)),
-        column(6,
-               numericInput("ms_qhrtc","Blood Flow Ratio",min =0 , max =1, value =0.10536))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_phrt","Partition Coefficient",0.5,0,2, 0.01)))
-    ),
-    tabItem(
-      tabName = "gi_tissue",
-      fluidRow(
-        column(6,
-               numericInput("ms_pagi","Pearmeability Area Coefficient",1000,1,1000,1)),
-        column(6,
-               numericInput("ms_givtbc","GI Tissue to Total GI Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "gi_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vgic","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
-        column(6,
-               numericInput("ms_qgic","Blood Flow Ratio",min =0 , max =1, value =0.1139))
-      ),
-
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pgi","Partition Coefficient",0.5,0,2, 0.01)))
-    ),
-    tabItem(
-      tabName = "liver_tissue",
-      fluidRow(
-        column(6,
-               numericInput("ms_paliv","Pearmeability Area Coefficient",1000,1,1000,1)),
-        column(6,
-               numericInput("ms_livvtbc","Liver Tissue to Total Liver Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "liver_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vlivc","Volume Ratio",min =0, max = 1, value =0.0225, step = 0.01))
-      ),
-      fluidRow(
-        column(6,
-               numericInput("ms_qalivc","Aretrial Blood Flow ratio to liver",min =0 , max =1, value =0.0381)),
-        column(6,
-               numericInput("ms_qvlivc","Fraction of Venous Liver Flow",min =0 , max =1, value =0.152))
-
-      ),
-
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pliv","Partition Coefficient",0.5,0,2, 0.01)))
-    ),
-    tabItem(
-      tabName = "kidney_tissue",
-      fluidRow(
-        column(6,
-               numericInput("ms_pakdn","Pearmeability Area Coefficient",1000,1,1000,1)),
-        column(6,
-               numericInput("ms_kdnvtbc","Kidney Tissue to Total Kidney Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "kidney_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vkdnc","Volume Ratio",min =0, max = 1, value =0.0046, step = 0.01)),
-        column(6,
-               numericInput("ms_qkdnc","Blood Flow Ratio",min =0 , max =1, value =0.16886))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pkdn","Partition Coefficient",0.5,0,2, 0.01)))
-    ),
-    tabItem(
-      tabName = "rpf_tissue",
-      fluidRow(
-        column(6,
-               numericInput("ms_parpf","Pearmeability Area Coefficient",1000,1,1000,1)),
-        column(6,
-               numericInput("ms_rpfvtbc","Rapidly Perfused Tissue to All Rapidly Perfused Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "rpf_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vrpfc","Volume Ratio",min =0, max = 1, value =0.00001, step = 0.01)),
-        column(6,
-               numericInput("ms_qrpfc","Blood Flow Ratio",min =0 , max =1, value =0))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_prpf","Partition Coefficient",0.5,0,2, 0.01)))
-    ),
-    tabItem(
-      tabName = "spf_tissue",
-      fluidRow(
-        column(6,
-               numericInput("ms_paspf","Pearmeability Area Coefficient",1000,1,1000,1)),
-        column(6,
-               numericInput("ms_spfvtbc","Slowly Perfused Tissue to All Slowly Perfused Volume Ratio",0.95,0,1,0.01))
-      )
-    ),
-    tabItem(
-      tabName = "spf_blood",
-      fluidRow(
-        column(6,
-               numericInput("ms_vspfc","Volume Ratio",min =0, max = 1, value =0.00001, step = 0.01)),
-        column(6,
-               numericInput("ms_qspfc","Blood Flow Ratio",min =0 , max =1, value =0))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pspf","Partition Coefficient",0.5,0,2, 0.01)))
+                      numericInput("ms_Krest2pu","Partition Coefficient",0.5,0,2, 0.01)))
     )
   )
 )
