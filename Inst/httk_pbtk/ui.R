@@ -288,10 +288,10 @@ comp_body <- dashboardBody(
                numericInput("ms_Qgfrc","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
                ),
         column(4,
-               numericInput("ms_Fgutabs","Fraction of the oral dose absorbed",1)
+               numericInput("ms_Fgutabs","Fraction of the Oral Dose Absorbed",1)
                ),
         column(4,
-               numericInput("ms_kgutabs","Rate that chemical enters the gut from gutlumen (1/h)",1)
+               numericInput("ms_kgutabs","Rate of Absorption into Gut (1/h)",1)
         )
         )
       ),
@@ -344,7 +344,12 @@ comp_body <- dashboardBody(
                column(6,
                       numericInput("ms_Rblood2plasma","Ratio of Chemical in Blood to Plasma",1)
                       )
+               ),
+      fluidRow(
+        column(6,
+               numericInput("ms_Funbound.plasma","Fraction Unbound in Plasma",2)
                )
+      )
     ),
     tabItem(
       tabName = "kidney",
@@ -396,7 +401,7 @@ chem_body <- dashboardBody(
               column(6,
                      numericInput("ms_den","Density (g/L)",1,0,1500,1)),
               column(6,
-                     numericInput("ms_mw","Molecular Weight (g/mol)",1,0,250,0.01))
+                     numericInput("ms_MW","Molecular Weight (g/mol)",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
