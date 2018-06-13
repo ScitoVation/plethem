@@ -79,11 +79,13 @@ getAllParamValuesForModel <- function(simid,model){
   result <- mainDbSelect(query)
   param_names <- result$Var
   # get Chemical parameter names
-  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Chemical';")
+  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Chemical' AND Model ='%s' ;",
+                   model)
   result <- mainDbSelect(query)
   param_names <- c(param_names,result$Var)
   # get Esposure parameter names
-  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Exposure';")
+  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Exposure' AND Model = '%s';",
+                   model)
   result <- mainDbSelect(query)
   param_names <- c(param_names,result$Var)
 

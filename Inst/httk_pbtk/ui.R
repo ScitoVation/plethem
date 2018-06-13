@@ -73,51 +73,43 @@ plot_body <- fluidPage(
   tabItem(tabName = "plots",
           fluidRow(
             bsCollapse(id="plts", multiple = TRUE,
-                       bsCollapsePanel(title = "Exposure Plots", style = "primary",
-                                     column(3,
-                                        wellPanel(
-                                                   checkboxInput("ch_dose", "Instaneous Dose", value = TRUE, width = NULL),
-                                                   checkboxInput("ch_totdose", "Total Dose", value = TRUE, width = NULL)
-                                        )
-                       ),
-                       column(9,
-                              tabBox(width=12, height = validateCssUnit("100%"),
-                                     tabPanel("Plot",
-                                              fluidRow(
-                                                column(4,offset = 4,
-                                                       radioButtons("r_expo_type",label = "Select Exposure",inline = TRUE,
-                                                                    choices = c("Active"="act","All"="all"),
-                                                                    selected = "act"))
-                                              ),
-                                              fluidRow(
-                                                plotly::plotlyOutput("exposureplt")
-                                              )
-                                     ),
-                                     tabPanel("Table",
-                                              DT::DTOutput("expotble"),
-                                              downloadButton("expodwnld",label = "Get Data")))
-                       )),
+                       # bsCollapsePanel(title = "Exposure Plots", style = "primary",
+                       #               column(3,
+                       #                  wellPanel(
+                       #                             checkboxInput("ch_dose", "Instaneous Dose", value = TRUE, width = NULL),
+                       #                             checkboxInput("ch_totdose", "Total Dose", value = TRUE, width = NULL)
+                       #                  )
+                       # ),
+                       # column(9,
+                       #        tabBox(width=12, height = validateCssUnit("100%"),
+                       #               tabPanel("Plot",
+                       #                        fluidRow(
+                       #                          column(4,offset = 4,
+                       #                                 radioButtons("r_expo_type",label = "Select Exposure",inline = TRUE,
+                       #                                              choices = c("Active"="act","All"="all"),
+                       #                                              selected = "act"))
+                       #                        ),
+                       #                        fluidRow(
+                       #                          plotly::plotlyOutput("exposureplt")
+                       #                        )
+                       #               ),
+                       #               tabPanel("Table",
+                       #                        DT::DTOutput("expotble"),
+                       #                        downloadButton("expodwnld",label = "Get Data")))
+                       # )),
                        bsCollapsePanel(title = "Concentration Plots", style = "primary",
                                  column(3,
                                         tabsetPanel(
                                           tabPanel("Model",value  = "model",
                                                    shinyWidgets::multiInput("cplt_comp",label = tags$h4("Select Compartment"),
-                                                              choices = list("Arterial Plasma"="art_bld","Venous Plasma"="ven_bld",
-                                                                             "Fat Total"="to_fat","Fat Tissue"="ti_fat","Fat Exchange"="bl_fat",
-                                                                             "Skin Total"="to_skn","Skin Tissue"="ti_skn","Skin Exchange"="bl_skn",
-                                                                             "Bone Total"="to_bne","Bone Tissue"="ti_bne","Bone Exchange"="bl_bne",
-                                                                             "Muscle Total"="to_musc","Muscle Tissue"="ti_musc","Muscle Exchange"="bl_musc",
-                                                                             "Brain Total"="to_brn","Brain Tissue"="ti_brn","Brain Exchange"="bl_brn",
-                                                                             "Lungs Total"="to_lng","Lungs Tissue"="ti_lng","Lungs Exchange"="bl_lng",
-                                                                             "Heart Total"="to_hrt","Heart Tissue"="ti_hrt","Heart Exchange"="bl_hrt",
-                                                                             "GI Total"="to_gi","GI Tissue"="ti_gi","GI Exchange"="bl_gi",
-                                                                             "Liver Total"="to_liv","Liver Tissue"="ti_liv","Liver Exchange"="bl_liv",
-                                                                             "Kidney Total"="to_kdn","Kidney Tissue"="ti_kdn","Kidney Exchange"="bl_kdn",
-                                                                             "Rapidly Perused Total"="to_rpf",
-                                                                             "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf",
-                                                                             "Slowly Perused Total"="to_spf",
-                                                                             "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf"
-                                                              )
+                                                              choices = list("Arterial Blood"="art_bld","Venous Blood"="ven_bld",
+                                                                             "Plasma"="to_plasma",
+                                                                             "Lungs"="to_lng",
+                                                                             "Gut"="to_gut",
+                                                                             "Liver"="to_liv",
+                                                                             "Kidney"="to_kdn",
+                                                                             "Rest of the Body"="to_rest"
+                                                                             )
                                                    )
                                                    ),
                                           tabPanel("Dataset",value = "dataset",
@@ -148,33 +140,20 @@ plot_body <- fluidPage(
                                                 tabPanel("Table",
                                                          DT::DTOutput("conctble"),
                                                          downloadButton("cdwnld",label ="Get Data"))
-                                         ))),
+                                         ))
+                                 ),
                        bsCollapsePanel(title = "Amount Plots", style = "primary",
                                        column(3,
                                               wellPanel(
                                                 multiInput("aplt_comp",label = tags$h4("Select Compartment"),
-                                                               choices = list("Arterial Plasma"="art_bld",
-                                                                              "Fat Total"="to_fat","Fat Tissue"="ti_fat","Fat Exchange"="bl_fat",
-                                                                              "Skin Total"="to_skn","Skin Tissue"="ti_skn","Skin Exchange"="bl_skn",
-                                                                              "Bone Total"="to_bne","Bone Tissue"="ti_bne","Bone Exchange"="bl_bne",
-                                                                              "Muscle Total"="to_musc","Muscle Tissue"="ti_musc","Muscle Exchange"="bl_musc",
-                                                                              "Brain Total"="to_brn","Brain Tissue"="ti_brn","Brain Exchange"="bl_brn",
-                                                                              "Lungs Total"="to_lng","Lungs Tissue"="ti_lng","Lungs Exchange"="bl_lng",
-                                                                              "Heart Total"="to_hrt","Heart Tissue"="ti_hrt","Heart Exchange"="bl_hrt",
-                                                                              "GI Total"="to_gi","GI Tissue"="ti_gi","GI Exchange"="bl_gi",
-                                                                              "Liver Total"="to_liv","Liver Tissue"="ti_liv","Liver Exchange"="bl_liv",
-                                                                              "Kidney Total"="to_kdn","Kidney Tissue"="ti_kdn","Kidney Exchange"="bl_kdn",
-                                                                              "Rapidly Perused Total"="to_rpf",
-                                                                                                  "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf",
-                                                                              "Slowly Perused Total"="to_spf",
-                                                                                                 "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf"
-                                                                              )
-
-                                                           ),
-                                                selectizeInput("aplt_data",tags$h4("Select Data Sets"),choices = c("a","b","c"))
-
-                                              )
-                                       ),
+                                                               choices = list("Amount in Gut Lumen"="agutlumen",
+                                                                              "Amount Metabolized"="ametab",
+                                                                              "Amount in Renal Tubules"="atubules")
+                                                )
+                                                )
+                                              
+                                              ),
+                                       
                                        column(9,
                                               tabBox(width = 12,height = validateCssUnit("100%"),
                                                      tabPanel("Plot",
@@ -192,7 +171,7 @@ plot_body <- fluidPage(
                                                               DT::DTOutput("amttble"),
                                                               downloadButton("amwnld",label ="Get Data"))
                                               ))
-                                       ),
+                                       )
                        # bsCollapsePanel(title = "AUC Plots", style = "primary",
                        #                 column(3,
                        #                        wellPanel(
@@ -229,19 +208,19 @@ plot_body <- fluidPage(
                        #                        )
                        #                    )
                        #                 ),
-                       bsCollapsePanel(title = "Mass Balance Plots", style = "primary",
-                                       column(8, offset = 2,
-                                              tabBox(width = 12, height = validateCssUnit("100%"),
-                                                     tabPanel("Plot",
-                                                              fluidRow(
-                                                                plotOutput("balplt")
-                                                              )
-                                                     ),
-                                                     tabPanel("Table",
-                                                              DT::DTOutput("baltble"),
-                                                              downloadButton("cmbaldwnld",label ="Get Data"))
-                                              ))
-                                       )
+                       # bsCollapsePanel(title = "Mass Balance Plots", style = "primary",
+                       #                 column(8, offset = 2,
+                       #                        tabBox(width = 12, height = validateCssUnit("100%"),
+                       #                               tabPanel("Plot",
+                       #                                        fluidRow(
+                       #                                          plotOutput("balplt")
+                       #                                        )
+                       #                               ),
+                       #                               tabPanel("Table",
+                       #                                        DT::DTOutput("baltble"),
+                       #                                        downloadButton("cmbaldwnld",label ="Get Data"))
+                       #                        ))
+                       #                 )
             )
           ))
 )
@@ -259,17 +238,17 @@ comp_body <- dashboardBody(
       tabName = "physiolocal_parameters",
       fluidRow(
         column(4,
-               selectInput("ms_org", label = "Organism",
-                           choices = list("Human" = "ha","Rat"= "ra"),
-                           selected = "ha")
+               selectInput("ms_Org", label = "Organism",
+                           choices = list("Human" = "Human","Rat"= "Rat"),
+                           selected = "Human")
                ),
         column(4,
-               selectInput("ms_gender", label = "Gender",
+               selectInput("ms_Gender", label = "Gender",
                            choices = list("Male" = "M", "Female" = "F"),
                            selected = "M")
         ),
         column(4,
-               numericInput("ms_age","Age",25,0.5,80,1)
+               numericInput("ms_Age","Age",25,0.5,80,1)
         )
       ),
 
@@ -285,7 +264,7 @@ comp_body <- dashboardBody(
       fluidRow(
         
         column(4,
-               numericInput("ms_Qgfrc","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
+               numericInput("ms_Qgfrc","Glomerular Filteration (L/h/kg BW)",min =0 , max =1, value =0.08)
                ),
         column(4,
                numericInput("ms_Fgutabs","Fraction of the Oral Dose Absorbed",1)
@@ -324,7 +303,12 @@ comp_body <- dashboardBody(
                column(6,
                       numericInput("ms_million.cells.per.gliver","Hepatocellularity",110)
                       )
+               ),
+      fluidRow(
+        column(6,
+               numericInput("ms_Fhep.assay.correction","Hepatocyte Assay Correction",1)
                )
+      )
     ),
     tabItem(
       tabName = "blood",
@@ -340,16 +324,8 @@ comp_body <- dashboardBody(
       fluidRow(class="",
                column(6,
                       numericInput("ms_Krbc2pu","RBC to Plasma Partition Coefficient",0.5,0,2, 0.01)
-                      ),
-               column(6,
-                      numericInput("ms_Rblood2plasma","Ratio of Chemical in Blood to Plasma",1)
                       )
-               ),
-      fluidRow(
-        column(6,
-               numericInput("ms_Funbound.plasma","Fraction Unbound in Plasma",2)
                )
-      )
     ),
     tabItem(
       tabName = "kidney",
@@ -399,41 +375,39 @@ chem_body <- dashboardBody(
             tags$h4("Chemical Parameters", class="pager-header"),
             fluidRow(
               column(6,
-                     numericInput("ms_den","Density (g/L)",1,0,1500,1)),
+                     selectInput("ms_Corg","Organism",choices = list("Human"="Human","Rat"="Rat"))
+                     ),
+              column(6,
+                     numericInput("ms_Clint","Instrinsic Clearance",1))
+            ),
+            fluidRow(
+              column(6,
+                     numericInput("ms_LogMA","Membrane Affinity",1)),
               column(6,
                      numericInput("ms_MW","Molecular Weight (g/mol)",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_vpa","Vapor Pressure (Pa)",1,0,250,0.01)),
+                     numericInput("ms_LogP","Octanol-water partition Coefficient",1,0,250,0.01)),
               column(6,
-                     numericInput("ms_dkow","logKow in skin at pH5.5",1,0,250,0.01))
+                     numericInput("ms_LogPwa","Water-air Partition Coefficient",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_lkow","logKow (Octanol:Water Coefficient)",1,0,250,0.01)),
+                     numericInput("ms_pKa_Accept","Accept Pka",1,0,250,0.01)),
               column(6,
-                     numericInput("ms_wsol","Water Solubility (mg/L)",1,0,250,0.01))
+                     numericInput("ms_pKa_Donor","Donor Pka",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_res","Fraction Resorped in Kidney",1,0,0,0.01)),
-              column(6,
-                     numericInput("ms_fupls", label = "Fraction Unbound in Palsma", value = 1, 0, 1, 0.001))
-            ),
-            fluidRow(
-              column(6,
-                     numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)),
-              column(6,
-                     numericInput("ms_km","Michelis Menton Constant for Metabolism (μM)",1,0,250,0.01))
-            ),
-            fluidRow(
-              column(6,
-                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
+                     numericInput("ms_Clmetabolismc","First Order metabolism in Liver (L/h/kg BW)",1)
                      ),
               column(6,
-                     numericInput("ms_frwsol", label = "Fraction dissolved in water", value = 1,
-                                  min=0,max = 1,step = 0.01)
+                     numericInput("ms_Funbound.plasma", label = "Fraction Unbound in Palsma", value = 1, 0, 1, 0.001))
+            ),
+            fluidRow(
+              column(6,
+                     numericInput("ms_Rblood2plasma","Ratio of Chemical in Blood to Plasma",1)
               )
             )
             )

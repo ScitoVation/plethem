@@ -82,7 +82,8 @@ shinyServer(function(input, output, session) {
   # expo_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-  query <- "SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='All' AND ParamSet = 'Chemical'AND UIParams = 'TRUE';"
+  query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
+                   model)
   chem_name_df <- mainDbSelect(query)
 
   #### Update the parameter set dropdowns if they exist for physiological and exposure sets
@@ -1042,6 +1043,7 @@ shinyServer(function(input, output, session) {
       #rep_flag <- all_params["rep_flag"]
       #model_params <- all_params["model_params"]
       initial_values <- calculateInitialValues(model_params)
+
       updateProgressBar(session,"pb",value = 100, total = 100,
                         status = "info")
       tempDF <- runFDPBPK(initial_values,model)
