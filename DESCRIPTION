@@ -1,5 +1,5 @@
 Package: plethem
-Title: Population Life Course Exposure TO Health Effects Modeling (PLETHEM)
+Title: Population Life Course Exposure to Health Effects Modeling (PLETHEM)
 Version: 0.0.0.9000
 Authors@R: person("Salil", "Pendse", email = "salil.pendse@scitovation.com", role = c("aut", "cre"))
 Description: PLETHEM is a PBPK modeling package written in R to faciliate rapidPBPK modeling and High-throughput IVIVE
