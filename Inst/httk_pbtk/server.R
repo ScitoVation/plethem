@@ -53,7 +53,7 @@ shinyServer(function(input, output, session) {
     chemset <- parameterSets$chem()
     updateSelectizeInput(session,"sel_set_chem",choices = chemset)
     metabset<- parameterSets$metab()
-    metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",metabset)
+    metabset <- c("Use Linear Metabolism"="1",metabset)
     updateSelectizeInput(session,"sel_set_metab",choices = metabset)
     physiovar <- parameterSets$physiovar()
     physiovar <- c("None"="0",physiovar)
@@ -180,7 +180,7 @@ shinyServer(function(input, output, session) {
    observeEvent(input$btn_import_chem,{
      importHTTKDataUI(paste0("chem",input$btn_import_chem))
      #importParameterSetUI(input$btn_import_chem,"chem")
-     #parameterSets$importdat <- callModule(importParameterSet,input$btn_import_chem,"chem")
+     parameterSets$importdat <- callModule(importHTTKData,paste0("chem",input$btn_import_chem))
 
    })
    #### Chunk for handling physiological tab
@@ -201,7 +201,6 @@ shinyServer(function(input, output, session) {
        parameterSets[[set_type]] <- reactiveVal(set_list)
        updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
        if(set_type == "chem"){
-         print("update here")
          updateSelectizeInput(session,"sel_chem4Partition",choices = set_list)
          
        }
@@ -217,9 +216,9 @@ shinyServer(function(input, output, session) {
   #Save a new physiological parameter set
   observeEvent(input$btn_saveas_physio,{
    
-    saveAsParameterSetUI(input$btn_saveas_physio,"physio")
+    saveAsParameterSetUI(paste0("physio",input$btn_saveas_physio),"physio")
     parameterSets$savedat <- callModule(saveAsParameterSet,
-                                        input$btn_saveas_physio,
+                                        paste0("physio",input$btn_saveas_physio),
                                         "physio",isolate(input),
                                         physio_name_df)
 
@@ -234,9 +233,9 @@ shinyServer(function(input, output, session) {
                                    type = "error")
 
     }else{
-      saveAsParameterSetUI(input$btn_saveas_expo,"expo")
+      saveAsParameterSetUI(paste0("expo",input$btn_saveas_expo),"expo")
       parameterSets$savedat <- callModule(saveAsParameterSet,
-                                          input$btn_saveas_expo,
+                                          paste0("expo",input$btn_saveas_expo),
                                           "expo",isolate(input),
                                           expo_name_df)
     }
@@ -687,7 +686,7 @@ shinyServer(function(input, output, session) {
                                                                  fluidRow(column(width = 6,
                                                                                  shinyWidgets::radioGroupButtons("metab_type",justified = T,
                                                                                                                  "Select Meatbolism Type",
-                                                                                                                 choices = c("Saturable"="m1","Linear"="m2"))
+                                                                                                                 choices = c("Linear"="m2"))
                                                                  )
 
 
@@ -799,7 +798,7 @@ shinyServer(function(input, output, session) {
 
         set_list <- getAllSetChoices(set_type)
         updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = id_num)
-        metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",set_list)
+        metabset <- c("Use Linear Metabolism"="1",set_list)
         updateSelectizeInput(session,"sel_set_metab",choices = metabset)
         removeModal()
       }
@@ -823,7 +822,7 @@ shinyServer(function(input, output, session) {
       simid <- getNextID("SimulationsSet")
       sim_name <- input$sim_name
       sim_descrp <- input$sim_descrp
-      sim_start <- input$sim_start
+      sim_start <- 0
       sim_dur <- input$sim_dur
       mc_num <- ifelse(input$mc_mode,input$mc_num,0)
       chemid <- as.integer(input$sel_set_chem)
@@ -895,7 +894,7 @@ shinyServer(function(input, output, session) {
     output$sim_expo <- renderText(expo_name)
 
     # get metabolism data.
-    metab_data <- getMetabData(metabid,physioid,chemid)
+    metab_data <- getMetabData(metabid,physioid,chemid,model)
     output$sim_metab_type <- renderText(metab_data$Type)
     output$sim_metab_units <- renderText(metab_data$Units)
     output$sim_metab_val <- renderText(as.character(round(metab_data$Value,2)))
@@ -934,13 +933,15 @@ shinyServer(function(input, output, session) {
       names(mc_results)<- mc_vars
       for (i in 1:mc_num){
         model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
-        initial_values <- calculateInitialValues(model_params)
+        initial_values <- model_params
         tempDF <- runFDPBPK(initial_values,model)
         max_list <- unlist(lapply(mc_vars,function(x,data){
           var_name <- gsub("_max","",x)
+          
+          val <- max(data[[var_name]])
  
-          return(max(data[var_name]))
-        },tempDF$pbpk))
+          return(val)
+        },as.data.frame(tempDF$pbpk)))
         names(max_list)<- mc_vars
         for (x in mc_vars){
           mc_results[[x]][[i]]<- max_list[[x]]
@@ -953,7 +954,7 @@ shinyServer(function(input, output, session) {
     }else{
       #rep_flag <- all_params["rep_flag"]
       #model_params <- all_params["model_params"]
-      initial_values <- calculateInitialValues(model_params)
+      initial_values <- model_params# calculateInitialValues(model_params)
       updateProgressBar(session,"pb",value = 100, total = 100,
                         status = "info")
       tempDF <- runFDPBPK(initial_values,model)
@@ -1232,11 +1233,11 @@ observeEvent({input$chemScenFilter},{
                  chemical_params[["Compound"]]<- ret_data$name
                  chemical_params[["CAS"]]<- ret_data$cas
                  chem_name <- ret_data$name
-                 # #print(chemical_params)
-                 chemical_params <- chemical_params[-which(names(chemical_params)%in% c("Clmetabolismc","Corg"))]
-                 data2add <- data.frame(lapply(chemical_params, function(x) t(data.frame(x))))
-                 # print(data2add)
-                 data_list <- setNames(names(chemical_params),names(chemical_params))
+                 # # #print(chemical_params)
+                 # chemical_params <- chemical_params[-which(names(chemical_params)%in% c("Clmetabolismc","Corg"))]
+                 # data2add <- data.frame(lapply(chemical_params, function(x) t(data.frame(x))))
+                 # # print(data2add)
+                 # data_list <- setNames(names(chemical_params),names(chemical_params))
                  #unlockBinding("chem.physical_and_invitro.data",environment())
                  #httkAddTable(data2add,data_list)
                  # temp_httk_table <- httk::add_chemtable(data2add,
@@ -1245,7 +1246,7 @@ observeEvent({input$chemScenFilter},{
                  #                                        reference = "None",
                  #                                        overwrite = T)
                  # httk::chem.physical_and_invitro.data <- temp_httk_table
-                 params <- httkParameterPBTK(data2add,data_list,chem_name)
+                 params <- httkParameterPBTK(chem_name,org)
                  #parameterize_pbtk(chem.cas = ret_data$cas)
                  updatePhysiology(session,params,physio_name_df)
 

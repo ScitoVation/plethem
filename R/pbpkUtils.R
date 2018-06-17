@@ -9,24 +9,35 @@
 #' @return List containing the metabolism values needed to run PBPK model or
 #' display simulation information
 #' @export
-getMetabData <- function(metabid,physioid,chemid){
+getMetabData <- function(metabid,physioid,chemid,model = "rapidPBPK"){
   metabid <- as.integer(metabid)
   physioid <- as.integer(physioid)
   chemid <- as.integer(chemid)
   if (metabid==0 || metabid == 1){
-    metab_type <- ifelse(metabid==0,
-                         "Michaelis Menten Kinetics",
-                         "First Order Metabolism")
-    metab_units <- ifelse(metabid==0,
-                          "\u00B5M/h/kg BW^0.75",
-                          "L/h/kg Liver")
-    variable <- ifelse(metabid==0,
-                       "vmaxc",
-                       "vkm1c")
-    query <- sprintf("SELECT value from Chemical WHERE chemid = %i AND param = '%s';",
-                     chemid,variable)
-    result <- projectDbSelect(query)
-    value <- as.numeric(result$value)
+    if (model == "rapidPBPK"){
+      metab_type <- ifelse(metabid==0,
+                           "Michaelis Menten Kinetics",
+                           "First Order Metabolism")
+      metab_units <- ifelse(metabid==0,
+                            "\u00B5M/h/kg BW^0.75",
+                            "L/h/kg Liver")
+      variable <- ifelse(metabid==0,
+                         "vmaxc",
+                         "vkm1c")
+      query <- sprintf("SELECT value from Chemical WHERE chemid = %i AND param = '%s';",
+                       chemid,variable)
+      result <- projectDbSelect(query)
+      value <- as.numeric(result$value)
+    }else if(model == "httk_pbtk"){
+      metab_type <- "First Order Metabolism"
+      metab_units <- "L/h/kg BW"
+      variable <- "Clmetabolismc"
+      query <- sprintf("SELECT value from Chemical WHERE chemid = %i AND param = '%s';",
+                       chemid,variable)
+      result <- projectDbSelect(query)
+      value <- as.numeric(result$value)
+    }
+    
 
 
   }else{
@@ -130,15 +141,21 @@ getAllParamValuesForModel <- function(simid,model){
   params[["totdays"]]<- sim_dur/24
   params[["sim_dur"]]<- sim_dur
   # get the metabolism data and adjust params accordingly
-  metab_data <- getMetabData(metabid,physioid,chemid)
+  metab_data <- getMetabData(metabid,physioid,chemid,model)
   metab_var <- metab_data$Var
-  if(metab_var == "vmaxc"){
-    params[["vmaxc"]]<- metab_data$Value
-    params[["vkm1c"]]<- 1e-10
-  }else{
-    params[["vkm1c"]]<- metab_data$Value
-    params[["vmaxc"]]<- 1e-10
+  if (model == "rapidPBPK"){
+    
+    if(metab_var == "vmaxc"){
+      params[["vmaxc"]]<- metab_data$Value
+      params[["vkm1c"]]<- 1e-10
+    }else{
+      params[["vkm1c"]]<- metab_data$Value
+      params[["vmaxc"]]<- 1e-10
+    }
+  }else if(model == "httk_pbtk"){
+    params[["Clmetabolismc"]]<- metab_data$Value
   }
+  
   # query <- "Select Var FROM ParamNames WHERE (Model = 'rapidPBPK' OR Model = 'All') AND ModelParams = 'TRUE';"
   # result <- mainDbSelect(query)
   # uiParamNames <- result$Var

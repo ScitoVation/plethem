@@ -32,7 +32,8 @@ Imports:
 	RSQLite,
 	formatR,
 	plotly,
-	magrittr
+	magrittr,
+    rstudioapi
 Suggests: testthat,
     knitr,
     rmarkdown

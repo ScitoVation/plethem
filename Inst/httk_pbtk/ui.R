@@ -237,17 +237,17 @@ comp_body <- dashboardBody(
     tabItem(
       tabName = "physiolocal_parameters",
       fluidRow(
-        column(4,
-               selectInput("ms_Org", label = "Organism",
-                           choices = list("Human" = "Human","Rat"= "Rat"),
-                           selected = "Human")
-               ),
-        column(4,
+        # column(4,
+        #        selectInput("ms_Org", label = "Organism",
+        #                    choices = list("Human" = "Human","Rat"= "Rat"),
+        #                    selected = "Human")
+        #        ),
+        column(6,
                selectInput("ms_Gender", label = "Gender",
                            choices = list("Male" = "M", "Female" = "F"),
                            selected = "M")
         ),
-        column(4,
+        column(6,
                numericInput("ms_Age","Age",25,0.5,80,1)
         )
       ),
@@ -636,20 +636,24 @@ shinyUI(fluidPage(
                                                       ))
                                              ),
                                              fluidRow(
-                                               column(2,
-                                                      shinyBS::tipify(shinyBS::bsButton("btn_use_lifecourse",
-                                                                                 "Calculate Parameters",
-                                                                                 style = "primary",block = TRUE),
-                                                                      "Use Lifecourse Equation to calcualte parameters")
-                                               ),
+                                               # column(2,
+                                               #        shinyBS::tipify(shinyBS::bsButton("btn_use_lifecourse",
+                                               #                                   "Calculate Parameters",
+                                               #                                   style = "primary",block = TRUE),
+                                               #                        "Use Lifecourse Equation to calcualte parameters")
+                                               # ),
                                                column(4,
-                                                      shinyBS::tipify(selectizeInput("sel_qsar4Partition", NULL,
-                                                                     choices = c("QSAR model one" = 'one',
-                                                                                 "QSAR model two" = 'two')
-                                                                     ),
-                                                                     "Select QSAR model for partition coefficients")
+                                                      selectInput("ms_Org", NULL,
+                                                                  #label = "Organism",
+                                                                  choices = list("Human" = "Human","Rat"= "Rat"),
+                                                                  selected = "Human")
+                                                      # shinyBS::tipify(selectizeInput("sel_qsar4Partition", NULL,
+                                                      #                choices = c("QSAR model one" = 'one',
+                                                      #                            "QSAR model two" = 'two')
+                                                      #                ),
+                                                      #                "Select QSAR model for partition coefficients")
                                                       ),
-                                               column(4,
+                                               column(6,
                                                       shinyBS::tipify(selectizeInput("sel_chem4Partition",NULL,
                                                                      choices ="No Chemical Added"
                                                                      ),
@@ -657,7 +661,9 @@ shinyUI(fluidPage(
                                                       ),
                                                column(2,
                                                       shinyBS::bsButton("btn_useQSAR4Partition",
-                                                                        "Calculate Partition",style = "primary",
+                                                                        "Parameterize Model",
+                                                                        #"Calculate Partition",
+                                                                        style = "primary",
                                                                         block = TRUE)
                                                       )
 
@@ -759,123 +765,90 @@ shinyUI(fluidPage(
                                                )
                                                )
                                            )
-                                           # fluidPage(
-                                           #   
-                                           #   fluidRow(
-                                           #     column(12,
-                                           #            div(style = "height:15px")
-                                           #     )
-                                           #   ),
-                                           #   fluidRow(tags$h5("Physiology")),
-                                           #   fluidRow(
-                                           #     column(width = 9, offset = 0,
-                                           #            selectizeInput("sel_mc_physio",NULL,
-                                           #                           choices = NULL,
-                                           #                           options= list(placeholder = "Population Parameter Set",
-                                           #                                         openOnFocus = T))),
-                                           #     column(width = 3, offset = 0,
-                                           #            shinyWidgets::actionGroupButtons(
-                                           #              c("btn_import_pop","btn_sverest_pop","btn_saveas_pop"),
-                                           #              c("Import","Save/Restore","Save As"),
-                                           #              direction = "horizontal",
-                                           #              status = "info",
-                                           #              fullwidth = T
-                                           #              
-                                           #            ))
-                                           #   ),
-                                           #   fluidRow(
-                                           #     pickerInput("param_names",label = "Select Parameters to assign variability",
-                                           #                 choices = NULL,multiple = T,
-                                           #                 options = list('selected-text-format' = "count > 3"))
-                                           #     
-                                           #   )
-                                           #   
-                                           # 
-                                           #   
-                                           # )
+                                           
                                            ),
-                                  tabPanel("Metabolism",
-
-                                           fluidPage(
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
-                                               )
-                                             ),
-                                             fluidRow(
-
-                                               column(2,
-                                                      bsButton("btn_metab_upload",
-                                                               "Upload Metabolism Files",
-
-                                                               block = T)
-                                                      )
-                                             ),
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
-                                               )
-                                             ),
-                                             fluidRow(
-                                               column(width = 7, offset = 0,
-                                                      selectizeInput("sel_metab",NULL,
-                                                                     choices = NULL,
-                                                                     options= list(placeholder = "Metabolism Parameter Set",
-                                                                                   openOnFocus = T))),
-                                               column(width = 5, offset = 0,
-                                                      shinyWidgets::actionGroupButtons(
-                                                        c("btn_sve_metab","btn_saveas_metab"),
-                                                        c("Save","Save As"),
-                                                        direction = "horizontal",
-                                                        status = "info",
-                                                        fullwidth = T
-
-                                                      ))
-                                             ),
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
-                                               )
-                                             ),
-                                             # fluidRow(
-                                             #   column(width = 3,
-                                             #          fileInput("metab_csv","Upload Metabolism Data")),
-                                             #   column(width = 3,
-                                             #          downloadLink("metab_template","Template for metabolism file"))
-                                             #   ),
-                                             # fluidRow(
-                                             #   column(width = 4,
-                                             #          textInput("metab_set_name","Name",
-                                             #                    placeholder = "Enter the name for this metabolism set")),
-                                             #   column(width = 8,
-                                             #          textAreaInput("metab_set_descrp","Description",
-                                             #                        resize = "none" ,row = 1))
-                                             #
-                                             # ),
-                                             # fluidRow(column(width = 6,
-                                             #                 shinyWidgets::radioGroupButtons("metab_type",justified = T,
-                                             #                                                 "Select Meatbolism Type",
-                                             #                                                 choices = c("VmaxC"="m1","VlivC"="m2"))
-                                             #                 )
-                                             #
-                                             #
-                                             #
-                                             #  ),
-                                             # fluidRow(column(width = 4,
-                                             #                 shinyWidgets::awesomeCheckbox("use_ref",
-                                             #                                               "Use clearance at reference age for ages not in the metabolism table",
-                                             #                                               value = T)
-                                             #                 ),
-                                             #          column(width = 4,
-                                             #                 numericInput("metab_ref_age","Referance age in Years",value = 25, min = 0))
-                                             # ),
-                                             fluidRow(column(width = 6, offset = 3,
-                                                             DT::DTOutput("metab_tble")))
-
-
-                                           )
-
-                                          ),
+                                  # tabPanel("Metabolism",
+                                  # 
+                                  #          fluidPage(
+                                  #            fluidRow(
+                                  #              column(12,
+                                  #                     div(style = "height:10px")
+                                  #              )
+                                  #            ),
+                                  #            fluidRow(
+                                  # 
+                                  #              column(2,
+                                  #                     bsButton("btn_metab_upload",
+                                  #                              "Upload Metabolism Files",
+                                  # 
+                                  #                              block = T)
+                                  #                     )
+                                  #            ),
+                                  #            fluidRow(
+                                  #              column(12,
+                                  #                     div(style = "height:10px")
+                                  #              )
+                                  #            ),
+                                  #            fluidRow(
+                                  #              column(width = 7, offset = 0,
+                                  #                     selectizeInput("sel_metab",NULL,
+                                  #                                    choices = NULL,
+                                  #                                    options= list(placeholder = "Metabolism Parameter Set",
+                                  #                                                  openOnFocus = T))),
+                                  #              column(width = 5, offset = 0,
+                                  #                     shinyWidgets::actionGroupButtons(
+                                  #                       c("btn_sve_metab","btn_saveas_metab"),
+                                  #                       c("Save","Save As"),
+                                  #                       direction = "horizontal",
+                                  #                       status = "info",
+                                  #                       fullwidth = T
+                                  # 
+                                  #                     ))
+                                  #            ),
+                                  #            fluidRow(
+                                  #              column(12,
+                                  #                     div(style = "height:10px")
+                                  #              )
+                                  #            ),
+                                  #            # fluidRow(
+                                  #            #   column(width = 3,
+                                  #            #          fileInput("metab_csv","Upload Metabolism Data")),
+                                  #            #   column(width = 3,
+                                  #            #          downloadLink("metab_template","Template for metabolism file"))
+                                  #            #   ),
+                                  #            # fluidRow(
+                                  #            #   column(width = 4,
+                                  #            #          textInput("metab_set_name","Name",
+                                  #            #                    placeholder = "Enter the name for this metabolism set")),
+                                  #            #   column(width = 8,
+                                  #            #          textAreaInput("metab_set_descrp","Description",
+                                  #            #                        resize = "none" ,row = 1))
+                                  #            #
+                                  #            # ),
+                                  #            # fluidRow(column(width = 6,
+                                  #            #                 shinyWidgets::radioGroupButtons("metab_type",justified = T,
+                                  #            #                                                 "Select Meatbolism Type",
+                                  #            #                                                 choices = c("VmaxC"="m1","VlivC"="m2"))
+                                  #            #                 )
+                                  #            #
+                                  #            #
+                                  #            #
+                                  #            #  ),
+                                  #            # fluidRow(column(width = 4,
+                                  #            #                 shinyWidgets::awesomeCheckbox("use_ref",
+                                  #            #                                               "Use clearance at reference age for ages not in the metabolism table",
+                                  #            #                                               value = T)
+                                  #            #                 ),
+                                  #            #          column(width = 4,
+                                  #            #                 numericInput("metab_ref_age","Referance age in Years",value = 25, min = 0))
+                                  #            # ),
+                                  #            fluidRow(column(width = 6, offset = 3,
+                                  #                            DT::DTOutput("metab_tble")))
+                                  # 
+                                  # 
+                                  #          )
+                                  # 
+                                  #         ),
                                   tabPanel("Simulations",
                                            fluidPage(
                                              # fluidRow(tags$h4("")),
@@ -927,13 +900,10 @@ shinyUI(fluidPage(
                                                           ),
                                                           selectizeInput("sel_set_metab","Select Metabolism",choice = NULL),
                                                           fluidRow(
-                                                            column(4,
-                                                                   numericInput("sim_start","Simulation Start Time (h)",0)
+                                                            column(6,
+                                                                   numericInput("sim_dur","Simulation Duration (days)",0)
                                                                    ),
-                                                            column(4,
-                                                                   numericInput("sim_dur","Simulation Duration (h)",0)
-                                                                   ),
-                                                            column(4,
+                                                            column(6,
                                                                    numericInput("mc_num","Number of Montecarlo Runs",1000)
                                                                    )
                                                           ),
@@ -978,7 +948,7 @@ shinyUI(fluidPage(
                                                # )
                                              ),
                                              fluidRow(
-                                               wellPanel(id= "Simulationdetails1",
+                                               wellPanel(id= "Simulationdetails",
                                                          fluidRow(
                                                            column(8,offset =2,
                                                                   tags$h4("Simulation Description"),
