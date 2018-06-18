@@ -89,7 +89,7 @@ importHTTKData <- function(input,output,session){
       
       
     }
-    print(selected_list)
+    #print(selected_list)
     removeModal()
   })
   returnValues$retdata<- eventReactive(input$import,{return(c("Yes","chem",1))})

@@ -22,6 +22,7 @@ shinyServer(function(input, output, session) {
   parameterSets$savedat <- reactiveVal(c("No","",0))
   parameterSets$sverestdat <- reactiveVal(c("None",0))
   parameterSets$importdat <- reactiveVal(c("No","",0))
+  parameterSets$importSeem <- reactiveVal(c("No"))
   parameterSets$sim_table <- data.frame("Col1"="","Col2"=0,"Col3"=0,row.names = NULL)
   parameterSets$vardat <- reactiveVal(c("None","",0))
   expo_set <- getAllSetChoices("expo")
@@ -209,6 +210,29 @@ shinyServer(function(input, output, session) {
      }
    })
    
+   # Import SEEM data
+   observeEvent(input$btn_seem_upload,{
+     path <-fpath()
+     importSEEMDataUI(paste0("seem",input$btn_seem_upload))
+     parameterSets$importSeem <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload),
+                                            path,expo_name_df)
+   })
+   
+   fpath <- reactive({
+     fpath <- file.choose()
+     return(fpath)
+   })
+   
+   observe({
+     result_vector <- parameterSets$importSeem
+     if(result_vector()[1]=="Yes"){
+       set_type <- "expo"
+       set_list <- getAllSetChoices(set_type)
+       parameterSets[[set_type]] <- reactiveVal(set_list)
+       updateSelectizeInput(session,paste0("sel_",set_type),
+                            choices = set_list)
+     }
+   })
    
    
   

@@ -525,8 +525,8 @@ shinyUI(fluidPage(
                                              ),
                                              fluidRow(
                                                column(2,
-                                                      shinyBS::bsButton("btn_expo_upload",
-                                                                        "Upload Exposure Files",
+                                                      shinyBS::bsButton("btn_seem_upload",
+                                                                        "Import From SEEM Data",
                                                                         block = T))
                                              ),
 

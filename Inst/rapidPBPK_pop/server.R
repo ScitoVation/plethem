@@ -196,15 +196,32 @@ shinyServer(function(input, output, session) {
   ########### The next code chunk deals with updating select inputs for all parameter sets]
   # Import SEEM data
   observeEvent(input$btn_seem_upload,{
+    path <-fpath()
     importSEEMDataUI(paste0("seem",input$btn_seem_upload))
-    data <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload))
+    parameterSets$importSeem <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload),
+                       path,expo_name_df)
   })
   
+  fpath <- reactive({
+    fpath <- file.choose()
+    return(fpath)
+  })
   
+  observe({
+    result_vector <- parameterSets$importSeem
+    if(result_vector()[1]=="Yes"){
+      set_type <- "expo"
+      set_list <- getAllSetChoices(set_type)
+      parameterSets[[set_type]] <- reactiveVal(set_list)
+      updateSelectizeInput(session,paste0("sel_",set_type),
+                           choices = set_list)
+    }
+  })
   ### Import button current for chemicals only
   # Import a new chemical set from user or main database
    #### Chunk for handling chemical tab
    observeEvent(input$btn_import_chem,{
+     
      importParameterSetUI(paste0("chem",input$btn_import_chem),"chem")
      parameterSets$importdat <- callModule(importParameterSet,paste0("chem",input$btn_import_chem),"chem")
 
