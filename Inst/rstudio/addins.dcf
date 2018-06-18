@@ -7,3 +7,13 @@ Name: Add Chemicals to HTTK
 Description: Adds chemicals to HTTK database so they can be used with HTTK models
 Binding:addChemsToHTTK
 Interactive:TRUE
+
+Name:Select a new user database
+Description: Sets and existing database as the user database to use for PLETHEM
+Binding:setUserDb
+Interactive:FALSE
+
+Name:Create a new user database
+Description: creates a new user database to use for PLETHEM
+Binding:createUserDb
+Interactive:FALSE

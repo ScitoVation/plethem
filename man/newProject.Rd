@@ -5,7 +5,7 @@
 \title{Start a new PLETHEM project.}
 \usage{
 newProject(name = "new_project", type = "PBPK", model = "rapidPBPK",
-  mode = "FD")
+  mode = "MC")
 }
 \arguments{
 \item{name}{Name of the project}
