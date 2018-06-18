@@ -43,7 +43,7 @@ saveProject <- function(){
 #' @param model The model to be used for the project
 #' @param mode Either Forward Dosimetry(FD) or Monte Carlo(MC) mode. Only valid for PBPK type models
 #' @export
-newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "FD"){
+newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC"){
   save_path <- gsub("\\\\","/",choose.dir(caption = sprintf("Select folder where %s will be saved",name)))
   clearProjectDb()
   # write new project details to the project table
@@ -78,7 +78,7 @@ listProjects <- function(type = NULL){
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){
-    file_path <- choose.files(caption = "Select PLETHEM project file",multi = F)
+    file_path <- file.choose(caption = "Select PLETHEM project file")
   }
   
   load(file_path)

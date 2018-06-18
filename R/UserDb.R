@@ -3,12 +3,14 @@
 
 
 setUserDb<- function(){
-  userDbPath <- choose.files(default = "plethemUserDb.sqlite",multi = F,
-                              caption = "Select/Create user database")
+  userDbPath <- file.choose()
   query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",userDbPath)
   mainDbUpdate(query)
   if(!(file.exists(userDbPath))){
     
     file.copy(system.file("database/plethemUserDb.sqlite",package = "plethem"),userDbPath)
   }
+  query <- "Select chemid from ChemicalSet;"
+  result <- userDbSelect(query)
+  print(sprintf("Selected User Database has %i chemicals",length(result$chemid)))
 }

@@ -1,4 +1,9 @@
-Name: IVIVE
+Name: Perform IVIVE
 Description: Performs IVIVE to get scaled clearance for use in PBPK models
-Binding: iviveGadget
+Binding: doIVIVE
 Interactive: TRUE
+
+Name: Add Chemicals to HTTK
+Description: Adds chemicals to HTTK database so they can be used with HTTK models
+Binding:addChemsToHTTK
+Interactive:TRUE
