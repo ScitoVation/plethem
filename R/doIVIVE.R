@@ -5,8 +5,7 @@
 #' @return Values returned by the IVIVE gadget
 #' @export
 doIVIVE<- function(){
-  path <- choose.dir(default = getwd(),
-                     caption = "Select Directory to store IVIVE results")
+  path <- rstudioapi::selectDirectory()
   ret_vals <- iviveGadget(TRUE,path)
   return(ret_vals)
 }

@@ -4,7 +4,7 @@
 \alias{getAllVariabilityValuesForModel}
 \title{Gets all the variability values for the model. This data returned by the function is not meant to be understandable by the user}
 \usage{
-getAllVariabilityValuesForModel(simid, params)
+getAllVariabilityValuesForModel(simid, params, mc_num)
 }
 \arguments{
 \item{simid}{Integer The id for simulation selected to run}

@@ -81,7 +81,9 @@ shinyServer(function(input,output,session){
 
     valid_row_names <- names(which(!(sapply(non_reactive_vals[grep("row_*",names(non_reactive_vals))],is.null))))
     data_list <- non_reactive_vals[valid_row_names]
+    #print(data_list)
     result <- runPlthemHTIVIVE(data_list)
+    #print(result)
     vals$result_table <- makeResultTable(isolate(vals$m_table),result)
     updateTabsetPanel(session,"navMenu","Results")
 
@@ -226,10 +228,10 @@ makeResultTable <- function(input_table,result){
     "Type" = input_table$Type,
     "Standard Exposure"=input_table[["Standard Exposure"]],
     "Invitro POD"=input_table[["Invitro POD"]],
-    "Actual Hepatic Clearance (L/h)"=lapply(result,"[[","hep"),
-    "Actual Renal Clearance (L/h)"=lapply(result,"[[","ren"),
-    "Actual Plasma Clearance (L/h)"=lapply(result,"[[","pls"),
-    "Css (mg/L)"=lapply(result,"[[","css"),
+    "Actual Hepatic Clearance (L/h)"=paste0(lapply(result,"[[","hep")),
+    "Actual Renal Clearance (L/h)"=paste0(lapply(result,"[[","ren")),
+    "Actual Plasma Clearance (L/h)"=paste0(lapply(result,"[[","pls")),
+    "Css (mg/L)"=paste0(lapply(result,"[[","css")),
     #"Equivalent Dose Type"=numeric(),
     "Equivalent dose"=paste0(lapply(result,"[[","eqdose"))
   )

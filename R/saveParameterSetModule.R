@@ -65,9 +65,17 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
     main_input <- reactiveValuesToList(main_input)
 
     # write the name to correct "Set" table
-    query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
-                     set_table_name,id_name,id_num,input$name,input$descrp)
-    projectDbUpdate(query)
+    if (set_type == "chem"){
+      query <- sprintf("INSERT INTO %s (%s, name, descrp,cas) VALUES (%d,'%s','%s','%s');",
+                       set_table_name,id_name,id_num,input$name,input$descrp,input$cas)
+      projectDbUpdate(query)
+      
+    }else{
+      query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
+                       set_table_name,id_name,id_num,input$name,input$descrp)
+      projectDbUpdate(query)
+    }
+    
 
     # get all values for parameter set
     write_col_names <- sprintf("%s, param, value",id_name)

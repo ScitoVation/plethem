@@ -25,6 +25,8 @@ to install from BitBucket.
 PLETHEM pulls data from three databases. The master database is installed with the package and cannot be modified by the user. The User database is a local copy that is a subset of the master database. This table is used to store user specific parameters that may be needed across different projects (Like a set of chemicals that are frequently used by the user but are not a part of the main database). The final database is project database. This is used by PLETHEM internally to keep track of all the data while the used is working on a specific project in PLETHEM. When the project is closed, the database is saved out as an .Rproj file that can be used to recreate the project on any other PLETHEM installation. 
 
 To complete the initial setup, the user needs to define the location where they want to store the user database. If they are updating a previous installation of PLETHEM or want to use the user database from another installation, they can just point to the database file instead. To either create a new database or to use an existing file run the following command and follow the prompts that come up
+  >library(plethem)
+  
   >setUserDb()
   
 This only needs to be done once.
@@ -34,6 +36,7 @@ This only needs to be done once.
 To load plethem and start a new PBPK modeling project 
 
  >library(plethem)
+ 
  >newProject("Name of the project")
  
 This will bring up a popup window where you can select where you want to save the project files. Once you have selected the directory here, plethem will launch the PBPK interface in your default browser. If the interfaces launches in a popup window instead, just click "Open in Browser" button on the window.

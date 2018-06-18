@@ -1,14 +1,18 @@
-#' creates a new user databases or sets the path to the existing Db
+#' Sets the path to the existing Db
 #' @export
-
-
 setUserDb<- function(){
-  userDbPath <- choose.files(default = "plethemUserDb.sqlite",multi = F,
-                              caption = "Select/Create user database")
+  userDbPath <- rstudioapi::selectFile(caption = "Select User database",filter = ".sqlite")
   query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",userDbPath)
   mainDbUpdate(query)
-  if(!(file.exists(userDbPath))){
-    
-    file.copy(system.file("database/plethemUserDb.sqlite",package = "plethem"),userDbPath)
-  }
+  
+  query <- "Select chemid from ChemicalSet;"
+  result <- userDbSelect(query)
+  print(sprintf("Selected User Database has %i chemicals",length(result$chemid)))
+}
+
+#' Creates a new userDb based on the empty database in the package
+#' @export
+createUserDb <- function(){
+  userDbPath <- rstudioapi::selectDirectory(caption = "Create a new user database")
+  file.copy(system.file("database/plethemUserDb.sqlite",package = "plethem"),userDbPath)
 }

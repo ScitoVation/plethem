@@ -43,8 +43,8 @@ saveProject <- function(){
 #' @param model The model to be used for the project
 #' @param mode Either Forward Dosimetry(FD) or Monte Carlo(MC) mode. Only valid for PBPK type models
 #' @export
-newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "FD"){
-  save_path <- gsub("\\\\","/",choose.dir(caption = sprintf("Select folder where %s will be saved",name)))
+newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC"){
+  save_path <- gsub("\\\\","/",rstudioapi::selectDirectory(caption = sprintf("Select folder where %s will be saved",name)))
   clearProjectDb()
   # write new project details to the project table
   query <- sprintf("INSERT INTO Project (name, path, type, model, mode) Values ('%s','%s','%s','%s','%s');",
@@ -56,6 +56,9 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
   }
   if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
     shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
+  }
+  if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
+    shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = T)
   }
   #interactivePBPK(model)
   return(NULL)
@@ -75,7 +78,8 @@ listProjects <- function(type = NULL){
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){
-    file_path <- choose.files(caption = "Select PLETHEM project file",multi = F)
+    file_path <- rstudioapi::selectFile(caption = "Select PLETHEM Project",
+                                        filter= "*.Rdata")
   }
   
   load(file_path)
@@ -95,10 +99,13 @@ loadProject <- function(file_path = ""){
     projectWriteTable(eval(parse(text = x)),x)
   }
   if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
-    shiny::runApp(system.file("rapidPBPK",package="plethem"))
+    shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
   }
   if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
     shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
+  }
+  if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
+    shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = T)
   }
 }
 

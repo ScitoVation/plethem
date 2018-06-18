@@ -450,7 +450,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   observeEvent(input$sel_chem,{
     chid <- input$sel_chem
     if(!is.null(chid)){
-      print(chem_list)
+      #print(chem_list)
       fupls <- chem_list[[as.integer(chid)]]["fupls"]
       km <- chem_list[[as.integer(chid)]]["km"]
       updateNumericInput(session,"num_fup",value = as.numeric(fupls))

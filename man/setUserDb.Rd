@@ -2,10 +2,10 @@
 % Please edit documentation in R/UserDb.R
 \name{setUserDb}
 \alias{setUserDb}
-\title{creates a new user databases or sets the path to the existing Db}
+\title{Sets the path to the existing Db}
 \usage{
 setUserDb()
 }
 \description{
-creates a new user databases or sets the path to the existing Db
+Sets the path to the existing Db
 }

@@ -129,6 +129,7 @@ rapidPBPK_initParms <- function(newParms = NULL) {
 
   if (!is.null(newParms)) {
     if (!all(names(newParms) %in% c(names(parms)))) {
+      print(setdiff(names(newParms),c(names(parms))) )
       stop("illegal parameter name")
     }
     parms[names(newParms)] <- newParms
