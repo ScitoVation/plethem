@@ -4,7 +4,7 @@
 \alias{getMetabData}
 \title{Gets the metabolism data. Should not be used by directly by the user}
 \usage{
-getMetabData(metabid, physioid, chemid)
+getMetabData(metabid, physioid, chemid, model = "rapidPBPK")
 }
 \arguments{
 \item{metabid}{The meabolism id to get information from the metabolism tables}

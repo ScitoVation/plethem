@@ -10,8 +10,8 @@
 runPlthemHTIVIVE<- function(vals){
   row_keys <- names(vals)
   num_rows <- length(row_keys)
+  #print(row_keys)
   result <- lapply(vals,preprocessUIData)
-  print(result)
   return(result)
 }
 
@@ -23,7 +23,7 @@ runPlthemHTIVIVE<- function(vals){
 #'@param hepatic list of lists for hepatic clearance
 #'@param renal list of TRUE/FALSE if renal clearance should be assumed
 #'@param plasma list of plasma clearance values
-#'@export
+#'
 perform_HTIVIVE <- function(chemical, physiological,type, POD, hepatic,renal, plasma){
   return(NULL)
 }
@@ -34,12 +34,13 @@ perform_HTIVIVE <- function(chemical, physiological,type, POD, hepatic,renal, pl
 #'@param val list containing data for each row from the UI
 #'@return list of cleranace values for point of departure values and type of reverse dosimetry
 preprocessUIData<- function(val){
+  #print(val)
   # get chemical properties
-  chem_list <- getProjectChemicalList()
-  chname <- val$sel_chem
-  casn <- "00-00-1234"#chem_list[["CAS"]][[chname]]
-  mw <- 100#chem_list[["MW"]][[casn]]
-  km <- 1#chem_list[["KM"]][[casn]]
+  chem_data <- getChemDataFromDb(val$sel_chem)
+
+  casn <- chem_data$casn
+  mw <- chem_data$mw
+  km <- val$num_km
   # get POD
   pod <- val$num_ivc
   pod_unit <- val$sel_ivunit
@@ -48,40 +49,42 @@ preprocessUIData<- function(val){
   }
   org <- "human"#ifelse(val$sel_org=="ha","human","rat")
   age <- 25#ifelse(val$sel_org=="ha",25,52)
-  hpgl <- 99#ifelse(val$sel_org=="ha",99,137) # from SymCyp Data
+ 
   liver_wt <- val$num_lw
   bw <- val$num_bw
+  hpgl <- val$num_hpgl
+  km <- val$num_km
+  mpcppgl <- c(val$num_mppgl,val$num_cppgl)
   # get hepatic clerance type
   hepcl_type <- val$tab_heptype
   scaled_hepcl <- switch(hepcl_type,
-                     "hep_sc"=calculateScaledSCClearance(c(val$num_mscl,val$num_cycl),
-                                                        c(val$sel_msunit,val$sel_cyunit),
-                                                        org,age,
-                                                        liver_wt,km),
-                     # "hep_sc"=c(hepcl_type,c("num_mscl",
-                     #                         "sel_msunit",
-                     #                         "num_cycl",
-                     #                         "sel_cyunit")),
-                     "hep_s9"=calculateScaledS9Clearance(val$num_s9cl,val$sel_s9unit,
-                                                         org,age,
-                                                         liver_wt),
-                     "hep_whole"=calculateScaledWholeHepClearance(input$num_whcl,input$sel_whunit,
-                                                                  liver_wt,hpgl,km),
-                     "hep_recomb"=calculateRecombClearance(
-                       list("CYP1A2"=val$num_cyp1a2cl,
-                            "CYP2B6"=val$num_cyp2b6cl,
-                            "CYP3A4"=val$num_cyp3a4cl,
-                            "CYP2C19"=val$num_cyp2c19cl,
-                            "CYP2C9"=val$num_cyp2c9cl,
-                            "CYP3A5"=val$num_cyp3a5cl,
-                            "CES1M"=val$num_ces1mcl,
-                            "CES1C" =val$num_ces1ccl,
-                            "CES2M"=val$num_ces2mcl,
-                            "CES2C"=val$num_ces2ccl
-                       ),org,age,liver_wt),
-                     0
-                     )
-  scaled_hepcl_bw <- signif(scaled_hepcl*km/(bw^0.75),4)
+                         "hep_sc"=calculateScaledSCClearance(c(val$num_mscl,val$num_cycl),
+                                                             c(val$sel_msunit,val$sel_cyunit),
+                                                             org,age,liver_wt,
+                                                             km,mpcppgl,
+                                                             return_total = T),
+                         "hep_s9"=calculateScaledS9Clearance(val$num_s9cl,val$sel_s9unit,
+                                                             org,age,liver_wt,
+                                                             km,mpcppgl),
+                         "hep_whole"=calculateScaledWholeHepClearance(val$num_whcl,
+                                                                      val$sel_whunit,
+                                                                      liver_wt,hpgl,km),
+                         "hep_recomb"=calculateRecombClearance(
+                           list("CYP1A2"=val$num_cyp1a2cl,
+                                "CYP2B6"=val$num_cyp2b6cl,
+                                "CYP3A4"=val$num_cyp3a4cl,
+                                "CYP2C19"=val$num_cyp2c19cl,
+                                "CYP2C9"=val$num_cyp2c9cl,
+                                "CYP3A5"=val$num_cyp3a5cl,
+                                "CES1M"=val$num_ces1mcl,
+                                "CES1C" =val$num_ces1ccl,
+                                "CES2M"=val$num_ces2mcl,
+                                "CES2C"=val$num_ces2ccl
+                           ),org,age,liver_wt),
+                         0
+  )
+  #print(scaled_hepcl)
+  #scaled_hepcl_bw <- signif(scaled_hepcl*km/(bw^0.75),4)
   # calculate renal clearance
   scaled_rencl <- ifelse(val$ch_rencl,val$num_gfr*val$num_fup,0)
 
@@ -109,8 +112,9 @@ preprocessUIData<- function(val){
   )
   equivalent_dose <- pod/ss_concentration
   #equivalent_dose <- getEquivalentDose(ss_concentration)
-  calcualted_vals_list <- list("hep"=scaled_hepcl,"hepbw"=scaled_hepcl_bw,
-                               "ren"=scaled_rencl,"pls"=scaled_plcl,
+  calcualted_vals_list <- list("hep"=signif(scaled_hepcl,4),
+                               "ren"=signif(scaled_rencl,4),
+                               "pls"=signif(scaled_plcl,4),
                                "css"=signif(ss_concentration,4),
                                "eqdose"= signif(equivalent_dose,4))
 
@@ -143,7 +147,7 @@ calculateScaledSCClearance <- function(clearance,units,organism="human",
     MPCPPGL <- unlist(mpcppgl)
   }
   
-  if (units == "ummmP"){
+  if (units[1] == "ummmP"){
     clearance <- clearance/km
     volume_multiplier <- 1
   }else{
@@ -340,4 +344,17 @@ calculateInhVolCss <- function(dose,ql,qc,qp,pair,scaled_hepcl,scaled_plcl){
   # }
   # clb<- qc*scaled_plcl/(qc+scaled_plcl)
   # css<- (dose*bw/24)/(clm+clc+clh+cls9+clb+rcl())
+}
+
+
+#' Get the chemical data from the project Db
+#' This function is not designed to be used by the end user
+getChemDataFromDb <- function(chemid = NULL){
+  query <- sprintf("Select cas from ChemicalSet where chemid = '%i';",as.integer(chemid))
+  result <- projectDbSelect(query)
+  cas <- result$cas
+  query <- sprintf("Select value from Chemical where param = 'mw' AND chemid = '%i'",
+                   as.integer(chemid))
+  result <- projectDbSelect(query)
+  return(list("casn" = cas, "mw"= as.numeric(result$value)))
 }

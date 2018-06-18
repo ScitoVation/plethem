@@ -18,6 +18,7 @@ shinyServer(function(input, output, session) {
   parameterSets$savedat <- reactiveVal(c("No","",0))
   parameterSets$sverestdat <- reactiveVal(c("None",0))
   parameterSets$importdat <- reactiveVal(c("No","",0))
+  parameterSets$importSeem <- reactiveVal(c("No"))
   parameterSets$sim_table <- data.frame("Col1"="","Col2"=0,"Col3"=0,row.names = NULL)
   parameterSets$vardat <- reactiveVal(c("None","",0))
   expo_set <- getAllSetChoices("expo")
@@ -82,7 +83,8 @@ shinyServer(function(input, output, session) {
   # expo_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-  query <- "SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='All' AND ParamSet = 'Chemical'AND UIParams = 'TRUE';"
+  query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
+                   model)
   chem_name_df <- mainDbSelect(query)
 
   #### Update the parameter set dropdowns if they exist for physiological and exposure sets
@@ -192,13 +194,36 @@ shinyServer(function(input, output, session) {
   # })
 
   ########### The next code chunk deals with updating select inputs for all parameter sets]
-
+  # Import SEEM data
+  observeEvent(input$btn_seem_upload,{
+    path <-fpath()
+    importSEEMDataUI(paste0("seem",input$btn_seem_upload))
+    parameterSets$importSeem <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload),
+                       path,expo_name_df)
+  })
+  
+  fpath <- reactive({
+    fpath <- file.choose()
+    return(fpath)
+  })
+  
+  observe({
+    result_vector <- parameterSets$importSeem
+    if(result_vector()[1]=="Yes"){
+      set_type <- "expo"
+      set_list <- getAllSetChoices(set_type)
+      parameterSets[[set_type]] <- reactiveVal(set_list)
+      updateSelectizeInput(session,paste0("sel_",set_type),
+                           choices = set_list)
+    }
+  })
   ### Import button current for chemicals only
   # Import a new chemical set from user or main database
    #### Chunk for handling chemical tab
    observeEvent(input$btn_import_chem,{
-     importParameterSetUI(input$btn_import_chem,"chem")
-     parameterSets$importdat <- callModule(importParameterSet,input$btn_import_chem,"chem")
+     
+     importParameterSetUI(paste0("chem",input$btn_import_chem),"chem")
+     parameterSets$importdat <- callModule(importParameterSet,paste0("chem",input$btn_import_chem),"chem")
 
    })
    #### Chunk for handling physiological tab
@@ -1042,6 +1067,7 @@ shinyServer(function(input, output, session) {
       #rep_flag <- all_params["rep_flag"]
       #model_params <- all_params["model_params"]
       initial_values <- calculateInitialValues(model_params)
+
       updateProgressBar(session,"pb",value = 100, total = 100,
                         status = "info")
       tempDF <- runFDPBPK(initial_values,model)

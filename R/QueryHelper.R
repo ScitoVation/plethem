@@ -161,6 +161,24 @@ userDbUpdate <- function(query){
   RSQLite::dbDisconnect(conn)
 }
 
+#' Runs all select queries an arbitrary database
+#' @description The function runs the select queries issued to the user db and returns the dataframe
+#' the path to user database is stored in main plethem database and is selected from there
+#' @param query A valid SQL Query
+#' @param db_path A valid path
+#' @export
+externDbSelect <- function(query,db_path){
+  # get user dbPath
+  
+  
+  conn <- getDbConn(db_path,internal = F)
+  res <- RSQLite::dbSendQuery(conn,query)
+  res_df <- RSQLite::dbFetch(res)
+  RSQLite::dbClearResult(res)
+  return(res_df)
+  
+}
+
 #' Gets the connection to the pDb to run all the queries against
 #' @description The function returns the connection object to the database passed in DbPath
 #' @param db_path The location of the project databse.
@@ -173,6 +191,7 @@ getDbConn<- function(db_path,internal = T){
   conn <- RSQLite::dbConnect(RSQLite::SQLite(),db_path)
   return(conn)
 }
+
 
 
 
