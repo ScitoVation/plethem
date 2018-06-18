@@ -44,7 +44,7 @@ saveProject <- function(){
 #' @param mode Either Forward Dosimetry(FD) or Monte Carlo(MC) mode. Only valid for PBPK type models
 #' @export
 newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC"){
-  save_path <- gsub("\\\\","/",choose.dir(caption = sprintf("Select folder where %s will be saved",name)))
+  save_path <- gsub("\\\\","/",rstudioapi::selectDirectory(caption = sprintf("Select folder where %s will be saved",name)))
   clearProjectDb()
   # write new project details to the project table
   query <- sprintf("INSERT INTO Project (name, path, type, model, mode) Values ('%s','%s','%s','%s','%s');",
@@ -78,7 +78,8 @@ listProjects <- function(type = NULL){
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){
-    file_path <- file.choose(caption = "Select PLETHEM project file")
+    file_path <- rstudioapi::selectFile(caption = "Select PLETHEM Project",
+                                        filter= "*.Rdata")
   }
   
   load(file_path)

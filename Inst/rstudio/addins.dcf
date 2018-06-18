@@ -17,3 +17,13 @@ Name:Create a new user database
 Description: creates a new user database to use for PLETHEM
 Binding:createUserDb
 Interactive:FALSE
+
+Name:Load PLETHEM Project
+Description:Load an existing project in the database and launch the appropriate UI
+Binding:loadProject
+Interactive:FALSE
+
+Name:Create PLETHEM Project
+Description:Create a new PLETHEM project
+Binding:newProjectGadget
+Interactive:TRUE
