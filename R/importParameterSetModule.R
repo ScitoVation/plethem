@@ -82,7 +82,7 @@ importParameterSet <- function(input,output,session,set_type){
   if (length(user_id_list[[id_name]])==0){
     user_id_num = 1
   }else{
-    user_id_num = max(user_id_list[[id_name]])+1
+    user_id_num = max(as.integer(user_id_list[[id_name]]))+1
   }
 
   all_sets_query <- sprintf("SELECT * FROM %s ;",set_table_name)

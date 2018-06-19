@@ -1,7 +1,7 @@
 #' Sets the path to the existing Db
 #' @export
 setUserDb<- function(){
-  userDbPath <- rstudioapi::selectFile(caption = "Select User database",filter = ".sqlite")
+  userDbPath <- rstudioapi::selectFile(caption = "Select User database",filter = "*.sqlite")
   query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",userDbPath)
   mainDbUpdate(query)
   

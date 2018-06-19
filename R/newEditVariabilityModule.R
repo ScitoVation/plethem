@@ -51,6 +51,8 @@ newEditVariabilityUI <- function(namespace){
   ))
 }
 
+#' Server side function for variability
+#' @export
 newEditVariability <- function(input,output,session,set_type,ops_type,var_params_list,set_id = 0){
   
   returnValues <- reactiveValues()
