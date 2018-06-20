@@ -26,8 +26,10 @@ PLETHEM pulls data from three databases. The master database is installed with t
 
 To complete the initial setup, the user needs to define the location where they want to store the user database. If they are updating a previous installation of PLETHEM or want to use the user database from another installation, they can just point to the database file instead. To either create a new database or to use an existing file run the following command and follow the prompts that come up
   >library(plethem)
-  
+  To use an exiting database, click on "Select user database" from the Addins menu or type
   >setUserDb()
+  To create a new database, click on "Create new user database" from the Addins menu or type
+  >createUserDb()
   
 This only needs to be done once.
 
