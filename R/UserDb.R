@@ -1,7 +1,7 @@
 #' Sets the path to the existing Db
 #' @export
 setUserDb<- function(){
-  if ("rstudioapi" %in% installed.packages){
+  if ("rstudioapi" %in% installed.packages()){
     userDbPath <- rstudioapi::selectFile(caption = "Select User database",filter = "*.sqlite")
   }else{
     userDbPath <- file.choose()

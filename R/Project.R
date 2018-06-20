@@ -83,7 +83,7 @@ listProjects <- function(type = NULL){
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){
-    if("rstudioapi" %in% installed && .Platform$GUI == "Rstudio"){
+    if("rstudioapi" %in% installed.packages() && .Platform$GUI == "Rstudio"){
       file_path <- rstudioapi::selectFile(caption = "Select PLETHEM Project",
                                           filter= "*.Rdata")
     }else{
