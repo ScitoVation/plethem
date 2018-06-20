@@ -93,7 +93,7 @@ preprocessUIData<- function(val){
   #get clearance scaling type
   cl_type <- val$rdo_cltype
   ql <- val$num_ql
-  qc <- val$num_qc
+  qalv <- getLifecourseVentilationRate(25,"M")
   fup <- val$num_fup
   bw<- val$num_bw
   pair <- val$num_pair
@@ -106,7 +106,7 @@ preprocessUIData<- function(val){
                                                                    scaled_plcl),
                              "oralvol"=calculateOralVolCss(dose,bw,ql,qc,pair,scaled_hepcl,
                                                            scaled_plcl),
-                             "inhvol"=calculateInhVolCss(dose,ql,qc,qp,pair,
+                             "inhvol"=calculateInhVolCss(dose,ql,qalv,pair,
                                                           scaled_hepcl,scaled_plcl),
                              stop("Invalid IVIVE type")
   )
@@ -324,13 +324,13 @@ calculateOralVolCss <- function(dose,bw,ql,qc,pair,scaled_hepcl,scaled_plcl){
     clh<- ql*scaled_hepcl/(ql+scaled_hepcl)
   }
   clb<- qc*scaled_plcl/(qc+scaled_plcl)
-  css<- (dose*bw/24)/(clm+clc+clh+cls9+clb+rcl())
+  css<- (dose*bw/24)/(clh+clb+rcl())
   return(css)
 }
 #'calculate steady state concentration of inhaled volatile compounds
 #' based on steady state clearance for renal,#'hepatic and plasma clearance
 #'
-calculateInhVolCss <- function(dose,ql,qc,qp,pair,scaled_hepcl,scaled_plcl){
+calculateInhVolCss <- function(dose,ql,qalv,pair,scaled_hepcl,scaled_plcl){
 
   clh <- (ql/qalv)*(scaled_hepcl/(scaled_hepcl+ql))
   css <- dose/((1/pair)+clh)
