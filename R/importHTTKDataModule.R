@@ -18,7 +18,7 @@ importHTTKDataUI <- function(namespace){
     )
   return(NULL)
 }
-
+#'@export
 importHTTKData <- function(input,output,session){
   returnValues <- reactiveValues()
   returnValues$retdata <- c("No","",0)
