@@ -18,7 +18,7 @@ setUserDb<- function(){
 #' Creates a new userDb based on the empty database in the package
 #' @export
 createUserDb <- function(){
-  if("rstudioapi" %in% installed.packages){
+  if("rstudioapi" %in% installed.packages()){
     userDbPath <- rstudioapi::selectDirectory(caption = "Create a new user database")
   }else{
     userDbPath <- choose.dir(caption = "Create a new user database")

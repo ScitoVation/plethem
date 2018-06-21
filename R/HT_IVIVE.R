@@ -94,6 +94,7 @@ preprocessUIData<- function(val){
   cl_type <- val$rdo_cltype
   ql <- val$num_ql
   qalv <- getLifecourseVentilationRate(25,"M")
+  qc <- val$num_qc
   fup <- val$num_fup
   bw<- val$num_bw
   pair <- val$num_pair
