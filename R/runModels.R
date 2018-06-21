@@ -74,6 +74,7 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
                              initial_values$names)
    # params4model <- setNames(as.numeric(params4model),initial_values$names)
     params4model <- as.list(params4model)
+    print(params4model[["Clmetabolismc"]])
     days <- as.numeric(initial_values$vals["sim_dur"])
     tsteps <- 100
     bdose <- as.numeric(initial_values$vals["bdose"])
@@ -114,4 +115,10 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
   
 
   return(result)
+}
+
+#' @export
+runHTIVIVE <- function(){
+  clearProjectDb()
+  interactiveHT("HT-IVIVE")
 }
