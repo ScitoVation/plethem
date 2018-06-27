@@ -3,7 +3,7 @@ Description: Performs IVIVE to get scaled clearance for use in PBPK models
 Binding: doIVIVE
 Interactive: TRUE
 
-Name: Add Chemicals to HTTK
+Name: Add/Edit HTTK Chemicals
 Description: Adds chemicals to HTTK database so they can be used with HTTK models
 Binding:addChemsToHTTK
 Interactive:TRUE
@@ -27,3 +27,13 @@ Name:Create PLETHEM Project
 Description:Create a new PLETHEM project
 Binding:newProjectGadget
 Interactive:TRUE
+
+Name:HT-IVIVE using HTTK
+Description: Use HTTK's oral equivalent dose calculation to perform High Throughput IVIVE
+Binding: httkCalcOralEqDose
+Interactive:TRUE
+
+Name:HT-IVIVE using PLETHEM
+Description:Use PLETHEM's HT-IVIVE model to calculate oral or inhalation equivalent dose
+Binding:runHTIVIVE
+Interactive:FALSE

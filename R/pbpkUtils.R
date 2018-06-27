@@ -9,7 +9,7 @@
 #' @return List containing the metabolism values needed to run PBPK model or
 #' display simulation information
 #' @export
-getMetabData <- function(metabid,physioid,chemid,model = "rapidPBPK"){
+getMetabData <- function(metabid,physioid,chemid,model){
   metabid <- as.integer(metabid)
   physioid <- as.integer(physioid)
   chemid <- as.integer(chemid)
@@ -35,6 +35,7 @@ getMetabData <- function(metabid,physioid,chemid,model = "rapidPBPK"){
       query <- sprintf("SELECT value from Chemical WHERE chemid = %i AND param = '%s';",
                        chemid,variable)
       result <- projectDbSelect(query)
+      print(result)
       value <- as.numeric(result$value)
     }
     
@@ -67,6 +68,7 @@ getMetabData <- function(metabid,physioid,chemid,model = "rapidPBPK"){
     metab_age <- ifelse(age %in% metab_tble$Age,age,ref_age)
     value <- metab_tble$Clearance[which(metab_tble$Age == metab_age)]
   }
+  print(value)
   return(list("Type"= metab_type,
               "Units"=metab_units,
               "Value"= value,
@@ -153,6 +155,7 @@ getAllParamValuesForModel <- function(simid,model){
       params[["vmaxc"]]<- 1e-10
     }
   }else if(model == "httk_pbtk"){
+    print(metab_data)
     params[["Clmetabolismc"]]<- metab_data$Value
   }
   

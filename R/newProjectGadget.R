@@ -13,9 +13,6 @@ newProjectGadget <- function(){
                                            ),
                             width = validateCssUnit("90%")
                             ),
-                selectInput("mtype","Select Model Type",
-                            choices = list("PBPK","HT-IVIVE"),
-                            width = validateCssUnit("90%")),
                 selectInput("wtype","Select Workflow Type",
                             choices=list("Monte Carlo"="MC",
                                          "Forward Dosimetry"="FD"),
@@ -27,7 +24,7 @@ newProjectGadget <- function(){
     observeEvent(input$done,{
       pname <- input$pname
       mname <- input$mname
-      mtype <- input$mtype
+      mtype <- "PBPK"
       wtype <- input$wtype
       code <- sprintf("newProject(name = '%s', type = '%s', model = '%s', mode = '%s')",
               pname,

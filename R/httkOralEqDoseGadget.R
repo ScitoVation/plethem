@@ -4,13 +4,16 @@ httkCalcOralEqDose <- function(){
   ui <- miniPage(
     gadgetTitleBar(""),
     miniContentPanel(
-      fillCol(flex = c(1,5,1),
+      fillCol(flex = 1,
         numericInput("ivc","Enter Invitro Concentration (uM)",
                      value = 0,width = validateCssUnit("90%")),
         pickerInput("chem_list","Select Chemical",
                     choices = NULL,
+                    options = list(size = 5,
+                                   'live-search'= T),
                     width = validateCssUnit("90%")),
-        numericInput("quantile","Quantile",0.5,min = 0,max =1)
+        numericInput("quantile","Quantile",0.5,min = 0,max =1,
+                     validateCssUnit("90%"))
         )
     )
   )
@@ -31,5 +34,5 @@ httkCalcOralEqDose <- function(){
     
   }
   runGadget(ui,server,viewer =dialogViewer("HTTK Oral Equivalent Dose",
-                                           width = 250,height = 450))
+                                           width = 350,height = 450))
 }

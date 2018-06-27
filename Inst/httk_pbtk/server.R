@@ -1763,7 +1763,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                           error_y = list(array= ~sd,
                                          color = '#000')
         )%>%
-        plotly::layout(xaxis = list(title = ('Time(h)')),
+        plotly::layout(xaxis = list(title = ('Time(days)')),
                        yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
                                                     'Concentration (mg/L)'))))
       
@@ -1793,7 +1793,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
   output$concplt <- plotly::renderPlotly(concplt())
   output$exposureplt <- plotly::renderPlotly(plotly::ggplotly(ggplot(exposureData(), aes(x=time,y=value,color = variable))+geom_line()
-                                                              +labs(x="Time (h)",y="Amount(umoles)")
+                                                              +labs(x="Time (days)",y="Amount(umoles)")
                                                               +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
 
 

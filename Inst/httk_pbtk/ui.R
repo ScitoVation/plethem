@@ -584,8 +584,8 @@ shinyUI(fluidPage(
                                                                                    openOnFocus = T))),
                                                column(width = 5, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
-                                                        c("btn_import_chem","btn_sverest_chem","btn_saveas_chem"),
-                                                        c("Import","Save/Restore","Save As"),
+                                                        c("btn_import_chem"),
+                                                        c("Import"),
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
@@ -962,7 +962,7 @@ shinyUI(fluidPage(
                                                                   textOutput("sim_start")
                                                            ),
                                                            column(6,
-                                                                  tags$h4("Simulation Duration (h)"),
+                                                                  tags$h4("Simulation Duration (days)"),
                                                                   textOutput("sim_dur")
                                                                   )
                                                          ),
