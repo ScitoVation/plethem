@@ -33,7 +33,8 @@ Imports:
 	formatR,
 	plotly,
 	magrittr,
-    rstudioapi
+    rstudioapi,
+    sqldf
 Suggests: testthat,
     knitr,
     rmarkdown

@@ -40,7 +40,8 @@ getNextID <- function(tble_name, db_path ="database/project.sqlite"){
                     "ChemicalSet" = "chemid",
                     "PhysiologicalSet" = "physioid",
                     "SimulationsSet" = "simid",
-                    "ObservationSet" = "obsid")
+                    "ObservationSet" = "obsid",
+                    "Variability"="varid")
   query <- sprintf("SELECT %s FROM %s ;",id_name,tble_name)
   id_list <- projectDbSelect(query)
   if (length(id_list[[id_name]])==0){

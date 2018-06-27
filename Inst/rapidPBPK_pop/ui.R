@@ -851,6 +851,10 @@ shinyUI(fluidPage(
                                                column(2,
                                                       shinyBS::bsButton("btn_seem_upload",
                                                                         "Import From SEEM Data",
+                                                                        block = T)),
+                                               column(2,
+                                                      shinyBS::bsButton("btn_sheds_upload",
+                                                                        "Import SHEDS-HT results",
                                                                         block = T))
                                              ),
 

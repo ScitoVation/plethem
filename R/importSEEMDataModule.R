@@ -27,20 +27,8 @@ importSEEMData <- function(input,output,session,fpath,expo_name_df){#,expo_name_
   id_name <- "expoid"
   set_table_name <- "ExposureSet"
   vals_table_name <- "Exposure"
-  # get the current ID for the parameter set from project database
-  query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
-  id_list <- projectDbSelect(query)
-  
-  if (length(id_list[[id_name]])==0){
-    id_num = 1
-  }else{
-    id_num = max(id_list[[id_name]])+1
-  }
-  #fpath <- file.choose()
-  # fpath <- reactive({
-  #   fpath <- file.choose()
-  #   return(fpath)
-  # })
+  id_num <- getNextID(set_table_name)
+ 
   query <- "SELECT Category,catid from ChemData;"
   ret_data <- externDbSelect(query,fpath)
   #print(ret_data)
