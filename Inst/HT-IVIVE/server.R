@@ -124,6 +124,11 @@ shinyServer(function(input,output,session){
     #chem_names <- getChemicalList()
 
   )
+  observeEvent(input$navMenu,{
+    if (input$navMenu == "stop"){
+      stopApp()
+    }
+  })
   # observeEvent(input$ok,{
   #   num_add <- isolate(as.numeric(input$add_row))
   #   chem <- input$sel_chem2add

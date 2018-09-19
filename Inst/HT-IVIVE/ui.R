@@ -39,6 +39,8 @@ shinyUI(fluidPage(
              tabPanel(title = "Results",
                       fluidRow(
                         DT::dataTableOutput("result_table")
-                      ))
+                      )),
+             tabPanel(title = NULL,icon = icon("power-off"),
+                      value = "stop")
   )
 ))

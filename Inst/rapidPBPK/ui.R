@@ -723,7 +723,7 @@ chem_body <- dashboardBody(
               column(6,
                      numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μM/h/kg)"),1,0,250,0.01)),
               column(6,
-                     numericInput("ms_km","Michelis Menton Constant for Metabolism",1,0,250,0.01))
+                     numericInput("ms_km","Michelis Menten Constant for Metabolism",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
