@@ -75,16 +75,10 @@ getMetabData <- function(metabid,physioid,chemid,model){
               "Var"=variable))
 }
 
-#' Gets all the parameter values for the model. This function should not be used by the model
-#' @description Get all the parameter values that are required for the model to run. The values
-#' are obtained from the Project database. Only those values that are used in the model as
-#' determined by the master database are returned by the function
-#' @param simid Integer The id for simulation selected to run
-#' @param model Character The string identifying the model to be run
-#' @return list List that can be passed to the solver as model params
-#' @export
-getAllParamValuesForModel <- function(simid,model){
-  simid <- as.integer(simid)
+#' Gets all the param_names for the model
+#' @description Get all the param_names for any given model. The function is not called by the user
+#' @param model Character string indentfying the model to be run
+getAllParamNames <- function(model){
   # get the param names that are a part of the model
   # get physiological parameter names
   query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Physiological' AND Model = '%s';",
@@ -101,6 +95,21 @@ getAllParamValuesForModel <- function(simid,model){
                    model)
   result <- mainDbSelect(query)
   param_names <- c(param_names,result$Var)
+  return(param_names)
+}
+
+#' Gets all the parameter values for the model. This function should not be used by the model
+#' @description Get all the parameter values that are required for the model to run. The values
+#' are obtained from the Project database. Only those values that are used in the model as
+#' determined by the master database are returned by the function
+#' @param simid Integer The id for simulation selected to run
+#' @param model Character The string identifying the model to be run
+#' @return list List that can be passed to the solver as model params
+#' @export
+getAllParamValuesForModel <- function(simid,model){
+  simid <- as.integer(simid)
+  param_names <- getAllParamNames(model)
+  
 
 
 

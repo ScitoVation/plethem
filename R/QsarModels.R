@@ -6,7 +6,7 @@
 #'@param tissue_list List of tissues for which the partition coefficients need to be calculated. See vignette on Qsar based parameter estimation of more details
 #'@export
 calculatePartitionCoefficients<- function(selected_qsar = "default",chem_params = NULL,
-                                          tissue_list=NULL,selected_org = "human"){
+                                          tissue_list=list(),selected_org = "human"){
 
   partCoefficients <- list()
   #decide which qsar model to run

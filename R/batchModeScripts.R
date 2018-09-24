@@ -19,10 +19,11 @@
 #' @export
 loadBatchChemicalData <- function(file_path = NULL){
   chemdf <- data.frame(stringsAsFactors = F)
-  if (is.null){
+  if (is.null(file_path)){
     file_path <- file.choose()
   }
-  raw_data <- read.csv(file_path,T)
+  chemdf <-read.csv(fpath,T,stringsAsFactors = F)
+  colnames(chemdf)[3:7]<- c("mw","logp","lkow","vpa","wsol")
   return(chemdf)
 } 
 
@@ -45,7 +46,7 @@ loadBatchChemicalData <- function(file_path = NULL){
 #' @export
 loadBatchExposureData <- function(file_path = NULL){
   expodf <- data.frame(stringsAsFactors = F)
-  if (is.null){
+  if (is.null(file_path)){
     file_path <- file.choose()
   }
   # read the csv file and return data to console
@@ -67,9 +68,239 @@ loadBatchExposureData <- function(file_path = NULL){
 #' @param save_to_file. If true promts the user to select a path to save a excel file with all the result
 #' @return If save_to_file is FALSE, returns a list of dataframes, each contaning simulation results, indexed by compound name.
 #' @export
-runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  model = "rapidPBPK", organism = "human"){
-  # load chemical data
-  # perform QSAR for Partition Coefficiant prediction
-  # perfrom IVIVE based on input data
+runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  model = "rapidPBPK", 
+                         organism = "human"){
+  if (load_files == TRUE){
+    chemdf <- loadBatchChemicalData(chemicals)
+    #expodf <- loadBatchExposureData(exposures)
+  }else{
+    chemdf <- chemicals
+    #expodf <- exposures
+  }
+  hpgl <- ifelse(organism == "human",99,109)#change later
+  mppgl <- ifelse(organism == "human",120,240)#change later
+  cppgl <- ifelse(organism == "human",230,200)# change later
+  mpcppgl <- list("MPPGL"=mppgl,"CPPGL"=cppgl)
+  liver_wt <- ifelse(organism=="human",1.58,0.023)#change later
+  bw<- ifelse(organism=="human",81.50,0.023)#change later
+  numchems <- nrow(chemdf)
+  for (i in 1:nrow(chemdf)){
+    chem_params <- as.list(chemdf[i,3:7])
+    partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
+    metab_type <- chemdf[i,9]
+    km <- chemdf[i,8]
+    mw <- chemdf[i,3]
+    if(metab_type=="Subcellular"){
+      micl <- chemdf[i,10]
+      cycl <- chemdf[i,11]
+      scaled_hepcl <- calculateScaledSCClearance(c(micl,cycl),
+                                                 c("ulmmP","ulmmP"),
+                                                 org,25,liver_wt,
+                                                 km,mpcppgl,
+                                                 return_total = T)
+      vmaxc <- scaled_hepcl*km/(bw^0.75)
+    }else if(metab_type=="Hepatocyte"){
+      whcl <- chemdf[i,10]
+      scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,km)
+      vmaxc <- scaled_hepcl*km/(bw^0.75)
+    }else{
+      vmaxc <- chemdf[i,10]
+      vkm1c<- chemdf[i,11]
+    }
+    if (is.na(vmaxc)){
+      vmaxc <- 0
+      }
+    else{
+      vkm1c <- 0
+    }
+
+    # tissue list
+    vol_tissues <- c("fat","skin","muscle",
+                 "bone","brain",
+                 "lung","heart","gi",
+                 "liver","kidney","rpf","spf")
+    vol_tissue_ids <- c("fat"="vfatc","skin"="vskinc",
+                    "muscle"="vmuscc","bone"="vbonec",
+                    "brain"="vbrnc","lung"="vlngc",
+                    "heart"="vhrtc","gi"="vgic",
+                    "liver"="vlivc","kidney"="vkdnc",
+                    "rpf"="vrpfc","spf"="vspfc","blood"="vbldc",
+                    "bw"="bw")
+    flow_tissues <- c("fat","skin","muscle",
+                      "bone","brain",
+                      "lung","heart","gi",
+                      "kidney","rpf","spf")
+    flow_tissue_ids <- c("fat"="qfatc","skin"="qskinc",
+                         "muscle"="qmuscc","bone"="qbonec",
+                         "brain"="qbrnc","lung"="qlngc",
+                         "heart"="qhrtc","gi"="qgic",
+                         "liver_art"="qalivc","liver_ven"="qvlivc",
+                         "kidney"="qkdnc","rpf"="qrpfc","spf"="qspfc",
+                         "qc"="qcc")
+    perfc <- 0.85
+    if (organism == "human"){
+      age <- 25
+      gender <- "M"
+      vols <- getLifecourseTissueVolumes(age,"M",perfc, c(vol_tissues,"blood"))
+      vols["bw"] <- getLifecourseBodyWeight(age,"M")
+      names(vols)<- lapply(c(vol_tissues,"blood","bw"),function(x){vol_tissue_ids[x]})
+      for(elem in names(vols)){
+        #print(elem)
+        if(elem!="bw"){
+          vols[[elem]]<- vols[[elem]]/(vols["bw"])
+        }
+      }
+      flows <- getLifecourseTissuePerfusion(age,"M", c(flow_tissues,"liver"))
+      flows["qc"]<- getLifecourseCardiacOutput(age,"M")
+      names(flows)<- lapply(c(flow_tissues,"liver_art","liver_ven","qc"),function(x){flow_tissue_ids[x]})
+      
+      for(elem in names(flows)){
+        #print(elem)
+        if(elem!="qc"){
+          flows[elem]<- flows[elem]/(flows["qc"])
+        }
+      }
+      ventilation_rate <- getLifecourseVentilationRate(age,gender)
+      tidal_volume <- getLifecourseTidalVolume(age,gender)
+      ds <- getLifecourseLungDeadSpace(age,gender)
+      gfr <- getLifecourseGlomerularFiltrationRate(age,gender)
+      hct <- 0.441
+    }
+    param_list <- c(vols,flows,partitions,"vmaxc"=vmaxc,"vkm1c"=vkm1c,
+                    "respr"=ventilation_rate,"tv"=tidal_volume,"ds"=ds,"gfr"=gfr,
+                    "hct"=hct)
+    initial_params <- within(as.list(param_list),{
+      mw <- mw
+      km <- km
+      total_vol <- 1
+      #Scaled Tissue Volumes
+      vbld <- vbldc*(perfc/total_vol)*bw     #L;Blood
+      vpls <- vbld*(1-hct)
+      vfat <- vfatc*(perfc/total_vol)*bw
+      vskin <- vskinc*(perfc/total_vol)*bw
+      vmusc <- vmuscc*(perfc/total_vol)*bw
+      vbone <- vbonec*(perfc/total_vol)*bw
+      vbrn <- vbrnc*(perfc/total_vol)*bw
+      vlng <- vlngc*(perfc/total_vol)*bw
+      vhrt <- vhrtc*(perfc/total_vol)*bw
+      vkdn <- vkdnc*(perfc/total_vol)*bw
+      vgi <- vgic*(perfc/total_vol)*bw
+      vliv <- vlivc*(perfc/total_vol)*bw
+      vrpf <- vrpfc*(perfc/total_vol)*bw
+      vspf <- vspfc*(perfc/total_vol)*bw
+      
+      #Total Fractional Perfusion
+      total_perf <- qfatc+qskinc+qmuscc+qbonec+qbrnc+qlngc+qhrtc+qkdnc+qvlivc+qrpfc+qspfc  # This does not include flow to GI since that is a part of liver venous flow
+      
+      #Scaled Perfusion
+      qcp <- qcc*(1-hct)
+      qfat <- qfatc*(1/total_perf)*qcp
+      qskin <- qskinc*(1/total_perf)*qcp
+      qmusc <- qmuscc*(1/total_perf)*qcp
+      qbone <- qbonec*(1/total_perf)*qcp
+      qbrn <- qbrnc*(1/total_perf)*qcp
+      qlng <- qlngc*(1/total_perf)*qcp
+      qhrt <- qhrtc*(1/total_perf)*qcp
+      qkdn <- qkdnc*(1/total_perf)*qcp
+      qvliv <- qvlivc*(1/total_perf)*qcp
+      qgi <- (qgic/(qgic+qalivc))*qvliv
+      qaliv <- (qalivc/(qgic+qalivc))*qvliv
+      qrpf <- qrpfc*(1/total_perf)*qcp
+      qspf <- qspfc*(1/total_perf)*qcp
+      
+      #Scaled tissue permeability coefs
+      pafat <- 1000
+      paskin <- 1000
+      pamusc <- 1000
+      pabone <- 1000
+      pabrn <- 1000
+      palng <- 1000
+      pahrt <-1000
+      pakdn <- 1000
+      pagi <- 1000
+      paliv <- 1000
+      parpf <- 1000
+      paspf <- 1000
+      
+      vkm1 <- vkm1c*vliv
+      vmaxliv <- vmaxc*bw**0.75
+      
+      tstop <- 24
+      tstart <- 0
+      cinh <- 0
+      qalv <- (tv-ds)*respr
+      pair <- ifelse(pair >0,pair,1E-10)
+      bdose <- 0
+      blen <- 0
+      breps <- 0
+      totbreps<- 0
+      drdose <- 0
+      vdw <- 0
+      dreps <- 0
+      inhdose <- 0
+      inhtlen <- 0
+      inhdays <- 0
+      ivdose <- 0
+      ivlen <- 0
+      bw <- bw
+      fupls <- 1
+      kbld <- 0
+      uflw <- 1 # change later
+    })
+    totdays <- 1
+    tstart <- 0
+    tstop <- 24
+    bdose <- 10
+    # var to change
+    state_Var <- c("odose","totodose")
+    
+    # operation of event
+    operation <- c("add","add")
+    change_val1<- (bdose*bw*1000/mw)
+    change_val2<- change_val1
+    change_arr <- c(change_val1,change_val2)
+    event_times <- c(tstart)
+    eventDat <- data.frame(
+      
+      var = rep(x = state_Var,each = length(event_times)),
+      time = rep(event_times,length(state_Var)),
+      value = rep(x = change_arr,each = length(event_times)),
+      method = rep(x = operation,each = length(event_times))
+      
+    )
+    times <- seq(tstart,tstop,by=0.1)
+    eventDat <- eventDat[order(eventDat$time),]
+    
+    state <- c(
+      #exposure related
+      inhswch=0,ainh=0,aexh=0,
+      totodose=0,odose=0,totddose=0,ddose=0,aabsgut=0,
+      ivswch=0,aiv=0,
+      #compartments
+      abld=0,
+      abfat=0,atfat=0,
+      abskin=0,atskin=0,
+      abmusc=0,atmusc=0,
+      abbone=0,atbone=0,
+      abbrn=0,atbrn=0,
+      ablng=0,atlng=0,
+      abhrt=0,athrt=0,
+      abgi=0,atgi=0,
+      abliv=0,atliv=0,
+      abkdn=0,atkdn=0,
+      abrpf=0,atrpf=0,
+      abspf=0,atspf=0,
+      # Clearance
+      ametliv1=0,ametliv2=0,aclbld=0,auexc=0,anabsgut=0)
+    param_names <- getAllParamNames(model)
+    initial_values <- list("evnt_data"= eventDat,
+                           "initial_params"= initial_params[param_names],
+                           "times"=times,
+                           "tstop"=tstop,"tstart"=tstart,
+                           "state"= state)
+    print(initial_values["initial_params"])
+    result <- runFDPBPK(initial_values,model)
+
+  }
   # combine data to create a initial
 }
