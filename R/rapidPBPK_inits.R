@@ -129,7 +129,8 @@ rapidPBPK_initParms <- function(newParms = NULL) {
 
   if (!is.null(newParms)) {
     if (!all(names(newParms) %in% c(names(parms)))) {
-      print(setdiff(names(newParms),c(names(parms))) )
+      a <- setdiff(names(newParms),c(names(parms)))
+      #write.table(a,"F:/testoutput.csv")
       stop("illegal parameter name")
     }
     parms[names(newParms)] <- newParms

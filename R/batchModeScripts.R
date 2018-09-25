@@ -69,7 +69,7 @@ loadBatchExposureData <- function(file_path = NULL){
 #' @return If save_to_file is FALSE, returns a list of dataframes, each contaning simulation results, indexed by compound name.
 #' @export
 runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  model = "rapidPBPK", 
-                         organism = "human"){
+                         organism = "rat"){
   if (load_files == TRUE){
     chemdf <- loadBatchChemicalData(chemicals)
     #expodf <- loadBatchExposureData(exposures)
@@ -84,15 +84,15 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
   liver_wt <- ifelse(organism=="human",1.58,0.023)#change later
   bw<- ifelse(organism=="human",81.50,0.023)#change later
   numchems <- nrow(chemdf)
-  for (i in 1:nrow(chemdf)){
+  for (i in 1:nrow(chemdf)){#){
     chem_params <- as.list(chemdf[i,3:7])
     partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
-    metab_type <- chemdf[i,9]
-    km <- chemdf[i,8]
+    metab_type <- chemdf[i,12]
+    km <- chemdf[i,11]
     mw <- chemdf[i,3]
     if(metab_type=="Subcellular"){
-      micl <- chemdf[i,10]
-      cycl <- chemdf[i,11]
+      micl <- chemdf[i,13]
+      cycl <- chemdf[i,14]
       scaled_hepcl <- calculateScaledSCClearance(c(micl,cycl),
                                                  c("ulmmP","ulmmP"),
                                                  org,25,liver_wt,
@@ -100,12 +100,12 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
                                                  return_total = T)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
     }else if(metab_type=="Hepatocyte"){
-      whcl <- chemdf[i,10]
+      whcl <- chemdf[i,13]
       scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,km)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
     }else{
-      vmaxc <- chemdf[i,10]
-      vkm1c<- chemdf[i,11]
+      vmaxc <- chemdf[i,13]
+      vkm1c<- chemdf[i,14]
     }
     if (is.na(vmaxc)){
       vmaxc <- 0
@@ -150,29 +150,44 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
           vols[[elem]]<- vols[[elem]]/(vols["bw"])
         }
       }
+      
       flows <- getLifecourseTissuePerfusion(age,"M", c(flow_tissues,"liver"))
       flows["qc"]<- getLifecourseCardiacOutput(age,"M")
       names(flows)<- lapply(c(flow_tissues,"liver_art","liver_ven","qc"),function(x){flow_tissue_ids[x]})
       
       for(elem in names(flows)){
         #print(elem)
-        if(elem!="qc"){
-          flows[elem]<- flows[elem]/(flows["qc"])
+        if(elem!="qcc"){
+          flows[elem]<- flows[elem]/(flows["qcc"])
         }
       }
+      
       ventilation_rate <- getLifecourseVentilationRate(age,gender)
       tidal_volume <- getLifecourseTidalVolume(age,gender)
       ds <- getLifecourseLungDeadSpace(age,gender)
       gfr <- getLifecourseGlomerularFiltrationRate(age,gender)
       hct <- 0.441
     }
-    param_list <- c(vols,flows,partitions,"vmaxc"=vmaxc,"vkm1c"=vkm1c,
-                    "respr"=ventilation_rate,"tv"=tidal_volume,"ds"=ds,"gfr"=gfr,
-                    "hct"=hct)
-    initial_params <- within(as.list(param_list),{
+    if (organism == "rat"){
+      query <- "Select param,value From Physiological where physioid = 1;"
+      vals <- mainDbSelect(query)
+      
+      vals <- as.list(
+        setNames(vals$value,nm = vals$param))
+      
+      vals[which(names(vals) %in% c("org","gender","cmplist"))]<- NULL
+      vals <- lapply(vals,as.numeric)
+      #print(vals)
+    }
+    # param_list <- c(vals,partitions,"vmaxc"=vmaxc,"vkm1c"=vkm1c,
+    #                 "respr"=ventilation_rate,"tv"=tidal_volume,"ds"=ds,"gfr"=gfr,
+    #                 "hct"=hct)
+    initial_params <- within(as.list(vals),{
       mw <- mw
       km <- km
-      total_vol <- 1
+      vmaxc <- vmaxc
+      vkm1c <- vkm1c
+      total_vol <- vbldc+vfatc+vskinc+vmuscc+vbonec+vbrnc+vlngc+vhrtc+vkdnc+vgic+vlivc+vrpfc+vspfc
       #Scaled Tissue Volumes
       vbld <- vbldc*(perfc/total_vol)*bw     #L;Blood
       vpls <- vbld*(1-hct)
@@ -230,10 +245,10 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       cinh <- 0
       qalv <- (tv-ds)*respr
       pair <- ifelse(pair >0,pair,1E-10)
-      bdose <- 0
-      blen <- 0
-      breps <- 0
-      totbreps<- 0
+      bdose <- 10
+      blen <- 1
+      breps <- 1
+      totbreps<- 1
       drdose <- 0
       vdw <- 0
       dreps <- 0
@@ -242,10 +257,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       inhdays <- 0
       ivdose <- 0
       ivlen <- 0
-      bw <- bw
       fupls <- 1
-      kbld <- 0
-      uflw <- 1 # change later
     })
     totdays <- 1
     tstart <- 0
@@ -293,13 +305,17 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       # Clearance
       ametliv1=0,ametliv2=0,aclbld=0,auexc=0,anabsgut=0)
     param_names <- getAllParamNames(model)
+    initial_params <- initial_params[param_names]
+    initial_params <- initial_params[-which(sapply(initial_params, is.null))]
     initial_values <- list("evnt_data"= eventDat,
-                           "initial_params"= initial_params[param_names],
+                           "initial_params"= initial_params,
                            "times"=times,
                            "tstop"=tstop,"tstart"=tstart,
                            "state"= state)
-    print(initial_values["initial_params"])
+    #print(initial_values["initial_params"])
     result <- runFDPBPK(initial_values,model)
+    res_df<- as.data.frame(result,stringsAsFactors = F)
+    write.csv(res_df,paste0("E:/",chemdf[i,2],".csv"))
 
   }
   # combine data to create a initial
