@@ -77,18 +77,30 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
     chemdf <- chemicals
     #expodf <- exposures
   }
-  hpgl <- ifelse(organism == "human",99,109)#change later
-  mppgl <- ifelse(organism == "human",120,240)#change later
-  cppgl <- ifelse(organism == "human",230,200)# change later
+  hpgl <- ifelse(organism == "human",99,110)#change later
+  mppgl <- ifelse(organism == "human",39.99,45)#change later
+  cppgl <- ifelse(organism == "human",80.7,91)# change later
   mpcppgl <- list("MPPGL"=mppgl,"CPPGL"=cppgl)
-  liver_wt <- ifelse(organism=="human",1.58,0.023)#change later
-  bw<- ifelse(organism=="human",81.50,0.023)#change later
+  liver_wt <- ifelse(organism=="human",1.58,0.012)#change later
+  bw<- ifelse(organism=="human",81.21,0.023)#change later
+  num_chems <- nrow(chemdf)
   numchems <- nrow(chemdf)
-  for (i in 1:nrow(chemdf)){#){
+  cpls_df <- data.frame()
+  for (i in 1:nrow(chemdf)){
+    chem_name <- chemdf[i,2]#){
     chem_params <- as.list(chemdf[i,3:7])
     partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
     metab_type <- chemdf[i,12]
     km <- chemdf[i,11]
+    ka <- ifelse(is.na(chemdf[i,10]),5,chemdf[i,10])
+    fupls <- ifelse(is.na(chemdf[i,8]),1,chemdf[i,8])
+    if(is.na(km)){
+      km <- 1
+      km_flag <- F
+      
+    }else{
+      km_flag <- T
+    }
     mw <- chemdf[i,3]
     if(metab_type=="Subcellular"){
       micl <- chemdf[i,13]
@@ -99,15 +111,17 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
                                                  km,mpcppgl,
                                                  return_total = T)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
+      vkm1c <- scaled_hepcl/liver_wt
     }else if(metab_type=="Hepatocyte"){
       whcl <- chemdf[i,13]
       scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,km)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
+      vkm1c <- scaled_hepcl/liver_wt
     }else{
       vmaxc <- chemdf[i,13]
       vkm1c<- chemdf[i,14]
     }
-    if (is.na(vmaxc)){
+    if (!km_flag || is.na(vmaxc)){
       vmaxc <- 0
       }
     else{
@@ -257,12 +271,13 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       inhdays <- 0
       ivdose <- 0
       ivlen <- 0
-      fupls <- 1
+      fupls <- fupls
+      ka <- ka
     })
-    totdays <- 1
+    totdays <- chemdf[i,16]
     tstart <- 0
     tstop <- 24
-    bdose <- 10
+    bdose <- chemdf[i,15]
     # var to change
     state_Var <- c("odose","totodose")
     
@@ -307,6 +322,9 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
     param_names <- getAllParamNames(model)
     initial_params <- initial_params[param_names]
     initial_params <- initial_params[-which(sapply(initial_params, is.null))]
+    initial_params["kfec"]<- chemdf[i,17]
+    initial_params["kVtoL"]<- chemdf[i,18]
+    initial_params["kent"]<- chemdf[i,19]
     initial_values <- list("evnt_data"= eventDat,
                            "initial_params"= initial_params,
                            "times"=times,
@@ -315,8 +333,19 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
     #print(initial_values["initial_params"])
     result <- runFDPBPK(initial_values,model)
     res_df<- as.data.frame(result,stringsAsFactors = F)
+    time <- res_df$pbpk.time
+    if (ncol(cpls_df)== 0){
+      cpls_df <- time
+    }
+    cpls <- res_df$pbpk.cpls
+    cpls_df <- cbind(cpls_df,cpls)
     write.csv(res_df,paste0("E:/",chemdf[i,2],".csv"))
 
   }
+  chem_names <- chemdf$Cname
+  print(chem_names)
+  print(colnames(cpls_df))
+  colnames(cpls_df)<- c("time",chem_names)
+  write.csv(cpls_df,"E:/CPLS.csv")
   # combine data to create a initial
 }
