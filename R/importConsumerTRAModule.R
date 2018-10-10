@@ -1,0 +1,3 @@
+#' @export
+importConsumerTRAUI <- function(namespace){
+}
