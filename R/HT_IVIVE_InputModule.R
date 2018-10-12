@@ -413,7 +413,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
       data <- data.frame("Names"= cypdb[["name"]],
                          "Clearance"= rep(0,length(cypdb[["name"]])),
                          stringsAsFactors = F)
-      write.csv(data,file,row.names = F)
+      utils::write.csv(data,file,row.names = F)
     },
     contentType = c("text/csv")
   )
@@ -425,7 +425,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   # The user's data, parsed into a data frame
   cypCl <- reactive({
     if(!(is.null(input$cypCl_upload))){
-      ret_dat <- read.csv(cypFile()$datapath)
+      ret_dat <- utils::read.csv(cypFile()$datapath)
     }else{
       ret_dat <- data.frame("Names"= cypdb[["name"]],"Clearance"= rep(0,length(cypdb[["name"]])),stringsAsFactors = F)
     }

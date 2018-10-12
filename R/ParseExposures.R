@@ -3,8 +3,10 @@
 #' Parse uploaed file for Consumer TRA
 #' @description Parses the uploaded Consumer TRA exposure SpreadSheet to extract all the exposure names and values
 #' This function will not be called directly by the user
+#' @importFrom readxl excel_sheets read_excel
+#' 
 #' @param path Path to Excel File
-#'
+#' 
 parseTRAFile <- function(path){
   sheets<- readxl::excel_sheets(path)
   #parse inhalation data

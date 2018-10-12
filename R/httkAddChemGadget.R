@@ -1,5 +1,7 @@
-#' @export
+#' @description internal function that interfaces with httk package
+#' @import httk
 #' @importFrom rstudioapi sendToConsole
+#' @export
 addChemsToHTTK <- function(){
   
   ui <- miniPage(

@@ -723,7 +723,7 @@ chem_body <- dashboardBody(
               column(6,
                      numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)),
               column(6,
-                     numericInput("ms_km","Michelis Menton Constant for Metabolism (μM)",1,0,250,0.01))
+                     numericInput("ms_km","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
@@ -802,7 +802,7 @@ expo_body <- dashboardBody(
 
 #################Shiny UI
 shinyUI(fluidPage(
-  shinyjs::useShinyjs(),
+  useShinyjs(),
   shinyWidgets::useSweetAlert(),
   theme = shinythemes::shinytheme("spacelab"),
   includeCSS("www/styles.css"),
@@ -814,7 +814,7 @@ shinyUI(fluidPage(
     tags$meta(name="viewport", content="width=device-width, initial-scale=1"),
     tags$link(rel="icon", type="image/png", href="chem_32.png", sizes="32x32")
   ),
-  rintrojs::introjsUI(),
+  #rintrojs::introjsUI(),
   navbarPage("", id="menu",collapsible = TRUE,
              tabPanel("",value = "Home",icon =icon("home"),
                       includeHTML("www/home.html")),
@@ -823,14 +823,6 @@ shinyUI(fluidPage(
                       fluidRow(
                         progressBar(id = "pb",value = 0, status = "success",striped = T)
                       ),
-                      # fluidRow(
-                      #   column(4,
-                      #          bsButton("run","Run Simulation", style = "primary", block = TRUE)
-                      #   ),
-                      #   column(2,
-                      #          bsButton("btnSetupIntro", "Need help?", style = "default", size = "medium", block = TRUE)
-                      #   )
-                      # ),
                       tabsetPanel(id= "modelSetupTabs", type = "tabs",
                                   tabPanel("Exposure",
                                            fluidPage(

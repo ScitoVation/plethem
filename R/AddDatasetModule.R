@@ -70,7 +70,7 @@ addDataSet <- function(input,output,session,data_type){
   obs_tble <- reactive({
     validate(need(input$file, message = "No Dataset Uploaded"))
     shinyjs::enable("add")
-    read.csv(userFile()$datapath)
+    utils::read.csv(userFile()$datapath)
   })
   output$obs_tble <- DT::renderDT(DT::datatable(obs_tble(),rownames = FALSE))
 

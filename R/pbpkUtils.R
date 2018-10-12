@@ -203,7 +203,7 @@ getAllVariabilityValuesForModel<- function(simid, params,mc_num){
       ret_data <- projectDbSelect(query)
       var_tble <- unserialize(charToRaw(ret_data[["var_tble"]]))
       mc_param_names <- c(mc_param_names,var_tble$Parameter)
-      cvs <- c(cvs,setNames(as.numeric(var_tble$CV),var_tble$Parameter))
+      cvs <- c(cvs,stats::setNames(as.numeric(var_tble$CV),var_tble$Parameter))
       types <- c(types,setNames(type_name2var[unlist(var_tble$Type)],var_tble$Parameter))
       bound_flag <- c(bound_flag,setNames(sample(c(TRUE,FALSE),length(var_tble$CV),replace = T),var_tble$Parameter))
       lbound <- c(lbound,setNames(rep(1e-10,length(var_tble$CV)),var_tble$Parameter))

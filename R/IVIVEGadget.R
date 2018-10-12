@@ -13,11 +13,11 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
     miniTabstripPanel(
       miniTabPanel("Physiological Parameters",
                    miniContentPanel(
-                     fillCol(flex = c(1,1,6),
+                     fillCol(flex = c(1,1,4),
                              fillRow(flex = c(16,2,3,1),
                                      fillRow(
                                        numericInput("age","Reference Age(Years)",25,0.1,80,0.1),
-                                       selectInput("gender","Gender",choice = c("Male"="M","Female"="F")),
+                                       selectInput("gender","Gender",choices = c("Male"="M","Female"="F")),
                                        numericInput("bw","Body Weight(kg)",80.15),
                                        numericInput("liv_wt","Liver Weight(kg)",1.5)
 
@@ -31,7 +31,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                              ),
                              fillRow(flex = c(8,14),
                                      fillRow(
-                                       numericInput("km","Michelis-Menten Constant",0),
+                                       numericInput("km","Michaelis-Menten Constant",0),
                                        numericInput("hpgl","10^6 Hepatocytes/gm Liver",137)
 
                                      ),
@@ -478,7 +478,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
       stopApp(returnValue = ret_data)
     })
   }
-  runGadget(ui,server,viewer =dialogViewer("IVIVE",width = 1200,height = 1200)) #dialogViewer("IVIVE",width = 800) )
+  runGadget(ui,server,viewer =dialogViewer("IVIVE",width = 1200,height = 1800)) #dialogViewer("IVIVE",width = 800) )
 }
 
 

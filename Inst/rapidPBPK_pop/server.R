@@ -1,8 +1,9 @@
 #' Server logic for RapidPBPK Model
 #' @importFrom plotly renderPlotly plot_ly add_trace
 #' @importFrom magrittr %>%
+#' @importFrom DT DTOutput renderDT datatable dataTableProxy replaceData
 shinyServer(function(input, output, session) {
-  shinyjs::useShinyjs()
+  useShinyjs()
   # define the model name once here. It will be used throughout this server file
   # this will make it easier to create new model UI/SERVERS
   model <- "rapidPBPK"
@@ -304,25 +305,13 @@ shinyServer(function(input, output, session) {
                                    title = "Invalid Compartment Configuration",
                                    text = "Liver compartment needs to be active if GI compartment is active",
                                    type = "error")
-      # showModal(
-      #   modalDialog(
-      #     tags$h4(),
-      #     tags$h5(),
-      #     title = "Error"
-      #   )
-      # )
+
     }else if (length(active_comp) == 0){
       shinyWidgets::sendSweetAlert(session,
                                    title = "Invalid Compartment Configuration",
                                    text = "At least one compartment needs to be active for the model to run",
                                    type = "error")
-      # showModal(
-      #   modalDialog(
-      #     tags$h4("Invalid Compartment Configuration"),
-      #     tags$h5("At least one compartment needs to be active for the model to run."),
-      #     title = "Error"
-      #   )
-      # )
+
     }else if(abs(total_vol-perfc)>0.03){
 
       error_text <- sprintf("The total volume of all compartments does not add up to %i %%",
@@ -332,13 +321,7 @@ shinyServer(function(input, output, session) {
                                    title = "Invalid Compartment Configuration",
                                    text = error_text,
                                    type = "error")
-      # showModal(
-      #   modalDialog(
-      #     tags$h4("Invalid Compartment Configuration"),
-      #     tags$h5("The total volume of all compartments does not add up to 85%"),
-      #     title = "Error"
-      #   )
-      # )
+
     }else if((input$ms_bdose>0 || input$ms_drdose>0) && !("gi" %in% active_comp)){
       showModal(
         modalDialog(
@@ -610,29 +593,6 @@ shinyServer(function(input, output, session) {
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
   
   
-
-  
-  # # Handle radio buttons for changing organisms
-  # observeEvent(input$ms_org,{
-  #   if(input$ms_org == "ha"){
-  #     shinyjs::enable("ms_gender")
-  #     shinyjs::enable("ms_age")
-  #   }else{
-  #     #shinyjs::disable("ms_gender")
-  #     #shinyjs::disable("ms_age")
-  #     physioid <- 1
-  #     query <- sprintf("Select param,value from Physiological where physioid = 1;")
-  #     param_values <- mainDbSelect(query)
-  #     param_names <- param_values$param
-  #     param_values <- param_values$value
-  #     names(param_values)<- param_names
-  #     # get all numeric values in the physio names dataframe
-  #     params_df <- physio_name_df
-  #     params_df$Val <- param_values[physio_name_df$Var]
-  #     updateUIInputs(session,params_df)
-  #     
-  #   }
-  # })
 
   #update the inputs for the parameter set selected
   observeEvent(input$sel_physio,{
@@ -1110,200 +1070,7 @@ shinyServer(function(input, output, session) {
   })
 
 
-
-
-
-  ###############  Code chunk for handling populating simulations tab
- # sim_table <- reactiveVal({data.frame("Name"='<input type = "text" id = "r1-name"  placeholder = "Enter Name" class = "shiny-bound-input />',
- #                                     "Col2"=1,
- #                                     "Col3"=0)
- #                          })
- #
- #  output$sim_tble <- DT::renderDataTable(
- #    DT::datatable(isolate(sim_table()),
- #                  rownames = F,escape = F,
- #                  selection = "single",
- #                  options = list(dom = "t",paging = F
- #                                 )),
- #    server = FALSE)
- #  sim_tble_proxy <- DT::dataTableProxy("sim_tble")
- #
- #  sim_table <- eventReactive(input$add_row,{
- #    org_table<- sim_table()
- #      data_added <- list("Name"=0,"Col2"=1,"Col3"=2)
- #      sim_table <- rbind(org_table,data_added)
- #      return(sim_table)
- #  })
- #  # parameterSets$sim_table <- eventReactive(input$add_row,{
- #  #   org_table<- isolate(parameterSets$sim_table())
- #  #   data_added <- c("Col1"=0,"Col2"=1,"Col3"=2)
- #  #   sim_table <- rbind(org_table,data_added)
- #  #   return(sim_table)
- #  # },ignoreInit = TRUE,ignoreNULL = FALSE)
- #  observe({
- #       replaceData(sim_tble_proxy,sim_table())
- #  })
-  btnDismiss = reactiveValues(modal_closed=F)
-
-  #########################new Chemical Modal
-  observeEvent(input$newChem, {
-    btnDismiss$modal_closed <- F
-    showModal(modalDialog(
-      chemicalInput("chemCRUD"),
-      easyClose = FALSE,
-      fade = TRUE,
-      size = "m",
-      footer = actionButton("dismiss_modal",label = "Dismiss")
-    ))
-    chemCRUD <- callModule(chemical, "chemCRUD", stringsAsFactors = FALSE)
-  })
-
-  observeEvent({input$dismiss_modal},{
-    btnDismiss$modal_closed <- T
-    removeModal()
-    chems <- getAllMainChemicals(session, "main")
-    updateSelectizeInput(session, "selectedChem", "Select a chemical", choices = chems,  selected = chems[[1]])
-    updateSelectizeInput(session, "chemScenFilter", "Select a chemical", choices = chems)
-  })
-
-  #update scenario dropdown based on selected chemical and exposure type (oral, inh...)
-  observeEvent({input$scenarioFilter
-  },{
-    chemId  <- input$chemScenFilter
-    expoKey <- input$exposureType
-    scenarios <- getAllScenarios(session, input, chemId, expoKey)
-
-    if(is.null(scenarios)){
-      updateSelectizeInput(session, "filteredScen", "Select a Scenario", choices = c("None"="0"), selected = "0")
-    }else{
-      updateSelectizeInput(session, "filteredScen", "Select a Scenario", choices = as.list(scenarios), selected = scenarios[[1]])
-    }
-  })
-
-######################UPDATE SELECTED EXPOSURE TYPE
-  observeEvent({input$exposureType},{
-    expoType <- input$exposureType
-    updateTabItems(session, "expos_sidebar", expoType)
-  })
-
-#####################UPDATE SELECTED CHEMICAL
-observeEvent({input$chemScenFilter},{
-  chems <- getAllMainChemicals(session, "main")
-
-  #Scenario filter current chem iD
-  id <- input$chemScenFilter
-  chem <- currentChem(session, input, id)
-  updateSelectizeInput(session, "selectedChem", "Select a chemical", choices = chems,  selected = chem[[1]])
-
-})
-
-####################Update UI values to match Current scenario Values
-  # observeEvent({
-  #   input$filteredScen
-  #   },{
-  #     scenKey <- input$filteredScen ##current scenario key
-  #     expoType <- input$exposureType ##current Scenario Exposure type
-  #
-  #    ###get Scenario exposure params
-  #     selectedExpo <- getExpoParams(session, input, scenKey, expoType)
-  #
-  #    ###Update Physiological parameters
-  #    # updatePhysioParams(session, input, scenKey)
-  # })
-
-  #system intro for pages under Model Setup
-  observeEvent(input$btnSetupIntro,{
-    conn <- dbConnect(SQLite(), dbname = "../../Data/cefic.sqlite")
-    modelSetup = input$modelSetupTabs
-    tmpUiItems <- dbSendQuery(conn, sprintf("select id, objectId, message, tab from Intro where tab == '%s' OR tab == '%s' OR tab == '%s'", 'ms', 'na', modelSetup))
-    uiItems <- fetch(tmpUiItems, n=-1)
-    dbClearResult(tmpUiItems)
-
-    #adding '#' to the ui object ids
-    uiItems$object <- paste("#",uiItems$object,sep = "")
-    steps <- data.frame(element = c(uiItems$object), intro = c(uiItems$message))
-    introjs(session,options = list(steps=steps))
-  })
-
-  #system intro for pages under Model Output
-  observeEvent(input$btnOutputIntro,{
-    conn <- dbConnect(SQLite(), dbname = "../../Data/cefic.sqlite")
-    modelOutput = input$Modeloutput
-    tmpUiItems <- dbSendQuery(conn, sprintf("select id, objectId, message, tab from Intro where tab == '%s' OR tab == '%s' OR tab == '%s' ", 'mo', 'na', modelOutput))
-    uiItems <- fetch(tmpUiItems, n=-1)
-    dbClearResult(tmpUiItems)
-
-    #adding '#' to the ui object ids
-    uiItems$object <- paste("#",uiItems$object,sep = "")
-    steps <- data.frame(element = c(uiItems$object), intro = c(uiItems$message))
-    introjs(session,options = list(steps=steps))
-  })
-
-  #############dismiss New Scenario Modal
-  observeEvent(input$dismissScenModal,{
-    btnDismiss$modal_closed <- T
-    removeModal()
-  })
-
-  ##########new Scenario Modal
-  observeEvent(input$newScenario, {
-    scenarioModal(session, input, btnDismiss$modal_closed <- F, FALSE, "")
-  })
-
-  ##########################New scenario
-  observeEvent({input$submitNewScen},{
-    chemId <- input$selectedChem
-    qsarModel <- input$qsarModel
-    expoType <- input$expos_sidebar
-
-    scenData <- list("scenName"=input$scenName, "scenDescription"=input$scenDescription, "chemId"=chemId, "qsarModel"=qsarModel, "expoType"=expoType)
-    expoData <- list("oralDose"=input$ms_oralDose, "dbr"=input$ms_dbr, "blen"=input$ms_blen, "repTime"=input$ms_repTime, "inhDose"=input$ms_inhDose, "dermDose"=input$ms_dermDose, "expoType" = expoType)
-    physiData <- list( "gender"=input$ms_gender, "age"=input$ms_age,  "qcc"=input$ms_qcc,  "bw"=input$ms_bw,    "vbc"=input$ms_vbc,  "qven"=input$ms_qven,"qart"=input$ms_qart,"vfat"=input$ms_vfat,   "qfat"=input$ms_qfat,
-                       "pfat"=input$ms_pfat,"vskin"=input$ms_vskin, "qskin"=input$ms_qskin, "pskin"=input$ms_pskin, "vmusc"=input$ms_vmusc, "qmusc"=input$ms_qmusc, "pmusc"=input$ms_pmusc, "vmarr"=input$ms_vmarr, "qmarr"=input$ms_qmarr,
-                       "pmarr"=input$ms_pmarr,"vbone"=input$ms_vbone, "qbone"=input$ms_qbone, "pbone"=input$ms_pbone, "vbrn"=input$ms_vbrn,   "qbrn"=input$ms_qbrn,   "pbrn"=input$ms_pbrn,   "vlng"=input$ms_vlng,   "qlng"=input$ms_qlng,
-                       "plng"=input$ms_plng,"qhrt"=input$ms_qhrt,   "ahvnt"=input$ms_ahvnt, "alvnt"=input$ms_alvnt, "phrt"=input$ms_phrt,   "vhrt"=input$ms_vhrt,   "vgrt"=input$ms_vgrt,   "pgs"=input$ms_pgs,     "vliv"=input$ms_vliv,
-                       "qaliv"=input$ms_qaliv,"qvliv"=input$ms_qvliv, "pliv"=input$ms_pliv,   "vkdn"=input$ms_vkdn,   "qkdn"=input$ms_qkdn,   "uflw"=input$ms_uflw,   "gfltr"=input$ms_gfltr,  "pkdn"=input$ms_pkdn)
-
-    if(is.null(scenData$chemId)){
-      showNotification(tags$p(paste0("You may have forgot to select a chemical"), style="color: red"), duration = 10)
-    }else{
-      callNewScenarioModal <- newScenario(session, scenData, expoData, physiData)
-
-      if(callNewScenarioModal != ""){
-        scenarioModal(session, input, FALSE, FALSE, callNewScenarioModal)
-      }else{
-        btnDismiss$modal_closed <- T
-        removeModal()
-        showNotification(tags$p("Scenario Created Successfully", style="color: green"), duration = 10)
-      }
-    }
-  })
-
-  #############dismiss New Scenario Modal
-  observeEvent(input$dismissScenModal,{
-    btnDismiss$modal_closed <- T
-    removeModal()
-  })
-
-  ######################Restore Selected Parameters
-  observeEvent(input$restore,{
-    param_data <- getChangedTable(isolate(input),paraValueList)
-    output$restore_table <- DT::renderDT(dt::datatable(param_data,rownames = FALSE), server = TRUE)
-  })
-
-  observeEvent(input$apply,{
-    param_data <- getChangedTable(isolate(input),param_values_list)
-    row_count <-  isolate(input$restore_table_rows_selected)
-
-    for (i in 1:length(row_count)){
-      var = paste0(sprintf("%s",param_data[row_count[i], 1])) #variable name
-      val = as.numeric(paste0(param_data[row_count[i], 3])) #original value
-      updateNumericInput(session, var, value = val)
-    }
-    toggleModal(session,"restore_modal",toggle = "close")
-  }) #end retore btn
-
-
+  
 # Life course equation
   tissue_volumes<- reactive({
     tissues <- c(input$ms_cmplist,"blood")

@@ -20,7 +20,7 @@ performIVIVEUI<- function(namespace){
                           ),
                           fluidRow(
                             column(3,
-                                   numericInput(ns("num_km"),"Michelis-Menten Constant",value = 1)
+                                   numericInput(ns("num_km"),"Michaelis-Menten Constant (\u00B5M)",value = 1)
                                    ),
                             column(3,
                                    numericInput(ns("num_hpgl"),"10^6 Hepatocytes per gram liver", value = 0)

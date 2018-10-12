@@ -105,7 +105,7 @@ preprocessUIData<- function(val){
                              "oralnonvol"=calculateOralNonvolCss(dose,bw,ql,qc,fup,cl_type,
                                                                    scaled_hepcl,scaled_rencl,
                                                                    scaled_plcl),
-                             "oralvol"=calculateOralVolCss(dose,bw,ql,qc,pair,scaled_hepcl,
+                             "oralvol"=calculateOralVolCss(dose,bw,ql,qc,fup,cl_typepair,scaled_hepcl,
                                                            scaled_plcl),
                              "inhvol"=calculateInhVolCss(dose,ql,qalv,pair,
                                                           scaled_hepcl,scaled_plcl),
@@ -195,7 +195,7 @@ calculateScaledS9Clearance<- function(clearance,units,organism,
       MPCPPGL <- calcMPCPPGL(age)
       MPCPPGL <- unlist(MPCPPGL)
       names(MPCPPGL)<- NULL
-    }else if(organim == "rat"){
+    }else if(organism == "rat"){
       MPCPPGL <- unlist(mpcppgl)
     }
   }else{
@@ -295,9 +295,9 @@ calculateRecombClearance <- function(clearance,organism,age,
 
 
 }
-#'calculate steady state concentration of orally adminitered non volatile compounds
+#' @description Calculate steady state concentration of orally adminitered non volatile compounds
 #' based on steady state clearance for renal,#'hepatic and plasma clearance
-#'
+#' 
 calculateOralNonvolCss <- function(dose,bw,ql,qc,fup,cl_type,scaled_hepcl,
                                   scaled_rencl,scaled_plcl){
 
@@ -315,7 +315,7 @@ calculateOralNonvolCss <- function(dose,bw,ql,qc,fup,cl_type,scaled_hepcl,
 #'calculate steady state concentration of orally administered volatile compounds
 #' based on steady state clearance for renal,#'hepatic and plasma clearance
 #'
-calculateOralVolCss <- function(dose,bw,ql,qc,pair,scaled_hepcl,scaled_plcl){
+calculateOralVolCss <- function(dose,bw,ql,qc,fup,cl_type,pair,scaled_hepcl,scaled_plcl){
 
   if (cl_type == "cl_eq1"){
     clh<- ql*fup*scaled_hepcl/(ql+(fup*scaled_hepcl))

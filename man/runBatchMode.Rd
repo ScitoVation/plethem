@@ -27,8 +27,6 @@ defaults to human}
 }
 \value{
 If save_to_file is FALSE, returns a list of dataframes, each contaning simulation results, indexed by compound name.
-
-Data frame
 }
 \description{
 Runs simulations in batch mode.

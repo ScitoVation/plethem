@@ -1,4 +1,6 @@
 #' UI for importing data from HTTK
+#' @import httk
+#' @import miniUI
 #' @export
 importHTTKDataUI <- function(namespace){
   shinyjs::useShinyjs()

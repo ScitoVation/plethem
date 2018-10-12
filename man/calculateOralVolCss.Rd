@@ -5,7 +5,8 @@
 \title{calculate steady state concentration of orally administered volatile compounds
 based on steady state clearance for renal,#'hepatic and plasma clearance}
 \usage{
-calculateOralVolCss(dose, bw, ql, qc, pair, scaled_hepcl, scaled_plcl)
+calculateOralVolCss(dose, bw, ql, qc, fup, cl_type, pair, scaled_hepcl,
+  scaled_plcl)
 }
 \description{
 calculate steady state concentration of orally administered volatile compounds
