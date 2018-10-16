@@ -1,3 +1,5 @@
+#' UI function for importing SHEDS data
+#' @description UI function for importing SHEDS exposures estimates into PLETHEM. The function should not be called by the user
 #' @export
 importShedsDataUI <- function(namespace){
   ns <- NS(namespace)
@@ -26,6 +28,8 @@ importShedsDataUI <- function(namespace){
   ))
 }
 
+#' Server function for importing SHEDS data
+#' @description Server function for importing SHEDS exposures estimates into PLETHEM. The function should not be called by the user
 #' @export
 importShedsData <- function(input,output,session,path,expo_name_df){
   print(path)

@@ -21,7 +21,7 @@ calcMPCPPGL<- function(age){
 #' get data for human cyp fraction by age
 #' @description The function returns the expression of cyps at each age as a fraction of the adult (25 years).
 #'   The number needs to be multiplied by the cyp abundance information in the database to get the nominal expression
-#'   value for the cyp. See \code{\link{getCypAbundance}} on how to get abundance values for a given age
+#'   value for the cyp.
 #' @param age the age of the person in years
 #' @return dataframe containing the fractional expression for all the cyps
 #' @export
@@ -39,9 +39,9 @@ getAllCypData<- function(age){
   return(cyp_df)
 
 }
-#' Calculate cyp1a2 fraction
-#' @description get expression for cyp1a2 as a fraction of adult
-#' @param (age)
+# Calculate cyp1a2 fraction
+# @description get expression for cyp1a2 as a fraction of adult
+# @param age age of the human in years
 calc_cyp1a2 <- function(age){
 
   # convert age to weeks assuming 40 week pregnancy
@@ -50,9 +50,9 @@ calc_cyp1a2 <- function(age){
   return(result)
 
 }
-#' Calculate cyp2c9 fraction
-#' @description get expression for cyp2c9 as a fraction of adult
-#' @param (age)
+# Calculate cyp2c9 fraction
+# @description get expression for cyp2c9 as a fraction of adult
+# @param age age of the human in years
 calc_cyp2c9 <- function(age){
 
   # convert age to weeks assuming 40 week pregnancy
@@ -61,9 +61,9 @@ calc_cyp2c9 <- function(age){
   return(result)
 
 }
-#' Calculate cyp2c19 fraction
-#' @description get expression for cyp2c19 as a fraction of adult
-#' @param (age)
+# Calculate cyp2c19 fraction
+# @description get expression for cyp2c19 as a fraction of adult
+# @param age age of the human in years
 calc_cyp2c19 <- function(age){
 
   # convert age to weeks assuming 40 week pregnancy
@@ -72,9 +72,9 @@ calc_cyp2c19 <- function(age){
   return(result)
 
 }
-#' Calculate cyp3a4 fraction
-#' @description get expression for cyp3a4 as a fraction of adult
-#' @param (age)
+# Calculate cyp3a4 fraction
+# @description get expression for cyp3a4 as a fraction of adult
+# @param age age of the human in years
 calc_cyp3a4 <- function(age){
 
   # convert age to weeks assuming 40 week pregnancy
@@ -85,7 +85,7 @@ calc_cyp3a4 <- function(age){
 }
 #' Calculate cyp2b6 fraction
 #' @description get expression for cyp2b6 as a fraction of adult
-#' @param (age)
+#' @param age age of the human in years
 calc_cyp2b6 <- function(age){
 
   # convert age to weeks assuming 40 week pregnancy
@@ -94,18 +94,18 @@ calc_cyp2b6 <- function(age){
   return(result)
 
 }
-#' Calculate ces1m fraction
-#' @description get expression for ces1m as a fraction of adult
-#' @param (age)
+# Calculate ces1m fraction
+# @description get expression for ces1m as a fraction of adult
+# @param age age of the human in years
 calc_ces1m <- function(age){
 
   result <- 0.9998*exp(log(0.2316*0.9998)*exp((-39.97*age)))
   return(result)
 
 }
-#' Calculate ces1c fraction
-#' @description get expression for ces1c as a fraction of adult
-#' @param (age)
+# Calculate ces1c fraction
+# @description get expression for ces1c as a fraction of adult
+# @param age age of the human in years
 calc_ces1c <- function(age){
 
   numerator <- 1.024*(age^0.5801)
@@ -113,9 +113,9 @@ calc_ces1c <- function(age){
   result <- numerator/denominator
   return(result)
 }
-#' Calculate ces2m fraction
-#' @description get expression for ces2m as a fraction of adult
-#' @param (age)
+# Calculate ces2m fraction
+# @description get expression for ces2m as a fraction of adult
+# @param age age of the human in years
 calc_ces2m <- function(age){
 
   numerator <- ((age^0.2656)*(1.457-0.3781))
@@ -123,9 +123,9 @@ calc_ces2m <- function(age){
   result <- 0.3781+(numerator/denominator)
   return(result)
 }
-#' Calculate ces2c fraction
-#' @description get expression for ces2c as a fraction of adult
-#' @param (age)
+# Calculate ces2c fraction
+# @description get expression for ces2c as a fraction of adult
+# @param age age of the human in years
 calc_ces2c <- function(age){
 
   numerator <- (age^0.6546)*(1.003-0.2191)

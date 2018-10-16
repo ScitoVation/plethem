@@ -8,9 +8,6 @@ userDbUpdate(query)
 }
 \arguments{
 \item{query}{A valid SQL Query}
-
-\item{db_path}{The location of the user databse. This defualts to database/user.sqlite and is not expected to change
-This function will not be called by the user directly}
 }
 \description{
 The function runs the update queries issued to the user db

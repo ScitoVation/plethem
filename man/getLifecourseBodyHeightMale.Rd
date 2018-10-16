@@ -14,6 +14,5 @@ getLifecourseBodyHeightMale(age)
 Body height
 }
 \description{
-This function is not called directly by the user. See
-  \code{\link{getLifeCourseBodyHeight}}
+This function is not called directly by the user.
 }

@@ -1,6 +1,7 @@
 # This module describes the UI and server for the restore/save dialog in PLETHEM UI
 
 #' UI for the restore/save dialog
+#' @description UI for the save restore dialog box. This function should not be called by the user.
 #' @importFrom DT dataTableOutput
 #' @export
 saveRestoreParameterSetUI <- function(namespace){
@@ -28,8 +29,8 @@ saveRestoreParameterSetUI <- function(namespace){
 
 
 #' Server for the restore/save dialog
+#' @description Server for the save restore dialog box. This function should not be called by the user.
 #' @export
-
 saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,param_names,type){
   returnValues <- reactiveValues()
   returnValues$retData <- reactiveVal(c("None"))

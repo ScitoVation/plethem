@@ -7,7 +7,7 @@ library(dplyr)
 #'   project database. This function returns the chemical properties needed by all the models
 #'   within PLETHEM. Chemical information specific to the model currently used is requested through a different function. This
 #'   function can be used directly by the user to get a list of chemicals in the current project.
-#' @returns Returns a chemical list containing the names(chem_name), CAS numbers(CAS), Molecular Weight(MW),KM and Fraction unbound
+#' @return Returns a chemical list containing the names(chem_name), CAS numbers(CAS), Molecular Weight(MW),KM and Fraction unbound
 #'  Unbound in Plasma (FuPls) for all the chemicals in the project
 #' @export
 getProjectChemicalList <- function(){
@@ -136,7 +136,6 @@ mainDbSelect <- function(query, db_path ="database/plethemdb.sqlite"){
 #' @description The function runs the select queries issued to the user db and returns the dataframe
 #' the path to user database is stored in main plethem database and is selected from there
 #' @param query A valid SQL Query
-#'
 #' @export
 userDbSelect <- function(query){
   # get user dbPath
@@ -152,8 +151,6 @@ userDbSelect <- function(query){
 #' Runs all update queries to the user database.
 #' @description The function runs the update queries issued to the user db
 #' @param query A valid SQL Query
-#' @param db_path The location of the user databse. This defualts to database/user.sqlite and is not expected to change
-#' This function will not be called by the user directly
 #' @export
 userDbUpdate <- function(query){
   db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
@@ -183,6 +180,7 @@ externDbSelect <- function(query,db_path){
 #' Gets the connection to the pDb to run all the queries against
 #' @description The function returns the connection object to the database passed in DbPath
 #' @param db_path The location of the project databse.
+#' @param internal Boolean. Is the database internal
 #' This function will not be called by the user directly
 #'
 getDbConn<- function(db_path,internal = T){

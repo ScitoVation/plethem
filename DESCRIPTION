@@ -2,29 +2,28 @@ Package: plethem
 Title: Population Life Course Exposure to Health Effects Modeling (PLETHEM)
 Version: 0.0.0.9000
 Authors@R: person("Salil", "Pendse", email = "spendse@scitovation.com", role = c("aut", "cre"))
-Description: PLETHEM is a PBPK modeling package written in R to faciliate rapidPBPK modeling and High-throughput IVIVE.
+Description: PLETHEM is a PBPK modeling package written in R to facilitate rapidPBPK modeling and High-throughput IVIVE.
 Depends:
-  R (>= 3.4.0)
+  R (>= 3.4.0),
+  shiny,
+  ggplot2,
+  V8,
+  shinyBS,
+  shinyWidgets,
+  httk,
+  miniUI,
+  shinydashboard
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-  shiny,
-  shinydashboard,
-  shinyjs,
-  V8,
+  rstudioapi,
   shinythemes,
-  shinyWidgets,
   data.table,
-  shinyBS,
-  miniUI,
-  ggplot2,
   rhandsontable,
-  httk,
 	deSolve,
 	truncdist,
 	reshape2,
-	DT,
 	dplyr,
 	readxl,
 	gdata,
@@ -33,12 +32,12 @@ Imports:
 	formatR,
 	plotly,
 	magrittr,
-  rstudioapi,
   sqldf,
   utils,
-  stats
+  stats,
+  DT,
+  shinyjs
 Suggests: testthat,
-    knitr,
     rmarkdown
 RoxygenNote: 6.0.1
-VignetteBuilder: knitr
+

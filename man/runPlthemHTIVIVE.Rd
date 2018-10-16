@@ -14,5 +14,5 @@ List of oral equivalent dose, steady state plasma concentration and steady state
 for each name in vals
 }
 \description{
-Main function called from PLETHEM UI to run HT- Reverse Dosimetry
+Main function called from PLETHEM UI to run HT- Reverse Dosimetry. This should not be called by the user
 }

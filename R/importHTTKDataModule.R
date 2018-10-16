@@ -1,12 +1,14 @@
 #' UI for importing data from HTTK
+#' @description UI function for the shiny module called by the rapidPBPK Exposure UI.
+#' This will never be called directly by the user.
 #' @import httk
 #' @import miniUI
 #' @export
 importHTTKDataUI <- function(namespace){
   shinyjs::useShinyjs()
   ns <- NS(namespace)
-  httk_chem <- chem.physical_and_invitro.data$CAS
-  names(httk_chem)<- chem.physical_and_invitro.data$Compound
+  httk_chem <- httk::chem.physical_and_invitro.data$CAS
+  names(httk_chem)<- httk::chem.physical_and_invitro.data$Compound
   showModal(
     modalDialog(title = "Select Chemicals",size = "l",
                 selectInput(ns("org"),"Select Organism Data to Import",
@@ -20,6 +22,8 @@ importHTTKDataUI <- function(namespace){
     )
   return(NULL)
 }
+#'Server function for importing HTTK data
+#'@description This is the server function for the importHTTKData module. This is not to be called by the user.
 #'@export
 importHTTKData <- function(input,output,session){
   returnValues <- reactiveValues()
@@ -28,7 +32,7 @@ importHTTKData <- function(input,output,session){
   id_name <- "chemid"
   set_table_name <- "ChemicalSet"
   vals_table_name <- "Chemical"
-  dataset <- chem.physical_and_invitro.data
+  dataset <- httk::chem.physical_and_invitro.data
   # get the current ID for the parameter set from project database
   query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
   id_list <- projectDbSelect(query)

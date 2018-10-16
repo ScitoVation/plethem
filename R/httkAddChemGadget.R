@@ -1,3 +1,4 @@
+#' Function that adds chemical to httk package chem list.
 #' @description internal function that interfaces with httk package
 #' @import httk
 #' @importFrom rstudioapi sendToConsole
@@ -12,7 +13,7 @@ addChemsToHTTK <- function(){
         fillRow(
           pickerInput("sel_chem","",
                       choices = c("New Chemical",
-                                  chem.physical_and_invitro.data$Compound),
+                                  httk::chem.physical_and_invitro.data$Compound),
                       options = list(size = 10,
                                      'live-search'=T,
                                      title = "Select Chemical"),
@@ -66,7 +67,7 @@ addChemsToHTTK <- function(){
           clint <- 0
           mw <- 0
         }else{
-          temp <- chem.physical_and_invitro.data
+          temp <- httk::chem.physical_and_invitro.data
           row_data <- temp[which(temp$Compound == chem_name),]
           mw <- row_data$MW
           casn <- row_data$CAS

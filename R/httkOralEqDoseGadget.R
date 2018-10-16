@@ -1,3 +1,5 @@
+#' Function that runs the httk oral equivalent dose gadaget. 
+#' 
 #' @export
 httkCalcOralEqDose <- function(){
   
@@ -21,8 +23,8 @@ httkCalcOralEqDose <- function(){
   )
   
   server <- function(input,output,session){
-    vals <- setNames(chem.physical_and_invitro.data$CAS,
-                     chem.physical_and_invitro.data$Compound)
+    vals <- setNames(httk::chem.physical_and_invitro.data$CAS,
+                     httk::chem.physical_and_invitro.data$Compound)
     updatePickerInput(session,"chem_list",choices = vals)
     
     observe({

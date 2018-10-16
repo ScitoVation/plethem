@@ -1,8 +1,8 @@
-# library(shiny)
-# library(miniUI)
-
-#source("physiologyHelpers.R")
-#'@export
+#' Command line function for running the IVIVE gadget
+#' @description Launches the IVIVE gadget for estimating age dependent metabolism
+#' @param save_flag Boolean. Should the data generated be saved to a csv file. The name of the file can then be defined in the UI
+#' @param base_path if save_flag is True, must specify a base path where the result file will be 
+#' @export
 iviveGadget <- function(save_flag = F,base_path = NULL){
 
   ui <- miniPage(

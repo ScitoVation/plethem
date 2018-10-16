@@ -2,11 +2,11 @@
 % Please edit documentation in R/newEditVariabilityModule.R
 \name{newEditVariability}
 \alias{newEditVariability}
-\title{Server side function for variability}
+\title{Server function for defining variability and uncertanity datasets}
 \usage{
 newEditVariability(input, output, session, set_type, ops_type, var_params_list,
   set_id = 0)
 }
 \description{
-Server side function for variability
+Server function for defining variability and uncertanity datasets in the rapidPBPK model. This should not be called by the user
 }

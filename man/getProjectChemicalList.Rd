@@ -6,6 +6,10 @@
 \usage{
 getProjectChemicalList()
 }
+\value{
+Returns a chemical list containing the names(chem_name), CAS numbers(CAS), Molecular Weight(MW),KM and Fraction unbound
+ Unbound in Plasma (FuPls) for all the chemicals in the project
+}
 \description{
 Gets the chemicals that are currently a part of the project. This list comes from the chemical table in the
   project database. This function returns the chemical properties needed by all the models

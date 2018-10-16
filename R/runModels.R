@@ -117,6 +117,8 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
   return(result)
 }
 
+#' Run HT-IVIVE
+#' @description Launches the HT-IVIVE UI. 
 #' @export
 runHTIVIVE <- function(){
   clearProjectDb()

@@ -1,3 +1,5 @@
+#' Command line function launching the new project gadget
+#' @description This launches the new project gadget for launching a new project in PLETHEM. If using Rstudio Addins, the addin also calls this function.
 #' @export
 newProjectGadget <- function(){
   ui <- miniPage(
@@ -12,11 +14,7 @@ newProjectGadget <- function(){
                                            "HTTK" = list("PBTK"="httk_pbtk")
                                            ),
                             width = validateCssUnit("90%")
-                            ),
-                selectInput("wtype","Select Workflow Type",
-                            choices=list("Monte Carlo"="MC",
-                                         "Forward Dosimetry"="FD"),
-                            width = validateCssUnit("90%"))
+                            )
               ))
     )
   )
@@ -26,11 +24,10 @@ newProjectGadget <- function(){
       mname <- input$mname
       mtype <- "PBPK"
       wtype <- input$wtype
-      code <- sprintf("newProject(name = '%s', type = '%s', model = '%s', mode = '%s')",
+      code <- sprintf("newProject(name = '%s', type = '%s', model = '%s', mode = 'MC')",
               pname,
               mtype,
-              mname,
-              wtype)
+              mname)
       sendToConsole(code,T)
       stopApp()
     })

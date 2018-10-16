@@ -2,11 +2,14 @@
 
 
 #' Scale clearance by age when both cellular and enzymatic clearance are known at referance age.
+#' @description This function is used internally to calculate age specific metabolism using the IVIVE gadget.
+#' It needs both cellular and enzymatic cleareance at atleast one age, the reference age, to extrapolate to values at other ages.
 #' @param out_ages Ages for which the clearance needs to be calculated including reference age
 #' @param tot_scaled_hepcl Total ellular clearance at reference age in L/h/kg Liver
 #' @param tot_scaled_recomcl Total Recombinant enzyme clearance at reference age in L/h/kg Liver
 #' @param cypDb Dataframe containing cyp datasets to scale measured clearance values from in-vitro to in-vivo
 #' @param cypCl Datafarame containing measured incitro enzymatic clearance.
+#' @param gender Gender either "M" for male or "F" for female
 #' @return List with individual enzyme and total clearance at all ages.
 scale_cellular_enzymatic<- function(out_ages,tot_scaled_hepcl,tot_scaled_recomcl,cypDb,cypCl,gender){
   agewise_enzyme_cl <- scale_enzymatic(out_ages,
@@ -34,6 +37,11 @@ scale_cellular_enzymatic<- function(out_ages,tot_scaled_hepcl,tot_scaled_recomcl
 
 
 #' Scale clerance by age for when enzymatic clearance is known at referance age.
+#' @param out_ages out_ages Ages for which the clearance needs to be calculated including reference age
+#' @param tot_scaled_recomcl Total Recombinant enzyme clearance at reference age in L/h/kg Liver
+#' @param cypDb Dataframe containing cyp datasets to scale measured clearance values from in-vitro to in-vivo
+#' @param cypCl Datafarame containing measured incitro enzymatic clearance.
+#' @param gender Gender, either "M" for male or "F" for female. Needed to get Liver weight
 scale_enzymatic<- function(out_ages,tot_scaled_recomcl,cypDb,cypCl,gender){
   liver_wt_list <- lapply(out_ages,getLifecourseLiverVolume,gender)
   names(liver_wt_list)<- out_ages

@@ -10,6 +10,10 @@ getMetabData(metabid, physioid, chemid, model)
 \item{metabid}{The meabolism id to get information from the metabolism tables}
 
 \item{physioid}{Physiological id to get the age from the physiological table}
+
+\item{chemid}{internal chemical ID}
+
+\item{model}{Model name}
 }
 \value{
 List containing the metabolism values needed to run PBPK model or

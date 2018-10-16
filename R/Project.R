@@ -1,11 +1,11 @@
-#' Launch PBPK interface
-#' valid values for names are "rapidPBPK"
-#' @export
+
 interactivePBPK <- function(name = ""){
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
 }
-
-#'@export
+#' Launch HT-IVIVE interface
+#' @description USed internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses
+#' @param name name of the  model. Has to be "HT-IVIVE"
+#' @export
 interactiveHT <- function(name = ""){
   shiny::runApp(system.file(name,package = "plethem"),launch.browser = T)
 }
@@ -47,7 +47,7 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
   if("rstudioapi" %in% installed.packages()){
     temp_path <- rstudioapi::selectDirectory(caption = sprintf("Select folder where %s will be saved",name))
   }else{
-    temp_path <- choose.dir(caption = sprintf("Select folder where %s will be saved",name))
+    temp_path <- tcltk::tk_choose.dir(caption =sprintf("Select folder where %s will be saved",name))
   }
   save_path <- gsub("\\\\","/",temp_path)
   clearProjectDb()
@@ -69,14 +69,6 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
   return(NULL)
 }
 
-#' List all the project currently in the PLETHEM
-#' @description Lists all the projects currently in the PLETHEM user database, This also lists
-#' It is ties to one of the models that PLETHEM supports, either PBPK or HT
-#' @param model The type of the model that the project is tied to
-listProjects <- function(type = NULL){
-  interactivePBPK(model)
-  return(NULL)
-}
 
 #' Load the project with the given name
 #' @description Loads the project data in the PLETHEM project database.
@@ -87,7 +79,8 @@ loadProject <- function(file_path = ""){
       file_path <- rstudioapi::selectFile(caption = "Select PLETHEM Project",
                                           filter= "*.Rdata")
     }else{
-      file_path <- file.choose()
+      file_path <- tcltk::tk_choose.files(caption = "Select PLETHEM Project",
+                                          filter= "*.Rdata")
     }
     
     

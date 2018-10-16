@@ -7,5 +7,6 @@
 importHTTKDataUI(namespace)
 }
 \description{
-UI for importing data from HTTK
+UI function for the shiny module called by the rapidPBPK Exposure UI.
+This will never be called directly by the user.
 }

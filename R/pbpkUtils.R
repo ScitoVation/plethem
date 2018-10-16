@@ -6,6 +6,8 @@
 #' data from the metabolism set
 #' @param metabid The meabolism id to get information from the metabolism tables
 #' @param physioid Physiological id to get the age from the physiological table
+#' @param chemid internal chemical ID
+#' @param model Model name
 #' @return List containing the metabolism values needed to run PBPK model or
 #' display simulation information
 #' @export

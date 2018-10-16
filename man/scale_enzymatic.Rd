@@ -6,6 +6,17 @@
 \usage{
 scale_enzymatic(out_ages, tot_scaled_recomcl, cypDb, cypCl, gender)
 }
+\arguments{
+\item{out_ages}{out_ages Ages for which the clearance needs to be calculated including reference age}
+
+\item{tot_scaled_recomcl}{Total Recombinant enzyme clearance at reference age in L/h/kg Liver}
+
+\item{cypDb}{Dataframe containing cyp datasets to scale measured clearance values from in-vitro to in-vivo}
+
+\item{cypCl}{Datafarame containing measured incitro enzymatic clearance.}
+
+\item{gender}{Gender, either "M" for male or "F" for female. Needed to get Liver weight}
+}
 \description{
 Scale clerance by age for when enzymatic clearance is known at referance age.
 }

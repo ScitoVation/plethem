@@ -11,6 +11,9 @@ getLifecourseBodyWeight(age, gender)
 
 \item{gender}{Either "M" for male or "F" for female}
 }
+\value{
+Body Weight in kgs
+}
 \description{
 The function is used to calculate the average body weight in kgs for humans based on age and gender.
  The function uses life course equations developed by Scitovation.

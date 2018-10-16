@@ -8,5 +8,5 @@ saveRestoreParameterSet(input, output, session, UI_values, set_values,
   param_names, type)
 }
 \description{
-Server for the restore/save dialog
+Server for the save restore dialog box. This function should not be called by the user.
 }

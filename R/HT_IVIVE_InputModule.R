@@ -1,4 +1,7 @@
 #' Module for editing high throughput reverse dosimetry functions
+#' @description The UI for defining HT-IVIVE parameters in the HT-IVIVE project. 
+#' It is called by the HT-IVIVE server script when a new row is added or existing row is edited. It is never called directly by the user.
+#' @param namespace namespace for the module. This is unique and decided by the project server function
 #' @export
 HT_IVIVEUI <- function(namespace=""){
   css <- "div .modal-lg {
@@ -359,7 +362,16 @@ HT_IVIVEUI <- function(namespace=""){
 }
 
 #' server function of high throughput dosimetry
-#' This function is needed internally by the package and depends on unexported functions from it.
+#' @description This function is needed internally by the package to handle the server functions related to
+#' adding compounds in the HT-IVIVE UI. It is never intended to be called by the user.
+#' @param input input object from the data input UI 
+#' @param output output object from the data input UI
+#' @param session session in which this module is called
+#' @param vals values for clearance 
+#' @param type IVIVE type
+#' @param chem_list List of imported chemicals in the project
+#' @param idx index of the row
+#' @param row_selected row selected for editing
 #' @export
 HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),idx = 0,row_selected = 0){
   #Get session ID

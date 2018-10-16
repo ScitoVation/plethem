@@ -4,8 +4,9 @@
 #'@param selected_qsar QSAR model to use for estimating partition coefficient
 #'@param chem_params A named list of chemical params. The list should contain the minimal number of parameters needed to run the QSAR model selected
 #'@param tissue_list List of tissues for which the partition coefficients need to be calculated. See vignette on Qsar based parameter estimation of more details
+#'@param selected_org Organism. Either "human" or "rat"
 #'@export
-calculatePartitionCoefficients<- function(selected_qsar = "default",chem_params = NULL,
+calculatePartitionCoefficients<- function(selected_qsar = "one",chem_params = NULL,
                                           tissue_list,selected_org = "human"){
 
   partCoefficients <- list()

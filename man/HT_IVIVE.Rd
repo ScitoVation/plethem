@@ -2,13 +2,29 @@
 % Please edit documentation in R/HT_IVIVE_InputModule.R
 \name{HT_IVIVE}
 \alias{HT_IVIVE}
-\title{server function of high throughput dosimetry
-This function is needed internally by the package and depends on unexported functions from it.}
+\title{server function of high throughput dosimetry}
 \usage{
 HT_IVIVE(input, output, session, vals = "", type = "", chem_list = list(),
   idx = 0, row_selected = 0)
 }
+\arguments{
+\item{input}{input object from the data input UI}
+
+\item{output}{output object from the data input UI}
+
+\item{session}{session in which this module is called}
+
+\item{vals}{values for clearance}
+
+\item{type}{IVIVE type}
+
+\item{chem_list}{List of imported chemicals in the project}
+
+\item{idx}{index of the row}
+
+\item{row_selected}{row selected for editing}
+}
 \description{
-server function of high throughput dosimetry
-This function is needed internally by the package and depends on unexported functions from it.
+This function is needed internally by the package to handle the server functions related to
+adding compounds in the HT-IVIVE UI. It is never intended to be called by the user.
 }

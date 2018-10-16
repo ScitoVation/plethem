@@ -24,7 +24,7 @@ css <- "div .disabled-comp {
 
 
 ################################exposure sidebar
-expo_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
+expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="ms_expo_sidebar",
   tags$div(actionButton("clear_expo","Reset exposures")),
   menuItem("Oral", tabName = "oral", selected = TRUE),
@@ -33,7 +33,7 @@ expo_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
 
 ################################compartment sidebar
 comp_sidebar <- shinydashboard::dashboardSidebar(
-  sidebarMenu(id="compsidebar",
+  shinydashboard::sidebarMenu(id="compsidebar",
               
               menuItem(tags$h5(tags$span(style = "color:white",
                                          "Physiological Parameters")),
@@ -51,7 +51,7 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
 
 
 ###############################Chemical Sidebar
-chem_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
+chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="chem_sidebar",
   selectizeInput("qsarModelChem", "Select A QSAR Model",
                           choices = c("QSAR model one" = 'one',
@@ -688,7 +688,7 @@ shinyUI(fluidPage(
                                            dashboardPage(
                                              dashboardHeader(disable = T),
                                              dashboardSidebar(
-                                               sidebarMenu(
+                                               shinydashboard::sidebarMenu(
                                                  menuItem("Physiological",
                                                           tabName = "var_physio"),
                                                  menuItem("Chemical",

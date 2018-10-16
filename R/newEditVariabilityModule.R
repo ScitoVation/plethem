@@ -1,7 +1,6 @@
-# This module handles the UI and server for creating variability parameter sets
-
+#' UI function for defining variability and uncertanity datasets
+#' @description UI function for defining variability and uncertanity datasets in the rapidPBPK model. This should not be called by the user
 #' @export
-#' 
 newEditVariabilityUI <- function(namespace){
   ns <- NS(namespace)
   showModal(modalDialog(
@@ -51,7 +50,8 @@ newEditVariabilityUI <- function(namespace){
   ))
 }
 
-#' Server side function for variability
+#' Server function for defining variability and uncertanity datasets
+#' @description Server function for defining variability and uncertanity datasets in the rapidPBPK model. This should not be called by the user
 #' @export
 newEditVariability <- function(input,output,session,set_type,ops_type,var_params_list,set_id = 0){
   

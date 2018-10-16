@@ -15,5 +15,5 @@ dataframe containing the fractional expression for all the cyps
 \description{
 The function returns the expression of cyps at each age as a fraction of the adult (25 years).
   The number needs to be multiplied by the cyp abundance information in the database to get the nominal expression
-  value for the cyp. See \code{\link{getCypAbundance}} on how to get abundance values for a given age
+  value for the cyp.
 }

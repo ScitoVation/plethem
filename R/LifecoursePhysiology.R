@@ -173,7 +173,7 @@ getLifecourseTissuePerfusion<- function(age = 25, gender = "M", tissues = list()
 #'  The function uses life course equations developed by Scitovation.
 #' @param age age in years
 #' @param gender Either "M" for male or "F" for female
-#' @returns Body Weight in kgs
+#' @return Body Weight in kgs
 #' @export
 getLifecourseBodyWeight <- function(age, gender){
   if(is.na(age)) return(NA)
@@ -250,7 +250,7 @@ getLifecourseBodyWeightFemale <- function(age){
 #'  The function uses life course equations developed by Scitovation.
 #' @param age age in years
 #' @param gender Either "M" for male or "F" for female
-#' @returns Body Height
+#' @return Body Height
 #' @export
 getLifecourseBodyHeight <- function(age, gender){
   if(is.na(age)) return(NA)
@@ -265,8 +265,7 @@ getLifecourseBodyHeight <- function(age, gender){
 
 #' Calculate body height of average human male using the lifecourse
 #' equation
-#' @description This function is not called directly by the user. See
-#'   \code{\link{getLifeCourseBodyHeight}}
+#' @description This function is not called directly by the user.
 #' @param age age in years
 #' @return Body height
 getLifecourseBodyHeightMale <- function(age){
@@ -524,10 +523,10 @@ getLifecourseAdiposeVolume <- function(age, gender, source = "sciv")
 
   if(source=="bosgra"){
     if(gender == "M") {
-      return(getLifecourseAdiposeVolumeMale(age))
+      return(getLifecourseAdiposeVolumeMaleSciV(age))
     }
     else if(gender == "F") {
-      return(getLifecourseAdiposeVolumeFemale(age))
+      return(getLifecourseAdiposeVolumeFemaleSciV(age))
     }
   }else if(source == "sciv"){
     if(gender == "M") {
@@ -970,7 +969,7 @@ getLifecourseLiverVolumeFemaleSciV<- function(age){
 
 
 #====================================================================================================
-getLifecourseLungVolume <- function(age, gender,source = "sciv")
+getLifecourseLungVolume <- function(age, gender,source = "bosgra")
   #====================================================================================================
 {
   if(is.na(age)) return(NA)
@@ -987,13 +986,6 @@ getLifecourseLungVolume <- function(age, gender,source = "sciv")
     }
     else if(gender == "F") {
       return(getLifecourseLungVolumeFemale(age))
-    }
-  }else if (source == "sciv"){
-    if(gender == "M") {
-      return(getLifecourseLungVolumeMaleSciV(age))
-    }
-    else if(gender == "F") {
-      return(getLifecourseLungVolumeFemaleSciV(age))
     }
   }
 
@@ -1246,14 +1238,7 @@ getLifecourseRapidlyPerfusedVolume <- function(age, gender,source = "sciv")
     warning("Bosgra equations not found, Using ScitoVation equations instead")
     source = "sciv"
   }
-
-  if (source == "bosgra"){
-    if(gender == "M") {
-      return(getLifecourseRapidlyPerfusedVolumeMale(age))
-    }else if(gender == "F") {
-      return(getLifecourseRapidlyPerfusedVolumeFemale(age))
-    }
-  }else if(source == "sciv"){
+  if(source == "sciv"){
       if(gender == "M") {
         return(getLifecourseRapidlyPerfusedVolumeMaleSciV(age))
       }else if(gender == "F") {
@@ -1303,7 +1288,7 @@ getLifecourseMuscleVolumeMale <- function(age)
   #====================================================================================================
 {
   vmus = getLifecourseBodyWeightMale(age) -
-    getLifecourseAdiposeVolumeMale(age) -
+    getLifecourseAdiposeVolumeMaleSciV(age) -
     getLifecourseBloodVolumeMale(age) -
     getLifecourseBoneVolumeMale(age) -
     getLifecourseBrainVolumeMale(age) -
@@ -1328,7 +1313,7 @@ getLifecourseMuscleVolumeFemale <- function(age)
   #====================================================================================================
 {
   vmus = getLifecourseBodyWeightMale(age) -
-    getLifecourseAdiposeVolumeFemale(age) -
+    getLifecourseAdiposeVolumeFemaleSciV(age) -
     getLifecourseBloodVolumeFemale(age) -
     getLifecourseBoneVolumeFemale(age) -
     getLifecourseBrainVolumeFemale(age) -
@@ -1410,7 +1395,7 @@ getLifecourseMuscleVolumeMale <- function(age)
 #====================================================================================================
 {
   vmus = getLifecourseBodyWeightMale(age) -
-    getLifecourseAdiposeVolumeMale(age) -
+    getLifecourseAdiposeVolumeMaleSciV(age) -
     getLifecourseBloodVolumeMale(age) -
     getLifecourseBoneVolumeMale(age) -
     getLifecourseBrainVolumeMale(age) -
@@ -1435,7 +1420,7 @@ getLifecourseMuscleVolumeFemale <- function(age)
   #====================================================================================================
 {
   vmus = getLifecourseBodyWeightMale(age) -
-    getLifecourseAdiposeVolumeFemale(age) -
+    getLifecourseAdiposeVolumeFemaleSciV(age) -
     getLifecourseBloodVolumeFemale(age) -
     getLifecourseBoneVolumeFemale(age) -
     getLifecourseBrainVolumeFemale(age) -
@@ -1489,7 +1474,7 @@ getLifecourseTissueVolumeSumMale <- function(age)
   #====================================================================================================
 {
   vall = +
-    getLifecourseAdiposeVolumeMale(age) +
+    getLifecourseAdiposeVolumeMaleSciV(age) +
     getLifecourseBloodVolumeMale(age) +
     getLifecourseBoneVolumeMale(age) +
     getLifecourseBrainVolumeMale(age) +
@@ -1515,7 +1500,7 @@ getLifecourseTissueVolumeSumFemale <- function(age)
   #====================================================================================================
 {
   vall = +
-    getLifecourseAdiposeVolumeFemale(age) +
+    getLifecourseAdiposeVolumeFemaleSciV(age) +
     getLifecourseBloodVolumeFemale(age) +
     getLifecourseBoneVolumeFemale(age) +
     getLifecourseBrainVolumeFemale(age) +
@@ -1589,8 +1574,8 @@ getLifecourseAdiposePerfusionFemaleSciV<- function(age){
 getLifecourseAdiposePerfusionMale <- function(age)
   #====================================================================================================
 {
-  m = getLifecourseAdiposeVolumeMale(age)
-  m35 = getLifecourseAdiposeVolumeMale(35)
+  m = getLifecourseAdiposeVolumeMaleSciV(age)
+  m35 = getLifecourseAdiposeVolumeMaleSciV(35)
   q = m*19.5/m35
   return(q)
 }
@@ -1599,8 +1584,8 @@ getLifecourseAdiposePerfusionMale <- function(age)
 getLifecourseAdiposePerfusionFemale <- function(age)
   #====================================================================================================
 {
-  m = getLifecourseAdiposeVolumeFemale(age)
-  m35 = getLifecourseAdiposeVolumeFemale(35)
+  m = getLifecourseAdiposeVolumeFemaleSciV(age)
+  m35 = getLifecourseAdiposeVolumeFemaleSciV(35)
   q = m*30.1/m35
   return(q)
 }
@@ -2447,22 +2432,14 @@ getLifecourseSlowlyPerfusedTissuePerfusionFemale <- function(age){
   return(qspf)
 }
 
-
-#===========================
-getLifeCourseCardiacOutputSCIV <- function(age,gender,qc_var = 0){
-#===========================
-  if(is.na(age)) return(NA)
-
-  if(gender == "M"){
-    return(getLifeCourseCardiacOutputSCIVMale(age,qc_var))
-  }else{
-    return(getLifeCourseCardiacOutputSCIVFemale(age,qc_var))
-  }
-}
-
-
-
+#' Get the cardiac output based on the life course equations
+#' @description Get the cardiac output for a specific age and gender. Uses either Bosgra or ScitoVation equations
+#' @param age Age in years 
+#' @param gender Gender can be either "M" for male or "F" for female
+#' @param source Source of the equations. Either from Bosgra et al. "bosgra" or from ScitoVation publications as "sciv"
+#' @param qc_var variability for cardiac output. Used to account for exercise level. Can only be used when source = "sciv"
 #' @export
+#' 
 getLifecourseCardiacOutput <- function(age, gender, source = "sciv",qc_var= 0)
   #====================================================================================================
 {
@@ -2548,6 +2525,12 @@ getLifecourseCardiacOutputFemale <- function(age)
   return(q)
 }
 
+#' Get the ventilation rate for a given age and gender
+#' @description Uses life course equation to calculate a ventilation rate for a specific age and gender
+#' @param age Age in years
+#' @param gender Either "M" for Male for "F" for Female
+#' @param activity Activity level. Can be "rest" or "light exercise"
+#' @param source source of equations either "sciv" or "bosgra"
 #' @export
 getLifecourseVentilationRate <- function(age, gender,activity="rest",source="sciv")
 #====================================================================================================
@@ -2609,7 +2592,11 @@ getLifecourseVentilationRateFemale <- function(age)
   return(qp)
 }
 
-#'@export
+#'Get the Lung Dead Space for a given age and gender
+#' @description Uses life course equation to calculate the lung dead space for a specific age and gender
+#' @param age Age in years
+#' @param gender Either "M" for Male for "F" for Female
+#' @export
 getLifecourseLungDeadSpace<- function(age,gender){
   if(is.na(age)) return(NA)
 
@@ -2630,7 +2617,12 @@ getLifecourseLungDeadSpaceFemale <- function(age){
   return(0.1274*exp(log(0.01345/0.1274)*exp(-0.1609*age)))
 }
 
-#'@export
+#' Get the tidal volume for a given age and gender
+#' @description Uses life course equation to calculate the tidal volume for a specific age and gender
+#' @param age Age in years
+#' @param gender Either "M" for Male for "F" for Female
+#' @param activity Activity level. Can be "rest" or "light activity"
+#' @export
 getLifecourseTidalVolume <- function(age,gender,activity ="rest"){
   if(is.na(age)) return(NA)
 
@@ -2666,7 +2658,11 @@ getLifecourseTidalVolumeFemale<- function(age,activity){
   }
 }
 
-#'@export
+#' Get the urine production rate for a given age and gender
+#' @description Uses life course equation to calculate a urine production rate for a specific age and gender
+#' @param age Age in years
+#' @param gender Either "M" for Male for "F" for Female
+#' @export
 getLifecourseUrineProductionRate <- function(age, gender)
 #====================================================================================================
 {
@@ -2696,6 +2692,10 @@ getLifecourseUrineProductionRateFemale <- function(age)
   return(ur)
 }
 
+#' Get the Glomerular Filteration Rate for a given age and gender
+#' @description Uses life course equation to calculate a GFR for a specific age and gender
+#' @param age Age in years
+#' @param gender Either "M" for Male for "F" for Female
 #' @export
 getLifecourseGlomerularFiltrationRate <- function(age, gender)
   #====================================================================================================

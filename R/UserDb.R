@@ -4,7 +4,8 @@ setUserDb<- function(){
   if ("rstudioapi" %in% installed.packages()){
     userDbPath <- rstudioapi::selectFile(caption = "Select User database",filter = "*.sqlite")
   }else{
-    userDbPath <- file.choose()
+    userDbPath <- tcltk::tk_choose.files(caption = "Select User database",multi = F,
+                                         filters = "*.sqlite")
   }
   
   query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",userDbPath)
@@ -21,7 +22,7 @@ createUserDb <- function(){
   if("rstudioapi" %in% utils::installed.packages()){
     userDbPath <- rstudioapi::selectDirectory(caption = "Create a new user database")
   }else{
-    userDbPath <- utils::choose.dir(caption = "Create a new user database")
+    userDbPath <- tcltk::tk_choose.dir(caption = "Create a new database")
   }
   
   file.copy(system.file("database/plethemUserDb.sqlite",package = "plethem"),userDbPath)

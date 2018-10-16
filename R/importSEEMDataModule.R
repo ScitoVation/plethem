@@ -1,3 +1,6 @@
+#' UI for importing SEEM data.
+#' @description This function is called by the pbpk model to import SEEM exposure estimates. Never called by the user
+#' @param namespace namespace for the module UI.
 #' @export
 importSEEMDataUI <- function(namespace){
   ns <- NS(namespace)
@@ -18,6 +21,9 @@ importSEEMDataUI <- function(namespace){
     
   ))
 }
+
+#' Server function for seem data module
+#' @description Server function for import seem data module
 #' @export
 importSEEMData <- function(input,output,session,fpath,expo_name_df){#,expo_name_df){
   ns <- session$ns

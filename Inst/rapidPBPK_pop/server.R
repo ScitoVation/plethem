@@ -205,7 +205,7 @@ shinyServer(function(input, output, session) {
   })
   
   fpath_seem <- reactive({
-    fpath <- file.choose()
+    fpath <- tcltk::tk_choose.files(multi = F)
     return(fpath)
   })
   

@@ -6,6 +6,10 @@
 \usage{
 HT_IVIVEUI(namespace = "")
 }
+\arguments{
+\item{namespace}{namespace for the module. This is unique and decided by the project server function}
+}
 \description{
-Module for editing high throughput reverse dosimetry functions
+The UI for defining HT-IVIVE parameters in the HT-IVIVE project. 
+It is called by the HT-IVIVE server script when a new row is added or existing row is edited. It is never called directly by the user.
 }

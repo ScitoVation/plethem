@@ -11,6 +11,9 @@ getLifecourseBodyHeight(age, gender)
 
 \item{gender}{Either "M" for male or "F" for female}
 }
+\value{
+Body Height
+}
 \description{
 The function is used to calculate the average body height for humans based on age and gender.
  The function uses life course equations developed by Scitovation.

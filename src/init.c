@@ -11,7 +11,7 @@
 extern void getParms(double *, double *, void *);
 
 extern void initmod(void *);
-;
+
 extern void derivs(int *, double *, double *, double *, double *, int *);
 
 extern void jac(int *, double *, double *, int *, int *, double *, int *, double *, int *);

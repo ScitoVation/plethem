@@ -7,5 +7,5 @@
 saveRestoreParameterSetUI(namespace)
 }
 \description{
-UI for the restore/save dialog
+UI for the save restore dialog box. This function should not be called by the user.
 }

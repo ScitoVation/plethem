@@ -6,6 +6,9 @@
 \usage{
 calc_cyp2b6(age)
 }
+\arguments{
+\item{age}{age of the human in years}
+}
 \description{
 get expression for cyp2b6 as a fraction of adult
 }

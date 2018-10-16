@@ -470,7 +470,7 @@ static double parms[125];
 #define pair parms[124]
 
 /* Forcing (Input) functions */
-static double forc[0];
+static double forc[1];
 
 
 /* Function definitions for delay differential equations */
@@ -485,7 +485,7 @@ void lagvalue(double T, int *nr, int N, double *ytau) {
   static void(*fun)(double, int*, int, double*) = NULL;
   if (fun == NULL)
     fun = (void(*)(double, int*, int, double*))R_GetCCallable("deSolve", "lagvalue");
-  return fun(T, nr, N, ytau);
+  
 }
 
 double CalcDelay(int hvar, double dTime, double delay) {

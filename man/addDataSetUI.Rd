@@ -8,6 +8,8 @@ addDataSetUI(namespace, data_type)
 }
 \arguments{
 \item{namespace}{the namespace for this module}
+
+\item{data_type}{the type of data to be uploaded based on where the UI is called from}
 }
 \description{
 The UI function for the add dataset module used in PLETHEM. This function creates the add dataset dialog
