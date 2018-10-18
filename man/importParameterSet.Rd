@@ -6,6 +6,15 @@
 \usage{
 importParameterSet(input, output, session, set_type)
 }
+\arguments{
+\item{input}{input object from the UI}
+
+\item{output}{output object for the UI}
+
+\item{session}{session object for the server}
+
+\item{set_type}{type of data to be imported}
+}
 \description{
 Server for import parameter module
 }

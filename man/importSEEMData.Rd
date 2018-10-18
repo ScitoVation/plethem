@@ -6,6 +6,17 @@
 \usage{
 importSEEMData(input, output, session, fpath, expo_name_df)
 }
+\arguments{
+\item{input}{input object for the UI}
+
+\item{output}{input object to the UI}
+
+\item{session}{session object for the module}
+
+\item{fpath}{path to the SEEM database}
+
+\item{expo_name_df}{dataframe containing variable names for exposure values}
+}
 \description{
-Server function for import seem data module
+Server function for import seem data module. This function should not be called by the user
 }

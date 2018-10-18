@@ -29,7 +29,9 @@ spleen,
 stomach,
 thymus,
 muscle,
-remaining}
+remaining.}
+
+\item{source}{source of the equation. defaults to "sciv" for scitovation}
 }
 \value{
 list containing blood perfusion of tissues for the given age and

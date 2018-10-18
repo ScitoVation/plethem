@@ -6,6 +6,9 @@
 \usage{
 saveRestoreParameterSetUI(namespace)
 }
+\arguments{
+\item{namespace}{namespace for the UI}
+}
 \description{
 UI for the save restore dialog box. This function should not be called by the user.
 }

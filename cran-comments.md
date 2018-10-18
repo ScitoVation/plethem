@@ -1,5 +1,12 @@
+## Resubmission
+This is a resubmission. In this version I have fixed the two warnings that were a part of the previous submission. This version now has
+
+* Import functions corrected to avoid replacing previously imported functions
+* Complete documentation for all exported functions. 
+
 ## Test environments
 * local OS X install, R 3.5.0
+* local windows install
 * win-builder (devel and release)
 
 ## R CMD check results

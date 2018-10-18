@@ -6,6 +6,17 @@
 \usage{
 importShedsData(input, output, session, path, expo_name_df)
 }
+\arguments{
+\item{input}{input object for the UI}
+
+\item{output}{input object to the UI}
+
+\item{session}{session object for the module}
+
+\item{path}{path where SHEDS results are stored}
+
+\item{expo_name_df}{dataframe containing variable names for exposure values}
+}
 \description{
 Server function for importing SHEDS exposures estimates into PLETHEM. The function should not be called by the user
 }

@@ -6,6 +6,13 @@
 \usage{
 importHTTKData(input, output, session)
 }
+\arguments{
+\item{input}{input object from the UI}
+
+\item{output}{output object with results}
+
+\item{session}{session from which this module is called}
+}
 \description{
 This is the server function for the importHTTKData module. This is not to be called by the user.
 }

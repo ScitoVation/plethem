@@ -7,6 +7,21 @@
 newEditVariability(input, output, session, set_type, ops_type, var_params_list,
   set_id = 0)
 }
+\arguments{
+\item{input}{input object from UI}
+
+\item{output}{output object to the UI}
+
+\item{session}{session object for this module}
+
+\item{set_type}{type of set for which variability is defined}
+
+\item{ops_type}{Operation requested. new variability or edit existing}
+
+\item{var_params_list}{List of parameters for variability}
+
+\item{set_id}{id for the variability set in the database}
+}
 \description{
 Server function for defining variability and uncertanity datasets in the rapidPBPK model. This should not be called by the user
 }

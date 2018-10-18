@@ -178,6 +178,7 @@ getAllParamValuesForModel <- function(simid,model){
 #' montecarlo analysis. The values are obtained from the Project database. 
 #' @param simid Integer The id for simulation selected to run
 #' @param params list of model parameters
+#' @param mc_num number of montecarlo runs
 #' @return matrix of parameters that will be used for individual montecarlo runs
 #' 
 #' @export

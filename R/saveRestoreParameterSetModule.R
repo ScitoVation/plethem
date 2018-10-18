@@ -2,13 +2,13 @@
 
 #' UI for the restore/save dialog
 #' @description UI for the save restore dialog box. This function should not be called by the user.
-#' @importFrom DT dataTableOutput
+#' @param namespace namespace for the UI
 #' @export
 saveRestoreParameterSetUI <- function(namespace){
   ns <- NS(namespace)
   showModal(modalDialog(
     title = "Save or Restore Selected Parameters",
-    tagList(dataTableOutput(ns("param_table"))),
+    tagList(DTOutput(ns("param_table"))),
     footer = fluidRow(
       column(6,
              shinyWidgets::actionGroupButtons(c(ns("saveall"),ns("savesel")),
@@ -30,7 +30,14 @@ saveRestoreParameterSetUI <- function(namespace){
 
 #' Server for the restore/save dialog
 #' @description Server for the save restore dialog box. This function should not be called by the user.
-#' @export
+#' @param input input object for the UI
+#' @param output input object to the UI
+#' @param session session object for the module
+#' @param UI_values values for the parameters in the UI
+#' @param set_values values for the parameters in the database
+#' @param param_names names of parameters to save or restore
+#' @param type type of parameter set to save
+#'@export
 saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,param_names,type){
   returnValues <- reactiveValues()
   returnValues$retData <- reactiveVal(c("None"))

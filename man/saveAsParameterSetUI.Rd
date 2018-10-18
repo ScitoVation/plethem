@@ -6,6 +6,11 @@
 \usage{
 saveAsParameterSetUI(namespace, set_type)
 }
+\arguments{
+\item{namespace}{namespace for the UI}
+
+\item{set_type}{type of parameter set to save}
+}
 \description{
-UI for saving a new physiological, chemical or exposure set to the project database
+UI for saving parameter sets. This function should not be called by the user
 }

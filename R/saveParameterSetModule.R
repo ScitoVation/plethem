@@ -1,6 +1,9 @@
 # This module for creating a new physiological, chemical or Exposure entry in the project database
 
 #'UI for saving a new physiological, chemical or exposure set to the project database
+#'@description UI for saving parameter sets. This function should not be called by the user
+#'@param namespace namespace for the UI
+#'@param set_type type of parameter set to save
 #'@export
 saveAsParameterSetUI <- function(namespace, set_type){
   shinyjs::useShinyjs()
@@ -24,6 +27,13 @@ saveAsParameterSetUI <- function(namespace, set_type){
 }
 
 #'server side function for saving a new physiological, chemical or exposure set to the project database
+#' @description Server side function for running the save parameter module. This function should not be called by the user
+#' @param input input object for the UI
+#' @param output input object to the UI
+#' @param session session object for the module
+#' @param set_type type of parameter set to save
+#' @param main_input input from the pbpk UI
+#' @param name_df variable names for parameters
 #'@export
 saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df){
 

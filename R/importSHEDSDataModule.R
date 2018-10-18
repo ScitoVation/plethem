@@ -1,5 +1,6 @@
 #' UI function for importing SHEDS data
 #' @description UI function for importing SHEDS exposures estimates into PLETHEM. The function should not be called by the user
+#' @param namespace namespace for the module
 #' @export
 importShedsDataUI <- function(namespace){
   ns <- NS(namespace)
@@ -30,6 +31,11 @@ importShedsDataUI <- function(namespace){
 
 #' Server function for importing SHEDS data
 #' @description Server function for importing SHEDS exposures estimates into PLETHEM. The function should not be called by the user
+#' @param input input object for the UI
+#' @param output input object to the UI
+#' @param session session object for the module
+#' @param path path where SHEDS results are stored
+#' @param expo_name_df dataframe containing variable names for exposure values
 #' @export
 importShedsData <- function(input,output,session,path,expo_name_df){
   print(path)

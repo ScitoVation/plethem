@@ -72,6 +72,7 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
 
 #' Load the project with the given name
 #' @description Loads the project data in the PLETHEM project database.
+#' @param file_path path to the project file
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){

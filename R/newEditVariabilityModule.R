@@ -1,5 +1,6 @@
 #' UI function for defining variability and uncertanity datasets
 #' @description UI function for defining variability and uncertanity datasets in the rapidPBPK model. This should not be called by the user
+#' @param namespace namespace for the module when it is called form the PBPK UI
 #' @export
 newEditVariabilityUI <- function(namespace){
   ns <- NS(namespace)
@@ -52,6 +53,13 @@ newEditVariabilityUI <- function(namespace){
 
 #' Server function for defining variability and uncertanity datasets
 #' @description Server function for defining variability and uncertanity datasets in the rapidPBPK model. This should not be called by the user
+#' @param input input object from UI
+#' @param output output object to the UI
+#' @param session session object for this module
+#' @param set_type type of set for which variability is defined
+#' @param ops_type Operation requested. new variability or edit existing
+#' @param var_params_list List of parameters for variability
+#' @param set_id id for the variability set in the database 
 #' @export
 newEditVariability <- function(input,output,session,set_type,ops_type,var_params_list,set_id = 0){
   

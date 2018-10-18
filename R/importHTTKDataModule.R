@@ -1,6 +1,7 @@
 #' UI for importing data from HTTK
 #' @description UI function for the shiny module called by the rapidPBPK Exposure UI.
 #' This will never be called directly by the user.
+#' @param namespace namespace for the module
 #' @import httk
 #' @import miniUI
 #' @export
@@ -22,9 +23,13 @@ importHTTKDataUI <- function(namespace){
     )
   return(NULL)
 }
+
 #'Server function for importing HTTK data
-#'@description This is the server function for the importHTTKData module. This is not to be called by the user.
-#'@export
+#' @description This is the server function for the importHTTKData module. This is not to be called by the user.
+#' @param input input object from the UI
+#' @param output output object with results
+#' @param session session from which this module is called
+#' @export
 importHTTKData <- function(input,output,session){
   returnValues <- reactiveValues()
   returnValues$retdata <- c("No","",0)

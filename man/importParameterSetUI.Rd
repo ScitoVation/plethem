@@ -6,6 +6,11 @@
 \usage{
 importParameterSetUI(namespace, set_type)
 }
+\arguments{
+\item{namespace}{namespace for this module}
+
+\item{set_type}{type of data to be imported; physiological, chemical or exposure}
+}
 \description{
-UI for importing parameter sets
+UI for importing parameters from user or main databases
 }

@@ -10,6 +10,8 @@ getAllVariabilityValuesForModel(simid, params, mc_num)
 \item{simid}{Integer The id for simulation selected to run}
 
 \item{params}{list of model parameters}
+
+\item{mc_num}{number of montecarlo runs}
 }
 \value{
 matrix of parameters that will be used for individual montecarlo runs

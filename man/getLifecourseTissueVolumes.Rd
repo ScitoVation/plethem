@@ -4,13 +4,15 @@
 \alias{getLifecourseTissueVolumes}
 \title{Get volumes for tissues provided on the basis of age and gender}
 \usage{
-getLifecourseTissueVolumes(age = 25, gender = "M", nonperf_frct = 0.85,
+getLifecourseTissueVolumes(age = 25, gender = "M", perf_frct = 0.85,
   tissues = list())
 }
 \arguments{
 \item{age}{Age of the organism in years}
 
 \item{gender}{The gender of the organism "M" for Male or "F" for Female}
+
+\item{perf_frct}{fraction of perfused tissue. default to 0.85}
 
 \item{tissues}{List of tissues for which the volumes are needed. The tissues can be one of the following
 liver,

@@ -1,5 +1,5 @@
-#' Gadget UI and server for importing data run using Commercial TRA version
-#'
+# Gadget UI and server for importing data run using Commercial TRA version
+#
 exposureTRAGadget <- function(save_flag = F, base_path = NULL){
   ui <- miniPage(
     shinyjs::useShinyjs(),

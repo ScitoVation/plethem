@@ -6,6 +6,19 @@
 \usage{
 saveAsParameterSet(input, output, session, set_type, main_input, name_df)
 }
+\arguments{
+\item{input}{input object for the UI}
+
+\item{output}{input object to the UI}
+
+\item{session}{session object for the module}
+
+\item{set_type}{type of parameter set to save}
+
+\item{main_input}{input from the pbpk UI}
+
+\item{name_df}{variable names for parameters}
+}
 \description{
-server side function for saving a new physiological, chemical or exposure set to the project database
+Server side function for running the save parameter module. This function should not be called by the user
 }

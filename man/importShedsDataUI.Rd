@@ -6,6 +6,9 @@
 \usage{
 importShedsDataUI(namespace)
 }
+\arguments{
+\item{namespace}{namespace for the module}
+}
 \description{
 UI function for importing SHEDS exposures estimates into PLETHEM. The function should not be called by the user
 }

@@ -7,6 +7,21 @@
 saveRestoreParameterSet(input, output, session, UI_values, set_values,
   param_names, type)
 }
+\arguments{
+\item{input}{input object for the UI}
+
+\item{output}{input object to the UI}
+
+\item{session}{session object for the module}
+
+\item{UI_values}{values for the parameters in the UI}
+
+\item{set_values}{values for the parameters in the database}
+
+\item{param_names}{names of parameters to save or restore}
+
+\item{type}{type of parameter set to save}
+}
 \description{
 Server for the save restore dialog box. This function should not be called by the user.
 }

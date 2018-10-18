@@ -1,6 +1,8 @@
 # Module for performing single age IVIVE in the chemical tab
 
 #' Shiny module that is called when perform IVIVE button is clicked on the chemical tab of a PBPK model
+#' @description UI for performing IVIVE from within the PBPK UI. This function should not be called by the user
+#' @param namespace namespace for the UI
 #' @export
 performIVIVEUI<- function(namespace){
   ns <- NS(namespace)
@@ -115,6 +117,11 @@ performIVIVEUI<- function(namespace){
 }
 
 #'server side function for performing IVIVE for a chemical
+#'@description The server side function for running the IVIVE module from within the PBPK UI
+#' @param input input object for the UI
+#' @param output input object to the UI
+#' @param session session object for the module
+#' @param km km for the chemical
 #'@export
 performIVIVE <- function(input,output,session,km){
   returnValues <- reactiveValues()

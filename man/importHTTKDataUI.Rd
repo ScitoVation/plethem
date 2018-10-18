@@ -6,6 +6,9 @@
 \usage{
 importHTTKDataUI(namespace)
 }
+\arguments{
+\item{namespace}{namespace for the module}
+}
 \description{
 UI function for the shiny module called by the rapidPBPK Exposure UI.
 This will never be called directly by the user.

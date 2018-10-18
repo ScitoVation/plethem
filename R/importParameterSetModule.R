@@ -1,7 +1,10 @@
 # This module describes the import dialog for parameter sets.Currently only chemicals are supported
 
 #'UI for importing parameter sets
-#'@importFrom DT dataTableOutput
+#' @description UI for importing parameters from user or main databases
+#' @param namespace namespace for this module
+#' @param set_type type of data to be imported; physiological, chemical or exposure
+#'
 #'@export
 importParameterSetUI <- function(namespace,set_type){
   shinyjs::useShinyjs()
@@ -20,12 +23,12 @@ importParameterSetUI <- function(namespace,set_type){
                                                 label = "Select Chemical",
                                                 choices = NULL),
 
-                                 dataTableOutput(ns("user_tble"))),
+                                 DTOutput(ns("user_tble"))),
                         tabPanel("Main Database",value = "main",
                                  selectizeInput(ns("sel_main"),
                                                 label = "Select Chemical",
                                                 choices = NULL),
-                                 dataTableOutput(ns("main_tble")))
+                                 DTOutput(ns("main_tble")))
 
 
 
@@ -46,6 +49,11 @@ importParameterSetUI <- function(namespace,set_type){
 }
 
 #'Server for import parameter module
+#'@desciption server function for importing parameter sets from user databases. This function should never be called by the user
+#'@param input input object from the UI
+#'@param output output object for the UI
+#'@param session session object for the server
+#'@param set_type type of data to be imported
 #'@export
 importParameterSet <- function(input,output,session,set_type){
   if(set_type == "chem"){

@@ -6,6 +6,9 @@
 \usage{
 loadProject(file_path = "")
 }
+\arguments{
+\item{file_path}{path to the project file}
+}
 \description{
 Loads the project data in the PLETHEM project database.
 }

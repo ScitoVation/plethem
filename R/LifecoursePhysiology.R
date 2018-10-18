@@ -1,6 +1,6 @@
 
-#' Small utility function for linear interpolation
-#' Used internally
+# Small utility function for linear interpolation
+# Used internally
 interp2 <- function(x1, x2, y1, y2, x)
 {
   m = (y2 - y1)/(x2 - x1)
@@ -12,6 +12,7 @@ interp2 <- function(x1, x2, y1, y2, x)
 #'
 #' @param age Age of the organism in years
 #' @param gender The gender of the organism "M" for Male or "F" for Female
+#' @param perf_frct fraction of perfused tissue. default to 0.85 
 #' @param tissues List of tissues for which the volumes are needed. The tissues can be one of the following
 #' liver,
 #' blood,
@@ -34,7 +35,7 @@ interp2 <- function(x1, x2, y1, y2, x)
 #' list containing volumes for age, gender and tissues.
 #' @export
 #'
-getLifecourseTissueVolumes<- function(age = 25, gender = "M",nonperf_frct = 0.85,
+getLifecourseTissueVolumes<- function(age = 25, gender = "M",perf_frct = 0.85,
                                       tissues=list()){
   tissue_vol_list <- NULL
   available_tissues <- c("blood","fat","skin","muscle","bone","brain","lung",
@@ -66,7 +67,7 @@ getLifecourseTissueVolumes<- function(age = 25, gender = "M",nonperf_frct = 0.85
 
   # for slowly perfused get value
   #from equation and add inactive tissue volumes
-  vol <- getLifecourseSlowlyPerfusedVolume(age,gender,nonperf_frct)
+  vol <- getLifecourseSlowlyPerfusedVolume(age,gender,perf_frct)
   spf_inact_vol <- sum(tissue_vol_list[spf_inactive_tissues])
   tissue_vol_list[["spf"]]<-vol+spf_inact_vol
 
@@ -79,6 +80,7 @@ getLifecourseTissueVolumes<- function(age = 25, gender = "M",nonperf_frct = 0.85
 #'
 #' @param age Age of the organism in years
 #' @param gender The gender of the organism "M" for Male or "F" for Female
+#' @param source source of the equation. defaults to "sciv" for scitovation
 #' @param tissues List of tissues for which blood perfusion is needed. The
 #'   tissues can be any of the following
 #'   liver,
@@ -96,7 +98,8 @@ getLifecourseTissueVolumes<- function(age = 25, gender = "M",nonperf_frct = 0.85
 #'   stomach,
 #'   thymus,
 #'   muscle,
-#'   remaining
+#'   remaining.
+#'  
 #' @return list containing blood perfusion of tissues for the given age and
 #' gender.
 #' @export
