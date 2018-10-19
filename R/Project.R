@@ -81,7 +81,7 @@ loadProject <- function(file_path = ""){
                                           filter= "*.Rdata")
     }else{
       file_path <- tcltk::tk_choose.files(caption = "Select PLETHEM Project",
-                                          filter= "*.Rdata")
+                                          filter= matrix(c("*.Rdata"),4,2,byrow=TRUE))
     }
     
     
@@ -107,6 +107,7 @@ loadProject <- function(file_path = ""){
     shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
   }
   if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
+    
     shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
   }
   if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){

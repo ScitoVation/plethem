@@ -49,7 +49,7 @@ importParameterSetUI <- function(namespace,set_type){
 }
 
 #'Server for import parameter module
-#'@desciption server function for importing parameter sets from user databases. This function should never be called by the user
+#'@description server function for importing parameter sets from user databases. This function should never be called by the user
 #'@param input input object from the UI
 #'@param output output object for the UI
 #'@param session session object for the server

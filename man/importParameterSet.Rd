@@ -16,5 +16,5 @@ importParameterSet(input, output, session, set_type)
 \item{set_type}{type of data to be imported}
 }
 \description{
-Server for import parameter module
+server function for importing parameter sets from user databases. This function should never be called by the user
 }
