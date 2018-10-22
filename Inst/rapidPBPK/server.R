@@ -984,7 +984,7 @@ observeEvent({input$chemScenFilter},{
     #adding '#' to the ui object ids
     uiItems$object <- paste("#",uiItems$object,sep = "")
     steps <- data.frame(element = c(uiItems$object), intro = c(uiItems$message))
-    introjs(session,options = list(steps=steps))
+    rintrojs::introjs(session,options = list(steps=steps))
   })
 
   #system intro for pages under Model Output
@@ -1062,7 +1062,7 @@ observeEvent({input$chemScenFilter},{
       val = as.numeric(paste0(param_data[row_count[i], 3])) #original value
       updateNumericInput(session, var, value = val)
     }
-    toggleModal(session,"restore_modal",toggle = "close")
+    shinyBS::toggleModal(session,"restore_modal",toggle = "close")
   }) #end retore btn
 
 

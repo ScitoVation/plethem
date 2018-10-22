@@ -1,9 +1,13 @@
-#' Server logic for RapidPBPK Model
-#' @importFrom plotly renderPlotly plot_ly add_trace
-#' @importFrom magrittr %>%
-#' @importFrom DT DTOutput renderDT datatable dataTableProxy replaceData
+library(shiny)
+library(shinyBS)
+library(shinydashboard)
+library(shinyWidgets)
+library(V8)
+library(ggplot2)
+library(shinyjs)
+
 shinyServer(function(input, output, session) {
-  useShinyjs()
+  shinyjs::useShinyjs()
   # define the model name once here. It will be used throughout this server file
   # this will make it easier to create new model UI/SERVERS
   model <- "rapidPBPK"
@@ -1151,28 +1155,28 @@ shinyServer(function(input, output, session) {
 current_params <-  reactive({
     temp <- getAllParamValuesForModel(input$sel_sim,model = model)
     # get exposure paramteres
-    expo_list <- temp[expo_name_df$Var]
-    expo_params <- data.frame("var" = expo_name_df$Var, "val" = temp[expo_name_df$Var],
+
+    
+    expo_params <- data.frame("var" = expo_name_df$Name, "val" = temp$vals[expo_name_df$Var],
                               stringsAsFactors = F)
-    physio_params <- data.frame("var" = physio_name_df$Var, "val" = temp[physio_name_df$Var],
+    physio_params <- data.frame("var" = physio_name_df$Name, "val" = temp$vals[physio_name_df$Var],
                               stringsAsFactors = F)
-    current_params <- data.frame("var" = names(temp),"val" = temp,stringsAsFactors = F)
+    current_params <- data.frame("var" = chem_name_df$Name,"val" = temp$vals[chem_name_df$Var],stringsAsFactors = F)
     #current_params <- temp$a
     #current_params <- cbind(gsub("ms_", "",temp$b),current_params)
     return(list("cur" = current_params,"expo" = expo_params,"physio" = physio_params))
   })
-output$pamamstbl <- DT::renderDT(DT::datatable(current_params()$cur,
+output$chem_params_tble <- DT::renderDT(DT::datatable(current_params()$cur,
                                                   rownames = F),
                                     colnames=c("Variable names", "Value"))
 output$expo_params_tble <- DT::renderDT(DT::datatable(current_params()$expo,
-                                                  rownames = F),
-                                    colnames=c("Variable names", "Value"))
+                                                  rownames = F,
+                                                  colnames=c("Variable names", "Value"))
+                                    )
 output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
-                                                         rownames = F),
-                                           colnames=c("Variable names", "Value"))
-
-
-  #*******************these are not called anywhere.
+                                                         rownames = F,
+                                                        colnames=c("Variable names", "Value")))
+#*******************these are not called anywhere.
 # These functions update the current values used in the restore paramsparams
   # resetParaValueList <- function(session, paraValueList, volumes, ratios){
   #

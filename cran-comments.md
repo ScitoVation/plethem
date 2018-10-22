@@ -1,3 +1,12 @@
+## Resbumission
+This is a resubmission. The last version submitted had a period missing at the end of the description. Causing it to error out. This version is spell checked for accuracy. 
+
+## Resubmission
+This is a resubmission. In this version I have addressed two concerns raised during the previous review. Specifically
+
+* No packages are a part of the Depends field in the description. The namespace and imports were reorganised to ensure the package still works
+* The description has been updated.
+
 ## Resubmission
 This is a resubmission. In this version I have fixed the two warnings that were a part of the previous submission. This version now has
 

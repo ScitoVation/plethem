@@ -182,8 +182,8 @@ chem_sidebar <- shinydashboard::dashboardSidebar(sidebarMenu(
 plot_body <- fluidPage(
   tabItem(tabName = "plots",
           fluidRow(
-            bsCollapse(id="plts", multiple = TRUE,
-                       bsCollapsePanel(title = "Exposure Plots", style = "primary",
+            shinyBS::bsCollapse(id="plts", multiple = TRUE,
+                       shinyBS::bsCollapsePanel(title = "Exposure Plots", style = "primary",
                                      column(3,
                                         wellPanel(
                                                    checkboxInput("ch_dose", "Instaneous Dose", value = TRUE, width = NULL),
@@ -207,7 +207,7 @@ plot_body <- fluidPage(
                                               DT::DTOutput("expotble"),
                                               downloadButton("expodwnld",label = "Get Data")))
                        )),
-                       bsCollapsePanel(title = "Concentration Plots", style = "primary",
+                       shinyBS::bsCollapsePanel(title = "Concentration Plots", style = "primary",
                                  column(3,
                                         tabsetPanel(
                                           tabPanel("Model",value  = "model",
@@ -259,7 +259,7 @@ plot_body <- fluidPage(
                                                          DT::DTOutput("conctble"),
                                                          downloadButton("cdwnld",label ="Get Data"))
                                          ))),
-                       bsCollapsePanel(title = "Amount Plots", style = "primary",
+                       shinyBS::bsCollapsePanel(title = "Amount Plots", style = "primary",
                                        column(3,
                                               wellPanel(
                                                 multiInput("aplt_comp",label = tags$h4("Select Compartment"),
@@ -303,43 +303,8 @@ plot_body <- fluidPage(
                                                               downloadButton("amwnld",label ="Get Data"))
                                               ))
                                        ),
-                       # bsCollapsePanel(title = "AUC Plots", style = "primary",
-                       #                 column(3,
-                       #                        wellPanel(
-                       #                          multiInput("aucplt_comp",label = tags$h4("Select Compartment"),
-                       #                                         choices = list("Blood"=c("Aretial Blood"="art_bld","Venous Blood"="ven_bld"),
-                       #                                                        "Fat"=c("Fat Total"="to_fat","Fat Tissue"="ti_fat","Fat Exchange"="bl_fat"),
-                       #                                                        "Skin"=c("Skin Total"="to_skn","Skin Tissue"="ti_skn","Skin Exchange"="bl_skn"),
-                       #                                                        "Bone"=c("Bone Total"="bl_skn","Bone Tissue"="ti_bne","Bone Exchange"="bl_bne"),
-                       #                                                        "Muscle"=c("Muscle Total"="to_musc","Muscle Tissue"="ti_musc","Muscle Exchange"="bl_musc"),
-                       #                                                        "Brain"=c("Brain Total"="to_brn","Brain Tissue"="ti_brn","Brain Exchange"="bl_brn"),
-                       #                                                        "Lungs"=c("Lungs Total"="to_lng","Lungs Tissue"="ti_lng","Lungs Exchange"="bl_lng"),
-                       #                                                        "Heart"=c("Heart Total"="to_hrt","Heart Tissue"="ti_hrt","Heart Exchange"="bl_hrt"),
-                       #                                                        "GI"=c("GI Total"="to_gi","GI Tissue"="ti_gi","GI Exchange"="bl_gi"),
-                       #                                                        "Liver"=c("Liver Total"="to_liv","Liver Tissue"="ti_liv","Liver Exchange"="bl_liv"),
-                       #                                                        "Kidney"=c("Kidney Total"="to_kdn","Kidney Tissue"="ti_kdn","Kidney Exchange"="bl_kdn"),
-                       #                                                        "Rapidly Perused"=c("Rapidly Perused Total"="to_rpf",
-                       #                                                                            "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf"),
-                       #                                                        "Slowly Perused"=c("Slowly Perused Total"="to_spf",
-                       #                                                                           "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf")
-                       #                                                        )
-                       #                          )
-                       #                          )
-                       #                 ),
-                       #                 column(9,
-                       #                        tabBox(width = 12, height = validateCssUnit("100%"),
-                       #                               tabPanel("Plot",
-                       #                                        fluidRow(
-                       #                                          plotOutput("aucplt")
-                       #                                        )
-                       #                               ),
-                       #                               tabPanel("Table",
-                       #                                        dataTableOutput("auctble"),
-                       #                                        downloadButton("aucdwnld",label ="Get Data"))
-                       #                        )
-                       #                    )
-                       #                 ),
-                       bsCollapsePanel(title = "Mass Balance Plots", style = "primary",
+                       
+                       shinyBS::bsCollapsePanel(title = "Mass Balance Plots", style = "primary",
                                        column(8, offset = 2,
                                               tabBox(width = 12, height = validateCssUnit("100%"),
                                                      tabPanel("Plot",
@@ -837,7 +802,7 @@ shinyUI(fluidPage(
                                                        column(8,offset = 2,
                                                               tags$h4("Overwrite existing Parameter Set ?")),
                                                        column(2,
-                                                              bsButton("exposave_yes","Yes",block = TRUE))
+                                                              shinyBS::bsButton("exposave_yes","Yes",block = TRUE))
                                                      )),
                                              fluidRow(
                                                column(12,
@@ -1010,7 +975,7 @@ shinyUI(fluidPage(
                                              fluidRow(
 
                                                column(2,
-                                                      bsButton("btn_metab_upload",
+                                                      shinyBS::bsButton("btn_metab_upload",
                                                                "Upload Metabolism Files",
 
                                                                block = T)
@@ -1129,27 +1094,7 @@ shinyUI(fluidPage(
                                                br(),
                                                selectizeInput("sel_sim", "Select a Simulation",
                                                               choices =NULL,  width = validateCssUnit("99%"))
-                                               # bsCollapse(id = "sim_selector",multiple = TRUE, open ="Simulations",
-                                               #            # bsCollapsePanel("Chemicals",style = "primary",
-                                               #            #                 selectizeInput("sim_chem_filter", "Select a chemical",
-                                               #            #                                choices = NULL,
-                                               #            #                                width = validateCssUnit("99%"))
-                                               #            # ),
-                                               #            # bsCollapsePanel("Exposure",style = "primary",
-                                               #            #                 radioButtons("sim_expo_type",label = NULL,
-                                               #            #                              choices = c("Oral"="oral",
-                                               #            #                                          "Drinking Water"="dw",
-                                               #            #                                          "Inhalation"="inh",
-                                               #            #                                          "Intravenous"="derm"),
-                                               #            #                              selected = 'oral',
-                                               #            #                              inline = FALSE,
-                                               #            #                              width = validateCssUnit("100%"))
-                                               #            # ),
-                                               #            bsCollapsePanel("Simulations",style = "primary",
-                                               #                            selectizeInput("sel_sim", "Select a Simulation",
-                                               #                                           choices =NULL,  width = validateCssUnit("99%"))
-                                               #            )
-                                               # )
+                                               
                                              ),
                                              fluidRow(
                                                wellPanel(id= "Simulationdetails1",
@@ -1215,7 +1160,7 @@ shinyUI(fluidPage(
              tabPanel("Model Output",icon = icon("line-chart"),value = "output",
                       fluidRow(
                         column(2,
-                               bsButton("btnAddData","Add Dataset",block = TRUE,style = "primary")
+                               shinyBS::bsButton("btnAddData","Add Dataset",block = TRUE,style = "primary")
                                ),
                         column(3, offset= 6,
                                downloadButton("downloadModel", "Download Model",class = "btn btn-primary btn-block")

@@ -1,3 +1,10 @@
+library(shiny)
+library(shinyBS)
+library(shinydashboard)
+library(shinyWidgets)
+library(V8)
+library(ggplot2)
+library(shinyjs)
 jscode <- "
 shinyjs.disableTab = function(name) {
   var tab = $('#'+name);
@@ -802,7 +809,7 @@ expo_body <- dashboardBody(
 
 #################Shiny UI
 shinyUI(fluidPage(
-  useShinyjs(),
+  shinyjs::useShinyjs(),
   shinyWidgets::useSweetAlert(),
   theme = shinythemes::shinytheme("spacelab"),
   includeCSS("www/styles.css"),
@@ -1378,8 +1385,8 @@ shinyUI(fluidPage(
                                              fluidRow(
                                                       box(title = "Exposure Parameters",width = 4,
                                                           DT::DTOutput("expo_params_tble")),
-                                                      box(title = "Chemical Parameters",width = 4,
-                                                          DT::DTOutput("pamamstbl")),
+                                                      box(title = "All Parameters",width = 4,
+                                                          DT::DTOutput("chem_params_tble")),
                                                       box(title = "Physiological Parameters",width = 4,
                                                           DT::DTOutput("physio_params_tble"))
 
