@@ -153,46 +153,48 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
                          "qc"="qcc")
     perfc <- 0.85
     if (organism == "human"){
-      age <- 25
-      gender <- "M"
-      vols <- getLifecourseTissueVolumes(age,"M",perfc, c(vol_tissues,"blood"))
-      vols["bw"] <- getLifecourseBodyWeight(age,"M")
-      names(vols)<- lapply(c(vol_tissues,"blood","bw"),function(x){vol_tissue_ids[x]})
-      for(elem in names(vols)){
-        #print(elem)
-        if(elem!="bw"){
-          vols[[elem]]<- vols[[elem]]/(vols["bw"])
-        }
-      }
-      
-      flows <- getLifecourseTissuePerfusion(age,"M", c(flow_tissues,"liver"))
-      flows["qc"]<- getLifecourseCardiacOutput(age,"M")
-      names(flows)<- lapply(c(flow_tissues,"liver_art","liver_ven","qc"),function(x){flow_tissue_ids[x]})
-      
-      for(elem in names(flows)){
-        #print(elem)
-        if(elem!="qcc"){
-          flows[elem]<- flows[elem]/(flows["qcc"])
-        }
-      }
-      
-      ventilation_rate <- getLifecourseVentilationRate(age,gender)
-      tidal_volume <- getLifecourseTidalVolume(age,gender)
-      ds <- getLifecourseLungDeadSpace(age,gender)
-      gfr <- getLifecourseGlomerularFiltrationRate(age,gender)
-      hct <- 0.441
+      query <- "Select param,value From Physiological where physioid = 2;"
+      # age <- 25
+      # gender <- "M"
+      # vols <- getLifecourseTissueVolumes(age,"M",perfc, c(vol_tissues,"blood"))
+      # vols["bw"] <- getLifecourseBodyWeight(age,"M")
+      # names(vols)<- lapply(c(vol_tissues,"blood","bw"),function(x){vol_tissue_ids[x]})
+      # for(elem in names(vols)){
+      #   #print(elem)
+      #   if(elem!="bw"){
+      #     vols[[elem]]<- vols[[elem]]/(vols["bw"])
+      #   }
+      # }
+      # 
+      # flows <- getLifecourseTissuePerfusion(age,"M", c(flow_tissues,"liver"))
+      # flows["qc"]<- getLifecourseCardiacOutput(age,"M")
+      # names(flows)<- lapply(c(flow_tissues,"liver_art","liver_ven","qc"),function(x){flow_tissue_ids[x]})
+      # 
+      # for(elem in names(flows)){
+      #   #print(elem)
+      #   if(elem!="qcc"){
+      #     flows[elem]<- flows[elem]/(flows["qcc"])
+      #   }
+      # }
+      # 
+      # ventilation_rate <- getLifecourseVentilationRate(age,gender)
+      # tidal_volume <- getLifecourseTidalVolume(age,gender)
+      # ds <- getLifecourseLungDeadSpace(age,gender)
+      # gfr <- getLifecourseGlomerularFiltrationRate(age,gender)
+      # hct <- 0.441
     }
     if (organism == "rat"){
       query <- "Select param,value From Physiological where physioid = 1;"
-      vals <- mainDbSelect(query)
       
-      vals <- as.list(
-        setNames(vals$value,nm = vals$param))
-      
-      vals[which(names(vals) %in% c("org","gender","cmplist"))]<- NULL
-      vals <- lapply(vals,as.numeric)
       #print(vals)
     }
+    vals <- mainDbSelect(query)
+    
+    vals <- as.list(
+      setNames(vals$value,nm = vals$param))
+    
+    vals[which(names(vals) %in% c("org","gender","cmplist"))]<- NULL
+    vals <- lapply(vals,as.numeric)
     # param_list <- c(vals,partitions,"vmaxc"=vmaxc,"vkm1c"=vkm1c,
     #                 "respr"=ventilation_rate,"tv"=tidal_volume,"ds"=ds,"gfr"=gfr,
     #                 "hct"=hct)
