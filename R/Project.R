@@ -44,11 +44,8 @@ saveProject <- function(){
 #' @param mode Either Forward Dosimetry(FD) or Monte Carlo(MC) mode. Only valid for PBPK type models
 #' @export
 newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC"){
-  if("rstudioapi" %in% installed.packages()){
-    temp_path <- rstudioapi::selectDirectory(caption = sprintf("Select folder where %s will be saved",name))
-  }else{
-    temp_path <- tcltk::tk_choose.dir(caption =sprintf("Select folder where %s will be saved",name))
-  }
+  temp_path <- tcltk::tk_choose.dir(caption =sprintf("Select folder where %s will be saved",name))
+  
   save_path <- gsub("\\\\","/",temp_path)
   clearProjectDb()
   # write new project details to the project table
@@ -76,14 +73,8 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){
-    if("rstudioapi" %in% installed.packages() && .Platform$GUI == "Rstudio"){
-      file_path <- rstudioapi::selectFile(caption = "Select PLETHEM Project",
-                                          filter= "*.Rdata")
-    }else{
-      file_path <- tcltk::tk_choose.files(caption = "Select PLETHEM Project",
+    file_path <- tcltk::tk_choose.files(caption = "Select PLETHEM Project",
                                           filter= matrix(c("*.Rdata"),4,2,byrow=TRUE))
-    }
-    
     
   }
   

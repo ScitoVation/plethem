@@ -5,7 +5,7 @@
 #' @return Values returned by the IVIVE gadget
 #' @export
 doIVIVE<- function(){
-  path <- rstudioapi::selectDirectory()
+  path <- tcltk::tk_choose.dir()
   ret_vals <- iviveGadget(TRUE,path)
   return(ret_vals)
 }
