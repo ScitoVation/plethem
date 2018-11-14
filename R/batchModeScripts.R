@@ -303,7 +303,9 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
     state <- c(
       #exposure related
       inhswch=0,ainh=0,aexh=0,
-      totodose=0,odose=0,totddose=0,ddose=0,aabsgut=0,
+      totodose=0,odose=0,odose1 = 0, odose2 = 0,
+      totddose=0,ddose=0,ddose1 = 0, ddose2 = 0,
+      aLAS= 0, akent = 0, afec = 0, aabsgut=0,
       ivswch=0,aiv=0,
       #compartments
       abld=0,
