@@ -78,6 +78,7 @@ rapidPBPK_initParms <- function(newParms = NULL) {
     pspf = 0,
     res = 0,
     fupls = 0,
+    veh_flag = 0,
     kfec = 0,
     kVtoL = 0,
     kent = 0,
@@ -132,8 +133,6 @@ rapidPBPK_initParms <- function(newParms = NULL) {
 
   if (!is.null(newParms)) {
     if (!all(names(newParms) %in% c(names(parms)))) {
-      a <- setdiff(names(newParms),c(names(parms)))
-      #write.table(a,"F:/testoutput.csv")
       stop("illegal parameter name")
     }
     parms[names(newParms)] <- newParms
@@ -199,6 +198,7 @@ rapidPBPK_Outputs <- c(
     "cspf_um",
     "ctspf",
     "cbspf",
+    "auc",
     "InstInhDose",
     "mbal"
 )
@@ -210,11 +210,15 @@ rapidPBPK_initStates <- function(parms, newStates = NULL) {
     aexh = 0.0,
     totodose = 0.0,
     odose = 0.0,
+    odose1 = 0.0,
+    odose2 = 0.0,
+    totddose = 0.0,
+    ddose = 0.0,
+    ddose1 = 0.0,
+    ddose2 = 0.0,
     aLAS = 0.0,
     akent = 0.0,
     afec = 0.0,
-    totddose = 0.0,
-    ddose = 0.0,
     aabsgut = 0.0,
     ivswch = 0.0,
     aiv = 0.0,
@@ -247,7 +251,8 @@ rapidPBPK_initStates <- function(parms, newStates = NULL) {
     ametliv2 = 0.0,
     aclbld = 0.0,
     auexc = 0.0,
-    anabsgut = 0.0
+    anabsgut = 0.0,
+    aucpls = 0.0
   )
 
   if (!is.null(newStates)) {
