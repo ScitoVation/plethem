@@ -1,6 +1,6 @@
 Package: plethem
 Title: Population Life Course Exposure to Health Effects Modeling
-Version: 0.1.3
+Version: 0.1.4
 Authors@R: person("Salil", "Pendse", email = "spendse@scitovation.com", role = c("aut", "cre"))
 Description: Functions, data and user interfaces for performing Physiologically Based Pharmacokinetic('PBPK') Modeling, In-vitro to In-vivo Extrapolation ('IVIVE') and exposure estimation. Also contains user interfaces to run models from the 'httk' package. Taken together these provide an easy to use and powerful modeling tool that can be used for all steps along the source-to-outcome continuum.
 Depends:
@@ -38,6 +38,7 @@ Imports:
   V8,
   httk
 Suggests: testthat,
-    rmarkdown
+    rmarkdown,
+    knitr
 RoxygenNote: 6.0.1
-
+VignetteBuilder: knitr

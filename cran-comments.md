@@ -1,3 +1,10 @@
+## Resubmission
+This is a resubmision and makes the following changes based on reviewer comments:
+1) Space added after periods in package description
+2) Acronyms and package names enclosed by single quotes instead of double quotes
+3) Vignette added that explains basic setup needed to start using the package. Since all functions in the package are run through the interactive Shiny interface, the vignette does not actually execute any code.
+
+
 ## Resbumission
 This is a resubmission. The last version submitted had a period missing at the end of the description. Causing it to error out. This version is spell checked for accuracy. 
 

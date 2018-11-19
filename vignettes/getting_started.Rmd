@@ -1,0 +1,55 @@
+---
+title: "Getting Started with PBPK modeling"
+author: "Salil N. Pendse"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+## Getting Started
+If this is the first time you are running plethem after a new installation or updating it for the first time, you will have to define a user database. The user database stores chemical, physical and metabolism datasets that the user may create and use across multiple modeling projects.If you are updating PLETHEM and would like to use the user database you had created for a previous version use the command 
+```{r eval = FALSE}
+setUserDb()
+```
+This will prompt the user to choose a sqlite file coresponding to the user database. 
+If this is the first time you are using plethem, you will need to run the command 
+```{r eval = FALSE}
+createUserDb()
+```
+Once the user database is set, it will only need to be updated if PLETHEM is reinstalled, or if the users chooses to use a different user database to keep workspaces independent
+
+## Creating or loading projects. 
+All the modeling in PLETHEM is carried out through projects. Each project can have only one model and modeling workflow but multiple simulations. Users can select to run either PBPK or HT-IVIVE workflows. For both workflows they can choose to run either the models that are a natively a part of PLETHEM or run models for the HTTK package
+
+### Running rapidPBPK model 
+To run a rapid PBPK model, the user will first either need to create a new rapidPBPK project or load an existing one. 
+To create a new rapidPBPK project run the following command
+```{r eval = FALSE}
+newProject(name = "Name for the project",type ="PBPK",model = "rapidPBPK")
+```
+To load an existing project 
+```{r eval = FALSE}
+loadProject()
+```
+In both cases, a file browser will pop up asking you to select the project location or select an existing project. Once that is done, the interactive modeling interface will launch in the default browser. Despite running from the browser, PLETHEM does not require an internet connection to run.
+Once the model launches, follow the tabs to create individual datasets and compile them into a simulation. 
+
+###Running HTTK models. 
+Models within the HTTK package can also be run using the same interactive modeling interface you saw previously. These models require the chemicals be a part of HTTK's internal chemical database. Chemicals can be added to httk's chemical database using the httk function
+```{r eval = FALSE}
+httk::add_chemtable(table)
+```
+This can be simplified if you are using RStudio. The gadget developed for adding data to httk's chemical database can be invoked by running the command
+```{r eval = FALSE}
+addChemsToHTTK()
+```
+Once the chemical is added to the HTTK database, a new httk PBPK project can be created by using the commands above but replacing value of the parameter model to "httk_pbtk"
