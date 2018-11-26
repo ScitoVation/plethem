@@ -122,12 +122,18 @@ HT_IVIVEUI <- function(namespace=""){
                                       ),
                                       column(6,
                                              selectInput(ns("sel_ivunit"),tags$h4("Unit"),
-                                                         list("	\u03BCm"="um",
+                                                         list("	\u03BCM"="um",
                                                               "mg/L"="mgL"),
                                                          width = validateCssUnit("100%"))
                                       )
                                     )
-                             )
+                             ),
+                             column(6,offset =2,
+                                      shiny::actionButton(ns("btn_getIVC"),"Get Invitro POD from MoAViz")
+                                      ),
+                             column(6, offset = 2,
+                                    DT::DTOutput(ns("ivd_tble")))
+                             
 
                            )
                            ),
@@ -406,6 +412,39 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     }else{
       shinyjs::hide("num_pair")
     }
+  })
+  # get invitro data from MoAviz if it exists
+  conc_table <- eventReactive(input$btn_getIVC,{
+    species <- "human"
+    chid <- as.integer(input$sel_chem)
+    query <- sprintf("Select cas From ChemicalSet Where chemid = %i",chid)
+    casrn <-"64-17-5" #projectDbSelect(query)$cas
+    url2Call <- sprintf("http://scyld.ciit.org/api/getVitroConc.php?species=human&cas=%s",casrn)
+    returned_data<- rjson::fromJSON(file = url2Call)
+    
+    conc_table <- data.frame()
+    if (length(returned_data)>0){
+      for (temp_var in returned_data){
+        conc_val <- temp_var$concentration
+        conc_units <- ifelse(temp_var$concentration_units == "uM","\u00B5M","mg\\L")
+        tble_row <- cbind(conc_val,conc_units)
+        conc_table <- rbind(conc_table,tble_row)
+      }
+      colnames(conc_table)<- c("Value","Units")
+      return(conc_table)
+    }
+    
+    
+    
+  })
+  output$ivd_tble <- DT::renderDT(DT::datatable(conc_table(),
+                                                selection = list(mode = "single")))
+  observeEvent(input$ivd_tble_rows_selected,{
+    row_idx <- input$ivd_tble_rows_selected
+    conc_val <- conc_table()$Value[[row_idx]]
+    units <- tolower(conc_table()$Units[[row_idx]])
+    updateNumericInput(session,"num_ivc",value = as.numeric(conc_val))
+    updateSelectInput(session,"sel_ivunit",selected = units)
   })
   #Get Cyp Data from main database
   query <- "SELECT name,abundance,isef,fumic,loc FROM CypData;"

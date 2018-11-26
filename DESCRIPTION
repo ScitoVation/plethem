@@ -36,7 +36,8 @@ Imports:
   DT,
   shinyjs,
   V8,
-  httk
+  httk,
+  rjson
 Suggests: testthat,
     rmarkdown,
     knitr

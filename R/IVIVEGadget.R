@@ -80,7 +80,7 @@ iviveGadget <- function(save_flag = F,base_path = NULL){
                                                             "Measure Whole Hepatocyte Clearance",0),
                                                selectInput("sel_whunit",label = "Units",
                                                            choices = list("L/h"="Lh",
-                                                                          "L/h/10^6 Hepatocytes"="LhmH")),
+                                                                          "L/h/10^6 Hepatocytes"="LhH")),
                                                tags$div()
                                        ),
                                        fillRow(flex = c(1,5,3,1),
