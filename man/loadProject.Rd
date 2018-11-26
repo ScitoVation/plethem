@@ -2,13 +2,19 @@
 % Please edit documentation in R/Project.R
 \name{loadProject}
 \alias{loadProject}
-\title{Load the project with the given name}
+\title{Load the project from the project file located at the given path}
 \usage{
 loadProject(file_path = "")
 }
 \arguments{
-\item{file_path}{path to the project file}
+\item{file_path}{path to the project file. If no path is provided, launches a select file dialog box for the user to select the path}
 }
 \description{
-Loads the project data in the PLETHEM project database.
+Loads the project data from the project file and then launches the shiny UI that corresponds to the analysis type that the project belongs to.
+}
+\examples{
+\dontrun{
+loadProject(file_path = "C:/Project/TestPBPK.Rdata")
+loadProject()
+}
 }

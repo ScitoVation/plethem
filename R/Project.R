@@ -36,12 +36,16 @@ saveProject <- function(){
 }
 
 #' Start a new PLETHEM project.
-#' @description A project consists of chemicals, organisms and datasets.
-#' It is ties to one of the models that PLETHEM supports, either PBPK or HT
-#' @param name Name of the project
+#' @description A project consists of chemicals, organisms and datasets. The function asks the user for a location to save the project files on exit. It then launches the shiny user interface used to parameterize and run the model.
+#' @param name The name for the project
 #' @param type The type of the model that the project is tied to
 #' @param model The model to be used for the project
 #' @param mode Either Forward Dosimetry(FD) or Monte Carlo(MC) mode. Only valid for PBPK type models
+#' @examples
+#' \dontrun{
+#' newProject(name = "TestPBPK",type = "PBPK",model = "rapidPBPK",mode = "MC")
+#' newProject(name = "TestPBPK",type = "PBPK",mode = "httk_pbpk",mode = "MC")
+#' }
 #' @export
 newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC"){
   temp_path <- tcltk::tk_choose.dir(caption =sprintf("Select folder where %s will be saved",name))
@@ -67,9 +71,15 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
 }
 
 
-#' Load the project with the given name
-#' @description Loads the project data in the PLETHEM project database.
-#' @param file_path path to the project file
+#' Load the project from the project file located at the given path
+#' @description Loads the project data from the project file and then launches the shiny UI that corresponds to the analysis type that the project belongs to.
+#' @param file_path path to the project file. If no path is provided, launches a select file dialog box for the user to select the path
+#' @examples 
+#' \dontrun{
+#' loadProject(file_path = "C:/Project/TestPBPK.Rdata")
+#' loadProject()
+#' }
+
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){

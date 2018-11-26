@@ -1,4 +1,9 @@
 ## Resubmission
+This is a resubmission and makes the following changes
+1) Examples have been added to main functions that launch shiny interfaces to run the analysis. They are defined as dontrun.
+2) A sentence has been added to the function description and package description informing the users that all analysis can only be run using the user interface.
+
+## Resubmission
 This is a resubmision and makes the following changes based on reviewer comments:
 1) Space added after periods in package description
 2) Acronyms and package names enclosed by single quotes instead of double quotes

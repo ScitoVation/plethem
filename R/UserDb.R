@@ -1,8 +1,9 @@
 #' Sets the path to the existing Db
 #' @export
 setUserDb<- function(){
+  filters <- matrix(c("SQLite DB",".sqlite"),1,2,byrow = T)
   userDbPath <- tcltk::tk_choose.files(caption = "Select User database",multi = F,
-                                         filters = "*.sqlite")
+                                         filters = filters)
   
   
   query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",userDbPath)

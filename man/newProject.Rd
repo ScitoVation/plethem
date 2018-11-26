@@ -8,7 +8,7 @@ newProject(name = "new_project", type = "PBPK", model = "rapidPBPK",
   mode = "MC")
 }
 \arguments{
-\item{name}{Name of the project}
+\item{name}{The name for the project}
 
 \item{type}{The type of the model that the project is tied to}
 
@@ -17,6 +17,11 @@ newProject(name = "new_project", type = "PBPK", model = "rapidPBPK",
 \item{mode}{Either Forward Dosimetry(FD) or Monte Carlo(MC) mode. Only valid for PBPK type models}
 }
 \description{
-A project consists of chemicals, organisms and datasets.
-It is ties to one of the models that PLETHEM supports, either PBPK or HT
+A project consists of chemicals, organisms and datasets. The function asks the user for a location to save the project files on exit. It then launches the shiny user interface used to parameterize and run the model.
+}
+\examples{
+\dontrun{
+newProject(name = "TestPBPK",type = "PBPK",model = "rapidPBPK",mode = "MC")
+newProject(name = "TestPBPK",type = "PBPK",mode = "httk_pbpk",mode = "MC")
+}
 }
