@@ -1277,7 +1277,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   observe({
 
     if(dataset$savedat()[1]=="Yes"){
-      type <- dataset$savedat()[2]
+      type <- "conc"
       set_list <- getObservationSetChoices(type)
       if(type == "conc"){
         ui_id <- "cplt_data"
@@ -1671,10 +1671,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                               +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.position="none")
                              )
   #data tables
-  output$conctble <- renderDataTable(reshapePlotData(concData()))
-  output$expotble <- renderDataTable(reshapePlotData(exposureData()))
-  output$amttble <- renderDataTable(reshapePlotData(amtData()))
-  output$baltble <- renderDataTable(reshapePlotData(balData()))
+  output$conctble <- DT::renderDT(reshapePlotData(concData()))
+  output$expotble <- DT::renderDT(reshapePlotData(exposureData()))
+  output$amttble <- DT::renderDT(reshapePlotData(amtData()))
+  output$baltble <- DT::renderDT(reshapePlotData(balData()))
   #output$auctble <- renderDataTable(reshapePlotData(AUCData()))
 
   #Download Plots data Tables
@@ -1809,7 +1809,7 @@ calculateInitialValues <- function(params_list){
 
     tstop <- tstart+sim_dur
 
-    cinh <- inhdose/24.45
+    cinh <- (inhdose/24.45)#*1000/mw # converting from  ppm to mg/L(/24.45) and then to umoles/L for the model
     qalv <- (tv-ds)*respr
     pair <- ifelse(pair >0,pair,1E-10)
   })
@@ -1943,6 +1943,7 @@ calculateInitialValues <- function(params_list){
       value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
       method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
     )
+    print(eventDat$time)
   }else if (ivdose >0){
     # var to change
     state_var1 <- "ivswch"

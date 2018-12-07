@@ -142,7 +142,7 @@ getAllParamValuesForModel <- function(simid,model){
 
   # add time start and sim duration as tstart and totdays to work with the model
   params[["tstart"]]<- tstart
-  params[["totdays"]]<- sim_dur/24
+  params[["totdays"]]<- as.integer(sim_dur/24)
   params[["sim_dur"]]<- sim_dur
   # get the metabolism data and adjust params accordingly
   metab_data <- getMetabData(metabid,physioid,chemid,model)
@@ -355,7 +355,7 @@ getVariabilitySetChoices <- function(var_type="physio"){
 #' @param plotData Plot Data in long form
 #' @export
 reshapePlotData<- function(plotData){
-  data <- dplyr::distinct(plotData)
+  data <- unique.data.frame(plotData)
                           
   return(reshape2::dcast(data,time~variable))
 }
