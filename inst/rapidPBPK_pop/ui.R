@@ -854,6 +854,10 @@ shinyUI(fluidPage(
                                                column(2,
                                                       shinyBS::bsButton("btn_sheds_upload",
                                                                         "Import SHEDS-HT results",
+                                                                        block = T)),
+                                               column(2,
+                                                      shinyBS::bsButton("btn_batch_upload",
+                                                                        "Import batch exposure file",
                                                                         block = T))
                                              ),
 

@@ -248,6 +248,14 @@ shinyServer(function(input, output, session) {
                            choices = set_list)
     }
   })
+  # Import Batch Exposure data
+  observeEvent(input$btn_batch_upload,{
+    importBatchExposureUI(paste0("batch",input$btn_batch_upload))
+    callModule(importBatchExposure,
+               paste0("batch",input$btn_batch_upload))
+  })
+  
+  
   ### Import button current for chemicals only
   # Import a new chemical set from user or main database
    #### Chunk for handling chemical tab
