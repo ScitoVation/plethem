@@ -10,16 +10,18 @@ importBatchExposureUI <- function(namespace){
               "Select Exposure file",multiple = F,
               accept = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
               ),
+    pickerInput(ns("sel_expo"),multiple = T,label = "Select Exposure",choices = NULL),
+    DT::DTOutput(ns("expo_tble"))
     
-    tabsetPanel(id = ns("expo_box"),type = "pills",
-                tabPanel(title = "Oral",
-                         value = "oral",
-                         DT::DTOutput(ns("oral_expo"))),
-                tabPanel(tile = "Inhalation",
-                         value = "inh",
-                         DT::DTOutput(ns("inh_expo"))),
-                tabPanel(title="Intravenous",
-                         value ="iv"))
+    # tabsetPanel(id = ns("expo_box"),type = "pills",
+    #             tabPanel(title = "Oral",
+    #                      value = "oral",
+    #                      DT::DTOutput(ns("oral_expo"))),
+    #             tabPanel(tile = "Inhalation",
+    #                      value = "inh",
+    #                      DT::DTOutput(ns("inh_expo"))),
+    #             tabPanel(title="Intravenous",
+    #                      value ="iv"))
 
 
     
@@ -35,9 +37,17 @@ importBatchExposure<- function(input,output,session){
     validate(need(input$expo_upload,"No File Uploaded"))
     return(expo_file()$datapath)
   })
-  oral_tble <- reactive({
-    data <- readxl::read_xlsx(data_file_path(),sheet = "Oral")
-    return(data)
+  
+  # oral_tble <- reactive({
+  #   data <- readxl::read_xlsx(data_file_path(),sheet = "Oral")
+  #   return(data)
+  # })
+  expo_choices <- reactive({
+    data<- readxl::read_xlsx(data_file_path(),sheet = "Oral")
+    print(data)
+    return(names)
   })
-  output$oral_expo <- DT::renderDT(oral_tble())
+  
+  updatePickerInput("sel_expo",choices = expo_choices())
+  #output$oral_expo <- DT::renderDT(oral_tble())
 }
