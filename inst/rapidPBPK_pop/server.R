@@ -25,6 +25,7 @@ shinyServer(function(input, output, session) {
   parameterSets$importdat <- reactiveVal(c("No","",0))
   parameterSets$importSeem <- reactiveVal(c("No"))
   parameterSets$importSheds <- reactiveVal(c("No"))
+  parameterSets$importBatch <- reactiveVal(c("No"))
   parameterSets$sim_table <- data.frame("Col1"="","Col2"=0,"Col3"=0,row.names = NULL)
   parameterSets$vardat <- reactiveVal(c("None","",0))
   expo_set <- getAllSetChoices("expo")
@@ -252,7 +253,8 @@ shinyServer(function(input, output, session) {
   observeEvent(input$btn_batch_upload,{
     importBatchExposureUI(paste0("batch",input$btn_batch_upload))
     callModule(importBatchExposure,
-               paste0("batch",input$btn_batch_upload))
+               paste0("batch",input$btn_batch_upload),
+               expo_name_df)
   })
   
   

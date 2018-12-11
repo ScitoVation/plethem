@@ -29,7 +29,7 @@ importBatchExposureUI <- function(namespace){
   ))
 }
 #'@export
-importBatchExposure<- function(input,output,session){
+importBatchExposure<- function(input,output,session,expo_name_df){
   expo_file <- reactive({   
     input$expo_upload
   })
@@ -42,11 +42,12 @@ importBatchExposure<- function(input,output,session){
   #   data <- readxl::read_xlsx(data_file_path(),sheet = "Oral")
   #   return(data)
   # })
-  expo_data <- reactive({
+  save_val <- reactive({
+    parseBatchExposureFile(data_file_path(),expo_name_df)
     temp_df <- data.frame()
-    data<- readxl::read_xlsx(data_file_path(),sheet = "Oral")
-    data <- t(data)
-    temp_df<- rbind(temp_df,data)
+    data_oral<- readxl::read_xlsx(data_file_path(),sheet = "Oral")
+    data_inh<- readxl::read_xlsx(data_file_path(),sheet = "Inhalation")
+    
     return(data$Name)
   })
   
