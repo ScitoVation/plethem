@@ -42,12 +42,14 @@ importBatchExposure<- function(input,output,session){
   #   data <- readxl::read_xlsx(data_file_path(),sheet = "Oral")
   #   return(data)
   # })
-  expo_choices <- reactive({
+  expo_data <- reactive({
+    temp_df <- data.frame()
     data<- readxl::read_xlsx(data_file_path(),sheet = "Oral")
-    print(data)
-    return(names)
+    data <- t(data)
+    temp_df<- rbind(temp_df,data)
+    return(data$Name)
   })
   
-  updatePickerInput("sel_expo",choices = expo_choices())
+  updatePickerInput(session,"sel_expo",choices = expo_choices())
   #output$oral_expo <- DT::renderDT(oral_tble())
 }
