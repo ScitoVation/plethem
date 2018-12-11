@@ -52,3 +52,16 @@ parseTRAFile <- function(path){
                                 "Oral" = oral_list,
                                 "Dermal"=dermal_list)))
 }
+
+#' Parse exposures from the batch exposure file in a format that can be accepted by the project db
+#' @description Reads and parses data from the exposure batch input file.
+#' This function will should not be called directly by the user
+#' @param path
+parseBatchExposureFile <- function(path){
+  if (is.null(path)){
+    return("No File selected")
+  }
+  oral_param_names <- 
+  oral_data <- readxl::read_excel(path,"Oral")
+  
+}
