@@ -252,11 +252,20 @@ shinyServer(function(input, output, session) {
   # Import Batch Exposure data
   observeEvent(input$btn_batch_upload,{
     importBatchExposureUI(paste0("batch",input$btn_batch_upload))
-    callModule(importBatchExposure,
+    parameterSets$importBatch <- callModule(importBatchExposure,
                paste0("batch",input$btn_batch_upload),
                expo_name_df)
   })
-  
+  observe({
+    result_vector <- parameterSets$importBatch
+    if(result_vector()[1]=="Yes"){
+      set_type <- "expo"
+      set_list <- getAllSetChoices(set_type)
+      parameterSets[[set_type]] <- reactiveVal(set_list)
+      updateSelectizeInput(session,paste0("sel_",set_type),
+                           choices = set_list)
+    }
+  })
   
   ### Import button current for chemicals only
   # Import a new chemical set from user or main database
