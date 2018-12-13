@@ -4,8 +4,17 @@
 \alias{createUserDb}
 \title{Creates a new userDb based on the empty database in the package}
 \usage{
-createUserDb()
+createUserDb(path = NULL)
+}
+\arguments{
+\item{path}{path to where the user database needs to be stored. Make sure you have write permission to this folder. If no path is provided, it launches a folder select dialog.}
 }
 \description{
-Creates a new userDb based on the empty database in the package
+The function allows the users to create a new empty user database file that is needed to run plethem.
+}
+\examples{
+\dontrun{
+createUserDb(),
+createUserDb("C:/Users/Documents/")
+}
 }

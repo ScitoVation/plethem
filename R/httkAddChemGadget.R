@@ -2,6 +2,10 @@
 #' @description internal function that interfaces with httk package
 #' @import httk
 #' @importFrom rstudioapi sendToConsole
+#' @examples
+#' \dontrun{
+#' addChemsToHTTK()
+#' }
 #' @export
 addChemsToHTTK <- function(){
   

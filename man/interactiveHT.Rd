@@ -10,5 +10,10 @@ interactiveHT(name = "")
 \item{name}{name of the  model. Has to be "HT-IVIVE"}
 }
 \description{
-USed internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses
+Used internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses.
+}
+\examples{
+\dontrun{
+interactiveHT("HT-IVIVE")
+}
 }

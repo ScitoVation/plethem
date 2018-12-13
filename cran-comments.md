@@ -1,4 +1,32 @@
 ## Resubmission
+This is a resubmission. Following are the responses to concerns raised by the reviewers
+
+1) Is there some reference about the method you can add in the Description field in the form Authors (year) <doi:.....>?
+
+*We currently do not have a publication for this package and so cannot add anything to the reference field
+
+
+2)We see in one of your C files:
+
+/* rapidPBPK.model.c for R deSolve package
+
+If it is for deSolve, is it from their authors? Have you added authors 
+and copyright information in Authors@R field?
+
+*The C file is created by us specifically for the package. It is written in the format that deSolve package can accept to simulate it. However it is not from that package and hence we have not added authors from that package.
+
+
+3)Further down:
+    Copyright (c) 1993-2017 Free Software Foundation, Inc.
+
+* The copyright has been switched from GPL-3 to MIT. This is more suitable with the intention of the package and the liscense has been updated to reflect the new license
+
+4) There are not enough examples in the Rd files. 
+
+*Examples have been added to every function that will be called directly by the user. Rest of the functions should not be called by the user directly and so no examples will be addded for those
+
+
+## Resubmission
 This is a resubmission and makes the following changes
 1) Examples have been added to main functions that launch shiny interfaces to run the analysis. They are defined as dontrun.
 2) A sentence has been added to the function description and package description informing the users that all analysis can only be run using the user interface.

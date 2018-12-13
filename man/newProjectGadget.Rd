@@ -9,3 +9,8 @@ newProjectGadget()
 \description{
 This launches the new project gadget for launching a new project in PLETHEM. If using Rstudio Addins, the addin also calls this function.
 }
+\examples{
+\dontrun{
+newProjectGadget()
+}
+}

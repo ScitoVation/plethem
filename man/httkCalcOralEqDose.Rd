@@ -2,10 +2,15 @@
 % Please edit documentation in R/httkOralEqDoseGadget.R
 \name{httkCalcOralEqDose}
 \alias{httkCalcOralEqDose}
-\title{Function that runs the httk oral equivalent dose gadaget.}
+\title{Function that runs the httk oral equivalent dose gadget.}
 \usage{
 httkCalcOralEqDose()
 }
 \description{
-Function that runs the httk oral equivalent dose gadaget.
+Launches the HTTK oral equivalent dose gadget. It servers as a UI wrapper around HTTK's functions to calculate oral equivalent dose.
+}
+\examples{
+\dontrun{
+httkCalcOralEqDose()
+}
 }

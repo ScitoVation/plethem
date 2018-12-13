@@ -9,3 +9,8 @@ runHTIVIVE()
 \description{
 Launches the HT-IVIVE UI.
 }
+\examples{
+\dontrun{
+runHTIVIVE()
+}
+}

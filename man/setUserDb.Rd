@@ -4,8 +4,17 @@
 \alias{setUserDb}
 \title{Sets the path to the existing Db}
 \usage{
-setUserDb()
+setUserDb(path = NULL)
+}
+\arguments{
+\item{path}{path to the user database file. If no path is provided, it launches a file select dialog.}
 }
 \description{
-Sets the path to the existing Db
+The function allows the users to set an existing database as the user database to use for plethem.
+}
+\examples{
+\dontrun{
+setUserDb(),
+setUserDb("C:/Users/Documents/PLETHEMUserDb.sqlite")
+}
 }

@@ -1,11 +1,20 @@
 #' Sets the path to the existing Db
+#' @description The function allows the users to set an existing database as the user database to use for plethem.
+#' @param path path to the user database file. If no path is provided, it launches a file select dialog.
+#' @examples
+#' \dontrun{
+#' setUserDb(),
+#' setUserDb("C:/Users/Documents/PLETHEMUserDb.sqlite")
+#' }
 #' @export
-setUserDb<- function(){
+setUserDb<- function(path = NULL){
   filters <- matrix(c("SQLite DB",".sqlite"),1,2,byrow = T)
-  userDbPath <- tcltk::tk_choose.files(caption = "Select User database",multi = F,
+  if (is.null(path)){
+    userDbPath <- tcltk::tk_choose.files(caption = "Select User database",multi = F,
                                          filters = filters)
-  
-  
+  }else{
+    userDbPath <- path
+  }
   query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",userDbPath)
   mainDbUpdate(query)
   
@@ -15,8 +24,20 @@ setUserDb<- function(){
 }
 
 #' Creates a new userDb based on the empty database in the package
+#' @description The function allows the users to create a new empty user database file that is needed to run plethem.
+#' @param path path to where the user database needs to be stored. Make sure you have write permission to this folder. If no path is provided, it launches a folder select dialog.
+#' @examples
+#' \dontrun{
+#' createUserDb(),
+#' createUserDb("C:/Users/Documents/")
+#' }
 #' @export
-createUserDb <- function(){
-  userDbPath <- tcltk::tk_choose.dir(caption = "Create a new database")
+createUserDb <- function(path = NULL){
+  if(is.null(path)){
+    userDbPath <- tcltk::tk_choose.dir(caption = "Create a new database")
+  }else{
+    userDbPath <- path
+  }
+  
   file.copy(system.file("database/plethemUserDb.sqlite",package = "plethem"),userDbPath)
 }

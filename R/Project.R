@@ -3,15 +3,19 @@ interactivePBPK <- function(name = ""){
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
 }
 #' Launch HT-IVIVE interface
-#' @description USed internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses
+#' @description Used internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses.
 #' @param name name of the  model. Has to be "HT-IVIVE"
+#' @examples
+#' \dontrun{
+#' interactiveHT("HT-IVIVE")
+#' }
 #' @export
 interactiveHT <- function(name = ""){
   shiny::runApp(system.file(name,package = "plethem"),launch.browser = T)
 }
 
 #' Save the current project to a location
-#' @description Save the current PBPK or HTIVIVE project the user is working on
+#' @description Save the current PBPK or HTIVIVE project the user is working on.
 #' This cannot be used to save exposure or IVIVE gadget data.
 #' This function should not be called directly from the console. It will be called by the app on exit
 #' @export

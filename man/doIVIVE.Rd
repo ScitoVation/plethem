@@ -12,3 +12,8 @@ Values returned by the IVIVE gadget
 \description{
 Run IVIVE gadget and save CSV files needed to create metabolism sets in the PBPK model
 }
+\examples{
+\dontrun{
+doIVIVE()
+}
+}

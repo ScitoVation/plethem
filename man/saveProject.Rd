@@ -7,7 +7,7 @@
 saveProject()
 }
 \description{
-Save the current PBPK or HTIVIVE project the user is working on
+Save the current PBPK or HTIVIVE project the user is working on.
 This cannot be used to save exposure or IVIVE gadget data.
 This function should not be called directly from the console. It will be called by the app on exit
 }

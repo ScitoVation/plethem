@@ -9,3 +9,8 @@ addChemsToHTTK()
 \description{
 internal function that interfaces with httk package
 }
+\examples{
+\dontrun{
+addChemsToHTTK()
+}
+}

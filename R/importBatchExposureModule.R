@@ -46,6 +46,13 @@ importBatchExposureUI <- function(namespace){
     
   ))
 }
+#' Server function for batch data module
+#' @description Server function for import batch data module. This function should not be called by the user
+#' @param input input object for the UI
+#' @param output input object to the UI
+#' @param session session object for the module
+#' @param expo_name_df dataframe containing variable names for exposure values
+#' @export
 #'@export
 importBatchExposure<- function(input,output,session,expo_name_df){
   returnValues <- reactiveValues()
