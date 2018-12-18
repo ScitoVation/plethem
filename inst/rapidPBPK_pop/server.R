@@ -5,6 +5,7 @@ library(shinyWidgets)
 library(V8)
 library(ggplot2)
 library(shinyjs)
+library(magrittr)
 
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()

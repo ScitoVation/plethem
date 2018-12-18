@@ -1,7 +1,14 @@
-#' Server logic for RapidPBPK Model
-#' @importFrom plotly renderPlotly plot_ly add_trace
-#' @importFrom magrittr %>%
-#' @importFrom httk chem.physical_and_invitro.data
+library(shiny)
+library(shinyBS)
+library(shinydashboard)
+library(shinyWidgets)
+library(V8)
+library(ggplot2)
+library(shinyjs)
+library(magrittr)
+library(httk)
+
+#server logic for HTTK model
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
   # define the model name once here. It will be used throughout this server file
