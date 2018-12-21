@@ -47,8 +47,8 @@ parseTRAFile <- function(path){
   dermal_list <- setNames(ids,dermal_list)
   return(list("inh" = inh_data,
               "oral"= oral_data,
-              "dermal" = dermal_data,
+              #"dermal" = dermal_data,
               "exponames"= list("Inhalation" = inh_list,
-                                "Oral" = oral_list,
-                                "Dermal"=dermal_list)))
+                                "Oral" = oral_list)))#,
+                                #"Dermal"=dermal_list)))
 }

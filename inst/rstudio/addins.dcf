@@ -1,3 +1,8 @@
+Name: Parse TRA Exposure
+Description: Parse TRA exposures to load into PBPK models
+Binding: loadTRA
+Interactive: TRUE
+
 Name: Perform IVIVE
 Description: Performs IVIVE to get scaled clearance for use in PBPK models
 Binding: doIVIVE

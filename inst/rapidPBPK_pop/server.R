@@ -705,7 +705,7 @@ shinyServer(function(input, output, session) {
   #     c("Age(years)","Clearance (\u00B5M/h/kg BW ^ 0.75)")
   #   }
   # })
-  output$metab_tble <- DT::renderDT(formatRound(DT::datatable(metabolism_dataframe,
+  output$metab_tble <- DT::renderDT(DT::formatRound(DT::datatable(metabolism_dataframe,
                                                               caption = "Metabolism Table",
 
                                                               rowname = NULL,editable = F,
@@ -865,7 +865,7 @@ shinyServer(function(input, output, session) {
     #}
     return(ret_dat)
   })
-  output$metab_upload_tble <- DT::renderDT(formatRound(DT::datatable(metab_upload_tble(),
+  output$metab_upload_tble <- DT::renderDT(DT::formatRound(DT::datatable(metab_upload_tble(),
                                                                      caption = "Metabolism Table",
                                                                      rowname = NULL,editable = F,
                                                                      options= list(dom = "tp",pageLength = 5)),
