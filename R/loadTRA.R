@@ -8,5 +8,4 @@
 loadTRA<- function(){
   path <- tcltk::tk_choose.dir()
   exposureTRAGadget(TRUE,path)
-  return(ret_vals)
 }

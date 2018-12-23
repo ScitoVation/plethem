@@ -1,4 +1,14 @@
 ## Resubmission
+
+1) Citing a reference. 
+
+WE are in the process of putting a manuscript together for the methods used in the package. There is no authoratative source on the methods here that can be cited easily. Once the publication gets accepted, we will update the package with that information. In the meantime we have added a reference in description to a book that provides a good overview of PBPK modeling and its applications.
+
+2) No copyright holder provided
+
+Appropriate copyright holder has been added to the description file
+
+## Resubmission
 This is a resubmission. Following are the responses to concerns raised by the reviewers
 
 1) Is there some reference about the method you can add in the Description field in the form Authors (year) <doi:.....>?
