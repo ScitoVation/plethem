@@ -2,12 +2,12 @@
 % Please edit documentation in R/QueryHelper.R
 \name{getDbConn}
 \alias{getDbConn}
-\title{Gets the connection to the pDb to run all the queries against}
+\title{Gets the connection to the Db to run all the queries against}
 \usage{
 getDbConn(db_path, internal = T)
 }
 \arguments{
-\item{db_path}{The location of the project databse.}
+\item{db_path}{The location of the project database.}
 
 \item{internal}{Boolean. Is the database internal
 This function will not be called by the user directly}

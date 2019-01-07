@@ -2,7 +2,7 @@
 % Please edit documentation in R/ParseExposures.R
 \name{parseTRAFile}
 \alias{parseTRAFile}
-\title{Parse uploaed file for Consumer TRA}
+\title{Parse uploaded file for Consumer TRA}
 \usage{
 parseTRAFile(path)
 }

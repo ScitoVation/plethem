@@ -21,7 +21,7 @@ runPlthemHTIVIVE<- function(vals){
 #'@description The function converts the data from the UI to standard units of liters/h for clearances
 #'and mg/L for concentrations. This function is not available to the end user as it relied on UI names
 #'@param val list containing data for each row from the UI
-#'@return list of cleranace values for point of departure values and type of reverse dosimetry
+#'@return list of clearance values for point of departure values and type of reverse dosimetry
 preprocessUIData<- function(val){
   #print(val)
   # get chemical properties

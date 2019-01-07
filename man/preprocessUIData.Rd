@@ -10,7 +10,7 @@ preprocessUIData(val)
 \item{val}{list containing data for each row from the UI}
 }
 \value{
-list of cleranace values for point of departure values and type of reverse dosimetry
+list of clearance values for point of departure values and type of reverse dosimetry
 }
 \description{
 The function converts the data from the UI to standard units of liters/h for clearances

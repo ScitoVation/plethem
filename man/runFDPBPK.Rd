@@ -13,6 +13,6 @@ runFDPBPK(initial_values, model = "rapidPBPK")
 }
 \description{
 Run the pbpk model in forward dosimetry mode.
-This function is common accross all PBPK models.
+This function is common across all PBPK models.
 This function can be used from the console if all the inputs are provided
 }

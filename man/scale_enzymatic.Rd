@@ -2,7 +2,7 @@
 % Please edit documentation in R/IVIVEScaling.R
 \name{scale_enzymatic}
 \alias{scale_enzymatic}
-\title{Scale clerance by age for when enzymatic clearance is known at referance age.}
+\title{Scale clearance by age for when enzymatic clearance is known at referance age.}
 \usage{
 scale_enzymatic(out_ages, tot_scaled_recomcl, cypDb, cypCl, gender)
 }
@@ -18,5 +18,5 @@ scale_enzymatic(out_ages, tot_scaled_recomcl, cypDb, cypCl, gender)
 \item{gender}{Gender, either "M" for male or "F" for female. Needed to get Liver weight}
 }
 \description{
-Scale clerance by age for when enzymatic clearance is known at referance age.
+Scale clearance by age for when enzymatic clearance is known at referance age.
 }

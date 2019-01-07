@@ -20,7 +20,7 @@ If this is the first time you are running plethem after a new installation or up
 ```{r eval = FALSE}
 setUserDb()
 ```
-This will prompt the user to choose a sqlite file coresponding to the user database. 
+This will prompt the user to choose a sqlite file corresponding to the user database. 
 If this is the first time you are using plethem, you will need to run the command 
 ```{r eval = FALSE}
 createUserDb()

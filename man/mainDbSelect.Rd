@@ -9,7 +9,7 @@ mainDbSelect(query, db_path = "database/plethemdb.sqlite")
 \arguments{
 \item{query}{A valid SQL Query}
 
-\item{db_path}{The location of the project databse. This defualts to database/plethemdb.sqlite and is not expected to change
+\item{db_path}{The location of the project database. This defaults to database/plethemdb.sqlite and is not expected to change
 This function will not be called by the user directly}
 }
 \description{

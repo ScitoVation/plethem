@@ -1,6 +1,6 @@
 # all functions to parse exposure datasets
 
-#' Parse uploaed file for Consumer TRA
+#' Parse uploaded file for Consumer TRA
 #' @description Parses the uploaded Consumer TRA exposure SpreadSheet to extract all the exposure names and values
 #' This function will not be called directly by the user
 #' @importFrom readxl excel_sheets read_excel

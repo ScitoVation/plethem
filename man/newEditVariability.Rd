@@ -2,7 +2,7 @@
 % Please edit documentation in R/newEditVariabilityModule.R
 \name{newEditVariability}
 \alias{newEditVariability}
-\title{Server function for defining variability and uncertanity datasets}
+\title{Server function for defining variability and uncertainty datasets}
 \usage{
 newEditVariability(input, output, session, set_type, ops_type,
   var_params_list, set_id = 0)
@@ -23,5 +23,5 @@ newEditVariability(input, output, session, set_type, ops_type,
 \item{set_id}{id for the variability set in the database}
 }
 \description{
-Server function for defining variability and uncertanity datasets in the rapidPBPK model. This should not be called by the user
+Server function for defining variability and uncertainty datasets in the rapidPBPK model. This should not be called by the user
 }

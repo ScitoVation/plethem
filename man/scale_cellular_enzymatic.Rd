@@ -10,13 +10,13 @@ scale_cellular_enzymatic(out_ages, tot_scaled_hepcl, tot_scaled_recomcl,
 \arguments{
 \item{out_ages}{Ages for which the clearance needs to be calculated including reference age}
 
-\item{tot_scaled_hepcl}{Total ellular clearance at reference age in L/h/kg Liver}
+\item{tot_scaled_hepcl}{Total cellular clearance at reference age in L/h/kg Liver}
 
 \item{tot_scaled_recomcl}{Total Recombinant enzyme clearance at reference age in L/h/kg Liver}
 
 \item{cypDb}{Dataframe containing cyp datasets to scale measured clearance values from in-vitro to in-vivo}
 
-\item{cypCl}{Datafarame containing measured incitro enzymatic clearance.}
+\item{cypCl}{Datafarame containing measured invitro enzymatic clearance.}
 
 \item{gender}{Gender either "M" for male or "F" for female}
 }
@@ -25,5 +25,5 @@ List with individual enzyme and total clearance at all ages.
 }
 \description{
 This function is used internally to calculate age specific metabolism using the IVIVE gadget.
-It needs both cellular and enzymatic cleareance at atleast one age, the reference age, to extrapolate to values at other ages.
+It needs both cellular and enzymatic clearance at atleast one age, the reference age, to extrapolate to values at other ages.
 }

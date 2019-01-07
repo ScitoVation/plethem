@@ -11,7 +11,7 @@ projectWriteTable(data, tble_name, db_path = "database/project.sqlite")
 
 \item{tble_name}{Name of the table to write the data to. NOTE SQLITE table names are not case sensitive}
 
-\item{db_path}{The location of the project databse. This defualts to database/project.sqlite and is not expected to change}
+\item{db_path}{The location of the project database. This defaults to database/project.sqlite and is not expected to change}
 }
 \value{
 None
