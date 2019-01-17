@@ -874,8 +874,8 @@ shinyUI(fluidPage(
                                                                                    openOnFocus = T))),
                                                column(width = 3, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
-                                                        c("btn_sverest_expo","btn_saveas_expo"),
-                                                        c("Save/Restore","Save As"),
+                                                        c("btn_import_expo","btn_sverest_expo","btn_saveas_expo"),
+                                                        c("Import Data","Save/Restore","Save As"),
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
