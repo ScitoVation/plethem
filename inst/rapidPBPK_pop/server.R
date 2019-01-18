@@ -27,6 +27,7 @@ shinyServer(function(input, output, session) {
   parameterSets$importSeem <- reactiveVal(c("No"))
   parameterSets$importSheds <- reactiveVal(c("No"))
   parameterSets$importBatch <- reactiveVal(c("No"))
+  parameterSets$importAllData <- reactiveVal(c("No"))
   parameterSets$sim_table <- data.frame("Col1"="","Col2"=0,"Col3"=0,row.names = NULL)
   parameterSets$vardat <- reactiveVal(c("None","",0))
   expo_set <- getAllSetChoices("expo")
@@ -206,6 +207,38 @@ shinyServer(function(input, output, session) {
   observeEvent(input$btn_import_expo,{
     importAllExposureDataUI(paste0("allData",input$btn_import_expo))
   })
+  
+  observe({
+    result_vector <- parameterSets$importAllData
+    if(result_vector()[1]=="Yes"){
+      set_type <- "expo"
+      set_list <- getAllSetChoices(set_type)
+      parameterSets[[set_type]] <- reactiveVal(set_list)
+      updateSelectizeInput(session,paste0("sel_",set_type),
+                           choices = set_list)
+    }
+  })
+  
+  # observeEvent(input$btn_batch_upload,{
+  #   importBatchExposureUI(paste0("batch",input$btn_batch_upload))
+  #   parameterSets$importBatch <- callModule(importBatchExposure,
+  #                                           paste0("batch",input$btn_batch_upload),
+  #                                           expo_name_df)
+  # })
+  # observe({
+  #   result_vector <- parameterSets$importBatch
+  #   if(result_vector()[1]=="Yes"){
+  #     set_type <- "expo"
+  #     set_list <- getAllSetChoices(set_type)
+  #     parameterSets[[set_type]] <- reactiveVal(set_list)
+  #     updateSelectizeInput(session,paste0("sel_",set_type),
+  #                          choices = set_list)
+  #   }
+  # })
+  
+  
+  
+  
   
   # Import SEEM data
   observeEvent(input$btn_seem_upload,{
