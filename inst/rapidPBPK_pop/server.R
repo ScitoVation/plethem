@@ -204,10 +204,7 @@ shinyServer(function(input, output, session) {
   ########### The next code chunk deals with updating select inputs for all parameter sets]
   # Import SEEM, SHEDS-HT, batch exposure, and TRA data
   observeEvent(input$btn_import_expo,{
-    #path <-fpath_seem()
     importAllExposureDataUI(paste0("allData",input$btn_import_expo))
-    #parameterSets$importSeem <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload),
-    #                                       path,expo_name_df)
   })
   
   # Import SEEM data
