@@ -206,6 +206,9 @@ shinyServer(function(input, output, session) {
   # Import SEEM, SHEDS-HT, batch exposure, and TRA data
   observeEvent(input$btn_import_expo,{
     importAllExposureDataUI(paste0("allData",input$btn_import_expo))
+    parameterSets$importAllData <- callModule(importAllExposureData,
+                                              paste0("allData",input$btn_import_expo),
+                                              expo_name_df)
   })
   
   observe({

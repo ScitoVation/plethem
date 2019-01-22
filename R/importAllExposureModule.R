@@ -24,14 +24,17 @@ importAllExposureDataUI <- function(namespace){
                              shinyBS::bsCollapsePanel("Intravenous Exposure",
                                                       DT::DTOutput(ns("ivDT")) )
                            ),
-                           footer = tagList(modalButton("Dismiss"),
-                                            shinyBS::bsButton(ns("import"),"Import Selected Exposures")),
-                           size = "l"),
+                           actionButton(ns("importBatch"), "Import Batch Exposure Data")
+                           ),
+                           # footer = tagList(modalButton("DismissI"),
+                           #                  shinyBS::bsButton(ns("import"),"Import Selected Exposures")),
+                           # size = "l"),
                   
                   ## Import SEEM Data ##
-                  tabPanel("SEEM",
-                           title = "Seem Data",
+                  tabPanel(title = "Seem Data",
                            uiOutput(ns("fltr_ui")),
+                           fileInput("seemDataFile", "Select SEEM Data File",
+                                     multiple = FALSE, accept = NULL, width = NULL),
                            actionButton(ns("get_list"),"Get Selected Chemical List"),
                            pickerInput(ns("chems"),"Select Chemicals to Import",choices = c(""),multiple = T),
                            checkboxGroupButtons(ns("data2add"),"Select Estimates to Import",
@@ -90,234 +93,23 @@ importAllExposureDataUI <- function(namespace){
 #' @param input input object for the UI
 #' @param output input object to the UI
 #' @param session session object for the module
-#' @param fpath path to the SEEM database
+#' @param fpath_seems path to the SEEM database
 #' @param expo_name_df dataframe containing variable names for exposure values
 #' @export
-importAllExposureData <- function(input,output,session,expo_name_df){
-  #   returnValues <- reactiveValues()
-  #   returnValues$retdata <- c("No")
-  #   expo_file <- reactive({   
-  #     input$expo_upload
-  #   })
-  #   data_file_path <- reactive({
-  #     validate(need(input$expo_upload,"No File Uploaded"))
-  #     return(expo_file()$datapath)
-  #   })
-  #   
-  #   oral_tble <- reactive({
-  #     data <- readxl::read_excel(data_file_path(),sheet = "Oral")
-  #     return(data)
-  #   })
-  #   inh_tble <- reactive({
-  #     data <- readxl::read_excel(data_file_path(),sheet = "Inhalation")
-  #     return(data)
-  #   })
-  #   dw_tble <- reactive({
-  #     data <- readxl::read_excel(data_file_path(),sheet = "Drinking Water")
-  #     return(data)
-  #   })
-  #   iv_tble <- reactive({
-  #     data <- readxl::read_excel(data_file_path(),sheet = "Intravenous")
-  #     return(data)
-  #   })
-  #   
-  #   output$oralDT <- DT::renderDT(DT::datatable(oral_tble(),
-  #                                               autoHideNavigation = T,
-  #                                               fillContainer = T,rownames = F),server = T)
-  #   output$inhDT <- DT::renderDT(DT::datatable(inh_tble(),
-  #                                              autoHideNavigation = T,
-  #                                              fillContainer = T,rownames = F),server = T)
-  #   output$dwDT <- DT::renderDT(DT::datatable(dw_tble(),
-  #                                             autoHideNavigation = T,
-  #                                             fillContainer = T,rownames = F),server = T)
-  #   output$ivDT <- DT::renderDT(DT::datatable(iv_tble(),
-  #                                             autoHideNavigation = T,
-  #                                             fillContainer = T,rownames = F),server = T)
-  #   
-  #   observeEvent(input$import,{
-  #     oral_rows <- input$oralDT_rows_selected
-  #     #print(oral_rows)
-  #     inh_rows <- input$inhDT_rows_selected
-  #     dw_rows <- input$dwDT_rows_selected
-  #     iv_rows <- input$ivDT_rows_selected
-  #     
-  #     if (all(is.null(c(oral_rows,inh_rows,dw_rows,iv_rows)))){
-  #       #print(oral_rows)
-  #       shinyWidgets::sendSweetAlert(session,"No Exposure Selected",type = "error")
-  #     }else{
-  #       # parse Oral exposures and write to database
-  #       for (i in oral_rows){
-  #         print(i)
-  #         data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
-  #         print(data)
-  #         colnames(data)<- c("Name","bdose","blen","breps","brep_flag")
-  #         name <- data$Name
-  #         print(name)
-  #         id_num <- getNextID("ExposureSet")
-  #         descrp <- "Imported from batch file"
-  #         query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
-  #                          "ExposureSet",
-  #                          "expoid",
-  #                          id_num,
-  #                          name,
-  #                          descrp)
-  #         #print(query)
-  #         projectDbUpdate(query)
-  #         
-  #         var_names <- expo_name_df$Var
-  #         data2write <- setNames(rep(0,length(var_names)),var_names)
-  #         data2write["expo_sidebar"]<-"oral"
-  #         data2write["bdose"]<- data$bdose
-  #         data2write["blen"]<- data$blen
-  #         data2write["breps"]<- data$breps
-  #         data2write["brep_flag"]<- ifelse(data$brep_flag == "Yes","TRUE","FALSE")
-  #         vals <- paste0("'",as.character(data2write),"'")
-  #         
-  #         all_values_string <- paste(paste0(sprintf('(%d,',id_num),
-  #                                           sprintf("'%s'",var_names),
-  #                                           ',',vals,')'),
-  #                                    collapse = ", ")
-  #         write_col_names <- sprintf("%s, param, value","expoid")
-  #         query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
-  #                          "Exposure",
-  #                          write_col_names,
-  #                          all_values_string)
-  #         #print(query)
-  #         projectDbUpdate(query)
-  #         
-  #         
-  #       }
-  #       # parse Oral exposures and write to database
-  #       for (i in dw_rows){
-  #         #  print(i)
-  #         data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
-  #         # print(data)
-  #         colnames(data)<- c("Name","drdose","dreps","vdw")
-  #         name <- data$Name
-  #         # print(name)
-  #         id_num <- getNextID("ExposureSet")
-  #         descrp <- "Imported from batch file"
-  #         query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
-  #                          "ExposureSet",
-  #                          "expoid",
-  #                          id_num,
-  #                          name,
-  #                          descrp)
-  #         # print(query)
-  #         projectDbUpdate(query)
-  #         
-  #         var_names <- expo_name_df$Var
-  #         data2write <- setNames(rep(0,length(var_names)),var_names)
-  #         data2write["expo_sidebar"]<-"dw"
-  #         data2write["drdose"]<- data$drdose
-  #         data2write["dreps"]<- data$dreps
-  #         data2write["vdw"]<- data$vdw
-  #         
-  #         vals <- paste0("'",as.character(data2write),"'")
-  #         
-  #         all_values_string <- paste(paste0(sprintf('(%d,',id_num),
-  #                                           sprintf("'%s'",var_names),
-  #                                           ',',vals,')'),
-  #                                    collapse = ", ")
-  #         write_col_names <- sprintf("%s, param, value","expoid")
-  #         query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
-  #                          "Exposure",
-  #                          write_col_names,
-  #                          all_values_string)
-  #         # print(query)
-  #         projectDbUpdate(query)
-  #       }
-  #       
-  #       # parse Inhalation exposures and write to database
-  #       for (i in inh_rows){
-  #         #print(i)
-  #         data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
-  #         #print(data)
-  #         colnames(data)<- c("Name","inhdose","inhtlen","inhdays")
-  #         name <- data$Name
-  #         #print(name)
-  #         id_num <- getNextID("ExposureSet")
-  #         descrp <- "Imported from batch file"
-  #         query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
-  #                          "ExposureSet",
-  #                          "expoid",
-  #                          id_num,
-  #                          name,
-  #                          descrp)
-  #         #print(query)
-  #         projectDbUpdate(query)
-  #         
-  #         var_names <- expo_name_df$Var
-  #         data2write <- setNames(rep(0,length(var_names)),var_names)
-  #         data2write["expo_sidebar"]<-"inh"
-  #         data2write["inhdose"]<- data$inhdose
-  #         data2write["inhtlen"]<- data$inhtlen
-  #         data2write["inhdays"]<- data$inhdays
-  #         
-  #         vals <- paste0("'",as.character(data2write),"'")
-  #         
-  #         all_values_string <- paste(paste0(sprintf('(%d,',id_num),
-  #                                           sprintf("'%s'",var_names),
-  #                                           ',',vals,')'),
-  #                                    collapse = ", ")
-  #         write_col_names <- sprintf("%s, param, value","expoid")
-  #         query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
-  #                          "Exposure",
-  #                          write_col_names,
-  #                          all_values_string)
-  #         #print(query)
-  #         projectDbUpdate(query)
-  #         
-  #       }
-  #       
-  #       # parse Intravenous exposures and write to database
-  #       for (i in oral_rows){
-  #         # print(i)
-  #         data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
-  #         #print(data)
-  #         colnames(data)<- c("Name","ivdose","ivlen","ivrep_flag")
-  #         name <- data$Name
-  #         # print(name)
-  #         id_num <- getNextID("ExposureSet")
-  #         descrp <- "Imported from batch file"
-  #         query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
-  #                          "ExposureSet",
-  #                          "expoid",
-  #                          id_num,
-  #                          name,
-  #                          descrp)
-  #         # print(query)
-  #         projectDbUpdate(query)
-  #         
-  #         var_names <- expo_name_df$Var
-  #         data2write <- setNames(rep(0,length(var_names)),var_names)
-  #         data2write["expo_sidebar"]<-"iv"
-  #         data2write["ivdose"]<- data$ivdose
-  #         data2write["ivlen"]<- data$ivlen
-  #         data2write["ivrep_flag"]<- ifelse(data$ivrep_flag == "Yes","TRUE","FALSE")
-  #         vals <- paste0("'",as.character(data2write),"'")
-  #         
-  #         all_values_string <- paste(paste0(sprintf('(%d,',id_num),
-  #                                           sprintf("'%s'",var_names),
-  #                                           ',',vals,')'),
-  #                                    collapse = ", ")
-  #         write_col_names <- sprintf("%s, param, value","expoid")
-  #         query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
-  #                          "Exposure",
-  #                          write_col_names,
-  #                          all_values_string)
-  #         # print(query)
-  #         projectDbUpdate(query)
-  #         
-  #         
-  #       }
-  #       removeModal()
-  #       
-  #     }
-  #     
-  #     
-  #   })
-  #   returnValues$retdata<- eventReactive(input$import,{return(c("Yes"))})
-  # }
-  # 
+importAllExposureData <- function(input,output,session,expo_name_df){#,expo_name_df){
+  ns <- session$ns
+  returnValues <- reactiveValues()
+  returnValues$retdata <- c("No")
+  
+  ## Import Batch Data ##
+
+  ## Import SEEMS Data ##
+  
+
+  ## Import SHEDS-HT Data ##
+
+  ## Import TRA Data ##
+
+  
+  returnValues$retdata <- eventReactive(input$import,{return(c("Yes"))})
 }
