@@ -211,16 +211,20 @@ shinyServer(function(input, output, session) {
                                               expo_name_df)
   })
   
-  observe({
-    result_vector <- parameterSets$importAllData
-    if(result_vector()[1]=="Yes"){
-      set_type <- "expo"
-      set_list <- getAllSetChoices(set_type)
-      parameterSets[[set_type]] <- reactiveVal(set_list)
-      updateSelectizeInput(session,paste0("sel_",set_type),
-                           choices = set_list)
-    }
-  })
+  # observe({
+  #   result_vector <- parameterSets$importAllData
+  #   if(result_vector()[1] != "No"){
+  #   if(result_vector()[1]=="SEEM"){parameterSets$importSeem <- reactiveVal(c("Yes"))}
+  #   result_vector <- parameterSets$importSeem
+  #   if(result_vector()[1]=="Yes"){
+  #     set_type <- "expo"
+  #     set_list <- getAllSetChoices(set_type)
+  #     parameterSets[[set_type]] <- reactiveVal(set_list)
+  #     updateSelectizeInput(session,paste0("sel_",set_type),
+  #                          choices = set_list)
+  #     parameterSets$importSeem <- reactiveVal(c("No"))
+  #   }}
+  # })
   
   # observeEvent(input$btn_batch_upload,{
   #   importBatchExposureUI(paste0("batch",input$btn_batch_upload))
