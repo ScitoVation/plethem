@@ -24,11 +24,26 @@ importAllExposureDataUI <- function(namespace){
                              shinyBS::bsCollapsePanel("Intravenous Exposure",
                                                       DT::DTOutput(ns("ivDT")) )
                            ),
-                           actionButton(ns("importBatch"), "Import Batch Exposure Data")
+                           actionButton(ns("importBatch"), "Import")
                            ),
-                           # footer = tagList(modalButton("DismissI"),
-                           #                  shinyBS::bsButton(ns("import"),"Import Selected Exposures")),
-                           # size = "l"),
+                  
+                  ## Import TRA Data ##
+                  tabPanel("TRA",
+                           ## Begin ##
+                           fileInput(ns("expoFile_upload"),
+                                     label = "Upload Exposure Excel File",
+                                     multiple = F,
+                                     buttonLabel = "Browse"),
+                           pickerInput(ns("sel_expo"),
+                                       label= "Select Exposure",
+                                       width = validateCssUnit("600px"),
+                                       choices = NULL),
+                           fillRow(
+                             DT::DTOutput("expo_table")
+                           ),
+                           pickerInput(ns("sel_export"),"Select exposures to export",
+                                       choices = NULL,multiple = T),
+                           actionButton(ns("importTRA"), "Import")),
                   
                   ## Import SEEM Data ##
                   tabPanel(title = "Seem Data",
@@ -62,29 +77,12 @@ importAllExposureDataUI <- function(namespace){
                                                              lib = "glyphicon"))),
                            prettyCheckbox(ns("ch_var"),"Create Variability Sets from Data",
                                           fill = T,status = "info",bigger = T),
-                           footer = tagList(
-                             actionButton(ns("import"),"Import"),
-                             modalButton("Dismiss")
-                           )),
-                  
-                  ## Import TRA Data ##
-                  tabPanel("TRA",
-                           ## Begin ##
-                                           fileInput(ns("expoFile_upload"),
-                                                     label = "Upload Exposure Excel File",
-                                                     multiple = F,
-                                                     buttonLabel = "Browse"),
-                                           pickerInput(ns("sel_expo"),
-                                                       label= "Select Exposure",
-                                                       width = validateCssUnit("600px"),
-                                                       choices = NULL),
-                                         fillRow(
-                                           DT::DTOutput("expo_table")
-                                         ),
-                                          pickerInput(ns("sel_export"),"Select exposures to export",
-                                                       choices = NULL,multiple = T)
-                           ## End ##
-                           )))))}
+                           actionButton(ns("importSHEDS"), "Import")
+                           )
+      )),
+    footer = tagList(modalButton("Dismiss"),
+                     shinyBS::bsButton(ns("importAll"),"Import Selected Exposures"))
+    ))}
 
 
 
@@ -464,7 +462,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                 })})
   
   fpath_sheds <- reactive({
-    fpath <- tcltk::tk_choose.files(multi = F)
+    fpath <- rstudioapi::selectDirectory("Select SHEDS-HT Folder")
     return(fpath)
   })
   
