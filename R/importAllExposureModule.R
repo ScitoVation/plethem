@@ -12,8 +12,10 @@ importAllExposureDataUI <- function(namespace){
                   ## Batch Exposure Input ##
                   tabPanel("Batch Exposure",
                            shinyWidgets::useSweetAlert(),
-                           fileInput(ns("batchExposure"), "Choose Batch Exposure File",
-                                     multiple = FALSE, accept = NULL, width = NULL),
+                           fileInput(ns("batchExposure"),
+                                     "Select Exposure file",multiple = F,
+                                     accept = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                           ),
                            shinyBS::bsCollapse(
                              shinyBS::bsCollapsePanel("Oral Exposure",
                                                       DT::DTOutput(ns("oralDT")) ),
@@ -123,16 +125,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       return(data)
     })
     
-    # save_val <- reactive({
-    #   parseBatchExposureFile(data_file_path(),expo_name_df)
-    #   temp_df <- data.frame()
-    #   data_oral<- readxl::read_xlsx(data_file_path(),sheet = "Oral")
-    #   data_inh<- readxl::read_xlsx(data_file_path(),sheet = "Inhalation")
-    #   data_inh
-    #   return(data$Name)
-    # })
-    # 
-    # updatePickerInput(session,"sel_expo",choices = expo_choices())
+
     output$oralDT <- DT::renderDT(DT::datatable(oral_tble(),
                                                 autoHideNavigation = T,
                                                 fillContainer = T,rownames = F),server = T)
@@ -145,6 +138,10 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     output$ivDT <- DT::renderDT(DT::datatable(iv_tble(),
                                               autoHideNavigation = T,
                                               fillContainer = T,rownames = F),server = T)
+    batch_values$oral_tble <- oral_tble
+    batch_values$inh_tble <- inh_tble
+    batch_values$dw_tble <- dw_tble
+    batch_values$iv_tble <- iv_tble
   })
   
   ## Import TRA Data ##
@@ -298,9 +295,13 @@ importAllExposureData <- function(input,output,session,expo_name_df){
   
   ## Import All Button
   observeEvent(input$importAll,{
-    #Batch
-    print(paste("batch:", file_paths$batch))
+    #Batch Working
+    #print(paste("batch:", file_paths$batch))
     if (!is.null(file_paths$batch)){
+      oral_tble <- isolate(batch_values$oral_tble)
+      inh_tble <- isolate(batch_values$inh_tble)
+      dw_tble <- isolate(batch_values$dw_tble)
+      iv_tble <- isolate(batch_values$iv_tble)
       oral_rows <- input$oralDT_rows_selected
       #print(oral_rows)
       inh_rows <- input$inhDT_rows_selected
@@ -329,7 +330,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                            descrp)
           #print(query)
           projectDbUpdate(query)
-          
+
           var_names <- expo_name_df$Var
           data2write <- setNames(rep(0,length(var_names)),var_names)
           data2write["expo_sidebar"]<-"oral"
@@ -338,7 +339,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
           data2write["breps"]<- data$breps
           data2write["brep_flag"]<- ifelse(data$brep_flag == "Yes","TRUE","FALSE")
           vals <- paste0("'",as.character(data2write),"'")
-          
+
           all_values_string <- paste(paste0(sprintf('(%d,',id_num),
                                             sprintf("'%s'",var_names),
                                             ',',vals,')'),
@@ -350,8 +351,8 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                            all_values_string)
           #print(query)
           projectDbUpdate(query)
-          
-          
+
+
         }
         # parse Oral exposures and write to database
         for (i in dw_rows){
@@ -371,16 +372,16 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                            descrp)
           # print(query)
           projectDbUpdate(query)
-          
+
           var_names <- expo_name_df$Var
           data2write <- setNames(rep(0,length(var_names)),var_names)
           data2write["expo_sidebar"]<-"dw"
           data2write["drdose"]<- data$drdose
           data2write["dreps"]<- data$dreps
           data2write["vdw"]<- data$vdw
-          
+
           vals <- paste0("'",as.character(data2write),"'")
-          
+
           all_values_string <- paste(paste0(sprintf('(%d,',id_num),
                                             sprintf("'%s'",var_names),
                                             ',',vals,')'),
@@ -393,7 +394,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
           # print(query)
           projectDbUpdate(query)
         }
-        
+
         # parse Inhalation exposures and write to database
         for (i in inh_rows){
           #print(i)
@@ -412,16 +413,16 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                            descrp)
           #print(query)
           projectDbUpdate(query)
-          
+
           var_names <- expo_name_df$Var
           data2write <- setNames(rep(0,length(var_names)),var_names)
           data2write["expo_sidebar"]<-"inh"
           data2write["inhdose"]<- data$inhdose
           data2write["inhtlen"]<- data$inhtlen
           data2write["inhdays"]<- data$inhdays
-          
+
           vals <- paste0("'",as.character(data2write),"'")
-          
+
           all_values_string <- paste(paste0(sprintf('(%d,',id_num),
                                             sprintf("'%s'",var_names),
                                             ',',vals,')'),
@@ -433,9 +434,9 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                            all_values_string)
           #print(query)
           projectDbUpdate(query)
-          
+
         }
-        
+
         # parse Intravenous exposures and write to database
         for (i in oral_rows){
           # print(i)
@@ -454,7 +455,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                            descrp)
           # print(query)
           projectDbUpdate(query)
-          
+
           var_names <- expo_name_df$Var
           data2write <- setNames(rep(0,length(var_names)),var_names)
           data2write["expo_sidebar"]<-"iv"
@@ -462,7 +463,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
           data2write["ivlen"]<- data$ivlen
           data2write["ivrep_flag"]<- ifelse(data$ivrep_flag == "Yes","TRUE","FALSE")
           vals <- paste0("'",as.character(data2write),"'")
-          
+
           all_values_string <- paste(paste0(sprintf('(%d,',id_num),
                                             sprintf("'%s'",var_names),
                                             ',',vals,')'),
@@ -474,8 +475,8 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                            all_values_string)
           # print(query)
           projectDbUpdate(query)
-          
-          
+
+
         }}}
     #TRA
     observeEvent(input$save,{
