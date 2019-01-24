@@ -2,7 +2,7 @@
 % Please edit documentation in R/importAllExposureModule.R
 \name{importAllExposureDataUI}
 \alias{importAllExposureDataUI}
-\title{UI for importing SEEM data.}
+\title{UI for importing all (Batch Exposure, TRA, SEEM, and SHEDS) data module.}
 \usage{
 importAllExposureDataUI(namespace)
 }
@@ -10,5 +10,5 @@ importAllExposureDataUI(namespace)
 \item{namespace}{namespace for the module UI.}
 }
 \description{
-This function is called by the pbpk model to import SEEM exposure estimates. Never called by the user
+This function is called by the pbpk model to import all (Batch Exposure, TRA, SEEM, and SHEDS) data module estimates. Never called by the user
 }

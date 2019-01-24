@@ -2,7 +2,7 @@
 % Please edit documentation in R/importAllExposureModule.R
 \name{importAllExposureData}
 \alias{importAllExposureData}
-\title{Server function for seem data module}
+\title{Server function for all (Batch Exposure, TRA, SEEM, and SHEDS) data module}
 \usage{
 importAllExposureData(input, output, session, expo_name_df)
 }
@@ -14,9 +14,7 @@ importAllExposureData(input, output, session, expo_name_df)
 \item{session}{session object for the module}
 
 \item{expo_name_df}{dataframe containing variable names for exposure values}
-
-\item{fpath_seems}{path to the SEEM database}
 }
 \description{
-Server function for import seem data module. This function should not be called by the user
+Server function for import all (Batch Exposure, TRA, SEEM, and SHEDS) data module. This function should not be called by the user
 }
