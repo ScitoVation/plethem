@@ -300,6 +300,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                 scenario_dirs <- list.dirs(path2output,full.names = F)
                 scenario_dirs <- scenario_dirs[scenario_dirs!= ""]
                 updateSelectInput(session,"sel_scene",choices = scenario_dirs)
+                file_paths$sheds <- path2output
                 observeEvent(input$sel_scene,{
                   scenario <- input$sel_scene
                   chem_list <-list.files(file.path(path2output,scenario))
@@ -314,6 +315,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     fpath <- rstudioapi::selectDirectory("Select SHEDS-HT Folder")
     return(fpath)
   })
+  
   
   ## Import All Button
   observeEvent(input$importAll,{
@@ -500,7 +502,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
 
 
         }}}
-    #TRA
+    #TRA mostly working need to know what to put in database
     if (!is.null(file_paths$tra)) {
       expoFile <- isolate(tra_values$expoFile)
       expoData <- isolate(tra_values$expoData)
@@ -604,11 +606,16 @@ importAllExposureData <- function(input,output,session,expo_name_df){
           id_num <- id_num+1
           
         }}}
-    #SHEDS Does Not Work Yet
-    chem_list <- input$sel_chem
+    #SHEDS Need to know which values from the file to import
+    if (!is.null(file_paths$sheds)){
+      chem_list <- input$sel_chem
+      fpath <- isolate(file_paths$sheds)
     for (each_chem in chem_list){
-      file_name <- paste0("CAS_",each_chem,".csv")
-    }
+      file_name <- paste0(fpath, "/", input$sel_scene,"/CAS_",each_chem,".csv")
+      print(file_name)
+      fileFrame <- read.csv(file_name)
+      print(fileFrame)
+    }}
   })
   returnValues$retdata<- eventReactive(input$importAll,{return(c("Yes"))})
 }
