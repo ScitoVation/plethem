@@ -97,6 +97,25 @@ importAllExposureData <- function(input,output,session,expo_name_df){
   seems_values <- reactiveValues()
   sheds_values <- reactiveValues()
   
+  ## Import DataBase Write Functions ##
+  
+  write2ExposureSet <- function(name, description){
+    queryId <- sprintf("SELECT expoid FROM ExposureSet ORDER BY expoid DESC LIMIT 1;")
+    expoid <- projectDbSelect(queryId)$expoid + 1
+    queryUpdate <- sprintf("insert into ExposureSet (expoid, name, descrp) values (%d, '%s', '%s');",
+                           expoid, name, description)
+    projectDbUpdate(queryUpdate)
+    return(expoid)
+  }
+  
+  write2Exposure <- function(expoid, param, value){
+    for (i in 1:length(param)){
+    queryUpdate <- sprintf("insert into Exposure (expoid, name, descrp) values (%d, '%s', '%s');",
+                           expoid, param[i], value[i])
+    projectDbUpdate(queryUpdate)
+    }
+  }
+  
   ## Import Batch Data ##
   observeEvent(input$batchExposure, ignoreInit = TRUE, {
     expo_file <- reactive({   
@@ -150,6 +169,8 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     expoFile <- reactive({
       input$expoFile_upload
     })
+    
+    file_paths$tra <- expoFile()$datapath
     
     # The user's data, parsed into a data frame
     expoData <- reactive({
@@ -215,7 +236,8 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     ignoreNULL = TRUE)
     
     output$file_path <- renderText({expoData()})
-    
+    tra_values$expoData <- expoData
+    tra_values$expoFile <- expoFile
   })
 
   ## Import SEEMS Data ##
@@ -479,7 +501,9 @@ importAllExposureData <- function(input,output,session,expo_name_df){
 
         }}}
     #TRA
-    observeEvent(input$save,{
+    if (!is.null(file_paths$tra)) {
+      expoFile <- isolate(tra_values$expoFile)
+      expoData <- isolate(tra_values$expoData)
       inh_exposure <- data.frame()
       oral_exposure <- data.frame()
       sel_list <- input$sel_export
@@ -496,12 +520,26 @@ importAllExposureData <- function(input,output,session,expo_name_df){
           data <- expoData()$dermal
           data <- data[which(data$ids == ids),c(1,5,10)]
         }
-        write.csv(inh_exposure,file.path(base_path,"inhalation_exposure.csv"),row.names = F)
-        write.csv(oral_exposure,file.path(base_path,"oral_exposure.csv"),row.names = F)
-        stopApp()
+        #write.csv(inh_exposure,file.path(base_path,"inhalation_exposure.csv"),row.names = F)
+        #write.csv(oral_exposure,file.path(base_path,"oral_exposure.csv"),row.names = F)
       }
-      
-    })
+      if (nrow(inh_exposure)>0){
+      for (n in 1:nrow(inh_exposure)){
+        print(inh_exposure[n,])
+        expoid <- write2ExposureSet(inh_exposure[n,1], "imported from TRA")
+        # write2Exposure(expoid,
+        #                as.character(names(inh_exposure)[-1]),
+        #                as.character(inh_exposure[n,][-1]))
+      }}
+      if (nrow(oral_exposure)>0){
+      for (n in 1:nrow(oral_exposure)){
+        print(oral_exposure[n,])
+        expoid <- write2ExposureSet(oral_exposure[n,1], "imported from TRA")
+        # write2Exposure(expoid,
+        #                as.character(names(oral_exposure)[-1]),
+        #                as.character(oral_exposure[n,][-1]))
+      }}
+    }
     #SEEM Working
     print(paste("seem:", file_paths$seem))
     if (!is.null(file_paths$seem)){
