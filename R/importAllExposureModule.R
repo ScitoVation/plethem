@@ -547,9 +547,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       }}
       if (nrow(oral_exposure)>0){
       for (n in 1:nrow(oral_exposure)){
-        print(oral_exposure[n,])
         expoid <- write2ExposureSet(oral_exposure[n,1], "imported from TRA")
-         ## Start New
          var_names <- expo_name_df$Var
          data2write <- setNames(rep(0,length(var_names)),var_names)
          data2write["expo_sidebar"]<-"oral"
@@ -569,7 +567,6 @@ importAllExposureData <- function(input,output,session,expo_name_df){
                          all_values_string)
         print(query)
         projectDbUpdate(query)
-        ## End New
       }}
     }
     #SEEM Working
@@ -642,9 +639,30 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       fpath <- isolate(file_paths$sheds)
     for (each_chem in chem_list){
       file_name <- paste0(fpath, "/", input$sel_scene,"/CAS_",each_chem,".csv")
-      print(file_name)
       fileFrame <- read.csv(file_name)
-      print(fileFrame)
+      ## Start NEW
+      fileFrame <- fileFrame[fileFrame[,1]=="mean",]
+      for (cohort in input$sel_cohort){print(cohort)
+      expoid <- write2ExposureSet(paste(each_chem," ",cohort), "imported from SHEDS")
+      var_names <- expo_name_df$Var
+       data2write <- setNames(rep(0,length(var_names)),var_names)
+       data2write["expo_sidebar"]<-"oral"
+       data2write["bdose"]<- fileFrame[fileFrame[,2] == cohort,]$dose.intake
+       data2write["brep_flag"]<- "FALSE"
+       vals <- paste0("'",as.character(data2write),"'")
+       
+       all_values_string <- paste(paste0(sprintf('(%d,',expoid),
+                                         sprintf("'%s'",var_names),
+                                         ',',vals,')'),
+                                  collapse = ", ")
+       write_col_names <- sprintf("%s, param, value","expoid")
+       query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
+                        "Exposure",
+                        write_col_names,
+                        all_values_string)
+       projectDbUpdate(query)
+       ## End New
+      }
     }}
   })
   returnValues$retdata<- eventReactive(input$importAll,{return(c("Yes"))})
