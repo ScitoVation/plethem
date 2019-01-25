@@ -34,15 +34,18 @@ importAllExposureDataUI <- function(namespace){
                                      label = "Upload Exposure Excel File",
                                      multiple = F,
                                      buttonLabel = "Browse"),
-                           pickerInput(ns("sel_expo"),
-                                       label= "Select Exposure",
-                                       width = validateCssUnit("600px"),
-                                       choices = NULL),
-                           fillRow(
-                             DT::DTOutput("expo_table")
-                           ),
+                           # pickerInput(ns("sel_expo"),
+                           #             label= "Select Exposure",
+                           #             width = validateCssUnit("600px"),
+                           #             choices = NULL),
+                           # fillRow(
+                           #   DT::DTOutput("expo_table")
+                           # ),
                            pickerInput(ns("sel_export"),"Select exposures to export",
-                                       choices = NULL,multiple = T)),
+                                       choices = NULL,multiple = T),
+                           numericInput(ns("TRA_MW"), "Molecular Weight", 1),
+                           numericInput(ns("TRA_inhalation_week"), "Inhalation Doses Per Week", 1),
+                           checkboxInput(ns("TRA_repeated_oral"), "Repeated Oral Dose")),
                   
                   ## Import SEEM Data ##
                   tabPanel(title = "Seem Data",
@@ -59,7 +62,7 @@ importAllExposureDataUI <- function(namespace){
                   ## Import SHEDS Data ##
                   tabPanel(title = "SHEDS Data",
                            shinyBS::bsButton(ns("btn_SHEDS_data_file"),
-                                             "Select SHEDS Data File",
+                                             "Select SHEDS Data Folder",
                                              block = T),
                            selectInput(ns("sel_scene"),"Select Scenario",choices = NULL),
                            pickerInput(ns("sel_chem"),"Select Chemical",choices = NULL,multiple = T),
@@ -67,15 +70,16 @@ importAllExposureDataUI <- function(namespace){
                                        choices = c("Population"="Total",
                                                    "Males"="Males",
                                                    "Females"="Females"),
-                                       multiple = T),
-                           checkboxGroupButtons(ns("ch_expotype"),"Select Exposures",
-                                                choices = c("Oral","Inhalation"),#,"Dermal"
-                                                checkIcon = list(
-                                                  yes = icon("ok", 
-                                                             lib = "glyphicon"))),
-                           prettyCheckbox(ns("ch_var"),"Create Variability Sets from Data",
-                                          fill = T,status = "info",bigger = T))
-      )),
+                                       multiple = T)
+                           # ,
+                           # checkboxGroupButtons(ns("ch_expotype"),"Select Exposures",
+                           #                      choices = c("Oral","Inhalation"),#,"Dermal"
+                           #                      checkIcon = list(
+                           #                        yes = icon("ok", 
+                           #                                   lib = "glyphicon"))),
+                           # prettyCheckbox(ns("ch_var"),"Create Variability Sets from Data",
+                           #                fill = T,status = "info",bigger = T)
+      ))),
     footer = tagList(modalButton("Dismiss"),
                      shinyBS::bsButton(ns("importAll"),"Import Selected Exposures"))
     ))}
@@ -101,19 +105,13 @@ importAllExposureData <- function(input,output,session,expo_name_df){
   
   write2ExposureSet <- function(name, description){
     queryId <- sprintf("SELECT expoid FROM ExposureSet ORDER BY expoid DESC LIMIT 1;")
-    expoid <- projectDbSelect(queryId)$expoid + 1
+    expoid <- projectDbSelect(queryId)$expoid
+    if (length(expoid) == 0){expoid = 1}
+    else {expoid <- expoid + 1}
     queryUpdate <- sprintf("insert into ExposureSet (expoid, name, descrp) values (%d, '%s', '%s');",
                            expoid, name, description)
     projectDbUpdate(queryUpdate)
     return(expoid)
-  }
-  
-  write2Exposure <- function(expoid, param, value){
-    for (i in 1:length(param)){
-    queryUpdate <- sprintf("insert into Exposure (expoid, name, descrp) values (%d, '%s', '%s');",
-                           expoid, param[i], value[i])
-    projectDbUpdate(queryUpdate)
-    }
   }
   
   ## Import Batch Data ##
@@ -187,8 +185,8 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       if(is.list(expoData())){
         output$file_path <- renderText({"File Uploaded"})
         exposureNames <-expoData()$exponames
-        updatePickerInput(session,"sel_expo",
-                          choices = exposureNames)
+        # updatePickerInput(session,"sel_expo",
+        #                   choices = exposureNames)
         updatePickerInput(session,"sel_export",
                           choices = exposureNames)
         shinyWidgets::updatePickerInput(session,"inh_export",
@@ -216,24 +214,24 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       
     })
     
-    observeEvent(input$sel_expo,{
-      expoid <- input$sel_expo
-      if(grepl("inh",expoid)){
-        data<- expoData()$inh
-        data <- data[which(data$ids == expoid),c(1,4,7,12)]
-      }else if(grepl("oral",expoid)){
-        data<- expoData()$oral
-        data <- data[which(data$ids == expoid),c(1,5,9)]
-      }else if(grepl("dermal",expoid)){
-        data <- expoData()$dermal
-        data <- data[which(data$ids == expoid),c(1,5,10)]
-      }
-      output$expo_table <-  DT::renderDT(DT::datatable(data,
-                                                       options = list(dom = "t")))
-      
-    },
-    ignoreInit = TRUE,
-    ignoreNULL = TRUE)
+    # observeEvent(input$sel_expo,{
+    #   expoid <- input$sel_expo
+    #   if(grepl("inh",expoid)){
+    #     data<- expoData()$inh
+    #     data <- data[which(data$ids == expoid),c(1,4,7,12)]
+    #   }else if(grepl("oral",expoid)){
+    #     data<- expoData()$oral
+    #     data <- data[which(data$ids == expoid),c(1,5,9)]
+    #   }else if(grepl("dermal",expoid)){
+    #     data <- expoData()$dermal
+    #     data <- data[which(data$ids == expoid),c(1,5,10)]
+    #   }
+    #   output$expo_table <-  DT::renderDT(DT::datatable(data,
+    #                                                    options = list(dom = "t")))
+    #   
+    # },
+    # ignoreInit = TRUE,
+    # ignoreNULL = TRUE)
     
     output$file_path <- renderText({expoData()})
     tra_values$expoData <- expoData
@@ -527,19 +525,53 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       }
       if (nrow(inh_exposure)>0){
       for (n in 1:nrow(inh_exposure)){
-        print(inh_exposure[n,])
+         print(inh_exposure[n,])
+        print(inh_exposure[n,1])
         expoid <- write2ExposureSet(inh_exposure[n,1], "imported from TRA")
-        # write2Exposure(expoid,
-        #                as.character(names(inh_exposure)[-1]),
-        #                as.character(inh_exposure[n,][-1]))
+         var_names <- expo_name_df$Var
+          data2write <- setNames(rep(0,length(var_names)),var_names)
+          data2write["expo_sidebar"]<-"inh"
+          data2write["inhdose"]<- inh_exposure[n,4] * 24.45 / input$TRA_MW ## Assuming STP and mg/m^3
+          data2write["inhtlen"]<- as.numeric(inh_exposure[n,2]) * as.numeric(inh_exposure[n,3])
+          data2write["inhdays"]<- isolate(input$TRA_inhalation_week)
+          vals <- paste0("'",as.character(data2write),"'")
+          
+          all_values_string <- paste(paste0(sprintf('(%d,',expoid),
+                                            sprintf("'%s'",var_names),
+                                            ',',vals,')'),
+                                     collapse = ", ")
+          write_col_names <- sprintf("%s, param, value","expoid")
+          query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
+                           "Exposure",
+                           write_col_names,
+                           all_values_string)
+          projectDbUpdate(query)
       }}
       if (nrow(oral_exposure)>0){
       for (n in 1:nrow(oral_exposure)){
         print(oral_exposure[n,])
-        expoid <- write2ExposureSet(oral_exposure[n,1], "imported from TRA")
-        # write2Exposure(expoid,
-        #                as.character(names(oral_exposure)[-1]),
-        #                as.character(oral_exposure[n,][-1]))
+        # ## Start New
+        # var_names <- expo_name_df$Var
+        # data2write <- setNames(rep(0,length(var_names)),var_names)
+        # data2write["expo_sidebar"]<-"oral"
+        # data2write["bdose"]<- data$bdose
+        # data2write["blen"]<- data$blen
+        # data2write["breps"]<- data$breps
+        # data2write["brep_flag"]<- ifelse(data$brep_flag == "Yes","TRUE","FALSE")
+        # vals <- paste0("'",as.character(data2write),"'")
+        # 
+        # all_values_string <- paste(paste0(sprintf('(%d,',id_num),
+        #                                   sprintf("'%s'",var_names),
+        #                                   ',',vals,')'),
+        #                            collapse = ", ")
+        # write_col_names <- sprintf("%s, param, value","expoid")
+        # query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
+        #                  "Exposure",
+        #                  write_col_names,
+        #                  all_values_string)
+        # #print(query)
+        # projectDbUpdate(query)
+        # ## End New
       }}
     }
     #SEEM Working

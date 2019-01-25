@@ -226,71 +226,71 @@ shinyServer(function(input, output, session) {
   
   
   
-  # Import SEEM data
-  observeEvent(input$btn_seem_upload,{
-    path <-fpath_seem()
-    importSEEMDataUI(paste0("seem",input$btn_seem_upload))
-    parameterSets$importSeem <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload),
-                       path,expo_name_df)
-  })
-  
-  fpath_seem <- reactive({
-    fpath <- tcltk::tk_choose.files(multi = F)
-    return(fpath)
-  })
-  
-  observe({
-    result_vector <- parameterSets$importSeem
-    if(result_vector()[1]=="Yes"){
-      set_type <- "expo"
-      set_list <- getAllSetChoices(set_type)
-      parameterSets[[set_type]] <- reactiveVal(set_list)
-      updateSelectizeInput(session,paste0("sel_",set_type),
-                           choices = set_list)
-    }
-  })
-  
-  # Import SHEDS-HT data
-  observeEvent(input$btn_sheds_upload,{
-    path <-fpath_sheds()
-    importShedsDataUI(paste0("sheds",input$btn_sheds_upload))
-    parameterSets$importSheds<- callModule(importShedsData,
-                                           paste0("sheds",input$btn_sheds_upload),
-                                           path,expo_name_df)
-  })
-  
-  fpath_sheds <- reactive({
-    fpath <- rstudioapi::selectDirectory("Select SHEDS-HT Folder")
-    return(fpath)
-  })
-  
-  observe({
-    result_vector <- parameterSets$importSheds
-    if(result_vector()[1]=="Yes"){
-      set_type <- "expo"
-      set_list <- getAllSetChoices(set_type)
-      parameterSets[[set_type]] <- reactiveVal(set_list)
-      updateSelectizeInput(session,paste0("sel_",set_type),
-                           choices = set_list)
-    }
-  })
-  # Import Batch Exposure data
-  observeEvent(input$btn_batch_upload,{
-    importBatchExposureUI(paste0("batch",input$btn_batch_upload))
-    parameterSets$importBatch <- callModule(importBatchExposure,
-               paste0("batch",input$btn_batch_upload),
-               expo_name_df)
-  })
-  observe({
-    result_vector <- parameterSets$importBatch
-    if(result_vector()[1]=="Yes"){
-      set_type <- "expo"
-      set_list <- getAllSetChoices(set_type)
-      parameterSets[[set_type]] <- reactiveVal(set_list)
-      updateSelectizeInput(session,paste0("sel_",set_type),
-                           choices = set_list)
-    }
-  })
+  # # Import SEEM data
+  # observeEvent(input$btn_seem_upload,{
+  #   path <-fpath_seem()
+  #   importSEEMDataUI(paste0("seem",input$btn_seem_upload))
+  #   parameterSets$importSeem <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload),
+  #                      path,expo_name_df)
+  # })
+  # 
+  # fpath_seem <- reactive({
+  #   fpath <- tcltk::tk_choose.files(multi = F)
+  #   return(fpath)
+  # })
+  # 
+  # observe({
+  #   result_vector <- parameterSets$importSeem
+  #   if(result_vector()[1]=="Yes"){
+  #     set_type <- "expo"
+  #     set_list <- getAllSetChoices(set_type)
+  #     parameterSets[[set_type]] <- reactiveVal(set_list)
+  #     updateSelectizeInput(session,paste0("sel_",set_type),
+  #                          choices = set_list)
+  #   }
+  # })
+  # 
+  # # Import SHEDS-HT data
+  # observeEvent(input$btn_sheds_upload,{
+  #   path <-fpath_sheds()
+  #   importShedsDataUI(paste0("sheds",input$btn_sheds_upload))
+  #   parameterSets$importSheds<- callModule(importShedsData,
+  #                                          paste0("sheds",input$btn_sheds_upload),
+  #                                          path,expo_name_df)
+  # })
+  # 
+  # fpath_sheds <- reactive({
+  #   fpath <- rstudioapi::selectDirectory("Select SHEDS-HT Folder")
+  #   return(fpath)
+  # })
+  # 
+  # observe({
+  #   result_vector <- parameterSets$importSheds
+  #   if(result_vector()[1]=="Yes"){
+  #     set_type <- "expo"
+  #     set_list <- getAllSetChoices(set_type)
+  #     parameterSets[[set_type]] <- reactiveVal(set_list)
+  #     updateSelectizeInput(session,paste0("sel_",set_type),
+  #                          choices = set_list)
+  #   }
+  # })
+  # # Import Batch Exposure data
+  # observeEvent(input$btn_batch_upload,{
+  #   importBatchExposureUI(paste0("batch",input$btn_batch_upload))
+  #   parameterSets$importBatch <- callModule(importBatchExposure,
+  #              paste0("batch",input$btn_batch_upload),
+  #              expo_name_df)
+  # })
+  # observe({
+  #   result_vector <- parameterSets$importBatch
+  #   if(result_vector()[1]=="Yes"){
+  #     set_type <- "expo"
+  #     set_list <- getAllSetChoices(set_type)
+  #     parameterSets[[set_type]] <- reactiveVal(set_list)
+  #     updateSelectizeInput(session,paste0("sel_",set_type),
+  #                          choices = set_list)
+  #   }
+  # })
   
   ### Import button current for chemicals only
   # Import a new chemical set from user or main database
