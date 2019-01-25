@@ -500,7 +500,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
 
 
         }}}
-    #TRA mostly working need to know what to put in database
+    #TRA Working
     if (!is.null(file_paths$tra)) {
       expoFile <- isolate(tra_values$expoFile)
       expoData <- isolate(tra_values$expoData)
@@ -525,8 +525,6 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       }
       if (nrow(inh_exposure)>0){
       for (n in 1:nrow(inh_exposure)){
-         print(inh_exposure[n,])
-        print(inh_exposure[n,1])
         expoid <- write2ExposureSet(inh_exposure[n,1], "imported from TRA")
          var_names <- expo_name_df$Var
           data2write <- setNames(rep(0,length(var_names)),var_names)
@@ -550,28 +548,28 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       if (nrow(oral_exposure)>0){
       for (n in 1:nrow(oral_exposure)){
         print(oral_exposure[n,])
-        # ## Start New
-        # var_names <- expo_name_df$Var
-        # data2write <- setNames(rep(0,length(var_names)),var_names)
-        # data2write["expo_sidebar"]<-"oral"
-        # data2write["bdose"]<- data$bdose
-        # data2write["blen"]<- data$blen
-        # data2write["breps"]<- data$breps
-        # data2write["brep_flag"]<- ifelse(data$brep_flag == "Yes","TRUE","FALSE")
-        # vals <- paste0("'",as.character(data2write),"'")
-        # 
-        # all_values_string <- paste(paste0(sprintf('(%d,',id_num),
-        #                                   sprintf("'%s'",var_names),
-        #                                   ',',vals,')'),
-        #                            collapse = ", ")
-        # write_col_names <- sprintf("%s, param, value","expoid")
-        # query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
-        #                  "Exposure",
-        #                  write_col_names,
-        #                  all_values_string)
-        # #print(query)
-        # projectDbUpdate(query)
-        # ## End New
+        expoid <- write2ExposureSet(oral_exposure[n,1], "imported from TRA")
+         ## Start New
+         var_names <- expo_name_df$Var
+         data2write <- setNames(rep(0,length(var_names)),var_names)
+         data2write["expo_sidebar"]<-"oral"
+         data2write["bdose"]<- oral_exposure[n,3]
+         data2write["breps"]<- oral_exposure[n,2]
+         data2write["brep_flag"]<- input$TRA_repeated_oral
+        vals <- paste0("'",as.character(data2write),"'")
+
+        all_values_string <- paste(paste0(sprintf('(%d,',expoid),
+                                          sprintf("'%s'",var_names),
+                                          ',',vals,')'),
+                                   collapse = ", ")
+        write_col_names <- sprintf("%s, param, value","expoid")
+        query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
+                         "Exposure",
+                         write_col_names,
+                         all_values_string)
+        print(query)
+        projectDbUpdate(query)
+        ## End New
       }}
     }
     #SEEM Working
