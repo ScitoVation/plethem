@@ -664,6 +664,8 @@ importAllExposureData <- function(input,output,session,expo_name_df){
        ## End New
       }
     }}
+    ## Close After Running
+    removeModal()
   })
   returnValues$retdata<- eventReactive(input$importAll,{return(c("Yes"))})
 }
