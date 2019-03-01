@@ -340,15 +340,16 @@ shinyServer(function(input, output, session) {
     perfc <- input$ms_perfc
     total_vol <- sum(unlist(lapply(vol_comps,function(x){input[[vol_ids[x]]]})))
     #exposure
-    if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && input$ms_inhdose==0 && input$ms_ivdose==0){
-      showModal(
-        modalDialog(
-          tags$h4("Invalid Exposure Parameters"),
-          tags$h5("Atleast one route of exposure should be active"),
-          title = "Error"
-        )
-      )
-    }else if ("gi" %in% active_comp && !("liver" %in% active_comp)){
+    # if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
+    #   showModal(
+    #     modalDialog(
+    #       tags$h4("Invalid Exposure Parameters"),
+    #       tags$h5("Atleast one route of exposure should be active"),
+    #       title = "Error"
+    #     )
+    #   )
+    # }else 
+    if ("gi" %in% active_comp && !("liver" %in% active_comp)){
       shinyWidgets::sendSweetAlert(session,
                                    title = "Invalid Compartment Configuration",
                                    text = "Liver compartment needs to be active if GI compartment is active",
@@ -390,7 +391,7 @@ shinyServer(function(input, output, session) {
 
   #Save a new exposure parameter set
   observeEvent(input$btn_saveas_expo,{
-    if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && input$ms_inhdose==0 && input$ms_ivdose==0){
+    if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
       shinyWidgets::sendSweetAlert(session,
                                    title = "Invalid Exposure Parameters",
                                    text = "Atleast one route of exposure should be active",
@@ -1793,7 +1794,7 @@ calculateInitialValues <- function(params_list){
   params <- params_list$vals
   brep_flag <- as.logical(params[["brep_flag"]])
   iv_flag <- as.logical(params[["ivrep_flag"]])
- 
+  derm_flag <- as.logical(params[["dermrep_flag"]])
   params <- params[which(grepl("[-]?[0-9]+[.]?[0-9]*|[-]?[0-9]+[L]?|[-]?[0-9]+[.]?[0-9]*[eE][0-9]+",params))]
   params <- lapply(params,function(x){as.numeric(x)})
 
@@ -1881,6 +1882,11 @@ calculateInitialValues <- function(params_list){
   #iv
   ivdose <- initial_params[["ivdose"]]
   ivlen <- initial_params[["ivlen"]]
+  
+  #dermal
+  dermrate <- initial_params[["dermrate"]]
+  dermlen <- initial_params[["dermlen"]]
+  skarea <- initial_params[["skarea"]]
 
   #simulation
   tstart <- initial_params[["tstart"]]
@@ -2014,31 +2020,91 @@ calculateInitialValues <- function(params_list){
       method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
     )
   }
+  else if(dermlen >0){
+    # var to change
+    state_var1 <- "drmswch"
+    state_var2 <- "drmswch"
+    # Value  of change
+    change_val1 <- 1
+    change_val2 <- 0
+    # operation of event
+    operation1 <- "rep"
+    operation2 <- "rep"
+    event_days <- 1:totdays
+    #event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
+    # if (derm_flag){
+    #   # times of event
+    #   event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
+    # }else{
+    #   # times of event
+    #   event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:2,function(y){(x-1)*7+y})}))
+    # }
+    print(dermlen)
+    print(event_days)
+    event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
+    event_times1 <- event_times1[event_times1 < tstop]
+    event_times2 <- unlist(lapply(event_days,function(x){dermlen+24*(x-1)}))
+    event_times2 <- event_times2[event_times2 < tstop]
+    print(event_times1)
+    eventDat <- data.frame(
+      var = c(rep(x = state_var1,each = length(event_times1)),rep(x = state_var2,each = length(event_times2))),
+      time = c(event_times1,event_times2),
+      value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
+      method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
+    )
+    
+  }
 
   times <- seq(tstart,tstop,by=0.1)
   eventDat <- eventDat[order(eventDat$time),]
 
   state <- c(
-    #exposure related
-    inhswch=0,ainh=0,aexh=0,
-    totodose=0,odose=0,totddose=0,ddose=0,aabsgut=0,
-    ivswch=0,aiv=0,
-    #compartments
-    abld=0,
-    abfat=0,atfat=0,
-    abskin=0,atskin=0,
-    abmusc=0,atmusc=0,
-    abbone=0,atbone=0,
-    abbrn=0,atbrn=0,
-    ablng=0,atlng=0,
-    abhrt=0,athrt=0,
-    abgi=0,atgi=0,
-    abliv=0,atliv=0,
-    abkdn=0,atkdn=0,
-    abrpf=0,atrpf=0,
-    abspf=0,atspf=0,
-    # Clearance
-    ametliv1=0,ametliv2=0,aclbld=0,auexc=0,anabsgut=0)
+    inhswch = 0.0,
+    ainh = 0.0,
+    aexh = 0.0,
+    totodose = 0.0,
+    odose = 0.0,
+    totddose = 0.0,
+    ddose = 0.0,
+    aabsgut = 0.0,
+    ivswch = 0.0,
+    aiv = 0.0,
+    dermswch = 0.0,
+    aderm = 0.0,
+    adermabs = 0.0,
+    adermevap = 0.0,
+    abld = 0.0,
+    abfat = 0.0,
+    atfat = 0.0,
+    abskin = 0.0,
+    asc = 0.0,
+    ascMgcm2 = 0.0,
+    atskin = 0.0,
+    abmusc = 0.0,
+    atmusc = 0.0,
+    abbone = 0.0,
+    atbone = 0.0,
+    abbrn = 0.0,
+    atbrn = 0.0,
+    ablng = 0.0,
+    atlng = 0.0,
+    abhrt = 0.0,
+    athrt = 0.0,
+    abgi = 0.0,
+    atgi = 0.0,
+    abliv = 0.0,
+    atliv = 0.0,
+    abkdn = 0.0,
+    atkdn = 0.0,
+    abrpf = 0.0,
+    atrpf = 0.0,
+    abspf = 0.0,
+    atspf = 0.0,
+    ametliv1 = 0.0,
+    ametliv2 = 0.0,
+    aclbld = 0.0,
+    auexc = 0.0,
+    anabsgut = 0.0)
 
   initial_values <- list("evnt_data"= eventDat,
                          "initial_params"= initial_params[params_list$names],
