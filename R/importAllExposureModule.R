@@ -79,7 +79,14 @@ importAllExposureDataUI <- function(namespace){
                            #                                   lib = "glyphicon"))),
                            # prettyCheckbox(ns("ch_var"),"Create Variability Sets from Data",
                            #                fill = T,status = "info",bigger = T)
-      ))),
+      ),
+      tabPanel(title = "ConsExpo",
+               fileInput(ns("consExpo_upload"),
+                         label = "Upload ConsExpo File",
+                         multiple = F,
+                         buttonLabel = "Browse"),
+               pickerInput(ns("sel_consexpo"),"Select Exposures to import",choices = NULL)
+               ))),
     footer = tagList(modalButton("Dismiss"),
                      shinyBS::bsButton(ns("importAll"),"Import Selected Exposures"))
     ))}
@@ -236,6 +243,65 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     output$file_path <- renderText({expoData()})
     tra_values$expoData <- expoData
     tra_values$expoFile <- expoFile
+  })
+  
+  #Import ConsExpo Data
+
+  observeEvent(input$consExpo_upload , ignoreInit = TRUE,{
+    # The selected file
+    consExpoFile <- reactive({
+      input$consExpo_upload
+    })
+    
+    file_paths$consexpo <- consExpoFile()$datapath
+    
+    # The user's data, parsed into a data frame
+    consExpoData <- reactive({
+      if(!(is.null(input$consExpo_upload))){
+        data_path <- consExpoFile()$datapath
+        out_list <- parseConsExpoFile(data_path)
+      }else{
+        out_list <- "Nothing Uploaded"
+      }
+      return(out_list)
+    })
+    
+    observe({
+      print(consExpoData())
+      if(is.list(consExpoData())){
+        #output$file_path <- renderText({"File Uploaded"})
+        exposureNames <-consExpoData()$exponames
+        
+        # updatePickerInput(session,"sel_expo",
+        #                   choices = exposureNames)
+        updatePickerInput(session,"sel_consexpo",
+                          choices = exposureNames)
+        # shinyWidgets::updatePickerInput(session,"inh_export",
+        #                                 choices = exposureNames$Inhalation)
+        # #inhalation data
+        # inh_colnames <- colnames(expoData()$inh)[c(1,4,7,8,11,12)]
+        # shinyWidgets::updatePrettyCheckboxGroup(session,
+        #                                         "ch_inh",
+        #                                         choices = inh_colnames,
+        #                                         selected = "Exposure Name")
+        # #oral data
+        # oral_colnames <- colnames(expoData()$oral)[c(1,3,5,8,9)]
+        # shinyWidgets::updatePrettyCheckboxGroup(session,
+        #                                         "ch_oral",
+        #                                         choices = oral_colnames,
+        #                                         selected = "Exposure Name")
+        # #dermal data
+        # # dermal_colnames <- colnames(expoData()$dermal)[c(1,3,5,6,8,9)]
+        # # shinyWidgets::updatePrettyCheckboxGroup(session,
+        # #                                         "ch_dermal",
+        # #                                         choices = dermal_colnames,
+        # #                                         selected = "Exposure Name")
+        
+      }
+      
+    })
+    
+    
   })
 
   ## Import SEEMS Data ##

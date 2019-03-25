@@ -52,3 +52,23 @@ parseTRAFile <- function(path){
                                 "Oral" = oral_list)))#,
                                 #"Dermal"=dermal_list)))
 }
+
+#' Parse uploaded file for consexpo
+#' @description Parses the uploaded ConsExpo exposure SpreadSheet to extract all the exposure names and values
+#' This function will not be called directly by the user
+#' @importFrom readxl excel_sheets read_excel
+#' 
+#' @param path Path to Excel File
+#' 
+parseConsExpoFile <- function(path){
+  print(path)
+  b <- read.csv(path,skipNul = T,stringsAsFactors = F,blank.lines.skip = T,encoding = "UTF-16LE")
+  names <- setNames(which(startsWith(b[,1],"Results for")),gsub("Results for scenario ","",b[which(startsWith(b[,1],"Results for")),1]))
+  inhalation_data <- setNames(b[which(b[,1]=="Mean event concentration"),2],which(b[,1]=="Mean event concentration"))
+  inhalation_data <- inhalation_data[inhalation_data != ""]
+  dermal_data <- setNames(b[which(b[,1]=="Dermal load"),2],which(b[,1]=="Dermal load"))
+  dermal_data <- dermal_data[dermal_data != ""]
+  oral_data <- setNames(b[which(b[,1]=="External event dose")+1,2],which(b[,1]=="External event dose")+1)
+  oral_data<- oral_data[oral_data != ""]
+  return(list("exponames"=names,inhalation_data,dermal_data,oral_data))
+}
