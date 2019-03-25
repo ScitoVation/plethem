@@ -1,3 +1,6 @@
+## PLETHEM User Guide.
+A step by step user guide for the current version of PLETHEM can be found under inst/docs folder in the repo above.
+
 ## PLETHEM INSTALLATION
 
 ### Installing R.
