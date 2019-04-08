@@ -23,7 +23,7 @@ loadBatchChemicalData <- function(file_path = NULL){
     file_path <- file.choose()
   }
   chemdf <-read.csv(fpath,T,stringsAsFactors = F)
-  colnames(chemdf)[3:7]<- c("mw","logp","lkow","vpa","wsol")
+  colnames(chemdf)[3:8]<- c("mw","lkow","vpa","wsol","fupls","fresrp")
   return(chemdf)
 } 
 
@@ -68,7 +68,8 @@ loadBatchExposureData <- function(file_path = NULL){
 #' @param save_to_file. If true promts the user to select a path to save a excel file with all the result
 #' @return If save_to_file is FALSE, returns a list of dataframes, each contaning simulation results, indexed by compound name.
 #' @export
-runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  model = "rapidPBPK", 
+runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  
+                         model = "rapidPBPK", vehicle = FALSE,
                          organism = "rat"){
   if (load_files == TRUE){
     chemdf <- loadBatchChemicalData(chemicals)
@@ -77,23 +78,26 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
     chemdf <- chemicals
     #expodf <- exposures
   }
-  hpgl <- ifelse(organism == "human",99,110)#change later
-  mppgl <- ifelse(organism == "human",39.99,45)#change later
-  cppgl <- ifelse(organism == "human",80.7,91)# change later
+  hpgl <- ifelse(organism == "human",99,110)
+  mppgl <- ifelse(organism == "human",39.99,45)
+  cppgl <- ifelse(organism == "human",80.7,91)
   mpcppgl <- list("MPPGL"=mppgl,"CPPGL"=cppgl)
-  liver_wt <- ifelse(organism=="human",1.58,0.012)#change later
-  bw<- ifelse(organism=="human",81.21,0.023)#change later
+  liver_wt <- ifelse(organism=="human",1.58,0.012)
+  bw<- ifelse(organism=="human",81.21,0.023)
   num_chems <- nrow(chemdf)
   numchems <- nrow(chemdf)
   cpls_df <- data.frame()
+  cmaxs <- list()
+  aucs <- list()
+  c_lasts <- list()
   for (i in 1:nrow(chemdf)){
     chem_name <- chemdf[i,2]#){
-    chem_params <- as.list(chemdf[i,3:7])
+    chem_params <- as.list(chemdf[i,3:6])
     partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
-    metab_type <- chemdf[i,12]
-    km <- chemdf[i,11]
-    ka <- ifelse(is.na(chemdf[i,10]),5,chemdf[i,10])
-    fupls <- ifelse(is.na(chemdf[i,8]),1,chemdf[i,8])
+    metab_type <- chemdf[i,11]
+    km <- chemdf[i,10]
+    ka <- ifelse(is.na(chemdf[i,9]),5,chemdf[i,9])
+    fupls <- ifelse(is.na(chemdf[i,7]),1,chemdf[i,7])
     if(is.na(km)){
       km <- 1
       km_flag <- F
@@ -103,8 +107,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
     }
     mw <- chemdf[i,3]
     if(metab_type=="Subcellular"){
-      micl <- chemdf[i,13]
-      cycl <- chemdf[i,14]
+      micl <- chemdf[i,12]
+      cycl <- chemdf[i,13]
       scaled_hepcl <- calculateScaledSCClearance(c(micl,cycl),
                                                  c("ulmmP","ulmmP"),
                                                  org,25,liver_wt,
@@ -113,13 +117,13 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       vmaxc <- scaled_hepcl*km/(bw^0.75)
       vkm1c <- scaled_hepcl/liver_wt
     }else if(metab_type=="Hepatocyte"){
-      whcl <- chemdf[i,13]
+      whcl <- chemdf[i,12]
       scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,km)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
       vkm1c <- scaled_hepcl/liver_wt
     }else{
-      vmaxc <- chemdf[i,13]
-      vkm1c<- chemdf[i,14]
+      vmaxc <- chemdf[i,12]
+      vkm1c<- chemdf[i,13]
     }
     if (!km_flag || is.na(vmaxc)){
       vmaxc <- 0
@@ -128,29 +132,29 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       vkm1c <- 0
     }
 
-    # tissue list
-    vol_tissues <- c("fat","skin","muscle",
-                 "bone","brain",
-                 "lung","heart","gi",
-                 "liver","kidney","rpf","spf")
-    vol_tissue_ids <- c("fat"="vfatc","skin"="vskinc",
-                    "muscle"="vmuscc","bone"="vbonec",
-                    "brain"="vbrnc","lung"="vlngc",
-                    "heart"="vhrtc","gi"="vgic",
-                    "liver"="vlivc","kidney"="vkdnc",
-                    "rpf"="vrpfc","spf"="vspfc","blood"="vbldc",
-                    "bw"="bw")
-    flow_tissues <- c("fat","skin","muscle",
-                      "bone","brain",
-                      "lung","heart","gi",
-                      "kidney","rpf","spf")
-    flow_tissue_ids <- c("fat"="qfatc","skin"="qskinc",
-                         "muscle"="qmuscc","bone"="qbonec",
-                         "brain"="qbrnc","lung"="qlngc",
-                         "heart"="qhrtc","gi"="qgic",
-                         "liver_art"="qalivc","liver_ven"="qvlivc",
-                         "kidney"="qkdnc","rpf"="qrpfc","spf"="qspfc",
-                         "qc"="qcc")
+    # # tissue list
+    # vol_tissues <- c("fat","skin","muscle",
+    #              "bone","brain",
+    #              "lung","heart","gi",
+    #              "liver","kidney","rpf","spf")
+    # vol_tissue_ids <- c("fat"="vfatc","skin"="vskinc",
+    #                 "muscle"="vmuscc","bone"="vbonec",
+    #                 "brain"="vbrnc","lung"="vlngc",
+    #                 "heart"="vhrtc","gi"="vgic",
+    #                 "liver"="vlivc","kidney"="vkdnc",
+    #                 "rpf"="vrpfc","spf"="vspfc","blood"="vbldc",
+    #                 "bw"="bw")
+    # flow_tissues <- c("fat","skin","muscle",
+    #                   "bone","brain",
+    #                   "lung","heart","gi",
+    #                   "kidney","rpf","spf")
+    # flow_tissue_ids <- c("fat"="qfatc","skin"="qskinc",
+    #                      "muscle"="qmuscc","bone"="qbonec",
+    #                      "brain"="qbrnc","lung"="qlngc",
+    #                      "heart"="qhrtc","gi"="qgic",
+    #                      "liver_art"="qalivc","liver_ven"="qvlivc",
+    #                      "kidney"="qkdnc","rpf"="qrpfc","spf"="qspfc",
+    #                      "qc"="qcc")
     perfc <- 0.85
     if (organism == "human"){
       query <- "Select param,value From Physiological where physioid = 2;"
@@ -275,6 +279,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       ivlen <- 0
       fupls <- fupls
       ka <- ka
+      veh_flag <- ifelse(vehicle,1,0)
+      
     })
     totdays <- chemdf[i,16]
     tstart <- 0
@@ -322,13 +328,20 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       abrpf=0,atrpf=0,
       abspf=0,atspf=0,
       # Clearance
-      ametliv1=0,ametliv2=0,aclbld=0,auexc=0,anabsgut=0)
+      ametliv1=0,ametliv2=0,aclbld=0,auexc=0,
+      anabsgut=0,aucpls = 0)
     param_names <- getAllParamNames(model)
     initial_params <- initial_params[param_names]
     initial_params <- initial_params[-which(sapply(initial_params, is.null))]
-    initial_params["kfec"]<- chemdf[i,17]
-    initial_params["kVtoL"]<- chemdf[i,18]
-    initial_params["kent"]<- chemdf[i,19]
+    
+    if(vehicle){
+      initial_params["kfec"]<- chemdf[i,16]
+      initial_params["kVtoL"]<- chemdf[i,17]
+      initial_params["kent"]<- chemdf[i,18]
+    }else{
+      initial_params["fa"]<- chemdf[i,16]
+    }
+    
     initial_values <- list("evnt_data"= eventDat,
                            "initial_params"= initial_params,
                            "times"=times,
@@ -342,14 +355,23 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  mode
       cpls_df <- time
     }
     cpls <- res_df$pbpk.cpls
+    auc <- res_df$pbpk.auc[length(res_df$pbpk.auc)]
+    cpls_max <- max(cpls)
+    c_last <- cpls[length(cpls)]
+    cmaxs[[i]]<- cpls_max
+    aucs[[i]]<- auc
+    c_lasts[[i]]<- c_last
     cpls_df <- cbind(cpls_df,cpls)
-    write.csv(res_df,paste0("E:/",chemdf[i,2],".csv"))
+    #write.csv(res_df,paste0("E:/",chemdf[i,2],".csv"))
 
   }
   chem_names <- chemdf$Cname
-  print(chem_names)
-  print(colnames(cpls_df))
+  #print(chem_names)
+  #print(colnames(cpls_df))
   colnames(cpls_df)<- c("time",chem_names)
-  write.csv(cpls_df,"E:/CPLS.csv")
-  # combine data to create a initial
+  results<- cbind(chem_names,cmaxs,aucs,c_lasts)
+  colnames(results)<- c("Chemicals","Cmax","AUC24","Conc24")
+  write.csv(cpls_df,"E:/Batch Mode Time course.csv")
+  write.table(results,"E:/Batch Mode Results.txt",sep = "\t")
+  
 }

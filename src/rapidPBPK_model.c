@@ -1,9 +1,9 @@
-/* rapidPBPK_Veh.model.c for R deSolve package
+/* rapidPBPK_2oral.model.c for R deSolve package
    ___________________________________________________
 
-   Model File:  rapidPBPK_Veh.model
+   Model File:  rapidPBPK_2oral.model
 
-   Date:  Mon Sep 24 06:57:45 2018
+   Date:  Wed Nov 14 13:40:49 2018
 
    Created by:  "C:/MCSIM-~1.6/mod/.libs/mod.exe v5.6.6"
     -- a model preprocessor by Don Maszle
@@ -13,17 +13,21 @@
 
    Model calculations for compartmental model:
 
-   43 States:
+   48 States:
      inhswch = 0.0,
      ainh = 0.0,
      aexh = 0.0,
      totodose = 0.0,
      odose = 0.0,
+     odose1 = 0.0,
+     odose2 = 0.0,
+     totddose = 0.0,
+     ddose = 0.0,
+     ddose1 = 0.0,
+     ddose2 = 0.0,
      aLAS = 0.0,
      akent = 0.0,
      afec = 0.0,
-     totddose = 0.0,
-     ddose = 0.0,
      aabsgut = 0.0,
      ivswch = 0.0,
      aiv = 0.0,
@@ -57,8 +61,9 @@
      aclbld = 0.0,
      auexc = 0.0,
      anabsgut = 0.0,
+     aucpls = 0.0,
 
-   52 Outputs:
+   53 Outputs:
     "abone",
     "abrn",
     "alng",
@@ -109,12 +114,13 @@
     "cspf_um",
     "ctspf",
     "cbspf",
+    "auc",
     "InstInhDose",
     "mbal",
 
    0 Inputs:
 
-   128 Parameters:
+   129 Parameters:
      mw = 0,
      bdose = 0,
      blen = 0,
@@ -193,6 +199,7 @@
      pspf = 0,
      res = 0,
      fupls = 0,
+     veh_flag = 0,
      kfec = 0,
      kVtoL = 0,
      kent = 0,
@@ -256,44 +263,49 @@
 #define ID_aexh 0x00002
 #define ID_totodose 0x00003
 #define ID_odose 0x00004
-#define ID_aLAS 0x00005
-#define ID_akent 0x00006
-#define ID_afec 0x00007
-#define ID_totddose 0x00008
-#define ID_ddose 0x00009
-#define ID_aabsgut 0x0000a
-#define ID_ivswch 0x0000b
-#define ID_aiv 0x0000c
-#define ID_abld 0x0000d
-#define ID_abfat 0x0000e
-#define ID_atfat 0x0000f
-#define ID_abskin 0x00010
-#define ID_atskin 0x00011
-#define ID_abmusc 0x00012
-#define ID_atmusc 0x00013
-#define ID_abbone 0x00014
-#define ID_atbone 0x00015
-#define ID_abbrn 0x00016
-#define ID_atbrn 0x00017
-#define ID_ablng 0x00018
-#define ID_atlng 0x00019
-#define ID_abhrt 0x0001a
-#define ID_athrt 0x0001b
-#define ID_abgi 0x0001c
-#define ID_atgi 0x0001d
-#define ID_abliv 0x0001e
-#define ID_atliv 0x0001f
-#define ID_abkdn 0x00020
-#define ID_atkdn 0x00021
-#define ID_abrpf 0x00022
-#define ID_atrpf 0x00023
-#define ID_abspf 0x00024
-#define ID_atspf 0x00025
-#define ID_ametliv1 0x00026
-#define ID_ametliv2 0x00027
-#define ID_aclbld 0x00028
-#define ID_auexc 0x00029
-#define ID_anabsgut 0x0002a
+#define ID_odose1 0x00005
+#define ID_odose2 0x00006
+#define ID_totddose 0x00007
+#define ID_ddose 0x00008
+#define ID_ddose1 0x00009
+#define ID_ddose2 0x0000a
+#define ID_aLAS 0x0000b
+#define ID_akent 0x0000c
+#define ID_afec 0x0000d
+#define ID_aabsgut 0x0000e
+#define ID_ivswch 0x0000f
+#define ID_aiv 0x00010
+#define ID_abld 0x00011
+#define ID_abfat 0x00012
+#define ID_atfat 0x00013
+#define ID_abskin 0x00014
+#define ID_atskin 0x00015
+#define ID_abmusc 0x00016
+#define ID_atmusc 0x00017
+#define ID_abbone 0x00018
+#define ID_atbone 0x00019
+#define ID_abbrn 0x0001a
+#define ID_atbrn 0x0001b
+#define ID_ablng 0x0001c
+#define ID_atlng 0x0001d
+#define ID_abhrt 0x0001e
+#define ID_athrt 0x0001f
+#define ID_abgi 0x00020
+#define ID_atgi 0x00021
+#define ID_abliv 0x00022
+#define ID_atliv 0x00023
+#define ID_abkdn 0x00024
+#define ID_atkdn 0x00025
+#define ID_abrpf 0x00026
+#define ID_atrpf 0x00027
+#define ID_abspf 0x00028
+#define ID_atspf 0x00029
+#define ID_ametliv1 0x0002a
+#define ID_ametliv2 0x0002b
+#define ID_aclbld 0x0002c
+#define ID_auexc 0x0002d
+#define ID_anabsgut 0x0002e
+#define ID_aucpls 0x0002f
 
 /* Model variables: Outputs */
 #define ID_abone 0x00000
@@ -346,11 +358,12 @@
 #define ID_cspf_um 0x0002f
 #define ID_ctspf 0x00030
 #define ID_cbspf 0x00031
-#define ID_InstInhDose 0x00032
-#define ID_mbal 0x00033
+#define ID_auc 0x00032
+#define ID_InstInhDose 0x00033
+#define ID_mbal 0x00034
 
 /* Parameters */
-static double parms[128];
+static double parms[129];
 
 #define mw parms[0]
 #define bdose parms[1]
@@ -430,56 +443,57 @@ static double parms[128];
 #define pspf parms[75]
 #define res parms[76]
 #define fupls parms[77]
-#define kfec parms[78]
-#define kVtoL parms[79]
-#define kent parms[80]
-#define vbld parms[81]
-#define vpls parms[82]
-#define vfat parms[83]
-#define vskin parms[84]
-#define vmusc parms[85]
-#define vbone parms[86]
-#define vbrn parms[87]
-#define vlng parms[88]
-#define vhrt parms[89]
-#define vkdn parms[90]
-#define vgi parms[91]
-#define vliv parms[92]
-#define vrpf parms[93]
-#define vspf parms[94]
-#define total_perf parms[95]
-#define qcp parms[96]
-#define qfat parms[97]
-#define qskin parms[98]
-#define qmusc parms[99]
-#define qbone parms[100]
-#define qbrn parms[101]
-#define qlng parms[102]
-#define qhrt parms[103]
-#define qkdn parms[104]
-#define qvliv parms[105]
-#define qgi parms[106]
-#define qaliv parms[107]
-#define qrpf parms[108]
-#define qspf parms[109]
-#define pafat parms[110]
-#define paskin parms[111]
-#define pamusc parms[112]
-#define pabone parms[113]
-#define pabrn parms[114]
-#define palng parms[115]
-#define pahrt parms[116]
-#define pakdn parms[117]
-#define pagi parms[118]
-#define paliv parms[119]
-#define parpf parms[120]
-#define paspf parms[121]
-#define vkm1 parms[122]
-#define vmaxliv parms[123]
-#define km parms[124]
-#define cinh parms[125]
-#define qalv parms[126]
-#define pair parms[127]
+#define veh_flag parms[78]
+#define kfec parms[79]
+#define kVtoL parms[80]
+#define kent parms[81]
+#define vbld parms[82]
+#define vpls parms[83]
+#define vfat parms[84]
+#define vskin parms[85]
+#define vmusc parms[86]
+#define vbone parms[87]
+#define vbrn parms[88]
+#define vlng parms[89]
+#define vhrt parms[90]
+#define vkdn parms[91]
+#define vgi parms[92]
+#define vliv parms[93]
+#define vrpf parms[94]
+#define vspf parms[95]
+#define total_perf parms[96]
+#define qcp parms[97]
+#define qfat parms[98]
+#define qskin parms[99]
+#define qmusc parms[100]
+#define qbone parms[101]
+#define qbrn parms[102]
+#define qlng parms[103]
+#define qhrt parms[104]
+#define qkdn parms[105]
+#define qvliv parms[106]
+#define qgi parms[107]
+#define qaliv parms[108]
+#define qrpf parms[109]
+#define qspf parms[110]
+#define pafat parms[111]
+#define paskin parms[112]
+#define pamusc parms[113]
+#define pabone parms[114]
+#define pabrn parms[115]
+#define palng parms[116]
+#define pahrt parms[117]
+#define pakdn parms[118]
+#define pagi parms[119]
+#define paliv parms[120]
+#define parpf parms[121]
+#define paspf parms[122]
+#define vkm1 parms[123]
+#define vmaxliv parms[124]
+#define km parms[125]
+#define cinh parms[126]
+#define qalv parms[127]
+#define pair parms[128]
 
 /* Forcing (Input) functions */
 static double forc[0];
@@ -491,7 +505,7 @@ int Nout=1;
 int nr[1]={0};
 double ytau[1] = {0.0};
 
-static double yini[43] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; /*Array of initial state variables*/
+static double yini[48] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; /*Array of initial state variables*/
 
 void lagvalue(double T, int *nr, int N, double *ytau) {
   static void(*fun)(double, int*, int, double*) = NULL;
@@ -513,9 +527,9 @@ double CalcDelay(int hvar, double dTime, double delay) {
 }
 
 /*----- Initializers */
-void initmod(void (* odeparms)(int *, double *))
+void initmod (void (* odeparms)(int *, double *))
 {
-  int N=128;
+  int N=129;
   odeparms(&N, parms);
 }
 
@@ -556,6 +570,8 @@ void getParms (double *inParms, double *out, int *nout) {
 
 void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, int *ip)
 {
+  /* local */ double dose_in_gut;
+  /* local */ double available_dose;
   /* local */ double raabsgut;
   /* local */ double rinh;
   /* local */ double rexh;
@@ -570,6 +586,8 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   /* local */ double tmass;
 
   yout[ID_cpls] = y[ID_abld] / vpls ;
+
+  yout[ID_auc] = y[ID_aucpls] ;
 
   yout[ID_ctfat] = y[ID_atfat] / ( fatvtbc * vfat ) ;
 
@@ -669,25 +687,37 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cv] = ( qfat * yout[ID_cbfat] + qskin * yout[ID_cbskin] + qmusc * yout[ID_cbmusc] + qbone * yout[ID_cbbone] + qbrn * yout[ID_cbbrn] + qlng * yout[ID_cblng] + qhrt * yout[ID_cbhrt] + qkdn * yout[ID_cbkdn] + qvliv * yout[ID_cbliv] + qrpf * yout[ID_cbrpf] + qspf * yout[ID_cbspf] ) / qcp ;
 
-  ydot[ID_odose] = - kfec * y[ID_odose] - kVtoL * y[ID_odose] ;
+  ydot[ID_odose] = 0 ;
 
-  ydot[ID_ddose] = - kfec * y[ID_ddose] - kVtoL * y[ID_ddose] ;
+  ydot[ID_ddose] = 0 ;
 
-  ydot[ID_aLAS] = kVtoL * ( y[ID_odose] + y[ID_ddose] ) - ka * y[ID_aLAS] - kfec * y[ID_aLAS] - kent * y[ID_aLAS] ;
+  ydot[ID_odose1] = - ka * y[ID_odose1] ;
+
+  ydot[ID_ddose1] = - ka * y[ID_ddose1] ;
+
+  ydot[ID_odose2] = - kfec * y[ID_odose2] - kVtoL * y[ID_odose2] ;
+
+  ydot[ID_ddose2] = - kfec * y[ID_ddose] - kVtoL * y[ID_ddose2] ;
+
+  ydot[ID_aLAS] = kVtoL * ( y[ID_odose2] + y[ID_ddose2] ) - ka * y[ID_aLAS] - kfec * y[ID_aLAS] - kent * y[ID_aLAS] ;
 
   ydot[ID_akent] = - kent * y[ID_aLAS] ;
 
-  ydot[ID_afec] = - kfec * ( y[ID_odose] + y[ID_ddose] + y[ID_aLAS] ) ;
+  ydot[ID_afec] = - kfec * ( y[ID_odose2] + y[ID_ddose2] + y[ID_aLAS] ) ;
 
   ydot[ID_totodose] = 0 ;
 
   ydot[ID_totddose] = 0 ;
 
-  raabsgut = ka * y[ID_aLAS] ;
+  dose_in_gut = ka * ( y[ID_odose1] + y[ID_ddose1] ) ;
+
+  available_dose = dose_in_gut ;
+
+  raabsgut = ka * y[ID_aLAS] + fa * available_dose ;
 
   ydot[ID_aabsgut] = raabsgut ;
 
-  ydot[ID_anabsgut] = 0 ;
+  ydot[ID_anabsgut] = ( 1 - fa ) * available_dose ;
 
   ydot[ID_inhswch] = 0 ;
 
@@ -771,9 +801,11 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_abld] = qcp * ( yout[ID_cv] - yout[ID_cpls] ) + riv - raclbld ;
 
+  ydot[ID_aucpls] = yout[ID_cpls] ;
+
   totdose = y[ID_totodose] + y[ID_totddose] + y[ID_ainh] + y[ID_aiv] ;
 
-  totbody = y[ID_abld] + yout[ID_afat] + yout[ID_askin] + yout[ID_amusc] + yout[ID_abone] + yout[ID_abrn] + yout[ID_alng] + yout[ID_ahrt] + yout[ID_agi] + yout[ID_aliv] + yout[ID_akdn] + yout[ID_arpf] + yout[ID_aspf] + y[ID_odose] + y[ID_ddose] + y[ID_aLAS] ;
+  totbody = y[ID_abld] + yout[ID_afat] + yout[ID_askin] + yout[ID_amusc] + yout[ID_abone] + yout[ID_abrn] + yout[ID_alng] + yout[ID_ahrt] + yout[ID_agi] + yout[ID_aliv] + yout[ID_akdn] + yout[ID_arpf] + yout[ID_aspf] + y[ID_odose1] + y[ID_ddose1] + y[ID_odose2] + y[ID_ddose2] + y[ID_aLAS] ;
 
   totclear = y[ID_ametliv1] + y[ID_ametliv2] + y[ID_aclbld] + y[ID_auexc] + y[ID_anabsgut] + y[ID_aexh] + y[ID_akent] + y[ID_afec] ;
 
@@ -801,6 +833,11 @@ void event (int *n, double *t, double *y)
 
   y[ID_ddose] = ( drdose > 0 ? y[ID_ddose] + ( drdose * 1000. * vdw / mw ) / dreps : y[ID_ddose] ) ;
   y[ID_totddose] = ( drdose > 0 ? y[ID_totddose] + ( drdose * 1000. * vdw / mw ) / dreps : y[ID_totddose] ) ;
+
+  y[ID_odose1] = ( veh_flag == 0 ? y[ID_odose] : 0 ) ;
+  y[ID_odose2] = ( veh_flag == 1 ? y[ID_odose] : 0 ) ;
+  y[ID_ddose1] = ( veh_flag == 0 ? y[ID_ddose] : 0 ) ;
+  y[ID_ddose2] = ( veh_flag == 1 ? y[ID_ddose] : 0 ) ;
 
   y[ID_inhswch] = ( inhdose > 0 ? ( y[ID_inhswch] == 0 ? 1 : 0 ) : 0 ) ;
   y[ID_ivswch] = ( ivdose > 0 ? ( y[ID_ivswch] == 0 ? 1 : 0 ) : 0 ) ;
