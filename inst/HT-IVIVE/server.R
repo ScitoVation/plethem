@@ -49,7 +49,8 @@ shinyServer(function(input,output,session){
     "Scaled Blood Clearance (L/h)"=numeric(),#10,#numeric(),
     "Css (mg/L)"=numeric(),#10,#numeric(),
     #"Equivalent Dose Type"=numeric(),#10,#numeric(),
-    "Equivalent dose (Exposure Units)"=character()#15#numeric()
+    "Equivalent dose (Exposure Units)"=character(),#15#numeric()
+    "Margin of exposure"=numeric()
   )
   output$master_table <- DT::renderDataTable(
     DT::datatable(data = vals$m_table,rownames = F,escape = F,selection = "single",
@@ -63,12 +64,18 @@ shinyServer(function(input,output,session){
                       visible = FALSE
                     ))
                   )),server = T)
+  # scientific_notation_js <- c("function(row,data){",
+  #                             "for (i=6,i< data.length,i++){",
+  #                             "$('td:eq('+i+')',row).html(data[i].toExponential(2);",
+  #                             "}",
+  #                             "}")
 
   output$result_table <- DT::renderDataTable(
     DT::datatable(data = vals$result_table,rownames = F,escape = F,selection = "single",extensions = "Buttons",
                   options = list(
                     dom="Btpl",
-                    buttons = c("copy","csv","colvis"))
+                    buttons = c("copy","csv","colvis"))#,
+                    #rowCallback = DT::JS(scientific_notation_js))
                     ),server = T)
     # ,extensions = "Buttons",
     #               options = list(buttons=c('copy'),
@@ -238,7 +245,8 @@ makeResultTable <- function(input_table,result){
     "Actual Plasma Clearance (L/h)"=paste0(lapply(result,"[[","pls")),
     "Css (mg/L)"=paste0(lapply(result,"[[","css")),
     #"Equivalent Dose Type"=numeric(),
-    "Equivalent dose"=paste0(lapply(result,"[[","eqdose"))
+    "Equivalent dose"=paste0(lapply(result,"[[","eqdose")),
+    "Margin of exposure"=paste0(lapply(result,"[[","moe"))
   )
 
 }

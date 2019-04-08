@@ -30,6 +30,7 @@ preprocessUIData<- function(val){
   casn <- chem_data$casn
   mw <- chem_data$mw
   km <- val$num_km
+  expo <- val$num_expo
   # get POD
   pod <- val$num_ivc
   pod_unit <- val$sel_ivunit
@@ -42,7 +43,7 @@ preprocessUIData<- function(val){
   liver_wt <- val$num_lw
   bw <- val$num_bw
   hpgl <- val$num_hpgl
-  km <- val$num_km
+
   mpcppgl <- c(val$num_mppgl,val$num_cppgl)
   # get hepatic clerance type
   hepcl_type <- val$tab_heptype
@@ -101,12 +102,15 @@ preprocessUIData<- function(val){
                              stop("Invalid IVIVE type")
   )
   equivalent_dose <- pod/ss_concentration
+  moe <- expo/equivalent_dose
+  print(moe)
   #equivalent_dose <- getEquivalentDose(ss_concentration)
   calcualted_vals_list <- list("hep"=signif(scaled_hepcl,4),
                                "ren"=signif(scaled_rencl,4),
                                "pls"=signif(scaled_plcl,4),
                                "css"=signif(ss_concentration,4),
-                               "eqdose"= signif(equivalent_dose,4))
+                               "eqdose"= signif(equivalent_dose,4),
+                               "moe"=signif(moe,4))
 
   existing_vals_list <- list()#getValsMetadata(vals)
   return(calcualted_vals_list)
