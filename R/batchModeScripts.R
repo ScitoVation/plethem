@@ -94,7 +94,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,
     chem_name <- chemdf[i,2]#){
     chem_params <- as.list(chemdf[i,3:6])
     partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
-    metab_type <- chemdf[i,11]
+    metab_type <- tolower(chemdf[i,11])
     km <- chemdf[i,10]
     ka <- ifelse(is.na(chemdf[i,9]),5,chemdf[i,9])
     fupls <- ifelse(is.na(chemdf[i,7]),1,chemdf[i,7])
@@ -106,7 +106,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,
       km_flag <- T
     }
     mw <- chemdf[i,3]
-    if(metab_type=="Subcellular"){
+    if(metab_type=="subcellular"){
       micl <- chemdf[i,12]
       cycl <- chemdf[i,13]
       scaled_hepcl <- calculateScaledSCClearance(c(micl,cycl),
@@ -116,9 +116,14 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,
                                                  return_total = T)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
       vkm1c <- scaled_hepcl/liver_wt
-    }else if(metab_type=="Hepatocyte"){
+    }else if(metab_type=="hepatocyte"){
       whcl <- chemdf[i,12]
       scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,km)
+      vmaxc <- scaled_hepcl*km/(bw^0.75)
+      vkm1c <- scaled_hepcl/liver_wt
+    }else if(metab_type == "s9"){
+      s9cl <- chemdf[i,12]
+      scaled_hepcl <- calculateScaledS9Clearance(s9cl,"ulmmP",organism,NULL,liver_wt,mpcppgl)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
       vkm1c <- scaled_hepcl/liver_wt
     }else{
