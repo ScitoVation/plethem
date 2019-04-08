@@ -287,10 +287,10 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,
       veh_flag <- ifelse(vehicle,1,0)
       
     })
-    totdays <- chemdf[i,16]
+    totdays <- chemdf[i,15]
     tstart <- 0
     tstop <- 24
-    bdose <- chemdf[i,15]
+    bdose <- chemdf[i,14]
     # var to change
     state_Var <- c("odose","totodose")
     
