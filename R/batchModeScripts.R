@@ -68,7 +68,7 @@ loadBatchExposureData <- function(file_path = NULL){
 #' @param save_to_file. If true promts the user to select a path to save a excel file with all the result
 #' @return If save_to_file is FALSE, returns a list of dataframes, each contaning simulation results, indexed by compound name.
 #' @export
-runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,  
+runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,  
                          model = "rapidPBPK", vehicle = FALSE,
                          organism = "rat"){
   if (load_files == TRUE){
@@ -376,7 +376,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = F,
   colnames(cpls_df)<- c("time",chem_names)
   results<- cbind(chem_names,cmaxs,aucs,c_lasts)
   colnames(results)<- c("Chemicals","Cmax","AUC24","Conc24")
-  write.csv(cpls_df,"E:/Batch Mode Time course.csv")
-  write.table(results,"E:/Batch Mode Results.txt",sep = "\t")
+  write.csv(cpls_df,paste0(dir(chemicals),"/Batch Mode Time course.csv"))
+  write.table(results,paste0(dir(chemicals),"/Batch Mode Results.txt",sep = "\t"))
   
 }
