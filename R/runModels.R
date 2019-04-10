@@ -61,7 +61,7 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
     event_times <- unique(event_data[["time"]])
     state <- rapidPBPK_initStates(initial_params,state)
     initial_params <- rapidPBPK_initParms(initial_params)
-    print(initial_params[["cinh"]])
+   # print(initial_params[["cinh"]])
     modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
                                func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
                                events=list(func="event", time=event_times),nout = length(rapidPBPK_Outputs),

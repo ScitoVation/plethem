@@ -37,7 +37,8 @@ expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   menuItem("Oral", tabName = "oral", selected = TRUE),
   menuItem("Drinking Water", tabName = "dw"),
   menuItem("Inhalation", tabName = "inh"),
-  menuItem("Intravenous", tabName = "iv")
+  menuItem("Intravenous", tabName = "iv"),
+  menuItem("Dermal",tabName = "dermal")
 ))
 
 ################################compartment sidebar
@@ -464,6 +465,15 @@ comp_body <- dashboardBody(
                numericInput("ms_paskin","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_skinvtbc","Skin Tissue to Total Skin Volume Ratio",0.95,0,1,0.01))
+      ),
+      fluidRow(
+        column(4, 
+               numericInput("ms_KPtot","Total Stratum Corneum permeation coefficient",1000,1,1000,1)),
+        column(4,
+               numericInput("ms_Kevap","Evaporation rate from Stratum Corneum",1000,1,1000,1)),
+        column(4,
+               numericInput("ms_maxcap","Maximum capacity of Stratum Corneum",1000,1,1000,1))
+        
       )
     ),
     tabItem(
@@ -803,7 +813,25 @@ expo_body <- dashboardBody(
         column(6,
                awesomeCheckbox("ms_ivrep_flag","Repeat Dose Daily?",value = F))
       )
-    )
+    ),
+    tabItem(
+      tabName = "dermal",
+      fluidRow(
+        column(6,
+               numericInput("ms_dermrate","Dermal deposition rate (mg/cm2/h)",0,step = 0.1)),
+        column(6,
+               numericInput("ms_skarea","Skin Area (cm2)",0,step = 0.1))
+        ),
+      fluidRow(
+        column(6, 
+               numericInput("ms_dermlen","Length of dermal dosing (h)",0.1,step=0.01)),
+        column(6,
+               awesomeCheckbox("ms_dermrep_flag","Repeat Dose Daily?",value = F))
+      )
+        
+      )
+    
+    
   )
 )
 
@@ -846,20 +874,20 @@ shinyUI(fluidPage(
                                                       div(style = "height:15px")
                                                )
                                              ),
-                                             fluidRow(
-                                               column(2,
-                                                      shinyBS::bsButton("btn_seem_upload",
-                                                                        "Import From SEEM Data",
-                                                                        block = T)),
-                                               column(2,
-                                                      shinyBS::bsButton("btn_sheds_upload",
-                                                                        "Import SHEDS-HT results",
-                                                                        block = T)),
-                                               column(2,
-                                                      shinyBS::bsButton("btn_batch_upload",
-                                                                        "Import batch exposure file",
-                                                                        block = T))
-                                             ),
+                                             # fluidRow(
+                                             #   column(2,
+                                             #          shinyBS::bsButton("btn_seem_upload",
+                                             #                            "Import From SEEM Data",
+                                             #                            block = T)),
+                                             #   column(2,
+                                             #          shinyBS::bsButton("btn_sheds_upload",
+                                             #                            "Import SHEDS-HT results",
+                                             #                            block = T)),
+                                             #   column(2,
+                                             #          shinyBS::bsButton("btn_batch_upload",
+                                             #                            "Import batch exposure file",
+                                             #                            block = T))
+                                             # ),
 
                                              fluidRow(
                                                column(12,
@@ -874,8 +902,8 @@ shinyUI(fluidPage(
                                                                                    openOnFocus = T))),
                                                column(width = 3, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
-                                                        c("btn_sverest_expo","btn_saveas_expo"),
-                                                        c("Save/Restore","Save As"),
+                                                        c("btn_import_expo","btn_sverest_expo","btn_saveas_expo"),
+                                                        c("Import Data","Save/Restore","Save As"),
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T

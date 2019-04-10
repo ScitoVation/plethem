@@ -2,4 +2,6 @@
 .Rhistory
 .RData
 inst/doc
+src/plethem.dll
 plethem_final.Rproj
+plethem.Rproj
