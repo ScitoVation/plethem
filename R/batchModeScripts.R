@@ -22,8 +22,12 @@ loadBatchChemicalData <- function(file_path = NULL){
   if (is.null(file_path)){
     file_path <- file.choose()
   }
-  chemdf <-read.csv(fpath,T,stringsAsFactors = F)
-  colnames(chemdf)[3:8]<- c("mw","lkow","vpa","wsol","fupls","fresrp")
+  chemdf <-read.csv(fpath,T,stringsAsFactors = F,skip = 1)
+  batchfilecols <- colnames(chemdf)
+ # print(batchfilecols)
+  batchfilecols[3:8]<- c("mw","lkow","vpa","wsol","fupls","fresrp")
+ # print(batchfilecols)
+  colnames(chemdf)<- batchfilecols
   return(chemdf)
 } 
 
@@ -90,9 +94,11 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   cmaxs <- list()
   aucs <- list()
   c_lasts <- list()
+  metab_types<- list()
   for (i in 1:nrow(chemdf)){
     chem_name <- chemdf[i,2]#){
     chem_params <- as.list(chemdf[i,3:6])
+    #print(chem_params)
     partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
     metab_type <- tolower(chemdf[i,11])
     km <- chemdf[i,10]
@@ -105,25 +111,30 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     }else{
       km_flag <- T
     }
+    #print(km_flag)
     mw <- chemdf[i,3]
     if(metab_type=="subcellular"){
-      micl <- chemdf[i,12]
-      cycl <- chemdf[i,13]
+      micl <- ifelse(is.na(chemdf[i,12]),0,chemdf[i,12])
+      cycl <- ifelse(is.na(chemdf[i,13]),0,chemdf[i,13])
       scaled_hepcl <- calculateScaledSCClearance(c(micl,cycl),
                                                  c("ulmmP","ulmmP"),
-                                                 org,25,liver_wt,
-                                                 km,mpcppgl,
+                                                 org,liver_wt = liver_wt,
+                                                 mpcppgl = mpcppgl,
+                                                 km= ifelse(is.na(km),1,km),
                                                  return_total = T)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
       vkm1c <- scaled_hepcl/liver_wt
     }else if(metab_type=="hepatocyte"){
       whcl <- chemdf[i,12]
-      scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,km)
+      scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,
+                                                       km = ifelse(is.na(km),1,km))
       vmaxc <- scaled_hepcl*km/(bw^0.75)
       vkm1c <- scaled_hepcl/liver_wt
     }else if(metab_type == "s9"){
       s9cl <- chemdf[i,12]
-      scaled_hepcl <- calculateScaledS9Clearance(s9cl,"ulmmP",organism,NULL,liver_wt,mpcppgl)
+     # print(s9cl)
+      scaled_hepcl <- calculateScaledS9Clearance(s9cl,"ulmmP",organism,liver_wt = liver_wt,
+                                                 mpcppgl = mpcppgl)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
       vkm1c <- scaled_hepcl/liver_wt
     }else{
@@ -136,6 +147,10 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     else{
       vkm1c <- 0
     }
+    #print(metab_type)
+   # print(scaled_hepcl)
+   # print(vmaxc)
+   # print(vkm1c)
 
     # # tissue list
     # vol_tissues <- c("fat","skin","muscle",
@@ -346,7 +361,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     }else{
       initial_params["fa"]<- chemdf[i,16]
     }
-    
+    #print(initial_params)
     initial_values <- list("evnt_data"= eventDat,
                            "initial_params"= initial_params,
                            "times"=times,
@@ -366,17 +381,25 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     cmaxs[[i]]<- cpls_max
     aucs[[i]]<- auc
     c_lasts[[i]]<- c_last
+    metab_types[[i]]<- metab_type
     cpls_df <- cbind(cpls_df,cpls)
     #write.csv(res_df,paste0("E:/",chemdf[i,2],".csv"))
 
   }
-  chem_names <- chemdf$Cname
+  chem_names <- chemdf[2]
+  colnames(chem_names)<- NULL
   #print(chem_names)
   #print(colnames(cpls_df))
-  colnames(cpls_df)<- c("time",chem_names)
-  results<- cbind(chem_names,cmaxs,aucs,c_lasts)
-  colnames(results)<- c("Chemicals","Cmax","AUC24","Conc24")
-  write.csv(cpls_df,paste0(dir(chemicals),"/Batch Mode Time course.csv"))
-  write.table(results,paste0(dir(chemicals),"/Batch Mode Results.txt",sep = "\t"))
+  time_course_cols <- c("time",t(chem_names))
+  #print(time_course_cols)
+  colnames(cpls_df)<- time_course_cols
+  write.csv(cpls_df,paste0(dirname(chemicals),"/Batch Mode Time course.csv"),
+            row.names = F)
+  results<- cbind(cmaxs,aucs,c_lasts,metab_types)
+  results <- cbind(as.vector(chem_names),results)
+  results <- apply(results,2,as.character)
+  colnames(results)<- c("Chemicals","Cmax","AUC24","Conc24","MetabolismTypes")
+  #print(results)
+  write.csv(results,paste0(dirname(chemicals),"/Batch Mode Results.csv"))
   
 }

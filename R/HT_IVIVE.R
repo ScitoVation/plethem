@@ -134,7 +134,7 @@ preprocessUIData<- function(val){
 #' @param return_total logical, type of value to be returned,
 #' @return  Total scaled invivo clearance in L/h if return_total is TRUE, else a named list of individual clearances
 calculateScaledSCClearance <- function(clearance,units,organism="human",
-                                       age,liver_wt,km,mpcppgl = list(),return_total = T){
+                                       age=NULL,liver_wt,km=1,mpcppgl = list(),return_total = T){
   if (length(mpcppgl) == 0){
     # get MPPGL and CPPGL
     if (organism == "human"){
@@ -195,7 +195,7 @@ calculateScaledS9Clearance<- function(clearance,units,organism,
       MPCPPGL <- calcMPCPPGL(age)
       MPCPPGL <- unlist(MPCPPGL)
       names(MPCPPGL)<- NULL
-    }else if(organim == "rat"){
+    }else if(organism == "rat"){
       MPCPPGL <- unlist(mpcppgl)
     }
   }else{
