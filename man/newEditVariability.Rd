@@ -4,8 +4,8 @@
 \alias{newEditVariability}
 \title{Server side function for variability}
 \usage{
-newEditVariability(input, output, session, set_type, ops_type, var_params_list,
-  set_id = 0)
+newEditVariability(input, output, session, set_type, ops_type,
+  var_params_list, set_id = 0)
 }
 \description{
 Server side function for variability

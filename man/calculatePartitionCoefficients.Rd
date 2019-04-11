@@ -5,7 +5,7 @@
 \title{Calculate Partition Coefficient}
 \usage{
 calculatePartitionCoefficients(selected_qsar = "default",
-  chem_params = NULL, tissue_list, selected_org = "human")
+  chem_params = NULL, tissue_list = list(), selected_org = "human")
 }
 \arguments{
 \item{selected_qsar}{QSAR model to use for estimating partition coefficient}

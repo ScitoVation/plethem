@@ -5,8 +5,8 @@
 \title{server function of high throughput dosimetry
 This function is needed internally by the package and depends on unexported functions from it.}
 \usage{
-HT_IVIVE(input, output, session, vals = "", type = "", chem_list = list(),
-  idx = 0, row_selected = 0)
+HT_IVIVE(input, output, session, vals = "", type = "",
+  chem_list = list(), idx = 0, row_selected = 0)
 }
 \description{
 server function of high throughput dosimetry

@@ -4,8 +4,8 @@
 \alias{calculateScaledS9Clearance}
 \title{Calculate scaled in-vivo clearance if in-vitro clearance is meausured using S9 Fraction}
 \usage{
-calculateScaledS9Clearance(clearance, units, organism, age, liver_wt, km = 1,
-  mpcppgl = list())
+calculateScaledS9Clearance(clearance, units, organism, age, liver_wt,
+  km = 1, mpcppgl = list())
 }
 \arguments{
 \item{clearance}{number for measured S9 clearance}

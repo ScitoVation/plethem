@@ -4,7 +4,8 @@
 \alias{calculateScaledWholeHepClearance}
 \title{Calculate sclaed in-vivo clearance if in-vitro clearance is measured in whole hepatocytes}
 \usage{
-calculateScaledWholeHepClearance(clearance, units, liver_wt, hpgl, km = 1)
+calculateScaledWholeHepClearance(clearance, units, liver_wt, hpgl,
+  km = 1)
 }
 \arguments{
 \item{clearance}{number for measured whole hepatocyte clearance}

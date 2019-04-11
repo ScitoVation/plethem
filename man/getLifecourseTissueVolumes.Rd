@@ -4,8 +4,8 @@
 \alias{getLifecourseTissueVolumes}
 \title{Get volumes for tissues provided on the basis of age and gender}
 \usage{
-getLifecourseTissueVolumes(age = 25, gender = "M", nonperf_frct = 0.85,
-  tissues = list())
+getLifecourseTissueVolumes(age = 25, gender = "M",
+  nonperf_frct = 0.85, tissues = list())
 }
 \arguments{
 \item{age}{Age of the organism in years}
