@@ -95,6 +95,9 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   aucs <- list()
   c_lasts <- list()
   metab_types<- list()
+  expos <- list()
+  fuplss <- list()
+  fas<- list()
   for (i in 1:nrow(chemdf)){
     chem_name <- chemdf[i,2]#){
     chem_params <- as.list(chemdf[i,3:6])
@@ -285,7 +288,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       cinh <- 0
       qalv <- (tv-ds)*respr
       pair <- ifelse(pair >0,pair,1E-10)
-      bdose <- 10
+      bdose <- 0
       blen <- 1
       breps <- 1
       totbreps<- 1
@@ -304,8 +307,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     })
     totdays <- chemdf[i,15]
     tstart <- 0
-    tstop <- 24
-    bdose <- chemdf[i,14]
+    tstop <- totdays*24
+    initial_params["bdose"]<-bdose <- chemdf[i,14]
     # var to change
     state_Var <- c("odose","totodose")
     
@@ -325,7 +328,6 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     )
     times <- seq(tstart,tstop,by=0.1)
     eventDat <- eventDat[order(eventDat$time),]
-    
     state <- c(
       #exposure related
       inhswch=0,ainh=0,aexh=0,
@@ -382,6 +384,9 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     aucs[[i]]<- auc
     c_lasts[[i]]<- c_last
     metab_types[[i]]<- metab_type
+    expos[[i]] <- bdose
+    fuplss[[i]]<- fupls
+    fas[[i]] <- chemdf[i,16]
     cpls_df <- cbind(cpls_df,cpls)
     #write.csv(res_df,paste0("E:/",chemdf[i,2],".csv"))
 
@@ -395,10 +400,12 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   colnames(cpls_df)<- time_course_cols
   write.csv(cpls_df,paste0(dirname(chemicals),"/Batch Mode Time course.csv"),
             row.names = F)
-  results<- cbind(cmaxs,aucs,c_lasts,metab_types)
+  results<- cbind(cmaxs,aucs,c_lasts,metab_types,expos,fuplss,fas)
   results <- cbind(as.vector(chem_names),results)
   results <- apply(results,2,as.character)
-  colnames(results)<- c("Chemicals","Cmax","AUC24","Conc24","MetabolismTypes")
+  colnames(results)<- c("Chemicals","Cmax","AUC24","Conc24",
+                        "MetabolismTypes","Exposure",
+                        "Fraction Unbound","Fraction absorbed")
   #print(results)
   write.csv(results,paste0(dirname(chemicals),"/Batch Mode Results.csv"))
   
