@@ -10,7 +10,7 @@
 setUserDb<- function(path = NULL){
   filters <- matrix(c("SQLite DB",".sqlite"),1,2,byrow = T)
   if (is.null(path)){
-    getFileFolderPath(type="file",
+    userDbPath <- getFileFolderPath(type="file",
                       caption = "Select user database",
                       c("SQLite DB","*.sqlite"))
   }else{
