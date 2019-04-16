@@ -172,8 +172,8 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
 chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="chem_sidebar",
   selectizeInput("qsarModelChem", "Select A QSAR Model",
-                          choices = c("QSAR model one" = 'one',
-                                      "QSAR model two" = 'two'),
+                          choices = c("QSAR model one" = 'one'),#,
+                                      #"QSAR model two" = 'two'),
                           width = "99%"),
   shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary"),
   shinyBS::bsButton("btn_ivive_chem","Perform IVIVE",style = "primary")
@@ -288,8 +288,8 @@ plot_body <- fluidPage(
                                                                                                  "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf"
                                                                               )
 
-                                                           ),
-                                                selectizeInput("aplt_data",tags$h4("Select Data Sets"),choices = c("a","b","c"))
+                                                           )
+                                                #selectizeInput("aplt_data",tags$h4("Select Data Sets"),choices = c("a","b","c"))
 
                                               )
                                        ),
@@ -298,7 +298,7 @@ plot_body <- fluidPage(
                                                      tabPanel("Plot",
                                                               fluidRow(
                                                                 tags$h5(class="text-center",
-                                                                        radioButtons("r_aplt_type",label = "Concentration Units",inline = TRUE,
+                                                                        radioButtons("r_aplt_type",label = "Amount Units",inline = TRUE,
                                                                                      choices = c("mg"="mg","\u00B5moles"="um"))
                                                                 )
                                                               ),
@@ -1003,8 +1003,8 @@ shinyUI(fluidPage(
                                                ),
                                                column(4,
                                                       shinyBS::tipify(selectizeInput("sel_qsar4Partition", NULL,
-                                                                     choices = c("QSAR model one" = 'one',
-                                                                                 "QSAR model two" = 'two')
+                                                                     choices = c("QSAR model one" = 'one')#,
+                                                                                 #"QSAR model two" = 'two')
                                                                      ),
                                                                      "Select QSAR model for partition coefficients")
                                                       ),
@@ -1020,6 +1020,9 @@ shinyUI(fluidPage(
                                                                         block = TRUE)
                                                       )
 
+                                             ),
+                                             fluidRow(
+                                               shinyBS::bsAlert("physio_header_alert")
                                              ),
                                              fluidRow(
                                                column(12,
@@ -1078,7 +1081,7 @@ shinyUI(fluidPage(
                                                          column(width = 4, offset = 0,
                                                                 selectizeInput("sel_chem_var",NULL,
                                                                                choices = NULL,
-                                                                               options= list(placeholder = "Metabolism Parameter Set",
+                                                                               options= list(placeholder = "Chemical Parameter Set",
                                                                                              openOnFocus = T))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
@@ -1091,7 +1094,7 @@ shinyUI(fluidPage(
                                                        ),
                                                        fluidRow(
                                                          column(8, offset = 2,
-                                                                tableOutput("chem_var_tble"))
+                                                                DT::DTOutput("chem_var_tble"))
                                                        )
                                                        ),
                                                tabItem(tabName = "var_expo",
@@ -1112,7 +1115,7 @@ shinyUI(fluidPage(
                                                        ),
                                                        fluidRow(
                                                          column(8, offset = 2,
-                                                                tableOutput("expo_var_tble"))
+                                                                DT::DTOutput("expo_var_tble"))
                                                        )
                                                )
                                                )
@@ -1417,7 +1420,7 @@ shinyUI(fluidPage(
                                              fluidRow(
                                                       box(title = "Exposure Parameters",width = 4,
                                                           DT::DTOutput("expo_params_tble")),
-                                                      box(title = "All Parameters",width = 4,
+                                                      box(title = "Chemical Specific Parameters",width = 4,
                                                           DT::DTOutput("chem_params_tble")),
                                                       box(title = "Physiological Parameters",width = 4,
                                                           DT::DTOutput("physio_params_tble"))
@@ -1437,8 +1440,9 @@ shinyUI(fluidPage(
                       )
 
              ),
-             tabPanel( id = "help" , title= "help", value = "Help", icon = icon("info")),
-             tabPanel(title = "",value = "Stop",icon=icon("power-off"))
+             tabPanel(title = "Save",value = "save",icon = icon("save")),
+             #tabPanel( id = "help" , title= "help", value = "Help", icon = icon("info")),
+             tabPanel(title = "Quit",value = "stop",icon=icon("power-off"))
   )
 ))
 

@@ -10,8 +10,9 @@
 setUserDb<- function(path = NULL){
   filters <- matrix(c("SQLite DB",".sqlite"),1,2,byrow = T)
   if (is.null(path)){
-    userDbPath <- tcltk::tk_choose.files(caption = "Select User database",multi = F,
-                                         filters = filters)
+    getFileFolderPath(type="file",
+                      caption = "Select user database",
+                      c("SQLite DB","*.sqlite"))
   }else{
     userDbPath <- path
   }
@@ -34,7 +35,7 @@ setUserDb<- function(path = NULL){
 #' @export
 createUserDb <- function(path = NULL){
   if(is.null(path)){
-    userDbPath <- tcltk::tk_choose.dir(caption = "Create a new database")
+    userDbPath <- getFileFolderPath(type = "dir",caption = "Create a new database")
   }else{
     userDbPath <- path
   }

@@ -252,15 +252,22 @@ getAllVariabilityValuesForModel<- function(simid, params,mc_num){
         MC.matrix[,this.param]<- truncdist::rtrunc(mc_num,"lnorm",a = lowerlim, 
                                         b = upperlim, mean = meanlog, 
                                         sd = sdlog)
-      }else{
-        stop(sprintf("Undefined distribution %s",dist_type))
+      }else if(dist_type == "uform"){
+        upperlim = mean+2*sd
+        lowerlim = mean-2*sd
+        MC.matrix[,this.param]<- stats::runif(mc_num,lowerlim,upperlim)
+      }
+      else{
+        #default to uniform distribution
+        upperlim = mean+2*sd
+        lowerlim = mean-2*sd
+        MC.matrix[,this.param]<- stats::runif(mc_num,
+                                              ifelse(lowerlim>=0,lowerlim,0),
+                                              upperlim)
       }
       
     }else{
       MC.matrix[, this.param] <- 0
-      warning(paste(this.param,
-                    "has mean of zero, yielding SD of zero for fixed cv.  Parameter value fixed at zero.")
-              )
     }
   }
   return(MC.matrix)
@@ -354,8 +361,15 @@ getVariabilitySetChoices <- function(var_type="physio"){
 #' @description Reshapes plot data in long form to wide form. The plot data has time as the id
 #' @param plotData Plot Data in long form
 #' @export
-reshapePlotData<- function(plotData){
-  data <- unique.data.frame(plotData)
+reshapePlotData<- function(plotData,type = "FD"){
+  
+  if (type == "FD"){
+    data <- unique.data.frame(plotData)
+    return(reshape2::dcast(data,time~variable))
+  }else{
+    data <- plotData
+    return(reshape2::dcast(data,sample~variable))
+  }
                           
-  return(reshape2::dcast(data,time~variable))
+  
 }

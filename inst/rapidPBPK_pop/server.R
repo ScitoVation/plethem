@@ -619,7 +619,13 @@ shinyServer(function(input, output, session) {
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
     var_data <- projectDbSelect(query)
     dataset <- unserialize(charToRaw(var_data$var_tble))
-    output$physio_var_tble <- DT::renderDT(DT::datatable(dataset))
+    dataset <- dataset[,c(-2)]
+    output$physio_var_tble <- DT::renderDT(DT::datatable(dataset,rownames = "",
+                                                         colnames = c("Use Bounds" = 5,
+                                                                      "Upper Bound"=6,
+                                                                      "Lower Bound"=7)
+                                                         )
+                                           )
     
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
   
@@ -628,7 +634,12 @@ shinyServer(function(input, output, session) {
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
     var_data <- projectDbSelect(query)
     dataset <- unserialize(charToRaw(var_data$var_tble))
-    output$chem_var_tble <- renderTable(dataset)
+    dataset <- dataset[,c(-2)]
+    output$chem_var_tble <- DT::renderDT(DT::datatable(dataset,rownames = "",
+                                                         colnames = c("Use Bounds" = 5,
+                                                                      "Upper Bound"=6,
+                                                                      "Lower Bound"=7)
+    ))
     
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
   
@@ -637,7 +648,12 @@ shinyServer(function(input, output, session) {
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
     var_data <- projectDbSelect(query)
     dataset <- unserialize(charToRaw(var_data$var_tble))
-    output$expo_var_tble <- renderTable(dataset)
+    dataset <- dataset[,c(-2)]
+    output$expo_var_tble <- DT::renderDT(DT::datatable(dataset,rownames = "",
+                                                         colnames = c("Use Bounds" = 5,
+                                                                      "Upper Bound"=6,
+                                                                      "Lower Bound"=7)
+    ))
     
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
   
@@ -1137,31 +1153,36 @@ shinyServer(function(input, output, session) {
   })
 #LifeCourse Equation
   observeEvent(input$btn_use_lifecourse,{
-    shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
-    age <- input$ms_age
-
-    gender<- input$ms_gender
-    # get volumes from life course equations
-    tissues <- c(input$ms_cmplist,"blood")
-    perfc <- input$ms_perfc
-    vols <- getLifecourseTissueVolumes(age,gender,perfc, tissues)
-    vols["bw"] <- getLifecourseBodyWeight(age,gender)
-    #update the UI with new volumes
-    updateVolumes(session,vols)
-    #Get blood flow ratios from life course equations
-    tissues <- input$ms_cmplist # since there is no blood flow through blood
-    flows <- getLifecourseTissuePerfusion(age,gender, tissues)
-    flows["qc"]<- getLifecourseCardiacOutput(age,gender)
-    updateRatios(session, flows)
-    ventilation_rate <- getLifecourseVentilationRate(age,gender)
-    updateNumericInput(session,"ms_respr",value = signif(ventilation_rate,4))
-    tidal_volume <- getLifecourseTidalVolume(age,gender)
-    updateNumericInput(session,"ms_tv",value = signif(tidal_volume,4))
-    ds <- getLifecourseLungDeadSpace(age,gender)
-    updateNumericInput(session,"ms_ds",value = signif(ds,4))
-    gfr<- getLifecourseGlomerularFiltrationRate(age,gender)
-    updateNumericInput(session,"ms_gfr",value = signif(gfr,4))
-
+    org <- input$ms_org
+    if (org == "ha"){
+      shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
+      age <- input$ms_age
+      
+      gender<- input$ms_gender
+      # get volumes from life course equations
+      tissues <- c(input$ms_cmplist,"blood")
+      perfc <- input$ms_perfc
+      vols <- getLifecourseTissueVolumes(age,gender,perfc, tissues)
+      vols["bw"] <- getLifecourseBodyWeight(age,gender)
+      #update the UI with new volumes
+      updateVolumes(session,vols)
+      #Get blood flow ratios from life course equations
+      tissues <- input$ms_cmplist # since there is no blood flow through blood
+      flows <- getLifecourseTissuePerfusion(age,gender, tissues)
+      flows["qc"]<- getLifecourseCardiacOutput(age,gender)
+      updateRatios(session, flows)
+      ventilation_rate <- getLifecourseVentilationRate(age,gender)
+      updateNumericInput(session,"ms_respr",value = signif(ventilation_rate,4))
+      tidal_volume <- getLifecourseTidalVolume(age,gender)
+      updateNumericInput(session,"ms_tv",value = signif(tidal_volume,4))
+      ds <- getLifecourseLungDeadSpace(age,gender)
+      updateNumericInput(session,"ms_ds",value = signif(ds,4))
+      gfr<- getLifecourseGlomerularFiltrationRate(age,gender)
+      updateNumericInput(session,"ms_gfr",value = signif(gfr,4))
+    }else{
+      shinyBS::createAlert(session,"physio_header_alert",style = "error",
+                           content = "Only human parameters can be estimated using lifecourse equations")
+    }
     })
 
   # when age and gender are changed, change the type of button to indicate things are out of sync
@@ -1549,11 +1570,37 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     return(plot_frame)
 
     })
+  #Concentration table data
+  conc_tble_data <- reactive({
+    mode <- results$mode
+    plt_data<- concData()
+    return(reshapePlotData(plt_data,mode))
+  })
 
   amtData <- reactive({
     result <- results$pbpk
+    units <- input$r_aplt_type
     simid <- results$simid
     mode <- results$mode
+    
+    if(is.null(simid)){
+      mw <- 1000 # to keep the multiplier as 1
+      
+    }else{
+      query <- sprintf("SELECT mc_num,chemid FROM SimulationsSet Where simid = %i ;",
+                       simid)
+      chemid <- projectDbSelect(query)$chemid
+      mc_num <- projectDbSelect(query)$mc_num
+      query <- sprintf("Select value FROM Chemical WHERE chemid = %i AND param = 'mw';",
+                       chemid)
+      mw <- projectDbSelect(query)$value
+    }
+    #get value multiplier based on concentration units
+    if(units == "um"){
+      multiplier <- 1
+    }else{
+      multiplier <- mw/1000
+    }
 
     values <- c()
     query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'amt' AND model='%s' AND mode = '%s';",model,mode)
@@ -1613,7 +1660,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
     else if(length(values) >0 ){
       for (plt_name in values){
-        y<- result[[plt_name]]
+        y<- result[[plt_name]] *multiplier
         plot_frame[[legend_names[plt_name]]] <-y
       }
     }else{
@@ -1625,6 +1672,13 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       plot_frame <- reshape2::melt(plot_frame,id.vars = "sample")
     }
     return(plot_frame)
+  })
+  
+  #Concentration table data
+  amt_tble_data <- reactive({
+    mode <- results$mode
+    plt_data<- amtData()
+    return(reshapePlotData(plt_data,mode))
   })
 
   AUCData <- reactive({
@@ -1678,7 +1732,12 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       plotly::plot_ly()%>%
         plotly::add_trace(data = concData(),
                           y = ~value,color = ~variable,
-                          type = "box")
+                          type = "box")%>%
+        plotly::layout(yaxis = list(title = (ifelse(input$r_cplt_type=="um",
+                                                    'Concentration (\u00B5M)',
+                                                    'Concentration (mg/L)'))
+                                    )
+                       )
     }
   })
   
@@ -1687,7 +1746,12 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       plotly::plot_ly() %>%
         plotly::add_trace(data = amtData(),x =~time,
                           y= ~value,color = ~variable,
-                          type = "scatter",mode="lines")
+                          type = "scatter",mode="lines")%>%
+        plotly::layout(xaxis = list(title = ('Time(h)')),
+                       yaxis = list(title = (ifelse(input$r_aplt_type=="um",
+                                                    'Amount (\u00B5moles)',
+                                                    'Amount (mg)')))
+                       )
       # plotly::ggplotly(ggplot(amtData(), aes(x=time,y=value,color = variable))+geom_line()
       #                  +labs(x="Time (h)",y="Amount")
       #                  +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank()))
@@ -1695,7 +1759,12 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       plotly::plot_ly()%>%
         plotly::add_trace(data = amtData(),
                           y = ~value,color = ~variable,
-                          type = "box")
+                          type = "box")%>%
+        plotly::layout(yaxis = list(title = (ifelse(input$r_aplt_type=="um",
+                                                    'Concentration (\u00B5M)',
+                                                    'Concentration (mg/L)'))
+        )
+        )
     }
   })
   output$concplt <- plotly::renderPlotly(concplt())
@@ -1716,9 +1785,9 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                               +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.position="none")
                              )
   #data tables
-  output$conctble <- DT::renderDT(reshapePlotData(concData()))
+  output$conctble <- DT::renderDT(conc_tble_data())#reshapePlotData(concData()))
   output$expotble <- DT::renderDT(reshapePlotData(exposureData()))
-  output$amttble <- DT::renderDT(reshapePlotData(amtData()))
+  output$amttble <- DT::renderDT(amt_tble_data())#reshapePlotData(amtData()))
   output$baltble <- DT::renderDT(reshapePlotData(balData()))
   #output$auctble <- renderDataTable(reshapePlotData(AUCData()))
 
@@ -1774,16 +1843,26 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   )
   # power button to shut down the app
   observeEvent(input$menu,{
-    if(input$menu=="Stop"){
+    if(input$menu=="stop"){
       shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close Application",
-                                   "Any changes will be saved. Proceed?",type = "info",danger_mode = T)
+                                   "Any changes will not be saved. Proceed?",type = "info",danger_mode = T)
 
+    }else if(input$menu == "save"){
+      shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
+                                      "Unsaved changes will be lost. Proceed?",type = "info",danger_mode = T)
     }
+    
   })
   observeEvent(input$close_dialog,{
     if (input$close_dialog){
-      saveProject()
       stopApp()
+    }else{
+      updateNavbarPage(session,"menu","setup")
+    }
+  })
+  observeEvent(input$save_dialog,{
+    if(input$save_dialog){
+      saveProject()
     }else{
       updateNavbarPage(session,"menu","setup")
     }

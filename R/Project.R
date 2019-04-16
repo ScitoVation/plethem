@@ -52,7 +52,9 @@ saveProject <- function(){
 #' }
 #' @export
 newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC"){
-  temp_path <- tcltk::tk_choose.dir(caption =sprintf("Select folder where %s will be saved",name))
+  temp_path <- getFileFolderPath("dir",
+                                 caption =sprintf("Select folder where %s will be saved",name))
+  
   
   save_path <- gsub("\\\\","/",temp_path)
   clearProjectDb()
@@ -87,8 +89,9 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){
-    file_path <- tcltk::tk_choose.files(caption = "Select PLETHEM Project",
-                                          filter= matrix(c("*.Rdata"),4,2,byrow=TRUE))
+    file_path <- getFileFolderPath(type = "file",
+                                   caption = "Select PLETHEM Project",
+                                   extension = "*.Rdata")
     
   }
   
@@ -133,4 +136,28 @@ clearProjectDb <- function(){
   for (x in table_names_list){
     projectDbUpdate(sprintf("DELETE FROM %s ;",x))
   }
+}
+
+#' Show dialogs to select files or folders
+#' @description The function shows the dialog to select files or folders. The functions change depending on the OS in which 
+#' RStudio is running. It is only called internally
+#' 
+getFileFolderPath <- function(type ="dir",caption,extension){
+  os <- .Platform$OS.type
+  if (os == "windows"){
+    if(type == "dir"){
+      returned_path <- utils::choose.dir(caption)
+    }else{
+      returned_path <- utils::choose.files(caption = caption, multi = F,
+                                           filters = matrix(c(extension),1,2,byrow=TRUE))
+    }
+  }else{
+    if(type == "dir"){
+      returned_path <-  tcltk::tk_choose.dir(caption =caption)#sprintf("Select folder where %s will be saved",name))
+    }else{
+      returned_path <- tcltk::tk_choose.files(caption = caption,#"Select PLETHEM Project",
+                                              filter= matrix(c(extenion),4,2,byrow=TRUE))
+    }
+  }
+  return(returned_path)
 }
