@@ -21,7 +21,7 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
     #initial_values <- calculateInitialValues(params,total_vol,prefc)
     initial_params <- initial_values[['initial_params']]
     
-    event_times <- initial_values[['evnt_times']]
+    event_times <- initial_values[['event_times']]
     times <- initial_values[['times']]
     tstop <- initial_values[['tstop']]
     state <- initial_values[['state']]
@@ -59,7 +59,6 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
     times <- sort(c(deSolve::cleanEventTimes(times,event_times),
                     event_times))
     
-    print(event_times)
     state <- rapidPBPK_initStates(initial_params,state)
     initial_params <- rapidPBPK_initParms(initial_params)
     

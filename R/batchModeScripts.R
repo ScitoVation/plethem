@@ -82,12 +82,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     chemdf <- chemicals
     #expodf <- exposures
   }
-  hpgl <- ifelse(organism == "human",99,110)
-  mppgl <- ifelse(organism == "human",39.99,45)
-  cppgl <- ifelse(organism == "human",80.7,91)
-  mpcppgl <- list("MPPGL"=mppgl,"CPPGL"=cppgl)
-  liver_wt <- ifelse(organism=="human",1.58,0.012)
-  bw<- ifelse(organism=="human",81.21,0.023)
+  
   num_chems <- nrow(chemdf)
   numchems <- nrow(chemdf)
   cpls_df <- data.frame()
@@ -98,13 +93,29 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   expos <- list()
   fuplss <- list()
   fas<- list()
-  for (i in 1:nrow(chemdf)){#nrow(chemdf)){
-    chem_name <- chemdf[i,2]#){
+  for (i in 1:nrow(chemdf)){
+    
+    chem_name <- chemdf[i,2]
     chem_params <- as.list(chemdf[i,3:6])
-    #print(chem_params)
-    partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
-   # print(partitions)
-    metab_type <- tolower(chemdf[i,11])
+    organism <- tolower(chemdf[i,26])
+    if (organism == "human"){
+      query <- "Select param,value From Physiological where physioid = 2;"
+    }
+    if (organism == "rat"){
+      query <- "Select param,value From Physiological where physioid = 1;"
+      #print(vals)
+    }
+    vals <- mainDbSelect(query)
+    
+    vals <- as.list(
+      setNames(vals$value,nm = vals$param))
+    
+    vals[which(names(vals) %in% c("org","gender","cmplist"))]<- NULL
+    vals <- lapply(vals,as.numeric)
+    hpgl <- ifelse(organism == "human",99,110)
+    mppgl <- ifelse(organism == "human",39.99,45)
+    cppgl <- ifelse(organism == "human",80.7,91)
+    mpcppgl <- list("MPPGL"=mppgl,"CPPGL"=cppgl)
     km <- chemdf[i,10]
     ka <- ifelse(is.na(chemdf[i,9]),5,chemdf[i,9])
     fupls <- ifelse(is.na(chemdf[i,7]),1,chemdf[i,7])
@@ -117,66 +128,15 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     }
     #print(km_flag)
     mw <- chemdf[i,3]
-    if(metab_type=="subcellular"){
-      micl <- ifelse(is.na(chemdf[i,12]),0,chemdf[i,12])
-      cycl <- ifelse(is.na(chemdf[i,13]),0,chemdf[i,13])
-      scaled_hepcl <- calculateScaledSCClearance(c(micl,cycl),
-                                                 c("ulmmP","ulmmP"),
-                                                 org,liver_wt = liver_wt,
-                                                 mpcppgl = mpcppgl,
-                                                 km= ifelse(is.na(km),1,km),
-                                                 return_total = T)
-      vmaxc <- scaled_hepcl*km/(bw^0.75)
-      vkm1c <- scaled_hepcl/liver_wt
-    }else if(metab_type=="hepatocyte"){
-      whcl <- chemdf[i,12]
-      scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,
-                                                       km = ifelse(is.na(km),1,km))
-      vmaxc <- scaled_hepcl*km/(bw^0.75)
-      vkm1c <- scaled_hepcl/liver_wt
-    }else if(metab_type == "s9"){
-      s9cl <- chemdf[i,12]
-     # print(s9cl)
-      scaled_hepcl <- calculateScaledS9Clearance(s9cl,"ulmmP",organism,liver_wt = liver_wt,
-                                                 mpcppgl = mpcppgl)
-      vmaxc <- scaled_hepcl*km/(bw^0.75)
-      vkm1c <- scaled_hepcl/liver_wt
-    }else{
-      vmaxc <- chemdf[i,12]
-      vkm1c<- chemdf[i,13]
-    }
-    if (!km_flag || is.na(vmaxc)){
-      vmaxc <- 0
-      }
-    else{
-      vkm1c <- 0
-    }
-    perfc <- 1
-    if (organism == "human"){
-      query <- "Select param,value From Physiological where physioid = 2;"
-    }
-    if (organism == "rat"){
-      query <- "Select param,value From Physiological where physioid = 1;"
-      
-      #print(vals)
-    }
-    vals <- mainDbSelect(query)
     
-    vals <- as.list(
-      setNames(vals$value,nm = vals$param))
-    
-    vals[which(names(vals) %in% c("org","gender","cmplist"))]<- NULL
-    vals <- lapply(vals,as.numeric)
+    partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
     vals[names(partitions)]<- partitions
-    #print(vals)
-    # param_list <- c(vals,partitions,"vmaxc"=vmaxc,"vkm1c"=vkm1c,
-    #                 "respr"=ventilation_rate,"tv"=tidal_volume,"ds"=ds,"gfr"=gfr,
-    #                 "hct"=hct)
+    
     initial_params <- within(as.list(vals),{
       mw <- mw
       km <- km
-      vmaxc <- vmaxc
-      vkm1c <- vkm1c
+      #vmaxc <- vmaxc
+      #vkm1c <- vkm1c
       total_vol <- vbldc+vfatc+vskinc+vmuscc+vbonec+vbrnc+vlngc+vhrtc+vkdnc+vgic+vlivc+vrpfc+vspfc
       #Scaled Tissue Volumes
       vbld <- vbldc*(perfc/total_vol)*bw     #L;Blood
@@ -227,8 +187,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       parpf <- 1000
       paspf <- 1000
       
-      vkm1 <- vkm1c*vliv
-      vmaxliv <- vmaxc*bw**0.75
+      #vkm1 <- vkm1c*vliv
+      #vmaxliv <- vmaxc*bw**0.75
       
       tstop <- 0
       tstart <- 0
@@ -243,17 +203,62 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       vdw <- 0
       dreps <- 0
       inhdose <- 0
-      inhtlen <- 0
+      inhtlen <- 1
       inhdays <- 0
       ivdose <- 0
       ivlen <- 0
       fupls <- fupls
       ka <- ka
     })
+    print(initial_params)
+    metab_type <- tolower(chemdf[i,11])
+    liver_wt <- as.numeric(initial_params$vliv)
+    bw <- as.numeric(initial_params$bw)
+    if(metab_type=="subcellular"){
+      micl <- ifelse(is.na(chemdf[i,12]),0,chemdf[i,12])
+      cycl <- ifelse(is.na(chemdf[i,13]),0,chemdf[i,13])
+      scaled_hepcl <- calculateScaledSCClearance(c(micl,cycl),
+                                                 c("ulmmP","ulmmP"),
+                                                 org,liver_wt = liver_wt,
+                                                 mpcppgl = mpcppgl,
+                                                 km= km,
+                                                 return_total = T)
+      vmaxc <- scaled_hepcl*km/(bw^0.75)
+      vkm1c <- scaled_hepcl/liver_wt
+    }else if(metab_type=="hepatocyte"){
+      whcl <- chemdf[i,12]
+      scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,
+                                                       km = km)
+      vmaxc <- scaled_hepcl*km/(bw^0.75)
+      vkm1c <- scaled_hepcl/liver_wt
+    }else if(metab_type == "s9"){
+      s9cl <- chemdf[i,12]
+     # print(s9cl)
+      scaled_hepcl <- calculateScaledS9Clearance(s9cl,"ulmmP",organism,liver_wt = liver_wt,
+                                                 mpcppgl = mpcppgl)
+      vmaxc <- scaled_hepcl*km/(bw^0.75)
+      vkm1c <- scaled_hepcl/liver_wt
+    }else{
+      vmaxc <- chemdf[i,12]
+      vkm1c<- chemdf[i,13]
+    }
+    if (!km_flag || is.na(vmaxc)){
+      vmaxc <- 0
+      }
+    else{
+      vkm1c <- 0
+    }
+    initial_params["vmaxc"]<- vmaxc
+    initial_params["vkm1c"]<- vkm1c
+    initial_params["vkm1"]<- vkm1c*liver_wt
+    initial_params["vmaxliv"] <- vmaxc*bw**0.75
     totdays <- chemdf[i,15]
     tstart <- 0
     initial_params["tstop"]<- tstop <- totdays*24
     initial_params["bdose"]<- bdose <- chemdf[i,14]
+    initial_params["totbreps"]<- 1
+    initial_params["blen"]<- 1
+    initial_params["breps"]<- 1
     #event times
     event_times <- seq(tstart,(tstop-0.0001),24)
     # var to change
@@ -311,8 +316,10 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       initial_params["fa"]<- chemdf[i,16]
     }
     initial_params["veh_flag"]<- 0
-    print(c(initial_params$veh_flag,initial_params$bdose,initial_params$frwsol))
-    initial_values <- list("evnt_times"= event_times,
+    #print(initial_params)
+    print(c(initial_params$veh_flag,initial_params$bdose,initial_params$frwsol,
+            initial_params$vkm1))
+    initial_values <- list("event_times"= 0,
                            "initial_params"= initial_params,
                            "times"=times,
                            "tstop"=tstop,
