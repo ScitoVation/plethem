@@ -98,11 +98,12 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   expos <- list()
   fuplss <- list()
   fas<- list()
-  for (i in 1:nrow(chemdf)){
+  for (i in 1:nrow(chemdf)){#nrow(chemdf)){
     chem_name <- chemdf[i,2]#){
     chem_params <- as.list(chemdf[i,3:6])
     #print(chem_params)
     partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
+   # print(partitions)
     metab_type <- tolower(chemdf[i,11])
     km <- chemdf[i,10]
     ka <- ifelse(is.na(chemdf[i,9]),5,chemdf[i,9])
@@ -150,65 +151,9 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     else{
       vkm1c <- 0
     }
-    #print(metab_type)
-   # print(scaled_hepcl)
-   # print(vmaxc)
-   # print(vkm1c)
-
-    # # tissue list
-    # vol_tissues <- c("fat","skin","muscle",
-    #              "bone","brain",
-    #              "lung","heart","gi",
-    #              "liver","kidney","rpf","spf")
-    # vol_tissue_ids <- c("fat"="vfatc","skin"="vskinc",
-    #                 "muscle"="vmuscc","bone"="vbonec",
-    #                 "brain"="vbrnc","lung"="vlngc",
-    #                 "heart"="vhrtc","gi"="vgic",
-    #                 "liver"="vlivc","kidney"="vkdnc",
-    #                 "rpf"="vrpfc","spf"="vspfc","blood"="vbldc",
-    #                 "bw"="bw")
-    # flow_tissues <- c("fat","skin","muscle",
-    #                   "bone","brain",
-    #                   "lung","heart","gi",
-    #                   "kidney","rpf","spf")
-    # flow_tissue_ids <- c("fat"="qfatc","skin"="qskinc",
-    #                      "muscle"="qmuscc","bone"="qbonec",
-    #                      "brain"="qbrnc","lung"="qlngc",
-    #                      "heart"="qhrtc","gi"="qgic",
-    #                      "liver_art"="qalivc","liver_ven"="qvlivc",
-    #                      "kidney"="qkdnc","rpf"="qrpfc","spf"="qspfc",
-    #                      "qc"="qcc")
-    perfc <- 0.85
+    perfc <- 1
     if (organism == "human"){
       query <- "Select param,value From Physiological where physioid = 2;"
-      # age <- 25
-      # gender <- "M"
-      # vols <- getLifecourseTissueVolumes(age,"M",perfc, c(vol_tissues,"blood"))
-      # vols["bw"] <- getLifecourseBodyWeight(age,"M")
-      # names(vols)<- lapply(c(vol_tissues,"blood","bw"),function(x){vol_tissue_ids[x]})
-      # for(elem in names(vols)){
-      #   #print(elem)
-      #   if(elem!="bw"){
-      #     vols[[elem]]<- vols[[elem]]/(vols["bw"])
-      #   }
-      # }
-      # 
-      # flows <- getLifecourseTissuePerfusion(age,"M", c(flow_tissues,"liver"))
-      # flows["qc"]<- getLifecourseCardiacOutput(age,"M")
-      # names(flows)<- lapply(c(flow_tissues,"liver_art","liver_ven","qc"),function(x){flow_tissue_ids[x]})
-      # 
-      # for(elem in names(flows)){
-      #   #print(elem)
-      #   if(elem!="qcc"){
-      #     flows[elem]<- flows[elem]/(flows["qcc"])
-      #   }
-      # }
-      # 
-      # ventilation_rate <- getLifecourseVentilationRate(age,gender)
-      # tidal_volume <- getLifecourseTidalVolume(age,gender)
-      # ds <- getLifecourseLungDeadSpace(age,gender)
-      # gfr <- getLifecourseGlomerularFiltrationRate(age,gender)
-      # hct <- 0.441
     }
     if (organism == "rat"){
       query <- "Select param,value From Physiological where physioid = 1;"
@@ -222,6 +167,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     
     vals[which(names(vals) %in% c("org","gender","cmplist"))]<- NULL
     vals <- lapply(vals,as.numeric)
+    vals[names(partitions)]<- partitions
+    #print(vals)
     # param_list <- c(vals,partitions,"vmaxc"=vmaxc,"vkm1c"=vkm1c,
     #                 "respr"=ventilation_rate,"tv"=tidal_volume,"ds"=ds,"gfr"=gfr,
     #                 "hct"=hct)
@@ -283,15 +230,15 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       vkm1 <- vkm1c*vliv
       vmaxliv <- vmaxc*bw**0.75
       
-      tstop <- 24
+      tstop <- 0
       tstart <- 0
       cinh <- 0
       qalv <- (tv-ds)*respr
       pair <- ifelse(pair >0,pair,1E-10)
       bdose <- 0
-      blen <- 1
-      breps <- 1
-      totbreps<- 1
+      blen <- 0
+      breps <- 0
+      totbreps<- 0
       drdose <- 0
       vdw <- 0
       dreps <- 0
@@ -302,13 +249,13 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       ivlen <- 0
       fupls <- fupls
       ka <- ka
-      veh_flag <- ifelse(vehicle,1,0)
-      
     })
     totdays <- chemdf[i,15]
     tstart <- 0
-    tstop <- totdays*24
-    initial_params["bdose"]<-bdose <- chemdf[i,14]
+    initial_params["tstop"]<- tstop <- totdays*24
+    initial_params["bdose"]<- bdose <- chemdf[i,14]
+    #event times
+    event_times <- seq(tstart,(tstop-0.0001),24)
     # var to change
     state_Var <- c("odose","totodose")
     
@@ -317,7 +264,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     change_val1<- (bdose*bw*1000/mw)
     change_val2<- change_val1
     change_arr <- c(change_val1,change_val2)
-    event_times <- c(tstart)
+    event_times <- c(tstart,tstart)
     eventDat <- data.frame(
       
       var = rep(x = state_Var,each = length(event_times)),
@@ -363,11 +310,13 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     }else{
       initial_params["fa"]<- chemdf[i,16]
     }
-    #print(initial_params)
-    initial_values <- list("evnt_data"= eventDat,
+    initial_params["veh_flag"]<- 0
+    print(c(initial_params$veh_flag,initial_params$bdose,initial_params$frwsol))
+    initial_values <- list("evnt_times"= event_times,
                            "initial_params"= initial_params,
                            "times"=times,
-                           "tstop"=tstop,"tstart"=tstart,
+                           "tstop"=tstop,
+                           "tstart"=tstart,
                            "state"= state)
     #print(initial_values["initial_params"])
     result <- runFDPBPK(initial_values,model)
@@ -377,6 +326,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       cpls_df <- time
     }
     cpls <- res_df$pbpk.cpls
+    #print(max(res_df$pbpk.totodose))
     auc <- res_df$pbpk.auc[length(res_df$pbpk.auc)]
     cpls_max <- max(cpls)
     c_last <- cpls[length(cpls)]

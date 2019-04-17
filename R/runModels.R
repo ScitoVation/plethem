@@ -21,7 +21,7 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
     #initial_values <- calculateInitialValues(params,total_vol,prefc)
     initial_params <- initial_values[['initial_params']]
     
-    event_data <- initial_values[['evnt_data']]
+    event_times <- initial_values[['evnt_times']]
     times <- initial_values[['times']]
     tstop <- initial_values[['tstop']]
     state <- initial_values[['state']]
@@ -55,10 +55,11 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
     #              AUCMUSCLE,AUCBRAIN,AUCLIVER,AUCBONE,AUCLUNG,AUCSKIN,AUCMARROW,AUCVEN,AUCFAT,AUCKIDNEY,AUCSTOM,AUCART,AUCHEART))
     #   })
     # }
+    event_times <- unique(event_times)
+    times <- sort(c(deSolve::cleanEventTimes(times,event_times),
+                    event_times))
     
-    times <- sort(c(deSolve::cleanEventTimes(times,event_data[["time"]]),
-                    event_data[["time"]]))
-    event_times <- unique(event_data[["time"]])
+    print(event_times)
     state <- rapidPBPK_initStates(initial_params,state)
     initial_params <- rapidPBPK_initParms(initial_params)
     

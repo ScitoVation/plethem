@@ -25,7 +25,7 @@ calculatePartitionCoefficients<- function(selected_qsar = "default",chem_params 
 #' @param selected_org Either "human" or "rat"
 #' @param tissue_list List of tissues for which partition coefficients have to be calculated
 #' @return Named list of partition coefficients, one for each tissue in the tissue list
-qsarModelDefault <- function(chem_params,selected_org,tissue_list){
+qsarModelDefault <- function(chem_params,selected_org,tissue_list=NULL){
 
   # chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw, "vpa"=input$ms_vpa, "dkow"=input$ms_dkow, "lkow"=input$ms_lkow, "wsol"=input$ms_wsol, "res"=input$ms_res,
   #                         "fhprt"=input$ms_fhprt, "vmaxc"=input$ms_vmaxc, "km"=input$ms_km)
