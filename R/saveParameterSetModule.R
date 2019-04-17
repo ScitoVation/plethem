@@ -52,7 +52,8 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
   vals_table_name<- set_name
 
   # get the current ID for the parameter set.
-  query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
+  query <- sprintf("SELECT %s FROM %s;",id_name,set_table_name)
+  print(query)
   id_list <- projectDbSelect(query)
 
   if (length(id_list[[id_name]])==0){
