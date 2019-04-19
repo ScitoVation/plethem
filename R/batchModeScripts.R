@@ -94,7 +94,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   fuplss <- list()
   fas<- list()
   for (i in 1:nrow(chemdf)){
-    
+    num <- chemdf[i,1]
     chem_name <- chemdf[i,2]
     chem_params <- as.list(chemdf[i,3:6])
     organism <- tolower(chemdf[i,26])
@@ -207,10 +207,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       inhdays <- 0
       ivdose <- 0
       ivlen <- 0
-      fupls <- fupls
-      ka <- ka
     })
-    print(initial_params)
+    #print(initial_params)
     metab_type <- tolower(chemdf[i,11])
     liver_wt <- as.numeric(initial_params$vliv)
     bw <- as.numeric(initial_params$bw)
@@ -259,6 +257,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     initial_params["totbreps"]<- 1
     initial_params["blen"]<- 1
     initial_params["breps"]<- 1
+    initial_params["ka"]<- ka
+    initial_params["fupls"]<- fupls
     #event times
     event_times <- seq(tstart,(tstop-0.0001),24)
     # var to change
@@ -316,9 +316,9 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       initial_params["fa"]<- chemdf[i,16]
     }
     initial_params["veh_flag"]<- 0
-    #print(initial_params)
-    print(c(initial_params$veh_flag,initial_params$bdose,initial_params$frwsol,
-            initial_params$vkm1))
+    print(c(num,chem_name))
+    #print(c(initial_params$fupls,initial_params$bdose,initial_params$ka,
+    #       initial_params$vkm1))
     initial_values <- list("event_times"= 0,
                            "initial_params"= initial_params,
                            "times"=times,
@@ -333,6 +333,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       cpls_df <- time
     }
     cpls <- res_df$pbpk.cpls
+    cpls_mg <- cpls*mw/1000
     #print(max(res_df$pbpk.totodose))
     auc <- res_df$pbpk.auc[length(res_df$pbpk.auc)]
     cpls_max <- max(cpls)
@@ -344,15 +345,15 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     expos[[i]] <- bdose
     fuplss[[i]]<- fupls
     fas[[i]] <- chemdf[i,16]
-    cpls_df <- cbind(cpls_df,cpls)
+    cpls_df <- cbind(cpls_df,cpls,cpls_mg)
     #write.csv(res_df,paste0("E:/",chemdf[i,2],".csv"))
 
   }
   chem_names <- chemdf[2]
   colnames(chem_names)<- NULL
-  #print(chem_names)
-  #print(colnames(cpls_df))
-  time_course_cols <- c("time",t(chem_names))
+  #print(chem_names
+  #print(c(rbind(t(chem_names),paste0(t(chem_names),"_mgL"))))
+  time_course_cols <- c("time",c(rbind(t(chem_names),paste0(t(chem_names),"_mgL"))))
   #print(time_course_cols)
   colnames(cpls_df)<- time_course_cols
   write.csv(cpls_df,paste0(dirname(chemicals),"/Batch Mode Time course.csv"),

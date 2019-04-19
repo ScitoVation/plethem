@@ -695,15 +695,15 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_ddose1] = - ka * y[ID_ddose1] ;
 
-  ydot[ID_odose2] = - kfec * y[ID_odose2] - kVtoL * y[ID_odose2] ;
+  ydot[ID_odose2] = 0; /*- kfec * y[ID_odose2] - kVtoL * y[ID_odose2] ;*/
 
-  ydot[ID_ddose2] = - kfec * y[ID_ddose] - kVtoL * y[ID_ddose2] ;
+  ydot[ID_ddose2] = 0; /*- kfec * y[ID_ddose2] - kVtoL * y[ID_ddose2] ;*/
 
-  ydot[ID_aLAS] = kVtoL * ( y[ID_odose2] + y[ID_ddose2] ) - ka * y[ID_aLAS] - kfec * y[ID_aLAS] - kent * y[ID_aLAS] ;
+  ydot[ID_aLAS] = 0;/*kVtoL * ( y[ID_odose2] + y[ID_ddose2] ) - ka * y[ID_aLAS] - kfec * y[ID_aLAS] - kent * y[ID_aLAS] ;*/
 
-  ydot[ID_akent] = - kent * y[ID_aLAS] ;
+  ydot[ID_akent] =0; /* - kent * y[ID_aLAS] ;*/
 
-  ydot[ID_afec] = - kfec * ( y[ID_odose2] + y[ID_ddose2] + y[ID_aLAS] ) ;
+  ydot[ID_afec] = 0;/*- kfec * ( y[ID_odose2] + y[ID_ddose2] + y[ID_aLAS] ) ;*/
 
   ydot[ID_totodose] = 0 ;
 
@@ -713,7 +713,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   available_dose = dose_in_gut ;
 
-  raabsgut = ka * y[ID_aLAS] + fa * available_dose ;
+  raabsgut = fa * available_dose ;/*ka * y[ID_aLAS] + */
 
   ydot[ID_aabsgut] = raabsgut ;
 
@@ -828,11 +828,11 @@ void jac (int *neq, double *t, double *y, int *ml, int *mu, double *pd, int *nro
 void event (int *n, double *t, double *y)
 {
 
-  y[ID_odose] = ( bdose > 0 ? y[ID_odose] + ( bdose * bw * 1000. / mw ) / totbreps : y[ID_odose] ) ;
-  y[ID_totodose] = ( bdose > 0 ? y[ID_totodose] + ( bdose * bw * 1000. / mw ) / totbreps : y[ID_totodose] ) ;
+  y[ID_odose] = ( bdose > 0 ? y[ID_odose] + ( bdose * bw * 1000.0 / mw ) / totbreps : y[ID_odose] ) ;
+  y[ID_totodose] = ( bdose > 0 ? y[ID_totodose] + ( bdose * bw * 1000.0 / mw ) / totbreps : y[ID_totodose] ) ;
 
-  y[ID_ddose] = ( drdose > 0 ? y[ID_ddose] + ( drdose * 1000. * vdw / mw ) / dreps : y[ID_ddose] ) ;
-  y[ID_totddose] = ( drdose > 0 ? y[ID_totddose] + ( drdose * 1000. * vdw / mw ) / dreps : y[ID_totddose] ) ;
+  y[ID_ddose] = ( drdose > 0 ? y[ID_ddose] + ( drdose * 1000.0 * vdw / mw ) / dreps : y[ID_ddose] ) ;
+  y[ID_totddose] = ( drdose > 0 ? y[ID_totddose] + ( drdose * 1000.0 * vdw / mw ) / dreps : y[ID_totddose] ) ;
 
   y[ID_odose1] = ( veh_flag == 0 ? y[ID_odose] : 0 ) ;
   y[ID_odose2] = ( veh_flag == 1 ? y[ID_odose] : 0 ) ;
