@@ -10,7 +10,7 @@
 runPlthemHTIVIVE<- function(vals){
   row_keys <- names(vals)
   num_rows <- length(row_keys)
-  #print(row_keys)
+  print(row_keys)
   result <- lapply(vals,preprocessUIData)
   return(result)
 }
@@ -103,7 +103,7 @@ preprocessUIData<- function(val){
   )
   equivalent_dose <- pod/ss_concentration
   moe <- expo/equivalent_dose
-  print(moe)
+  #print(moe)
   #equivalent_dose <- getEquivalentDose(ss_concentration)
   calcualted_vals_list <- list("hep"=signif(scaled_hepcl,4),
                                "ren"=signif(scaled_rencl,4),

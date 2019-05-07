@@ -17,6 +17,13 @@ HT_IVIVEUI <- function(namespace=""){
                   tabPanel("Physiologcal and Chemical Parameters",
                            fluidPage(
                              fluidRow(
+                               column(8, offset = 2,
+                                      textInput(ns("txt_name"),"Name",
+                                                width = validateCssUnit("100%"),
+                                                placeholder = "Identifier for HT-IVIVE"))
+                               ),
+                             
+                             fluidRow(
                                column(4,
                                       tags$h5("Oragnism"),
                                       tags$h4("Standard Human")
