@@ -18,6 +18,7 @@ shinyServer(function(input,output,session){
   vals$m_table <- data.table::data.table(
     #"row_number"=numeric(),
     "rn"=numeric(),
+    "Name"=character(),
     "Chemical"=numeric(),
     "Organism"=numeric(),
     "Type" = numeric(),
@@ -28,6 +29,7 @@ shinyServer(function(input,output,session){
     "Plasma Clearance"=numeric(),keep.rownames = TRUE
   )
   vals$result_table <- data.table::data.table(
+    "Name"=character(),
 
     "Chemical"=numeric(),#c("Chemical A",
                  # "Chemical B",
@@ -234,6 +236,7 @@ shinyServer(function(input,output,session){
 
 makeResultTable <- function(input_table,result){
   output_table <- data.table::data.table(
+    "Name"=input_table$Name,
 
     "Chemical"=input_table$Chemical,
     "Organism"=input_table$Organism,

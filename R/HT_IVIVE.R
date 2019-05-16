@@ -85,7 +85,7 @@ preprocessUIData<- function(val){
   ql <- val$num_ql
   qalv <- getLifecourseVentilationRate(25,"M")
   qc <- val$num_qc
-  fup <- val$num_fup
+  fup <- val$num_fupls
   bw<- val$num_bw
   pair <- val$num_pair
   dose <- 1
@@ -102,6 +102,7 @@ preprocessUIData<- function(val){
                              stop("Invalid IVIVE type")
   )
   equivalent_dose <- pod/ss_concentration
+  #print(ss_concentration)
   moe <- expo/equivalent_dose
   #print(moe)
   #equivalent_dose <- getEquivalentDose(ss_concentration)
@@ -113,6 +114,7 @@ preprocessUIData<- function(val){
                                "moe"=signif(moe,4))
 
   existing_vals_list <- list()#getValsMetadata(vals)
+  #print(calcualted_vals_list)
   return(calcualted_vals_list)
 }
 
@@ -293,6 +295,7 @@ calculateRecombClearance <- function(clearance,organism,age,
 #
 calculateOralNonvolCss <- function(dose,bw,ql,qc,fup,cl_type,scaled_hepcl,
                                   scaled_rencl,scaled_plcl){
+  #print(c(ql,fup))
 
   if (cl_type == "cl_eq1"){
     clh<- ql*fup*scaled_hepcl/(ql+(fup*scaled_hepcl))
@@ -303,6 +306,7 @@ calculateOralNonvolCss <- function(dose,bw,ql,qc,fup,cl_type,scaled_hepcl,
   }
   clb<- qc*scaled_plcl/(qc+scaled_plcl)
   css<- (dose*bw/24)/(clh+clb+scaled_rencl)
+  #print(css)
   return(css)
 }
 #calculate steady state concentration of orally administered volatile compounds

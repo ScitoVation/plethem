@@ -18,7 +18,7 @@ HT_IVIVEUI <- function(namespace=""){
                            fluidPage(
                              fluidRow(
                                column(8, offset = 2,
-                                      textInput(ns("txt_name"),"Name",
+                                      textInput(ns("txt_IVIVE_name"),"Name",
                                                 width = validateCssUnit("100%"),
                                                 placeholder = "Identifier for HT-IVIVE"))
                                ),
@@ -536,6 +536,9 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     #update checkbox inputs
     values <- row_values[grep("ch_",names(row_values),value = TRUE)]
     lapply(names(values),function(x){updateCheckboxInput(session,x,value = values[[x]])})
+    #update text inputs
+    values <- row_values[grep("txt_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateTextInput(session,x,value = values[[x]])})
   }
 
   # On Organism Change
@@ -568,6 +571,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     # Organism data
     org <- input$sel_org
     org_type_name <- "Standard Human"
+    name <- input$txt_IVIVE_name
     # Type of reverse dosimetry
     rd_type  <- input$rdo_rdtype
     rd_type_name <- text_ui_dict[[rd_type]]
@@ -618,12 +622,17 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     # get all checkbox inputs
     temp <- sapply(names(input_list),function(x){grepl("ch_",x)})
     chkbox_param_names_list <- names(temp[temp==TRUE])
+    # get all text inputs
+    temp <- sapply(names(input_list),function(x){grepl("txt_",x)})
+    txt_param_names_list <- names(temp[temp=TRUE])
     row_values <-c(input_list[numeric_param_names_list],input_list[select_param_names_list],
                    input_list[radio_param_names_list],input_list[tab_param_names_list],
-                   input_list[chkbox_param_names_list],cypCl())
+                   input_list[chkbox_param_names_list],input_list[txt_param_names_list],
+                   cypCl())
 
     # create the row that will either be added or replace existing row
     data_added<- data.table::data.table("rn"=0,
+                                        "Name" = name,
                                         "Chemical"=chem_list[[as.integer(chem)]]["names"],
                                         "Organism"=org_type_name,
                                         "Type" = rd_type_name,
