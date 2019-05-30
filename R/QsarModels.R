@@ -12,9 +12,9 @@ calculatePartitionCoefficients<- function(selected_qsar = "one",chem_params = NU
   partCoefficients <- list()
   #decide which qsar model to run
   if(selected_qsar == "one"){
-    partCoefficients <- qsarModelDefault(chem_params,selected_org,tissue_list)
+    partCoefficients <- qsarModelone(chem_params,selected_org,tissue_list)
   }else if(selected_qsar == "two"){
-    #partCoefficients <- qsarModeltwo(chemical_params)
+    partCoefficients <- qsarModeltwo(chemical_params)
   }
 
   return(partCoefficients)
@@ -26,7 +26,7 @@ calculatePartitionCoefficients<- function(selected_qsar = "one",chem_params = NU
 #' @param selected_org Either "human" or "rat"
 #' @param tissue_list List of tissues for which partition coefficients have to be calculated
 #' @return Named list of partition coefficients, one for each tissue in the tissue list
-qsarModelDefault <- function(chem_params,selected_org,tissue_list){
+qsarModelone <- function(chem_params,selected_org,tissue_list){
 
   # chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw, "vpa"=input$ms_vpa, "dkow"=input$ms_dkow, "lkow"=input$ms_lkow, "wsol"=input$ms_wsol, "res"=input$ms_res,
   #                         "fhprt"=input$ms_fhprt, "vmaxc"=input$ms_vmaxc, "km"=input$ms_km)
@@ -150,4 +150,12 @@ qsarModelDefault <- function(chem_params,selected_org,tissue_list){
   return(partCoefficients)
 }
 
-
+#' Calculate Partition Coefficient using the default QSAR model
+#' @description Calculates the partition coefficient using the default QSAR model. This QSAR model is based on the one described by Jongneelan et al as a part of the IndusChemFate model
+#' @param chem_params A named list of parameters needed to run the model
+#' @param selected_org Either "human" or "rat"
+#' @param tissue_list List of tissues for which partition coefficients have to be calculated
+#' @return Named list of partition coefficients, one for each tissue in the tissue list
+qsarModeltwo <- function(chem_params,selected_org,tissue_list){
+  
+}

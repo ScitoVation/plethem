@@ -42,8 +42,7 @@ importParameterSetUI <- function(namespace,set_type){
 
             #checkboxInput(ns("add2Db"),label = "Add to user database")
     ),
-    footer =tagList(
-      shinyjs::disabled(actionButton(ns("import"),"Import")),
+    footer =tagList(actionButton(ns("import"),"Import"),
       modalButton("Dismiss")
     )
   ))
@@ -259,14 +258,14 @@ importParameterSet <- function(input,output,session,set_type){
   #   DT::replaceData(user_proxy,tables$user_disp(),resetPaging = F,rownames = F)
   # })
 
-  checkData <- reactive({
-    req(input$name,input$descrp)
-  })
-  observe({
-    if(checkData() != ""){
-      shinyjs::enable("import")
-    }
-  })
+  # checkData <- reactive({
+  #   req(input$sel_user)
+  # })
+  # observe({
+  #   if(checkData() != ""){
+  #     shinyjs::enable("import")
+  #   }
+  # })
 
   observeEvent(input$import,{
     userDbIds <- input$sel_user
