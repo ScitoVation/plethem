@@ -2132,6 +2132,8 @@ calculateInitialValues <- function(params_list){
       method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
     )
     
+  }else if(bdosev > 0){
+    
   }
 
   times <- seq(tstart,tstop,by=0.1)
@@ -2145,6 +2147,11 @@ calculateInitialValues <- function(params_list){
     odose = 0.0,
     totddose = 0.0,
     ddose = 0.0,
+    odosev = 0.0,
+    totodosev = 0.0,
+    alas = 0.0,
+    akent = 0.0,
+    afec = 0.0,
     aabsgut = 0.0,
     ivswch = 0.0,
     aiv = 0.0,
