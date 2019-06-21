@@ -37,7 +37,14 @@ getMetabData <- function(metabid,physioid,chemid,model){
       query <- sprintf("SELECT value from Chemical WHERE chemid = %i AND param = '%s';",
                        chemid,variable)
       result <- projectDbSelect(query)
-      print(result)
+      value <- as.numeric(result$value)
+    }else if(model == "fishPBPK"){
+      metab_type <- "Saturable metabolism"
+      metab_units <- "mg/L"
+      variable <- "vmax"
+      query <- sprintf("SELECT value from Chemical WHERE chemid = %i AND param = '%s';",
+                       chemid,variable)
+      result <- projectDbSelect(query)
       value <- as.numeric(result$value)
     }
     
@@ -70,7 +77,6 @@ getMetabData <- function(metabid,physioid,chemid,model){
     metab_age <- ifelse(age %in% metab_tble$Age,age,ref_age)
     value <- metab_tble$Clearance[which(metab_tble$Age == metab_age)]
   }
-  print(value)
   return(list("Type"= metab_type,
               "Units"=metab_units,
               "Value"= value,
@@ -157,16 +163,12 @@ getAllParamValuesForModel <- function(simid,model){
       params[["vmaxc"]]<- 1e-10
     }
   }else if(model == "httk_pbtk"){
-    print(metab_data)
+   
     params[["Clmetabolismc"]]<- metab_data$Value
+  }else if(model == "fishPBPK"){
+   
+    params[["vmax"]]<- metab_data$Value
   }
-  
-  # query <- "Select Var FROM ParamNames WHERE (Model = 'rapidPBPK' OR Model = 'All') AND ModelParams = 'TRUE';"
-  # result <- mainDbSelect(query)
-  # uiParamNames <- result$Var
-  # print(length(names(params)))
-  # print(length(uiParamNames))
-  # params[!(names(params) %in% uiParamNames )]<- NULL
 
 
   return(list("vals" = params,"names" =param_names))

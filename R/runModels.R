@@ -110,6 +110,27 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
     }
 
     result <- list("pbpk"=httk_result)
+  }else if(model == "fishPBPK"){
+    #get all input
+    
+    #initial_values <- calculateInitialValues(params,total_vol,prefc)
+    initial_params <- initial_values[['initial_params']]
+    
+    event_data <- initial_values[['evnt_data']]
+    times <- initial_values[['times']]
+    tstop <- initial_values[['tstop']]
+    state <- initial_values[['state']]
+    times <- sort(c(deSolve::cleanEventTimes(times,event_data[["time"]]),
+                    event_data[["time"]]))
+    event_times <- unique(event_data[["time"]])
+    state <- fishPBPK_initStates(initial_params,state)
+    initial_params <- fishPBPK_initParms(initial_params)
+    modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
+                               func = "derivsfishPBPK", dllname = "plethem",initfunc= "initmodfishPBPK",parms = initial_params,
+                               events=list(func="eventfishPBPK", time=event_times),nout = length(fishPBPK_Outputs),
+                               outnames = fishPBPK_Outputs)
+    dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
+    result <- list("pbpk"=dfModelOutput)
   }
 
   
@@ -127,4 +148,5 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
 runHTIVIVE <- function(){
   clearProjectDb()
   interactiveHT("HT-IVIVE")
+  
 }

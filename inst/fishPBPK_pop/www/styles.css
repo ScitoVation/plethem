@@ -1,0 +1,52 @@
+.comp_tabs{
+  width:160px;
+  height:30px;
+}
+
+.shiny-progress .bar {
+background-color: #FF0000;
+opacity: 0.8;
+}
+
+.shiny-progress .progress {
+height:7px;
+}
+
+.comp_checkboxes {
+  margin-left:10px;
+  margin-bottom:20px;
+}
+
+.sidebar-menu li>a>.fa-angle-left{ display :none;}
+
+.sidebar-menu li>a>.fa-plus{display:inline-block;transition: 0.5s ease-in;}
+.sidebar-menu li.active>a>.fa-plus{transform: rotate(-45deg)}
+
+.plotcheckboxes div.checkbox{margin-top: 0; margin-left: 10px;}
+
+.shiny-progress .progress-text {
+position: absolute;
+left: 100px;
+top: 100px;
+height: 100px;
+width: 80%;
+background-color:#FFAAAA;
+margin: 0;
+padding: 2px 3px;
+opacity: 1;
+text-align: center;
+}
+
+#lifeCourse{width: 150px;  margin-left: 10px;}
+
+#lifec{margin-bottom: 0;}
+
+div.form-group.shiny-input-container{width: 100%;}
+
+.condInput{background-color: #fafafa;}
+
+
+#pfat, #pskin, #pmusc, #pmarr, #pbone, #pbrn, #plng, #phrt, #pgs, #pliv, #pkdn{border: 1.5px solid #ffc299;}
+
+/*#introSection{float: right;}*/
+#newChem{width: 200px;}
