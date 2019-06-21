@@ -14,7 +14,7 @@ newProjectGadget <- function(){
                 textInput("pname","Enter Project Name",width = validateCssUnit("90%")),
      
                 selectInput("mname","Select Model",
-                            choices = list("PLETHEM" = list("rapidPBPK"="rapidPBPK"),
+                            choices = list("PLETHEM" = list("rapidPBPK"="rapidPBPK","fishPBPK"="fishPBPK"),
                                            "HTTK" = list("PBTK"="httk_pbtk")
                                            ),
                             width = validateCssUnit("90%")

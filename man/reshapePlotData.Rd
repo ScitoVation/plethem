@@ -4,7 +4,7 @@
 \alias{reshapePlotData}
 \title{reshape plotted data to create wide form}
 \usage{
-reshapePlotData(plotData)
+reshapePlotData(plotData, type = "FD")
 }
 \arguments{
 \item{plotData}{Plot Data in long form}
