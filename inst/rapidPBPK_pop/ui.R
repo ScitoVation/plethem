@@ -36,6 +36,7 @@ expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   tags$div(actionButton("clear_expo","Reset exposures")),
   menuItem("Oral", tabName = "oral", selected = TRUE),
   menuItem("Drinking Water", tabName = "dw"),
+  menuItem("Oral exposure with vehicle",tabName = "oralv"),
   menuItem("Inhalation", tabName = "inh"),
   menuItem("Intravenous", tabName = "iv"),
   menuItem("Dermal",tabName = "dermal")
@@ -434,6 +435,14 @@ comp_body <- dashboardBody(
                numericInput("ms_fa","Fraction Absorbed in the Gut Lumen",1)),
         column(6,
                numericInput("ms_ka",label = "Rate of Absorption in Gut Lumen (per hour)", value = 5, step = 0.01))
+      ),
+      fluidRow(
+        column(4,
+               numericInput("ms_kVtoL","Transfer Rate from vehicle to gut lumen",1)),
+        column(4,
+               numericInput("ms_kent",label = "Rate of metabolism in the gut lumen", value = 5, step = 0.01)),
+        column(4,
+               numericInput("ms_kfec","Transfer rate to elimination via fecal excretion",1))
       )
     ),
 
@@ -788,6 +797,23 @@ expo_body <- dashboardBody(
                      numericInput("ms_dreps", "Number of drinking water doses per day", value = 1, step = 0.1 )
               )
             )
+    ),
+    tabItem(
+      tabName = "oralv",
+      fluidRow(
+        column(6,
+               numericInput("ms_bdosev",label="Daily Oral Dose (mg/kg BW)", value =0, step= 0.01)),
+        column(6,
+               numericInput("ms_blenv",label = "Total length of dosing (h/day)", value = 1, step = 0.1))
+      ),
+      fluidRow(
+        column(6,
+               numericInput("ms_brepsv","Number of Bolus Doses",0,0,100, 1)),
+        column(6,
+               awesomeCheckbox("ms_brepv_flag","Repeat Dose Daily?",value = F))
+      )
+      
+      
     ),
     tabItem(
       tabName = "inh",

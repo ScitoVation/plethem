@@ -391,7 +391,7 @@ shinyServer(function(input, output, session) {
 
   #Save a new exposure parameter set
   observeEvent(input$btn_saveas_expo,{
-    if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
+    if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && (input$ms_bdosev==0 || input$ms_brepsv == 0)&& input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
       shinyWidgets::sendSweetAlert(session,
                                    title = "Invalid Exposure Parameters",
                                    text = "Atleast one route of exposure should be active",
@@ -1872,6 +1872,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 calculateInitialValues <- function(params_list){
   params <- params_list$vals
   brep_flag <- as.logical(params[["brep_flag"]])
+  brepv_flag <- as.logical(params[["brepv_flag"]])
   iv_flag <- as.logical(params[["ivrep_flag"]])
   derm_flag <- as.logical(params[["dermrep_flag"]])
   params <- params[which(grepl("[-]?[0-9]+[.]?[0-9]*|[-]?[0-9]+[L]?|[-]?[0-9]+[.]?[0-9]*[eE][0-9]+",params))]
@@ -1952,6 +1953,13 @@ calculateInitialValues <- function(params_list){
   ddose <- initial_params[["drdose"]]
   vdw <- initial_params[["vdw"]]
   dreps <- initial_params[["dreps"]]
+  
+  #ORAL  with vehicle
+  bdosev <- initial_params[["bdosev"]]
+  brepsv <- initial_params[["brepsv"]]
+  blenv <- initial_params[["blenv"]]
+  
+  totbrepsv <- initial_params[["totbrepsv"]]<-brepsv*blenv
 
   #inhalation
   inhdose <- initial_params[["inhdose"]]
@@ -2047,6 +2055,59 @@ calculateInitialValues <- function(params_list){
 
     )
     # if inhalation dose is administered
+  }else if(bdosev > 0){
+    # var to change
+    state_Var <- c("odosev","totodosev")
+    
+    # operation of event
+    operation <- c("add","add")
+    # times of event
+    if (brepsv==1){
+      # Value  of change
+      change_val1<- (bdosev*bw*1000/mw)
+      change_val2<- change_val1
+      change_arr <- c(change_val1,change_val2)
+      #only one bolus dose per day
+      if (brepv_flag){
+        event_times <- head(seq(tstart,tstop,24),-1)
+      }else{
+        event_times <- c(tstart)
+      }
+      
+    }else{
+      # Value  of change
+      change_val1<- (bdosev*bw*1000/mw)/totbrepsv
+      change_val2<- change_val1
+      change_arr <- c(change_val1,change_val2)
+      #multiple bolus doses per day
+      if (brepv_flag){
+        event_times <- unlist(lapply(X = 1:totdays,
+                                     FUN = function(x){
+                                       head(seq(0,blenv,1/brepsv),-1)+(24*(x-1))
+                                     }
+        )
+        )
+      }else{
+        #only one day
+        event_times <- unlist(lapply(X = 1,
+                                     FUN = function(x){
+                                       head(seq(0,blenv,1/brepsv),-1)+(24*(x-1))
+                                     }
+        )
+        )
+      }
+      
+    }
+    
+    eventDat <- data.frame(
+      
+      var = rep(x = state_Var,each = length(event_times)),
+      time = rep(event_times,length(state_Var)),
+      value = rep(x = change_arr,each = length(event_times)),
+      method = rep(x = operation,each = length(event_times))
+      
+    )
+    
   }else if (inhdose >0){
     # var to change
     state_var1 <- "inhswch"
@@ -2131,8 +2192,6 @@ calculateInitialValues <- function(params_list){
       value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
       method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
     )
-    
-  }else if(bdosev > 0){
     
   }
 
