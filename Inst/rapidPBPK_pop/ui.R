@@ -1400,11 +1400,24 @@ shinyUI(fluidPage(
                                                downloadButton("btn_param_dwnld",
                                                               label = "Download All Paramters")
                                              ))
+                                  ),
+                                  tabPanel("Values",
+                                           fluidPage(
+                                             fluidRow(
+                                               box(title = "Margin of Exposure",width = 6,
+                                                   fluidRow(
+                                                     bsButton("btn_getMoAviz_data","Get data from MoAViz")
+                                                   ),
+                                                   fluidRow(
+                                                     DT::DTOutput("moaviz_tble")
+                                                   ))
+                                             )
+                                           )
                                   )
-
                       )
 
              ),
+             
              tabPanel( id = "help" , title= "help", value = "Help", icon = icon("info")),
              tabPanel(title = "",value = "Stop",icon=icon("power-off"))
   )

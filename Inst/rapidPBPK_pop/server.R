@@ -1727,6 +1727,54 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       write.csv(reshapePlotData(results()), file)
     }
   )
+  
+  # get invitro data from MoAviz if it exists
+  conc_table <- eventReactive(input$btn_getMoAviz_data,{
+    species <- "human"
+    chid <- as.integer(input$sel_chem)
+    query <- sprintf("Select cas From ChemicalSet Where chemid = %i",chid)
+    casrn <-"64-17-5" #projectDbSelect(query)$cas
+    
+    mw <- tryCatch({
+      query <- sprintf("Select value From Chemical Where chemid = %i AND param = 'mw'",chid)
+      projectDbSelect(query)$mw
+    },error = function(condition){
+      print("No chemical in project Db")
+      return(1000)
+    }
+    )
+    cmax <- tryCatch({
+      result <- results$pbpk
+      max(result$cpls)
+    },
+    error = function(condition){
+     print("Model not yet run")
+      return(0)
+    }
+    )
+    url2Call <- sprintf("http://scyld.ciit.org/api/getVitroConc.php?species=human&cas=%s",casrn)
+    returned_data<- rjson::fromJSON(file = url2Call)
+    print(c(cmax,mw))
+    conc_table <- data.frame()
+    if (length(returned_data)>0){
+      index<- 1
+      for (temp_var in returned_data){
+        pathway_name <- paste0("Pathway",index)#temp_var$name
+        conc_val <- as.numeric(temp_var$concentration)
+        returned_units <- temp_var$concentration_units
+        conc_units <- ifelse(returned_units  == "uM","\u00B5M","mg\\L")
+        MOE <- ifelse(returned_units  == "uM",conc_val/cmax,conc_val/(cmax*mw/1000))
+        tble_row <- cbind(pathway_name,conc_val,conc_units,MOE)
+        conc_table <- rbind(conc_table,tble_row)
+        index = index+1
+      }
+      colnames(conc_table)<- c("Pathway","Value","Units","Margin of Exposure")
+      return(conc_table)
+    }
+  })
+    
+    output$moaviz_tble <- DT::renderDT(DT::datatable(conc_table(),
+                                                  selection = list(mode = "single")))
   # power button to shut down the app
   observeEvent(input$menu,{
     if(input$menu=="Stop"){
