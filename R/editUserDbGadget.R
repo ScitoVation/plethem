@@ -3,7 +3,7 @@
 #' @param file_path Path of the database where changes are to be made
 #' @export
 #' 
-editUserDb <- function(file_path){
+editUserDb <- function(file_path=""){
   if (file_path==""){
     base_path <- getFileFolderPath(type = "dir",caption="Select location for user database")
     file_path <- file.path(base_path,"userDb.sqlite")

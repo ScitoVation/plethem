@@ -1190,6 +1190,15 @@ shinyServer(function(input, output, session) {
     shinyBS::updateButton(session,"btn_use_lifecourse",style = "warning")
   },ignoreInit = TRUE )
 
+ observeEvent(input$ms_org,{
+   if (input$ms_org == "ha"){
+     updatePickerInput(session,"sel_qsar4Partition",choices =  c("QSAR model one" = 'one'))
+   } else{
+     updatePickerInput(session,"sel_qsar4Partition",choices = c("QSAR model one" = 'one',
+                                                                "Unified QSAR model" = 'two'))
+   } 
+ })
+  
 #Qsar models
   observeEvent(input$btn_useQSAR4Partition,
                {

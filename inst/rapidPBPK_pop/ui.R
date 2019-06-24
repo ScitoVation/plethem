@@ -172,9 +172,9 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
 ###############################Chemical Sidebar
 chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="chem_sidebar",
-  selectizeInput("qsarModelChem", "Select A QSAR Model",
-                          choices = c("QSAR model one" = 'one'),#,
-                                      #"QSAR model two" = 'two'),
+  pickerInput("qsarModelChem", "Select A QSAR Model",
+                          choices = c("QSAR model one" = 'one'),
+                                      #"Unified QSAR model" = 'two'),
                           width = "99%"),
   shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary"),
   shinyBS::bsButton("btn_ivive_chem","Perform IVIVE",style = "primary")
@@ -1028,10 +1028,11 @@ shinyUI(fluidPage(
                                                                       "Use Lifecourse Equation to calcualte parameters")
                                                ),
                                                column(4,
-                                                      shinyBS::tipify(selectizeInput("sel_qsar4Partition", NULL,
-                                                                     choices = c("QSAR model one" = 'one')#,
+                                                      shinyBS::tipify(pickerInput("sel_qsar4Partition", NULL,
+                                                                     choices = c("QSAR model one" = 'one',
+                                                                     "Unified QSAR model" = 'two')),#,
                                                                                  #"QSAR model two" = 'two')
-                                                                     ),
+                                                                     
                                                                      "Select QSAR model for partition coefficients")
                                                       ),
                                                column(4,
