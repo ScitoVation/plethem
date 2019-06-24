@@ -1242,34 +1242,6 @@ output$expo_params_tble <- DT::renderDT(DT::datatable(current_params()$expo,
 output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                                          rownames = F,
                                                         colnames=c("Variable names", "Value")))
-#*******************these are not called anywhere.
-# These functions update the current values used in the restore paramsparams
-  # resetParaValueList <- function(session, paraValueList, volumes, ratios){
-  #
-  #   for(name in names(volumes)){
-  #     paraValueList[name] <<- volumes[[name]]
-  #   }
-  #   for(name in names(ratios)){
-  #     paraValueList[name] <<- ratios[[name]]
-  #   }
-  #
-  #   return(paraValueList)
-  # }
-  #
-  #
-  # resetParam_values_list <- function(session, param_values_list, volumes, ratios){
-  #   for(name in names(volumes)){
-  #     param_values_list[name] <<- volumes[[name]]
-  #   }
-  #
-  #
-  #   for(name in names(ratios)){
-  #     param_values_list[name] <<- ratios[[name]]
-  #   }
-  #   return(param_values_list)
-  # }
-
-
 
   observeEvent(input$run,{
     active_comp <- input$ms_cmplist
@@ -1610,31 +1582,6 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     plot_vals<- input$aplt_comp
     values <- unlist(lapply(plot_vals,function(x){var_names[x]}))
     names(values)<- NULL
-    # 
-    # if (exists("plot_frame")){
-    #   rm(plot_frame)
-    # }
-    # # check if model was ever run
-    # if (dim(result)[1]==0){
-    #   x<- 1:10
-    # }else{
-    #   x<- result$time
-    # }
-    # plot_frame<- data.frame(time = x)
-    # # select appropriate variables to plot
-    # if (dim(result)[1]==0){
-    #   plot_frame["Model not yet run"]<-rep(0,length(x))
-    # }
-    # else if(length(values) >0 ){
-    #   for (plt_name in values){
-    #     y<- result[[plt_name]]
-    #     plot_frame[[legend_names[plt_name]]] <-y
-    #   }
-    # }else{
-    #   plot_frame["No Data Selected"]<-rep(0,length(x))
-    # }
-    # plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
-    # return(plot_frame)
     
     if (exists("plot_frame")){
       rm(plot_frame)
@@ -1704,13 +1651,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     return(plot_frame)
   })
-
-  # output$concplt <- plotly::renderPlotly(plotly::ggplotly(ggplot()
-  #                              +geom_line(data = concData(), aes(x=time,y=value,color = variable))
-  #                              +geom_pointrange(data = concDataset(),aes(x = time,y = mean, ymin = mean-sd ,ymax = mean+sd,fill = "Dataset (mg/L)"))
-  # 
-  #                              +labs(x="Time (h)",y="Concentration")
-  #                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
+  
   concplt <- reactive({
     if (results$mode == "FD"){
       plotly::plot_ly()%>%
@@ -2133,7 +2074,6 @@ calculateInitialValues <- function(params_list){
       value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
       method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
     )
-    print(eventDat$time)
   }else if (ivdose >0){
     # var to change
     state_var1 <- "ivswch"

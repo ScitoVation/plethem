@@ -18,9 +18,14 @@ Description: Sets and existing database as the user database to use for PLETHEM
 Binding:setUserDb
 Interactive:FALSE
 
-Name:Create a new user database
-Description: creates a new user database to use for PLETHEM
-Binding:createUserDb
+Name:Create a new empty user database
+Description: creates a new empty user database. Will need to run "Populate user database" for it to be useful.
+Binding:createEmptyUserDb
+Interactive:FALSE
+
+Name:Add data to user database
+Description: Adds data to an existing or new user database.
+Binding:editUserDb
 Interactive:FALSE
 
 Name:Load PLETHEM Project
