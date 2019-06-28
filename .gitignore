@@ -3,3 +3,5 @@
 .RData
 inst/doc
 plethem_final.Rproj
+src/plethem.dll
+*.dll

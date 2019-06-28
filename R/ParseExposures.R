@@ -68,7 +68,7 @@ parseConsExpoFile <- function(path){
   inhalation_data <- inhalation_data[inhalation_data != ""]
   dermal_data <- setNames(b[which(b[,1]=="Dermal load"),2],which(b[,1]=="Dermal load"))
   dermal_data <- dermal_data[dermal_data != ""]
-  oral_data <- setNames(b[which(b[,1]=="External event dose")+1,2],which(b[,1]=="External event dose")+1)
+  oral_data <- setNames(b[which(b[,1]=="Oral")+1,2],which(b[,1]=="Oral")+1)
   oral_data<- oral_data[oral_data != ""]
   return(list("exponames"=names,inhalation_data,dermal_data,oral_data))
 }
