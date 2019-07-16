@@ -2,6 +2,16 @@
 
 # This script runs all the models
 
+#' Function to run reverse dosimetry model
+#' @description Runs reverse dosimetry model based on the user's input. This function should not be used used directly by the user.
+#' @param mcCSV dataframe for monte carlo data
+#' @param bmCSV dataframe for biomonitoring data
+#' @return list of reverse dosimetry results
+#' @export
+runRevDos <- function(mcCSV,bmCSV){
+  # This will send the user's data to the backend and return the files created from running reverse dosimetry.
+}
+
 #' Run the PBPK models in forward dosimetry mode
 #' @description Run the pbpk model in forward dosimetry mode.
 #' This function is common across all PBPK models.
