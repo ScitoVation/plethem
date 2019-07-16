@@ -1,4 +1,8 @@
 
+interactiveReverseDosimetry <- function(name = "ReverseDosimetry"){
+  shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
+}
+
 interactivePBPK <- function(name = ""){
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
 }
