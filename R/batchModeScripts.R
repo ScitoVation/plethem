@@ -93,6 +93,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   expos <- list()
   fuplss <- list()
   fas<- list()
+  vkm1s <- list()
+  vmaxs <- list()
   for (i in 1:nrow(chemdf)){
     num <- chemdf[i,1]
     chem_name <- chemdf[i,2]
@@ -225,7 +227,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       vkm1c <- scaled_hepcl/liver_wt
     }else if(metab_type=="hepatocyte"){
       whcl <- chemdf[i,12]
-      scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"lhH",liver_wt,hpgl,
+      scaled_hepcl <- calculateScaledWholeHepClearance(whcl,"LhH",liver_wt,hpgl,
                                                        km = km)
       vmaxc <- scaled_hepcl*km/(bw^0.75)
       vkm1c <- scaled_hepcl/liver_wt
@@ -345,6 +347,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     expos[[i]] <- bdose
     fuplss[[i]]<- fupls
     fas[[i]] <- chemdf[i,16]
+    vkm1s[[i]] <- vkm1c
+    vmaxs[[i]]<- vmaxc
     cpls_df <- cbind(cpls_df,cpls,cpls_mg)
     #write.csv(res_df,paste0("E:/",chemdf[i,2],".csv"))
 
@@ -358,12 +362,13 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   colnames(cpls_df)<- time_course_cols
   write.csv(cpls_df,paste0(dirname(chemicals),"/Batch Mode Time course.csv"),
             row.names = F)
-  results<- cbind(cmaxs,aucs,c_lasts,metab_types,expos,fuplss,fas)
+  results<- cbind(cmaxs,aucs,c_lasts,metab_types,expos,fuplss,fas,vkm1s,vmaxs)
   results <- cbind(as.vector(chem_names),results)
   results <- apply(results,2,as.character)
   colnames(results)<- c("Chemicals","Cmax","AUC24","Conc24",
                         "MetabolismTypes","Exposure",
-                        "Fraction Unbound","Fraction absorbed")
+                        "Fraction Unbound","Fraction absorbed",
+                        "Clearance (L/h/kg liver)","Maximum Metabolic Rate (uM/h/BW^0.75)")
   #print(results)
   write.csv(results,paste0(dirname(chemicals),"/Batch Mode Results.csv"))
   
