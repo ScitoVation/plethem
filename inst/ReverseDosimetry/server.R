@@ -42,34 +42,51 @@ shinyServer(function(input, output,session) {
       easyClose = TRUE,
       size = "l",
       tagList(
-        textInput(
-          "mcname",
-          "Dataset Name",
-          placeholder = "Enter name for the dataset"
-        ),
-        fluidRow(
-          column(
-            6,
-            shinyWidgets::radioGroupButtons(
-              "type",
-              "Select Exposure Type",
-              choices = c("Inhalation", "Oral", "IV", "Dermal")
-            )
+        tabsetPanel(
+          tabPanel(
+            title = 'Upload Existing Results',
+            br(),
+            textInput(
+              "mcname",
+              "Dataset Name",
+              placeholder = "Enter name for the dataset"
+            ),
+            fluidRow(
+              column(
+                6,
+                shinyWidgets::radioGroupButtons(
+                  "type",
+                  "Select Exposure Type",
+                  choices = c("Inhalation", "Oral", "IV", "Dermal")
+                )
+              ),
+              column(
+                6,
+                uiOutput(
+                  "unit_ui"
+                )
+              )
+            ),
+            fileInput(
+              "csvFile",
+              label = "Select CSV file",
+              accept = c("text/csv","text/comma-separated-values",".csv"),
+              multiple = TRUE
+            ),
+            tags$h4("Results in mg/L")
           ),
-          column(
-            6,
-            uiOutput(
-              "unit_ui"
+          tabPanel(
+            title = 'Create Monte Carlo Results',
+            br(),
+            fileInput(
+              "rdataFile",
+              label = "Select Project file",
+              accept = c(".Rdata"),
+              placeholder = 'Upload .Rdata file',
+              multiple = F
             )
           )
-        ),
-        fileInput(
-          "csvFile",
-          label = "Select CSV file",
-          accept = c("text/csv","text/comma-separated-values",".csv"),
-          multiple = TRUE
-        ),
-        tags$h4("Results in mg/L")
+        )
       ),
       footer= tagList(
         shinyjs::disabled(actionButton("add","Add Dataset")),
