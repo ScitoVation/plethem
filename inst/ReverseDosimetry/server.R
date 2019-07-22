@@ -87,6 +87,18 @@ shinyServer(function(input, output,session) {
               accept = c(".Rdata"),
               placeholder = 'Upload .Rdata file',
               multiple = F
+            ),
+            pickerInput(
+              'simulation',
+              'Select Simulation',
+              choices = NULL,
+              multiple = TRUE,
+              options = list(
+                'live-search' = TRUE,
+                'actions-box' = TRUE,
+                'selected-text-format' = 'count > 2',
+                'count-selected-text'='{0} simulations selected'
+              )
             )
           )
         )
