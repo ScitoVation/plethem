@@ -92,25 +92,8 @@ shinyServer(function(input, output,session) {
         )
       ),
       footer= tagList(
-        uiOutput('mcFooter', inline = T),#, class = 'modal-footer')
-        # shinyjs::disabled(actionButton("add","Add Dataset")),
+        uiOutput('mcFooter', inline = T),
         modalButton('Cancel')
-        # observeEvent(input$modalNav, {
-        #   if(input$modalNav == 'Upload Existing Results'){
-        #     shinyjs::disabled(actionButton("add","Add Dataset"))
-        #   } else{
-        #     shinyjs::disabled(actionButton("addMC","Run Dataset"))
-        #     modalButton("Cancel")
-        #   }
-        #     
-        # })
-        # if(input$modalNav == 'modalNav1'){
-        # if(F){
-        #   shinyjs::disabled(actionButton("add","Add Dataset"))
-        # } else{
-        #   shinyjs::disabled(actionButton("addMC","Run Dataset"))
-        # },
-        # modalButton("Cancel")
       )
     )
   }
@@ -320,32 +303,15 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$modalNav, {
-  if(input$modalNav == 'Upload Existing Results'){
-    # print('hello')
-    # updateActionButton()
-    output$mcFooter <- renderUI({
-      shinyjs::disabled(actionButton("add","Add Dataset"))
-      # modalButton("Cancel")
-    })
-    
-    # mcF <- renderUI({
-    #     shinyjs::disabled(actionButton("add","Add Dataset"))
-    #     modalButton("Cancel")
-    #   })
-
-  } else{
-    # print(input$modalNav)
-    # print('nope')
-    # mcF <- renderUI({
-    #       shinyjs::disabled(actionButton("addMC","Run Dataset"))
-    #       # modalButton("Cancel")
-    #     })
-    output$mcFooter <- renderUI({
-      shinyjs::disabled(actionButton("addMC","Run Dataset"))
-      # modalButton("Cancel")
-    })
-  }
-    # output$mcFooter <- mcF
+    if(input$modalNav == 'Upload Existing Results'){
+      output$mcFooter <- renderUI({
+        shinyjs::disabled(actionButton("add","Add Dataset"))
+      })
+    } else{
+      output$mcFooter <- renderUI({
+        shinyjs::disabled(actionButton("addMC","Run Dataset"))
+      })
+    }
   })
   
   output$toggleSidebar <- reactive({
