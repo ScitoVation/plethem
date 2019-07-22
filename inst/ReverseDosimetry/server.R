@@ -37,13 +37,16 @@ shinyServer(function(input, output,session) {
   
   monteCarloModal <- function() {
     modalDialog(
+      # id = 'modalNav',
       useShinyjs(),
       title = "Upload Monte Carlo Results",
       easyClose = TRUE,
       size = "l",
       tagList(
         tabsetPanel(
+          id = 'modalNav',
           tabPanel(
+            # id='modalNav1',
             title = 'Upload Existing Results',
             br(),
             textInput(
@@ -89,8 +92,25 @@ shinyServer(function(input, output,session) {
         )
       ),
       footer= tagList(
-        shinyjs::disabled(actionButton("add","Add Dataset")),
-        modalButton("Cancel")
+        uiOutput('mcFooter', inline = T),#, class = 'modal-footer')
+        # shinyjs::disabled(actionButton("add","Add Dataset")),
+        modalButton('Cancel')
+        # observeEvent(input$modalNav, {
+        #   if(input$modalNav == 'Upload Existing Results'){
+        #     shinyjs::disabled(actionButton("add","Add Dataset"))
+        #   } else{
+        #     shinyjs::disabled(actionButton("addMC","Run Dataset"))
+        #     modalButton("Cancel")
+        #   }
+        #     
+        # })
+        # if(input$modalNav == 'modalNav1'){
+        # if(F){
+        #   shinyjs::disabled(actionButton("add","Add Dataset"))
+        # } else{
+        #   shinyjs::disabled(actionButton("addMC","Run Dataset"))
+        # },
+        # modalButton("Cancel")
       )
     )
   }
@@ -129,6 +149,10 @@ shinyServer(function(input, output,session) {
   
   observeEvent(input$csvFile, {
     shinyjs::enable("add")
+  })
+  
+  observeEvent(input$rdataFile, {
+    shinyjs::enable('addMC')
   })
   
   observeEvent(input$bmFile, {
@@ -293,6 +317,35 @@ shinyServer(function(input, output,session) {
         choices = choices
       )
     })
+  })
+  
+  observeEvent(input$modalNav, {
+  if(input$modalNav == 'Upload Existing Results'){
+    # print('hello')
+    # updateActionButton()
+    output$mcFooter <- renderUI({
+      shinyjs::disabled(actionButton("add","Add Dataset"))
+      # modalButton("Cancel")
+    })
+    
+    # mcF <- renderUI({
+    #     shinyjs::disabled(actionButton("add","Add Dataset"))
+    #     modalButton("Cancel")
+    #   })
+
+  } else{
+    # print(input$modalNav)
+    # print('nope')
+    # mcF <- renderUI({
+    #       shinyjs::disabled(actionButton("addMC","Run Dataset"))
+    #       # modalButton("Cancel")
+    #     })
+    output$mcFooter <- renderUI({
+      shinyjs::disabled(actionButton("addMC","Run Dataset"))
+      # modalButton("Cancel")
+    })
+  }
+    # output$mcFooter <- mcF
   })
   
   output$toggleSidebar <- reactive({
