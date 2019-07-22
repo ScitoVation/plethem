@@ -37,7 +37,6 @@ shinyServer(function(input, output,session) {
   
   monteCarloModal <- function() {
     modalDialog(
-      # id = 'modalNav',
       useShinyjs(),
       title = "Upload Monte Carlo Results",
       easyClose = TRUE,
@@ -46,7 +45,6 @@ shinyServer(function(input, output,session) {
         tabsetPanel(
           id = 'modalNav',
           tabPanel(
-            # id='modalNav1',
             title = 'Upload Existing Results',
             br(),
             textInput(
@@ -82,9 +80,9 @@ shinyServer(function(input, output,session) {
             title = 'Create Monte Carlo Results',
             br(),
             fileInput(
-              "rdataFile",
+              "rDataFile",
               label = "Select Project file",
-              accept = c(".Rdata"),
+              accept = c(".RData", ".Rdata"),
               placeholder = 'Upload .Rdata file',
               multiple = F
             ),
@@ -92,13 +90,20 @@ shinyServer(function(input, output,session) {
               'simulation',
               'Select Simulation',
               choices = NULL,
-              multiple = TRUE,
-              options = list(
-                'live-search' = TRUE,
-                'actions-box' = TRUE,
-                'selected-text-format' = 'count > 2',
-                'count-selected-text'='{0} simulations selected'
-              )
+              multiple = F
+              # ,options = list(
+                # 'live-search' = TRUE,
+                # 'actions-box' = TRUE,
+                # 'selected-text-format' = 'count > 2',
+                # 'count-selected-text'='{0} simulations selected'
+              # )
+            ),
+            noUiSliderInput(
+              'mySlider',
+              label = 'Hello',
+              min = 0,
+              max = 100,
+              value = c(0,100)
             )
           )
         )
@@ -146,8 +151,31 @@ shinyServer(function(input, output,session) {
     shinyjs::enable("add")
   })
   
-  observeEvent(input$rdataFile, {
+  observeEvent(input$rDataFile, {
     shinyjs::enable('addMC')
+    inFile <- input$rDataFile
+    rDFile <- inFile$datapath
+    # e = new.env()
+    # name <<- load(rDFile, envir = e)
+    # data <- e[['name']]
+    load(rDFile, envir = .GlobalEnv)
+    simSet <<- SimulationsSet %>%
+      filter(
+        physiovarid > 0 |
+          chemvarid > 0 |
+          expovarid > 0
+      ) 
+    # simSet2 <<- simSet$name
+    updatePickerInput(
+      session,
+      'simulation',
+      selected = 0,
+      choices = simSet$name,
+      choicesOpt = list(
+        subtext = simSet$descrp
+      )
+    )
+    
   })
   
   observeEvent(input$bmFile, {
