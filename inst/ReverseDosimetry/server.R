@@ -38,7 +38,7 @@ shinyServer(function(input, output,session) {
   monteCarloModal <- function() {
     modalDialog(
       useShinyjs(),
-      title = "Upload Monte Carlo Results",
+      # title = "Upload Monte Carlo Results",
       easyClose = F,#TRUE,
       size = "l",
       tagList(
@@ -98,9 +98,27 @@ shinyServer(function(input, output,session) {
                 # 'count-selected-text'='{0} simulations selected'
               # )
             ),
+            fluidRow(
+              column(
+                6,
+                shinyWidgets::radioGroupButtons(
+                  'tissue',
+                  label = "Select Tissue Type",
+                  choices = c('Plasma', 'Urine')
+                )
+              ),
+              column(
+                6,
+                shinyWidgets::radioGroupButtons(
+                  "chemType",
+                  "Select Chemical Type",
+                  choices = c("Parent", "Metabolite")
+                )
+              )
+            ),
             sliderInput(
               'mySlider2',
-              label = 'Hello',
+              label = 'Exposure Type (Units)',
               min = 0,
               max = 1000,
               value = c(0,1000)
@@ -198,7 +216,21 @@ shinyServer(function(input, output,session) {
         expoid == simSet3$expoid & 
           param == 'expo_sidebar'
       )
-    mySliderLabel <- exposureType$value[1]
+    myExpoid <- exposureType$value[1]
+    if(myExpoid == 'oral'){
+      mySliderLabel = 'Oral (mg/kg/BW/day)'
+    } else if(myExpoid == 'dw'){
+      mySliderLabel = 'DW (mg/L)'
+    } else if(myExpoid == 'inh'){
+      mySliderLabel = 'Inhalation (ppm)'
+    } else if(myExpoid == 'iv'){
+      mySliderLabel = 'mg/???'
+    } else if(myExpoid == 'derm'){
+      mySliderLabel = 'Dermal (um/n/cm^2?????)'
+    } else if(myExpoid == 'oralv'){
+      mySliderLabel = 'Oral V (???)'
+    } else mySliderLabel = 'Unknown'
+    
     updateSliderInput(
       session,
       'mySlider2',
