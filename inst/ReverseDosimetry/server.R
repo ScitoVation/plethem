@@ -207,16 +207,51 @@ shinyServer(function(input, output,session) {
     )
     
   })
-  
+  jsCode2 <- 'shinyjs.swal = function(){swal({
+  title: "Are you sure?",
+  text: "Once deleted, you will not be able to recover this imaginary file!",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+  .then((willDelete) => {
+  if (willDelete) {
+  swal("Poof! Your imaginary file has been deleted!", {
+  icon: "success",
+  });
+  } else {
+  swal("Your imaginary file is safe!");
+  }
+  });}'
   observeEvent(input$addMC, {
-    sendSweetAlert(
-      session = session,
-      title = "Are you sure you want to run a simulation?",
-      text = "This may take several hours to complete.",
-      type = 'warning',
-      btn_labels = c('Cancel','Confirm'),
-      closeOnClickOutside = F
-    )
+    runjs('/*swal({
+  title: "Are you sure?",
+          text: "Once deleted, you will not be able to recover this imaginary file!",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+  })
+          .then((willDelete) => {
+          if (willDelete) {
+          swal("Poof! Your imaginary file has been deleted!", {
+          icon: "success",
+          });
+          } else {
+          swal("Your imaginary file is safe!");
+          }
+          });}*/
+          /*var today = new Date(); alert(today);*/
+          swal({title: "Hello World!"})
+          .then(console.log("Hello"));')
+    # js$swal()
+    # sendSweetAlert(
+    #   session = session,
+    #   title = "Are you sure you want to run a simulation?",
+    #   text = "This may take several hours to complete.",
+    #   type = 'warning',
+    #   btn_labels = c('Cancel','Confirm'),
+    #   closeOnClickOutside = F
+    # )
   })
   
   observeEvent(input$simulation, {
