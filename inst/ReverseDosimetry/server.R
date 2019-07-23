@@ -39,7 +39,7 @@ shinyServer(function(input, output,session) {
     modalDialog(
       useShinyjs(),
       title = "Upload Monte Carlo Results",
-      easyClose = TRUE,
+      easyClose = F,#TRUE,
       size = "l",
       tagList(
         tabsetPanel(
@@ -98,14 +98,24 @@ shinyServer(function(input, output,session) {
                 # 'count-selected-text'='{0} simulations selected'
               # )
             ),
-            noUiSliderInput(
-              'mySlider',
+            sliderInput(
+              'mySlider2',
               label = 'Hello',
               min = 0,
-              max = 100,
-              value = c(0,100)
+              max = 1000,
+              value = c(0,1000)
             )
           )
+            # br(),br(),br()
+            # 'hello'
+            # noUiSliderInput(
+            #   'mySlider',
+            #   label = 'Hello',
+            #   min = 0,
+            #   max = 1000,
+            #   value = c(0,1000)
+            # )
+          # )
         )
       ),
       footer= tagList(
@@ -176,6 +186,43 @@ shinyServer(function(input, output,session) {
       )
     )
     
+  })
+  
+  observeEvent(input$simulation, {
+    simSet3 <<- simSet %>%
+      filter(
+        name == input$simulation
+      )
+    exposureType <<- Exposure %>%
+      filter(
+        expoid == simSet3$expoid & 
+          param == 'expo_sidebar'
+      )
+    mySliderLabel <- exposureType$value[1]
+    updateSliderInput(
+      session,
+      'mySlider2',
+      label = mySliderLabel,
+      max = 1000 # This line is needed because this would create subscript out of bounds error otherwise
+    )
+    # output$mySlider <- renderUI({
+    #   # fluidRow(
+    #   sliderInput(
+    #     'mySlider',
+    #     label = exposureType$value[1],
+    #     min = 0,
+    #     max = 1000,
+    #     value = c(0,1000)
+    #   )    
+    #   # )
+    # })
+    
+    # mySliderLabel <- simset3$expoid
+    # updateNoUiSliderInput(
+    #   session,
+    #   'mySlider',
+    #   label = 'simSet3'
+    # )
   })
   
   observeEvent(input$bmFile, {
