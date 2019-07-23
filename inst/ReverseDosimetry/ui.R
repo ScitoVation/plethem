@@ -33,6 +33,7 @@ shinyUI(
         sizes="32x32"
       )
     ),
+    useSweetAlert(),
     useShinyjs(),
     includeCSS("www/styles.css"),
     navbarPage(

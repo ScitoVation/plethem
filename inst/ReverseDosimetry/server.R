@@ -42,6 +42,7 @@ shinyServer(function(input, output,session) {
       easyClose = F,#TRUE,
       size = "l",
       tagList(
+        useSweetAlert(),
         tabsetPanel(
           id = 'modalNav',
           tabPanel(
@@ -90,6 +91,7 @@ shinyServer(function(input, output,session) {
               'simulation',
               'Select Simulation',
               choices = NULL,
+              selected = NULL,
               multiple = F
               # ,options = list(
                 # 'live-search' = TRUE,
@@ -204,6 +206,17 @@ shinyServer(function(input, output,session) {
       )
     )
     
+  })
+  
+  observeEvent(input$addMC, {
+    sendSweetAlert(
+      session = session,
+      title = "Are you sure you want to run a simulation?",
+      text = "This may take several hours to complete.",
+      type = 'warning',
+      btn_labels = c('Cancel','Confirm'),
+      closeOnClickOutside = F
+    )
   })
   
   observeEvent(input$simulation, {
