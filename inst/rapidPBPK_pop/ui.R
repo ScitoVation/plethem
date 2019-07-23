@@ -176,8 +176,8 @@ chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
                           choices = c("QSAR model one" = 'one'),
                                       #"Unified QSAR model" = 'two'),
                           width = "99%"),
-  shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary"),
-  shinyBS::bsButton("btn_ivive_chem","Perform IVIVE",style = "primary")
+  shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary")
+  
 )
   #actionButton("newChem", "Modify Chemical DB"),
   #selectizeInput("selectedChem", "Select a chemical", choices = getAllMainChemicals(), width = validateCssUnit("99%")),
@@ -437,11 +437,11 @@ comp_body <- dashboardBody(
                numericInput("ms_ka",label = "Rate of Absorption in Gut Lumen (per hour)", value = 5, step = 0.01))
       ),
       fluidRow(
-        column(4,
+        column(6,
                numericInput("ms_kVtoL","Transfer Rate from vehicle to gut lumen",1)),
-        column(4,
-               numericInput("ms_kent",label = "Rate of metabolism in the gut lumen", value = 5, step = 0.01)),
-        column(4,
+        
+               
+        column(6,
                numericInput("ms_kfec","Transfer rate to elimination via fecal excretion",1))
       )
     ),
@@ -861,6 +861,119 @@ expo_body <- dashboardBody(
   )
 )
 
+metab_sidebar <- dashboardSidebar(
+  sidebarMenu(
+    id="ms_metab_sidebar",
+    menuItem("Hepatic", tabName = "hepatic", selected = TRUE),
+             #menuSubItem("Fixed",tabName = "fixed_hepatic"),
+             #menuSubItem("Age Dependent",tabName= "age_hepatic")),
+    menuItem("Gut", tabName = "gut", selected = TRUE),
+    menuItem("Plasma", tabName = "plasma", selected = TRUE)
+    )
+  )
+
+metab_body <- dashboardBody(
+  tabItems(
+    tabItem(
+      tabName = "hepatic",
+      
+      fluidPage(
+        fluidRow(
+          column(6, offset = 3,
+            awesomeRadio(inputId = "hep_metab_type",label = "Select Metabolism Type",
+                         choices = list(
+                           "Fixed"="hep_fixed",
+                           "Age Dependent"="hep_age"),
+                         inline = T,width = validateCssUnit("100%"),checkbox = T)
+          )
+          
+        ),
+        fluidRow(
+          conditionalPanel(
+            "input.hep_metab_type=='hep_fixed'",
+            tagList(
+              fluidRow(
+                column(2,
+                       shinyBS::bsButton("btn_ivive_chem","Perform IVIVE",block = T)
+                       )
+                
+              ),
+              fluidRow(
+                column(6,
+                       numericInput("ms_vmaxc2",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)),
+                column(6,
+                       numericInput("ms_km2","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01))
+              ),
+              fluidRow(
+                column(6,
+                       numericInput("ms_vkm1c2", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
+                )
+              )
+            )
+          ),
+          conditionalPanel(
+            "input.hep_metab_type=='hep_age'",
+            tagList(
+              fluidRow(
+                column(12,
+                       div(style = "height:10px")
+                )
+              ),
+              fluidRow(
+
+                column(2,
+                       bsButton("btn_metab_upload",
+                                "Upload Metabolism Files",
+
+                                block = T)
+                       )
+              ),
+              fluidRow(
+                column(12,
+                       div(style = "height:10px")
+                )
+              ),
+              fluidRow(column(width = 4,
+                              shinyWidgets::awesomeCheckbox("use_ref",
+                                                            "Use clearance at reference age for ages not in the metabolism table",
+                                                            value = T)
+                              ),
+                       column(width = 4,
+                              numericInput("metab_ref_age","Referance age in Years",value = 25, min = 0))
+              ),
+                fluidRow(column(width = 6, offset = 3,
+                                DT::DTOutput("metab_tble")))
+
+
+              )
+            )
+        )
+      )
+          
+    ),
+    tabItem(
+      tabName = "Gut",
+      fluidPage(
+        fluidRow(
+          column(6,
+                 numericInput("ms_kent",label = "Rate of metabolism in the gut lumen", value = 5, step = 0.01)
+                 )
+        )
+      )
+    ),
+    tabItem(
+      tabName = "Plasma",
+      fluidPage(
+        fluidRow(
+          column(6,
+                 numericInput("ms_kbld","First Order Metabolism in Blood",0,0.75,0.95,0.01)
+          )
+        )
+      )
+    )
+  )
+)
+
 #################Shiny UI
 shinyUI(fluidPage(
   shinyjs::useShinyjs(),
@@ -1184,27 +1297,7 @@ shinyUI(fluidPage(
                                            # )
                                            ),
                                   tabPanel("Metabolism",
-
                                            fluidPage(
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
-                                               )
-                                             ),
-                                             fluidRow(
-
-                                               column(2,
-                                                      bsButton("btn_metab_upload",
-                                                               "Upload Metabolism Files",
-
-                                                               block = T)
-                                                      )
-                                             ),
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
-                                               )
-                                             ),
                                              fluidRow(
                                                column(width = 7, offset = 0,
                                                       selectizeInput("sel_metab",NULL,
@@ -1218,51 +1311,19 @@ shinyUI(fluidPage(
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
-
+                                                        
                                                       ))
                                              ),
                                              fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
+                                               dashboardPage(
+                                                 dashboardHeader(disable = TRUE),
+                                                 metab_sidebar,
+                                                 metab_body
                                                )
-                                             ),
-                                             # fluidRow(
-                                             #   column(width = 3,
-                                             #          fileInput("metab_csv","Upload Metabolism Data")),
-                                             #   column(width = 3,
-                                             #          downloadLink("metab_template","Template for metabolism file"))
-                                             #   ),
-                                             # fluidRow(
-                                             #   column(width = 4,
-                                             #          textInput("metab_set_name","Name",
-                                             #                    placeholder = "Enter the name for this metabolism set")),
-                                             #   column(width = 8,
-                                             #          textAreaInput("metab_set_descrp","Description",
-                                             #                        resize = "none" ,row = 1))
-                                             #
-                                             # ),
-                                             # fluidRow(column(width = 6,
-                                             #                 shinyWidgets::radioGroupButtons("metab_type",justified = T,
-                                             #                                                 "Select Meatbolism Type",
-                                             #                                                 choices = c("VmaxC"="m1","VlivC"="m2"))
-                                             #                 )
-                                             #
-                                             #
-                                             #
-                                             #  ),
-                                             # fluidRow(column(width = 4,
-                                             #                 shinyWidgets::awesomeCheckbox("use_ref",
-                                             #                                               "Use clearance at reference age for ages not in the metabolism table",
-                                             #                                               value = T)
-                                             #                 ),
-                                             #          column(width = 4,
-                                             #                 numericInput("metab_ref_age","Referance age in Years",value = 25, min = 0))
-                                             # ),
-                                             fluidRow(column(width = 6, offset = 3,
-                                                             DT::DTOutput("metab_tble")))
-
-
+                                             )
                                            )
+                                           
+                                             
 
                                           ),
                                   tabPanel("Simulations",
