@@ -283,7 +283,7 @@ shinyServer(function(input, output,session) {
       session,
       'mySlider2',
       label = mySliderLabel,
-      max = 1000 # This line is needed because this would create subscript out of bounds error otherwise
+      max = 1000 # This line is needed to update the label because this would create subscript out of bounds error otherwise
     )
     # output$mySlider <- renderUI({
     #   # fluidRow(
