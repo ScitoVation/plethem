@@ -120,24 +120,34 @@ shinyServer(function(input, output,session) {
                 )
               )
             ),
-            sliderInput(
-              'mySlider2',
-              label = 'Exposure Type (Units)',
-              min = 0,
-              max = 1000,
-              value = c(0,1000)
+            fluidRow(
+              column(
+                6,
+                sliderInput(
+                  'mySlider2',
+                  label = 'Exposure Type (Units)',
+                  min = 0,
+                  max = 1000,
+                  value = c(0,1000)
+                )
+              ),
+              column(
+                6,
+                numericInput(
+                  'mcNumeric',
+                  label = 'Count of Concentration Runs',
+                  min = 1,
+                  max = 100,
+                  value = 25,
+                  step = 1,
+                  width = '156.84px'
+                ),
+                uiOutput(
+                  'validNum'
+                )
+              )
             )
           )
-            # br(),br(),br()
-            # 'hello'
-            # noUiSliderInput(
-            #   'mySlider',
-            #   label = 'Hello',
-            #   min = 0,
-            #   max = 1000,
-            #   value = c(0,1000)
-            # )
-          # )
         )
       ),
       footer= tagList(
@@ -179,6 +189,17 @@ shinyServer(function(input, output,session) {
     )
   }
   
+  mcNum <- reactive({
+    validate(
+      need(input$mcNumeric > 0, 'Invalid input. Please enter a number 1-100.') %then%
+        need(input$mcNumeric < 101, 'Invalid input. Please enter a number 1-100.')
+    )
+  })
+  
+  output$validNum <- renderUI({
+    mcNum()
+  })
+
   observeEvent(input$csvFile, {
     shinyjs::enable("add")
   })
