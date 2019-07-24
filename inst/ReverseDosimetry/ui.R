@@ -33,6 +33,11 @@ shinyUI(
         sizes="32x32"
       )
     ),
+    tags$style(HTML("
+      .shiny-output-error-validation {
+        color: red;
+      }
+    ")),
     useSweetAlert(),
     useShinyjs(),
     includeCSS("www/styles.css"),
