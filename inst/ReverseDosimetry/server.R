@@ -230,30 +230,32 @@ shinyServer(function(input, output,session) {
     )
     
   })
-  jsCode2 <- 'shinyjs.swal = function(){swal({
-  title: "Are you sure?",
-  text: "Once deleted, you will not be able to recover this imaginary file!",
-  icon: "warning",
-  buttons: true,
-  dangerMode: true,
-})
-  .then((willDelete) => {
-  if (willDelete) {
-  swal("Poof! Your imaginary file has been deleted!", {
-  icon: "success",
-  });
-  } else {
-  swal("Your imaginary file is safe!");
-  }
-  });}'
+#   jsCode2 <- 'shinyjs.swal = function(){swal({
+#   title: "Are you sure?",
+#   text: "Once deleted, you will not be able to recover this imaginary file!",
+#   icon: "warning",
+#   buttons: true,
+#   dangerMode: true,
+# })
+#   .then((willDelete) => {
+#   if (willDelete) {
+#   swal("Poof! Your imaginary file has been deleted!", {
+#   icon: "success",
+#   });
+#   } else {
+#   swal("Your imaginary file is safe!");
+#   }
+#   });}'
   observeEvent(input$addMC, {
-    runjs('/*swal({
-  title: "Are you sure?",
+    runjs(
+      '
+          /*swal({
+          title: "Are you sure?",
           text: "Once deleted, you will not be able to recover this imaginary file!",
           icon: "warning",
           buttons: true,
           dangerMode: true,
-  })
+            })
           .then((willDelete) => {
           if (willDelete) {
           swal("Poof! Your imaginary file has been deleted!", {
@@ -264,8 +266,43 @@ shinyServer(function(input, output,session) {
           }
           });}*/
           /*var today = new Date(); alert(today);*/
-          swal({title: "Hello World!"})
-          .then(console.log("Hello"));')
+
+/*
+          swal({
+            title: "Are you sure you want to run a simulation?",
+            text: "This may take several hours to complete.",
+            icon: "warning",
+            buttons: ["Cancel","Confirm"]//,
+            //closeOnClickOutside = F
+          })
+          .then(console.log("Hello"));
+*/
+
+/*
+swal({
+  title: "Uhh",
+  text: "Search for a movie.",
+  content: "input",
+  button: {
+    text: "Search!",
+    closeModal: false,
+  }
+}).then(name => {
+  if (!name) {console.log("!name");throw null;}
+else console.log("name");
+ 
+  return fetch(`https://itunes.apple.com/search?term=${name}&entity=movie`);
+});
+*/
+swal("Write something here:", {
+  content: "input",
+  })
+      .then((value) => {
+      swal(`You typed: ${value}`);
+      });
+
+      '
+    )
     # js$swal()
     # sendSweetAlert(
     #   session = session,
@@ -499,7 +536,8 @@ shinyServer(function(input, output,session) {
       })
     } else{
       output$mcFooter <- renderUI({
-        shinyjs::disabled(actionButton("addMC","Run Dataset"))
+        # shinyjs::disabled(actionButton("addMC","Run Dataset"))
+        actionButton("addMC","Run Dataset")
       })
     }
   })
