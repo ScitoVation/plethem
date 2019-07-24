@@ -266,17 +266,17 @@ shinyServer(function(input, output,session) {
       )
     myExpoid <- exposureType$value[1]
     if(myExpoid == 'oral'){
-      mySliderLabel = 'Oral (mg/kg/BW/day)'
+      mySliderLabel = 'Oral (mg/kg BW/day)'
     } else if(myExpoid == 'dw'){
-      mySliderLabel = 'DW (mg/L)'
+      mySliderLabel = 'Drinking Water (mg/L)'
     } else if(myExpoid == 'inh'){
       mySliderLabel = 'Inhalation (ppm)'
     } else if(myExpoid == 'iv'){
-      mySliderLabel = 'mg/???'
+      mySliderLabel = 'IV (mg/L)'
     } else if(myExpoid == 'derm'){
-      mySliderLabel = 'Dermal (um/n/cm^2?????)'
+      mySliderLabel = 'Dermal (\U00B5m/n/cm\U00B2)'
     } else if(myExpoid == 'oralv'){
-      mySliderLabel = 'Oral V (???)'
+      mySliderLabel = 'Oral Vehicle (mg/kg BW/day)'
     } else mySliderLabel = 'Unknown'
     
     updateSliderInput(
