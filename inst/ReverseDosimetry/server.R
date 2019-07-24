@@ -135,9 +135,9 @@ shinyServer(function(input, output,session) {
                 6,
                 numericInput(
                   'mcNumeric',
-                  label = 'Count of Concentration Runs',
-                  min = 1,
-                  max = 100,
+                  label = 'Number of Doses',
+                  min = 20,
+                  max = 50,
                   value = 25,
                   step = 1,
                   width = '156.84px'
@@ -191,8 +191,8 @@ shinyServer(function(input, output,session) {
   
   mcNum <- reactive({
     validate(
-      need(input$mcNumeric > 0, 'Invalid input. Please enter a number 1-100.') %then%
-        need(input$mcNumeric < 101, 'Invalid input. Please enter a number 1-100.')
+      need(input$mcNumeric > 19, 'Invalid input. Please enter a number 20-50.') %then%
+        need(input$mcNumeric < 51, 'Invalid input. Please enter a number 20-50.')
     )
   })
   
