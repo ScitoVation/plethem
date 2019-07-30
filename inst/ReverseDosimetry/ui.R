@@ -56,7 +56,8 @@ shinyUI(
         icon = icon('line-chart'),
         tags$style(
           type='text/css',
-          'body {padding-top: 50px; #background-color: #db6e00;}'
+          'body {padding-top: 50px; #background-color: #db6e00;}
+          #rDataFile_progress {margin-bottom:0;}'
         ),
         div(
           Id = 'mySidenav',
@@ -65,7 +66,7 @@ shinyUI(
           align = 'center',
           bsButton(
             'btnUploadMC',
-            'Upload Monte Carlo Results',
+            'Add Monte Carlo Simulation',
             block = TRUE,
             style = 'primary',
             width = '80%'
@@ -73,7 +74,7 @@ shinyUI(
           br(),
           bsButton(
             'btnUploadBMResults',
-            'Upload Biomonitoring Results',
+            'Add Biomonitoring Results',
             block = TRUE,
             style = 'primary',
             width = '80%'
