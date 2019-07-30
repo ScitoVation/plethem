@@ -201,9 +201,6 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$mcNumeric, {
-    if(is.null(mcNum())){
-      print(mcNum())
-    }else print(mcNum())
     if(input$mcNumeric < 20 | input$mcNumeric > 50){
       shinyjs::disable('addMC')
     } else{
