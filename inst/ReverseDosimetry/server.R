@@ -247,62 +247,111 @@ shinyServer(function(input, output,session) {
 #   }
 #   });}'
   observeEvent(input$addMC, {
-    runjs(
-      '
-          /*swal({
-          title: "Are you sure?",
-          text: "Once deleted, you will not be able to recover this imaginary file!",
-          icon: "warning",
-          buttons: true,
-          dangerMode: true,
-            })
-          .then((willDelete) => {
-          if (willDelete) {
-          swal("Poof! Your imaginary file has been deleted!", {
-          icon: "success",
-          });
-          } else {
-          swal("Your imaginary file is safe!");
-          }
-          });}*/
-          /*var today = new Date(); alert(today);*/
-
-/*
-          swal({
-            title: "Are you sure you want to run a simulation?",
-            text: "This may take several hours to complete.",
-            icon: "warning",
-            buttons: ["Cancel","Confirm"]//,
-            //closeOnClickOutside = F
-          })
-          .then(console.log("Hello"));
-*/
-
-/*
-swal({
-  title: "Uhh",
-  text: "Search for a movie.",
-  content: "input",
-  button: {
-    text: "Search!",
-    closeModal: false,
-  }
-}).then(name => {
-  if (!name) {console.log("!name");throw null;}
-else console.log("name");
- 
-  return fetch(`https://itunes.apple.com/search?term=${name}&entity=movie`);
-});
-*/
-swal("Write something here:", {
-  content: "input",
-  })
-      .then((value) => {
-      swal(`You typed: ${value}`);
-      });
-
-      '
+#     runjs(
+#       '
+#           /*swal({
+#           title: "Are you sure?",
+#           text: "Once deleted, you will not be able to recover this imaginary file!",
+#           icon: "warning",
+#           buttons: true,
+#           dangerMode: true,
+#             })
+#           .then((willDelete) => {
+#           if (willDelete) {
+#           swal("Poof! Your imaginary file has been deleted!", {
+#           icon: "success",
+#           });
+#           } else {
+#           swal("Your imaginary file is safe!");
+#           }
+#           });}*/
+#           /*var today = new Date(); alert(today);*/
+# 
+# 
+#           swal({
+#             title: "Are you sure you want to run a simulation?",
+#             text: "This may take several hours to complete.",
+#             icon: "warning",
+#             buttons: ["Cancel","Confirm"]//,
+#             //closeOnClickOutside = F
+#           })
+#           .then((result) => {
+# //console.log(result);
+# if(result){
+# console.log("Confirmed");
+# } else console.log("Denied");
+# });
+#           //.then(console.log("Hello"));
+# 
+# 
+# 
+# 
+# 
+# /*
+# swal({
+#   title: "Uhh",
+#   text: "Search for a movie.",
+#   content: "input",
+#   button: {
+#     text: "Search!",
+#     closeModal: false,
+#   }
+# }).then(name => {
+#   if (!name) {console.log("!name");throw null;}
+# else console.log("name");
+#  
+#   return fetch(`https://itunes.apple.com/search?term=${name}&entity=movie`);
+# });
+# */
+# /*
+# swal(
+#   //title: "Are you sure?",
+#   "Write something here:", 
+#   {
+#     title: "Are you sure you want to run a monte carlo simulation?",
+#     text: "This may take several hours to complete.",
+#     icon: "warning",
+#     //showCancelButton: true,
+#     buttons: ["Cancel","Confirm"]
+#     //confirmButtonColor: "#3085d6",
+#     //cancelButtonColor: "#d33",
+#     //confirmButtonText: "Yes, delete it!"
+#   })
+#       .then((result) => {
+#       if(result.value){
+# console.log("hello");
+#         /*swal({
+#           "Running!",
+#           "Your simulation is running!",
+#           "success"
+#         })
+#       }
+#       });
+# /**/
+#       '
+#     )
+    confirmSweetAlert(
+      session = session,
+      inputId = "myconfirmation",
+      type = "warning",
+      title = "Are you sure you want to run a simulation?",
+      text = "This may take several hours to complete.",
+      danger_mode = TRUE
     )
+    
+
+    # shinyalert(
+    #   "Enter your name", type = "input",
+    #   callbackR = function(x) { if(x != FALSE) message("Hello ", x) },
+    #   callbackJS = "function(x) { if (x !== false) { alert('Hello ' + x); } }"
+    # )
+    # print(input$myconfirmation)
+        # if(!is.null(input$sweetalert)){
+    #   removeModal()
+    # }
+    # else(shinyalert(
+    #   "Oops!", "Something went wrong.", type = "error"
+    # ))
     # js$swal()
     # sendSweetAlert(
     #   session = session,
@@ -312,6 +361,14 @@ swal("Write something here:", {
     #   btn_labels = c('Cancel','Confirm'),
     #   closeOnClickOutside = F
     # )
+  })
+  
+  observeEvent(input$myconfirmation, {
+    if(isTRUE(input$myconfirmation)){
+      print('Running Monte Carlo')
+      removeModal()
+    }
+    else(print('Denied Monte Carlo Simulation'))
   })
   
   observeEvent(input$simulation, {
