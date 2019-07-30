@@ -199,13 +199,26 @@ shinyServer(function(input, output,session) {
   output$validNum <- renderUI({
     mcNum()
   })
-
+  
+  observeEvent(input$mcNumeric, {
+    if(is.null(mcNum())){
+      print(mcNum())
+    }else print(mcNum())
+    if(input$mcNumeric < 20 | input$mcNumeric > 50){
+      shinyjs::disable('addMC')
+    } else{
+      if(!is.null(input$simulation)){
+        shinyjs::enable('addMC')
+      }
+    }
+  })
+  
   observeEvent(input$csvFile, {
     shinyjs::enable("add")
   })
   
   observeEvent(input$rDataFile, {
-    shinyjs::enable('addMC')
+    # shinyjs::enable('addMC')
     inFile <- input$rDataFile
     rDFile <- inFile$datapath
     # e = new.env()
@@ -253,6 +266,7 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$simulation, {
+    shinyjs::enable('addMC')
     simSet3 <<- simSet %>%
       filter(
         name == input$simulation
