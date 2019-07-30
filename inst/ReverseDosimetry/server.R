@@ -77,16 +77,16 @@ shinyServer(function(input, output,session) {
               accept = c("text/csv","text/comma-separated-values",".csv"),
               multiple = TRUE
             ),
-            tags$h4("Results in mg/L")
+            tags$h4("Results are displayed in mg/L")
           ),
           tabPanel(
-            title = 'Create Monte Carlo Results',
+            title = 'Run Monte Carlo Simulation',
             br(),
             fileInput(
               "rDataFile",
               label = "Select Project file",
               accept = c(".RData", ".Rdata"),
-              placeholder = 'Upload .Rdata file',
+              placeholder = 'Upload .RData file',
               multiple = F
             ),
             pickerInput(
@@ -96,10 +96,10 @@ shinyServer(function(input, output,session) {
               selected = NULL,
               multiple = F
               # ,options = list(
-                # 'live-search' = TRUE,
-                # 'actions-box' = TRUE,
-                # 'selected-text-format' = 'count > 2',
-                # 'count-selected-text'='{0} simulations selected'
+              # 'live-search' = TRUE,
+              # 'actions-box' = TRUE,
+              # 'selected-text-format' = 'count > 2',
+              # 'count-selected-text'='{0} simulations selected'
               # )
             ),
             fluidRow(
@@ -176,7 +176,7 @@ shinyServer(function(input, output,session) {
         ),
         fileInput(
           "bmFile",
-          label = "Upload Biomonitoring Results",
+          label = "Upload Biomonitoring CSV File",
           accept = c("text/csv","text/comma-separated-values",".csv"),
           multiple = TRUE
         ),
