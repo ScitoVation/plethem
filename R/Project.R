@@ -145,12 +145,12 @@ loadProject <- function(file_path = ""){
 
 #' @export
 loadReverseDosimetryProject <- function(file_path = ""){
-  if(file_path == ""){
-    file_path <- getFileFolderPath(
-      type = "file",
-      caption = "Select PLETHEM Project",
-      extension = "*.Rdata")
-  }
+  # if(file_path == ""){
+  #   file_path <- getFileFolderPath(
+  #     type = "file",
+  #     caption = "Select PLETHEM Project",
+  #     extension = "*.Rdata")
+  # }
   
   load(file_path)
   # set the project details to match where the current file was loaded from
