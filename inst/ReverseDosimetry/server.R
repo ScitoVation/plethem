@@ -222,6 +222,7 @@ shinyServer(function(input, output,session) {
     # name <<- load(rDFile, envir = e)
     # data <- e[['name']]
     load(rDFile, envir = .GlobalEnv)
+    loadReverseDosimetryProject(rDFile)
     simSet <<- SimulationsSet %>%
       filter(
         physiovarid > 0 |
