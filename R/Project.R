@@ -134,13 +134,13 @@ loadProject <- function(file_path = ""){
 }
 
 
-#' Load the project from the project file located at the given path
-#' @description Loads the project data from the project file.
-#' @param file_path path to the project file. If no path is provided, launches a select file dialog box for the user to select the path
+#' Load the project from the project file selected by the user.
+#' @description Loads the project data from the project file. This function is only called after the user 
+#' selects a project file so the file_path parameter will always be given.
+#' @param file_path path to the project file.
 #' @examples 
 #' \dontrun{
 #' loadReverseDosimetryProject(file_path = "C:/Project/TestPBPK.Rdata")
-#' loadReverseDosimetryProject()
 #' }
 
 #' @export
