@@ -96,10 +96,10 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
 #' @export
 loadProject <- function(file_path = ""){
   if(file_path == ""){
-    file_path <- getFileFolderPath(type = "file",
-                                   caption = "Select PLETHEM Project",
-                                   extension = "*.Rdata")
-    
+    file_path <- getFileFolderPath(
+      type = "file",
+      caption = "Select PLETHEM Project",
+      extension = "*.Rdata")
   }
   
   load(file_path)
@@ -133,6 +133,42 @@ loadProject <- function(file_path = ""){
   }
 }
 
+
+#' Load the project from the project file located at the given path
+#' @description Loads the project data from the project file.
+#' @param file_path path to the project file. If no path is provided, launches a select file dialog box for the user to select the path
+#' @examples 
+#' \dontrun{
+#' loadReverseDosimetryProject(file_path = "C:/Project/TestPBPK.Rdata")
+#' loadReverseDosimetryProject()
+#' }
+
+#' @export
+loadReverseDosimetryProject <- function(file_path = ""){
+  if(file_path == ""){
+    file_path <- getFileFolderPath(
+      type = "file",
+      caption = "Select PLETHEM Project",
+      extension = "*.Rdata")
+  }
+  
+  load(file_path)
+  # set the project details to match where the current file was loaded from
+  # this will be helpful if the user changes the location/name of the files outside the package
+  Project$name <- gsub(".Rdata","",basename(file_path))
+  Project$path <- dirname(file_path)
+  type <- Project$type
+  model <- Project$model
+  mode <- Project$mode
+  # get all the table names from the database
+  query <- "SELECT name FROM sqlite_master WHERE type = 'table';"
+  table_names_list <- projectDbSelect(query)$name
+  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = T)]
+  # can use apply here but tables are small and for is more readable
+  for (x in table_names_list){
+    projectWriteTable(eval(parse(text = x)),x)
+  }
+}
 
 #' Clear Project Db
 #' @description This function clears the project Db. It is called internally when a new project is created. 
