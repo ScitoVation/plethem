@@ -73,7 +73,7 @@ shinyServer(function(input, output,session) {
             ),
             fileInput(
               "csvFile",
-              label = "Select CSV file",
+              label = "Upload Monte Carlo Results",
               accept = c("text/csv","text/comma-separated-values",".csv"),
               multiple = TRUE
             ),
@@ -241,8 +241,8 @@ shinyServer(function(input, output,session) {
     )
     
   })
-
-    observeEvent(input$addMC, {
+  
+  observeEvent(input$addMC, {
     confirmSweetAlert(
       session = session,
       inputId = "myconfirmation",
@@ -252,8 +252,73 @@ shinyServer(function(input, output,session) {
     )
   })
   
+  results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
+      ########################################################################
+      # observeEvent(input$run_sim,{
+      #   simid <- as.integer(input$sel_sim)
+      #   results$simid <- simid
+      #   # get the parameters needed to run the model
+      #   model_params <- getAllParamValuesForModel(simid,model)
+      #   #get total volume
+      #   active_comp <- input$ms_cmplist
+      #   vol_comps <- c(active_comp,"blood")
+      #   total_vol <- sum(unlist(lapply(vol_comps,
+      #                                  function(x){
+      #                                    input[[vol_ids[x]]]
+      #                                  })
+      #   )
+      #   )
+      #   query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
+      #   mc_num <- as.integer(projectDbSelect(query)$mc_num)
+      #   model_params$vals[["total_vol"]]<- total_vol
+      #   if (mc_num > 1){
+      #     MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+      #     query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
+      #                      model)
+      #     mc_vars<- mainDbSelect(query)$model_var
+      #     mc_results <- lapply(mc_vars,function(x,n){
+      #       return(x = rep(NA,n))
+      #     },mc_num)
+      #     names(mc_results)<- mc_vars
+      #     for (i in 1:mc_num){
+      #       model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
+      #       initial_values <- calculateInitialValues(model_params)
+      #       tempDF <- runFDPBPK(initial_values,model)
+      #       max_list <- unlist(lapply(mc_vars,function(x,data){
+      #         var_name <- gsub("_max","",x)
+      #         
+      #         return(max(data[var_name]))
+      #       },tempDF$pbpk))
+      #       names(max_list)<- mc_vars
+      #       for (x in mc_vars){
+      #         mc_results[[x]][[i]]<- max_list[[x]]
+      #       }
+      #       updateProgressBar(session,"pb",value = i, total = mc_num)
+      #     }
+      #     results$pbpk <- as.data.frame(mc_results)
+      #     results$mode <- "MC"
+      #     updateNavbarPage(session,"menu","output")
+      #   }else{
+      #     #rep_flag <- all_params["rep_flag"]
+      #     #model_params <- all_params["model_params"]
+      #     initial_values <- calculateInitialValues(model_params)
+      #     
+      #     updateProgressBar(session,"pb",value = 100, total = 100,
+      #                       status = "info")
+      #     tempDF <- runFDPBPK(initial_values,model)
+      #     
+      #     results$pbpk<- tempDF$pbpk
+      #     
+      #     
+      #     results$mode <- "FD"
+      #     updateNavbarPage(session,"menu","output")
+      #   }
+      # })
+      
+      
+      ########################################################################
       print('Running Monte Carlo')
       print(paste('Number of doses = ',input$mcNumeric, '!', sep = ''))
       removeModal()
