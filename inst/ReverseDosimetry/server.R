@@ -251,28 +251,41 @@ shinyServer(function(input, output,session) {
       text = "This may take several hours to complete."
     )
   })
-  
+  vol_ids <- c("fat"="ms_vfatc","skin"="ms_vskinc",
+               "muscle"="ms_vmuscc","bone"="ms_vbonec",
+               "brain"="ms_vbrnc","lung"="ms_vlngc",
+               "heart"="ms_vhrtc","gi"="ms_vgic",
+               "liver"="ms_vlivc","kidney"="ms_vkdnc",
+               "rpf"="ms_vrpfc","spf"="ms_vspfc","blood"="ms_vbldc",
+               "bw"="ms_bw")
   results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
       ########################################################################
-      # observeEvent(input$run_sim,{
-      #   simid <- as.integer(input$sel_sim)
-      #   results$simid <- simid
-      #   # get the parameters needed to run the model
-      #   model_params <- getAllParamValuesForModel(simid,model)
-      #   #get total volume
-      #   active_comp <- input$ms_cmplist
-      #   vol_comps <- c(active_comp,"blood")
-      #   total_vol <- sum(unlist(lapply(vol_comps,
-      #                                  function(x){
-      #                                    input[[vol_ids[x]]]
-      #                                  })
-      #   )
-      #   )
-      #   query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
-      #   mc_num <- as.integer(projectDbSelect(query)$mc_num)
-      #   model_params$vals[["total_vol"]]<- total_vol
+      ## observeEvent(input$run_sim,{
+      simid <- simSet3$simid[1]
+      # print(simid)
+      # print(GeometricSequence(25,0.05,1))
+        results$simid <- simid
+        # get the parameters needed to run the model
+        model_params <- getAllParamValuesForModel(simid,"rapidPBPK")
+        #get total volume
+        active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
+        vol_comps <- c(active_comp,"blood")
+        total_vol <- sum(
+          unlist(
+            lapply(
+              vol_comps,
+              function(x){
+                input[[vol_ids[x]]]
+              })
+          )
+        )
+        query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
+        mc_num <- as.integer(projectDbSelect(query)$mc_num)
+        print(mc_num)
+        model_params$vals[["total_vol"]]<- total_vol
+        print(total_vol)
       #   if (mc_num > 1){
       #     MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
       #     query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
@@ -315,7 +328,7 @@ shinyServer(function(input, output,session) {
       #     results$mode <- "FD"
       #     updateNavbarPage(session,"menu","output")
       #   }
-      # })
+      ## })
       
       
       ########################################################################
