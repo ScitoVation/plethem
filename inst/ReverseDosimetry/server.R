@@ -265,7 +265,6 @@ shinyServer(function(input, output,session) {
       ## observeEvent(input$run_sim,{
       simid <- simSet3$simid[1]
       # print(simid)
-      # print(GeometricSequence(25,0.05,1))
         results$simid <- simid
         # get the parameters needed to run the model
         model_params <- getAllParamValuesForModel(simid,"rapidPBPK")
@@ -281,6 +280,9 @@ shinyServer(function(input, output,session) {
               })
           )
         )
+        test_vol_comps <<- vol_comps
+        test_total_Vol <<- total_vol
+        test_vol_ids <<- vol_ids
         query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
         mc_num <- as.integer(projectDbSelect(query)$mc_num)
         print(mc_num)
