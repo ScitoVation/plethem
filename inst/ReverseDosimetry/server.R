@@ -25,6 +25,7 @@ library(htmltools)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
+  model <- "rapidPBPK"
   mcvals <- reactiveValues(
     csvFile = NULL,
     name = NULL
@@ -146,6 +147,9 @@ shinyServer(function(input, output,session) {
                   'validNum'
                 )
               )
+            ),
+            fluidRow(
+              progressBar(id = "pb",value = 0, status = "success",striped = T)
             )
           )
         )
@@ -251,13 +255,13 @@ shinyServer(function(input, output,session) {
       text = "This may take several hours to complete."
     )
   })
-  vol_ids <- c("fat"="ms_vfatc","skin"="ms_vskinc",
-               "muscle"="ms_vmuscc","bone"="ms_vbonec",
-               "brain"="ms_vbrnc","lung"="ms_vlngc",
-               "heart"="ms_vhrtc","gi"="ms_vgic",
-               "liver"="ms_vlivc","kidney"="ms_vkdnc",
-               "rpf"="ms_vrpfc","spf"="ms_vspfc","blood"="ms_vbldc",
-               "bw"="ms_bw")
+  vol_ids <- c("fat"="vfatc","skin"="vskinc",
+               "muscle"="vmuscc","bone"="vbonec",
+               "brain"="vbrnc","lung"="vlngc",
+               "heart"="vhrtc","gi"="vgic",
+               "liver"="vlivc","kidney"="vkdnc",
+               "rpf"="vrpfc","spf"="vspfc","blood"="vbldc")
+  # ,"bw"="bw")
   results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
@@ -267,69 +271,68 @@ shinyServer(function(input, output,session) {
       # print(simid)
         results$simid <- simid
         # get the parameters needed to run the model
-        model_params <- getAllParamValuesForModel(simid,"rapidPBPK")
+        model_params <- getAllParamValuesForModel(simid,model)
         #get total volume
         active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
         vol_comps <- c(active_comp,"blood")
-        total_vol <- sum(
-          unlist(
-            lapply(
-              vol_comps,
-              function(x){
-                input[[vol_ids[x]]]
-              })
-          )
-        )
+        total_vol <- 1#sum( #COME BACK TO #######################################
+        #   unlist(
+        #     lapply(
+        #       vol_comps,
+        #       function(x){
+        #         input[[vol_ids[x]]]
+        #       })
+        #   )
+        # )
         test_vol_comps <<- vol_comps
         test_total_Vol <<- total_vol
         test_vol_ids <<- vol_ids
         query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
         mc_num <- as.integer(projectDbSelect(query)$mc_num)
-        print(mc_num)
+        print(paste('mc_num: ',mc_num))
         model_params$vals[["total_vol"]]<- total_vol
         print(total_vol)
-      #   if (mc_num > 1){
-      #     MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
-      #     query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
-      #                      model)
-      #     mc_vars<- mainDbSelect(query)$model_var
-      #     mc_results <- lapply(mc_vars,function(x,n){
-      #       return(x = rep(NA,n))
-      #     },mc_num)
-      #     names(mc_results)<- mc_vars
-      #     for (i in 1:mc_num){
-      #       model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
-      #       initial_values <- calculateInitialValues(model_params)
-      #       tempDF <- runFDPBPK(initial_values,model)
-      #       max_list <- unlist(lapply(mc_vars,function(x,data){
-      #         var_name <- gsub("_max","",x)
-      #         
-      #         return(max(data[var_name]))
-      #       },tempDF$pbpk))
-      #       names(max_list)<- mc_vars
-      #       for (x in mc_vars){
-      #         mc_results[[x]][[i]]<- max_list[[x]]
-      #       }
-      #       updateProgressBar(session,"pb",value = i, total = mc_num)
-      #     }
-      #     results$pbpk <- as.data.frame(mc_results)
-      #     results$mode <- "MC"
+        if (mc_num > 1){
+          MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+          query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
+                           model)
+          mc_vars<- mainDbSelect(query)$model_var
+          mc_results <- lapply(mc_vars,function(x,n){
+            return(x = rep(NA,n))
+          },mc_num)
+          names(mc_results)<- mc_vars
+          for (i in 1:mc_num){
+            model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
+            initial_values <- calculateInitialValues(model_params)
+            tempDF <- runFDPBPK(initial_values,model)
+            max_list <- unlist(lapply(mc_vars,function(x,data){
+              var_name <- gsub("_max","",x)
+
+              return(max(data[var_name]))
+            },tempDF$pbpk))
+            names(max_list)<- mc_vars
+            for (x in mc_vars){
+              mc_results[[x]][[i]]<- max_list[[x]]
+            }
+            updateProgressBar(session,"pb",value = i, total = mc_num)
+          }
+          results$pbpk <<- as.data.frame(mc_results)
+          MymcResults <<- as.data.frame(mc_results)
+          results$mode <- "MC"
       #     updateNavbarPage(session,"menu","output")
-      #   }else{
-      #     #rep_flag <- all_params["rep_flag"]
-      #     #model_params <- all_params["model_params"]
-      #     initial_values <- calculateInitialValues(model_params)
-      #     
-      #     updateProgressBar(session,"pb",value = 100, total = 100,
-      #                       status = "info")
-      #     tempDF <- runFDPBPK(initial_values,model)
-      #     
-      #     results$pbpk<- tempDF$pbpk
-      #     
-      #     
-      #     results$mode <- "FD"
+        }else{
+          initial_values <- calculateInitialValues(model_params)
+
+          updateProgressBar(session,"pb",value = 100, total = 100,
+                            status = "info")
+          tempDF <- runFDPBPK(initial_values,model)
+
+          results$pbpk<- tempDF$pbpk
+
+
+          results$mode <- "FD"
       #     updateNavbarPage(session,"menu","output")
-      #   }
+        }
       ## })
       
       
@@ -841,3 +844,394 @@ shinyServer(function(input, output,session) {
   })
   
 })
+
+calculateInitialValues <- function(params_list){
+  params <- params_list$vals
+  brep_flag <- as.logical(params[["brep_flag"]])
+  brepv_flag <- as.logical(params[["brepv_flag"]])
+  iv_flag <- as.logical(params[["ivrep_flag"]])
+  derm_flag <- as.logical(params[["dermrep_flag"]])
+  params <- params[which(grepl("[-]?[0-9]+[.]?[0-9]*|[-]?[0-9]+[L]?|[-]?[0-9]+[.]?[0-9]*[eE][0-9]+",params))]
+  params <- lapply(params,function(x){as.numeric(x)})
+  
+  initial_params <- within(as.list(params),{
+    
+    #Scaled Tissue Volumes
+    vbld <- vbldc*(perfc/total_vol)*bw     #L;Blood
+    vpls <- vbld*(1-hct)
+    vfat <- vfatc*(perfc/total_vol)*bw
+    vskin <- vskinc*(perfc/total_vol)*bw
+    vmusc <- vmuscc*(perfc/total_vol)*bw
+    vbone <- vbonec*(perfc/total_vol)*bw
+    vbrn <- vbrnc*(perfc/total_vol)*bw
+    vlng <- vlngc*(perfc/total_vol)*bw
+    vhrt <- vhrtc*(perfc/total_vol)*bw
+    vkdn <- vkdnc*(perfc/total_vol)*bw
+    vgi <- vgic*(perfc/total_vol)*bw
+    vliv <- vlivc*(perfc/total_vol)*bw
+    vrpf <- vrpfc*(perfc/total_vol)*bw
+    vspf <- vspfc*(perfc/total_vol)*bw
+    
+    #Total Fractional Perfusion
+    total_perf <- qfatc+qskinc+qmuscc+qbonec+qbrnc+qlngc+qhrtc+qkdnc+qvlivc+qrpfc+qspfc  # This does not include flow to GI since that is a part of liver venous flow
+    
+    #Scaled Perfusion
+    qcp <- qcc*(1-hct)
+    qfat <- qfatc*(1/total_perf)*qcp
+    qskin <- qskinc*(1/total_perf)*qcp
+    qmusc <- qmuscc*(1/total_perf)*qcp
+    qbone <- qbonec*(1/total_perf)*qcp
+    qbrn <- qbrnc*(1/total_perf)*qcp
+    qlng <- qlngc*(1/total_perf)*qcp
+    qhrt <- qhrtc*(1/total_perf)*qcp
+    qkdn <- qkdnc*(1/total_perf)*qcp
+    qvliv <- qvlivc*(1/total_perf)*qcp
+    qgi <- (qgic/(qgic+qalivc))*qvliv
+    qaliv <- (qalivc/(qgic+qalivc))*qvliv
+    qrpf <- qrpfc*(1/total_perf)*qcp
+    qspf <- qspfc*(1/total_perf)*qcp
+    
+    #Scaled tissue permeability coefs
+    pafat <- pafat*vfat**0.75
+    paskin <- paskin*vskin**0.75
+    pamusc <- pamusc*vmusc**0.75
+    pabone <- pabone*vbone**0.75
+    pabrn <- pabrn*vbrn**0.75
+    palng <- palng*vlng**0.75
+    pahrt <- pahrt*vhrt**0.75
+    pakdn <- pakdn*vkdn**0.75
+    pagi <- pagi*vgi**0.75
+    paliv <- paliv*vliv**0.75
+    parpf <- parpf*vrpf**0.75
+    paspf <- paspf*vspf**0.75
+    
+    vkm1 <- vkm1c*vliv
+    vmaxliv <- vmaxc*bw**0.75
+    
+    tstop <- tstart+sim_dur
+    
+    cinh <- (inhdose/24.45)#*1000/mw # converting from  ppm to mg/L(/24.45) and then to umoles/L for the model
+    qalv <- (tv-ds)*respr
+    pair <- ifelse(pair >0,pair,1E-10)
+  })
+  
+  #function for dosing
+  
+  mw <- initial_params[["mw"]]
+  bw <- initial_params[["bw"]]
+  #ORAL
+  bdose <- initial_params[["bdose"]]
+  breps <- initial_params[["breps"]]
+  blen <- initial_params[["blen"]]
+  
+  totbreps <- initial_params[["totbreps"]]<-breps*blen
+  #Drinking Water
+  ddose <- initial_params[["drdose"]]
+  vdw <- initial_params[["vdw"]]
+  dreps <- initial_params[["dreps"]]
+  
+  #ORAL  with vehicle
+  bdosev <- initial_params[["bdosev"]]
+  brepsv <- initial_params[["brepsv"]]
+  blenv <- initial_params[["blenv"]]
+  
+  totbrepsv <- initial_params[["totbrepsv"]]<-brepsv*blenv
+  
+  #inhalation
+  inhdose <- initial_params[["inhdose"]]
+  inhtlen <- initial_params[["inhtlen"]]
+  inhdays <- initial_params[["inhdays"]]
+  
+  #iv
+  ivdose <- initial_params[["ivdose"]]
+  ivlen <- initial_params[["ivlen"]]
+  
+  #dermal
+  dermrate <- initial_params[["dermrate"]]
+  dermlen <- initial_params[["dermlen"]]
+  skarea <- initial_params[["skarea"]]
+  
+  #simulation
+  tstart <- initial_params[["tstart"]]
+  totdays <- initial_params[["totdays"]]
+  tstop <- initial_params[["tstop"]]
+  #if bolus oral dose is administered
+  if (bdose > 0){
+    # var to change
+    state_Var <- c("odose","totodose")
+    
+    # operation of event
+    operation <- c("add","add")
+    # times of event
+    if (breps==1){
+      # Value  of change
+      change_val1<- (bdose*bw*1000/mw)
+      change_val2<- change_val1
+      change_arr <- c(change_val1,change_val2)
+      #only one bolus dose per day
+      if (brep_flag){
+        event_times <- head(seq(tstart,tstop,24),-1)
+      }else{
+        event_times <- c(tstart)
+      }
+      
+    }else{
+      # Value  of change
+      change_val1<- (bdose*bw*1000/mw)/totbreps
+      change_val2<- change_val1
+      change_arr <- c(change_val1,change_val2)
+      #multiple bolus doses per day
+      if (brep_flag){
+        event_times <- unlist(lapply(X = 1:totdays,
+                                     FUN = function(x){
+                                       head(seq(0,blen,1/breps),-1)+(24*(x-1))
+                                     }
+        )
+        )
+      }else{
+        #only one day
+        event_times <- unlist(lapply(X = 1,
+                                     FUN = function(x){
+                                       head(seq(0,blen,1/breps),-1)+(24*(x-1))
+                                     }
+        )
+        )
+      }
+      
+    }
+    
+    eventDat <- data.frame(
+      
+      var = rep(x = state_Var,each = length(event_times)),
+      time = rep(event_times,length(state_Var)),
+      value = rep(x = change_arr,each = length(event_times)),
+      method = rep(x = operation,each = length(event_times))
+      
+    )
+    
+    # if drinking water dose is administered
+  }else if (ddose >0){
+    # var to change
+    state_Var <- c("ddose","totddose")
+    # Value  of change
+    change_val1 <- (ddose*1000*vdw/mw)/dreps
+    change_val2 <- change_val1
+    change_arr <- c(change_val1,change_val2)
+    # operation of event
+    operation <- c("add","add")
+    # times of event
+    event_times <- unlist(lapply(X = 1:totdays,function(x){head(seq(0,24,by = 24/dreps),-1)+24*(x-1)}))
+    
+    eventDat <- data.frame(
+      
+      var = rep(x = state_Var,each = length(event_times)),
+      time = rep(event_times,length(state_Var)),
+      value = rep(x = change_arr,each = length(event_times)),
+      method = rep(x = operation,each = length(event_times))
+      
+    )
+    # if inhalation dose is administered
+  }else if(bdosev > 0){
+    # var to change
+    state_Var <- c("odosev","totodosev")
+    
+    # operation of event
+    operation <- c("add","add")
+    # times of event
+    if (brepsv==1){
+      # Value  of change
+      change_val1<- (bdosev*bw*1000/mw)
+      change_val2<- change_val1
+      change_arr <- c(change_val1,change_val2)
+      #only one bolus dose per day
+      if (brepv_flag){
+        event_times <- head(seq(tstart,tstop,24),-1)
+      }else{
+        event_times <- c(tstart)
+      }
+      
+    }else{
+      # Value  of change
+      change_val1<- (bdosev*bw*1000/mw)/totbrepsv
+      change_val2<- change_val1
+      change_arr <- c(change_val1,change_val2)
+      #multiple bolus doses per day
+      if (brepv_flag){
+        event_times <- unlist(lapply(X = 1:totdays,
+                                     FUN = function(x){
+                                       head(seq(0,blenv,1/brepsv),-1)+(24*(x-1))
+                                     }
+        )
+        )
+      }else{
+        #only one day
+        event_times <- unlist(lapply(X = 1,
+                                     FUN = function(x){
+                                       head(seq(0,blenv,1/brepsv),-1)+(24*(x-1))
+                                     }
+        )
+        )
+      }
+      
+    }
+    
+    eventDat <- data.frame(
+      
+      var = rep(x = state_Var,each = length(event_times)),
+      time = rep(event_times,length(state_Var)),
+      value = rep(x = change_arr,each = length(event_times)),
+      method = rep(x = operation,each = length(event_times))
+      
+    )
+    
+  }else if (inhdose >0){
+    # var to change
+    state_var1 <- "inhswch"
+    state_var2 <- "inhswch"
+    # Value  of change
+    change_val1 <- 1
+    change_val2 <- 0
+    # operation of event
+    operation1 <- "rep"
+    operation2 <- "rep"
+    # times of event
+    
+    #days on which dosing can occue
+    event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:inhdays,function(y){(x-1)*7+y})}))
+    
+    event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
+    event_times1 <- event_times1[event_times1 < tstop]
+    event_times2 <- unlist(lapply(event_days,function(x){inhtlen+24*(x-1)}))
+    event_times2 <- event_times2[event_times2 < tstop]
+    eventDat <- data.frame(
+      var = c(rep(x = state_var1,each = length(event_times1)),rep(x = state_var2,each = length(event_times2))),
+      time = c(event_times1,event_times2),
+      value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
+      method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
+    )
+  }else if (ivdose >0){
+    # var to change
+    state_var1 <- "ivswch"
+    state_var2 <- "ivswch"
+    # Value  of change
+    change_val1 <- 1
+    change_val2 <- 0
+    # operation of event
+    operation1 <- "rep"
+    operation2 <- "rep"
+    # times of event
+    
+    #days on which dosing can occue
+    #event_days = unlist(lapply(X=1:7,function(x){lapply(1:inhdays,function(y){(x-1)*7+y})}))
+    event_days <- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
+    event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
+    event_times1 <- event_times1[event_times1 < tstop]
+    event_times2 <- unlist(lapply(event_days,function(x){ivlen+24*(x-1)}))
+    event_times2 <- event_times2[event_times2 < tstop]
+    eventDat <- data.frame(
+      var = c(rep(x = state_var1,each = length(event_times1)),rep(x = state_var2,each = length(event_times2))),
+      time = c(event_times1,event_times2),
+      value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
+      method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
+    )
+  }
+  else if(dermlen >0){
+    # var to change
+    state_var1 <- "drmswch"
+    state_var2 <- "drmswch"
+    # Value  of change
+    change_val1 <- 1
+    change_val2 <- 0
+    # operation of event
+    operation1 <- "rep"
+    operation2 <- "rep"
+    event_days <- 1:totdays
+    #event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
+    # if (derm_flag){
+    #   # times of event
+    #   event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
+    # }else{
+    #   # times of event
+    #   event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:2,function(y){(x-1)*7+y})}))
+    # }
+    print(dermlen)
+    print(event_days)
+    event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
+    event_times1 <- event_times1[event_times1 < tstop]
+    event_times2 <- unlist(lapply(event_days,function(x){dermlen+24*(x-1)}))
+    event_times2 <- event_times2[event_times2 < tstop]
+    print(event_times1)
+    eventDat <- data.frame(
+      var = c(rep(x = state_var1,each = length(event_times1)),rep(x = state_var2,each = length(event_times2))),
+      time = c(event_times1,event_times2),
+      value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
+      method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
+    )
+    
+  }
+  
+  times <- seq(tstart,tstop,by=0.1)
+  eventDat <- eventDat[order(eventDat$time),]
+  
+  state <- c(
+    inhswch = 0.0,
+    ainh = 0.0,
+    aexh = 0.0,
+    totodose = 0.0,
+    odose = 0.0,
+    totddose = 0.0,
+    ddose = 0.0,
+    odosev = 0.0,
+    totodosev = 0.0,
+    alas = 0.0,
+    akent = 0.0,
+    afec = 0.0,
+    aabsgut = 0.0,
+    ivswch = 0.0,
+    aiv = 0.0,
+    dermswch = 0.0,
+    aderm = 0.0,
+    adermabs = 0.0,
+    adermevap = 0.0,
+    abld = 0.0,
+    abfat = 0.0,
+    atfat = 0.0,
+    abskin = 0.0,
+    asc = 0.0,
+    ascMgcm2 = 0.0,
+    atskin = 0.0,
+    abmusc = 0.0,
+    atmusc = 0.0,
+    abbone = 0.0,
+    atbone = 0.0,
+    abbrn = 0.0,
+    atbrn = 0.0,
+    ablng = 0.0,
+    atlng = 0.0,
+    abhrt = 0.0,
+    athrt = 0.0,
+    abgi = 0.0,
+    atgi = 0.0,
+    abliv = 0.0,
+    atliv = 0.0,
+    abkdn = 0.0,
+    atkdn = 0.0,
+    abrpf = 0.0,
+    atrpf = 0.0,
+    abspf = 0.0,
+    atspf = 0.0,
+    ametliv1 = 0.0,
+    ametliv2 = 0.0,
+    aclbld = 0.0,
+    auexc = 0.0,
+    anabsgut = 0.0)
+  
+  initial_values <- list("evnt_data"= eventDat,
+                         "initial_params"= initial_params[params_list$names],
+                         "times"=times,
+                         "tstop"=tstop,"tstart"=tstart,
+                         "state"= state)
+  
+  return(initial_values)
+}
+
