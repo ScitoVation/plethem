@@ -265,6 +265,7 @@ shinyServer(function(input, output,session) {
   results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
+      mcResults <- NULL
       ########################################################################
       ## observeEvent(input$run_sim,{
       simid <- simSet3$simid[1]
@@ -317,7 +318,27 @@ shinyServer(function(input, output,session) {
             updateProgressBar(session,"pb",value = i, total = mc_num)
           }
           results$pbpk <<- as.data.frame(mc_results)
-          MymcResults <<- as.data.frame(mc_results)
+          # MymcResults <<- as.data.frame(mc_results)
+          plasmaResults <<- as.data.frame(results$pbpk$cpls_max)
+          colnames(plasmaResults) = 'Dose'
+          # plasmaResults <<- plasmaResults %>%
+          #   rename(
+          #     results$pbpk$cpls_max = 'DOSE'
+          #   )
+          if(is.null(mcResults)){
+            # print('it is null')
+            mcResults <<- plasmaResults
+          } else{
+            # print('something exists')
+            mcResults <<- cbind(mcResults,plasmaResults)# %>%
+          }
+          # mcResults <<- mcResults %>% 
+          #   rename(
+          #     results$pbpk$cpls_max = 'DOSE'
+          #   )
+          #   mutate(
+          #     xCol = as.data.frame(mc_results['cpls_max'])
+          #   )
           results$mode <- "MC"
       #     updateNavbarPage(session,"menu","output")
         }else{
