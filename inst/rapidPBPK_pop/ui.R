@@ -1355,7 +1355,7 @@ shinyUI(fluidPage(
                                                  fluidRow(
                                                    column(4,
                                                           bsButton("btn_metab_upload",
-                                                                   "Upload Metabolism Files",
+                                                                   "Upload age-based hepatic metabolism data",
                                                                    block = T)
                                                           )
                                                    ),
@@ -1383,16 +1383,20 @@ shinyUI(fluidPage(
                                                    )
                                                  )
                                                ),
-                                             tags$hr(style = "border: 1px dashed black;"),
-                                                 fluidRow(
-                                                   column(6,
-                                                          numericInput("ms_kent2",label = "Rate of metabolism in the gut lumen", value = 5, step = 0.01)
+                                             fluidRow(
+                                               tags$hr(style = "border: 1px dashed black;")
+                                             ),
+                                             fluidRow(
+                                               column(6,
+                                                      numericInput("ms_kent2",label = "Rate of metabolism in the gut lumen", value = 5, step = 0.01)
                                                    )
-                                                 ),
-                                                 tags$hr(style = "border: 1px dashed black;"),
-                                                 fluidRow(
-                                                   column(6,
-                                                          numericInput("ms_kbld2","First Order Metabolism in Blood",0,0.75,0.95,0.01)
+                                               ),
+                                             fluidRow(
+                                               tags$hr(style = "border: 1px dashed black;")
+                                             ),
+                                             fluidRow(
+                                               column(6,
+                                                      numericInput("ms_kbld2","First Order Metabolism in Blood",0,0.75,0.95,0.01)
                                                  )
                                                  )
                                                )
