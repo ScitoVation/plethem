@@ -252,7 +252,7 @@ shinyServer(function(input, output,session) {
       inputId = "myconfirmation",
       type = "warning",
       title = "Are you sure you want to run a simulation?",
-      text = "This may take several hours to complete."
+      text = "This may take a while to complete."
     )
   })
   vol_ids <- c("fat"="vfatc","skin"="vskinc",
