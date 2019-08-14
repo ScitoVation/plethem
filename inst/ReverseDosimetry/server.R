@@ -269,17 +269,30 @@ shinyServer(function(input, output,session) {
       nDoses <- 3#input$mcNumeric
       if(myExpoid == 'oral'){
         whichDose = 'bdose'
+        doseName = 'Oral'
+        doseUnits = 'mg/kg BW/day'
       } else if(myExpoid == 'dw'){
         whichDose = 'drdose'
+        doseName = 'Drinking Water'
+        doseUnits = 'mg/L'
       } else if(myExpoid == 'inh'){
         whichDose = 'inhdose'
+        doseName = 'Inhalation'
+        doseUnits = 'ppm'
       } else if(myExpoid == 'iv'){
         whichDose = 'ivdose'
+        doseName = 'IV'
+        doseUnits = 'mg/L'
       } else if(myExpoid == 'derm'){
         whichDose = 'dermrate'
+        doseName = 'Dermal'
+        doseUnits = '\U00B5m/n/cm\U00B2'
       } else if(myExpoid == 'oralv'){
         whichDose = 'bdosev'
+        doseName = 'Oral Vehicle'
+        doseUnits = 'mg/kg BW/day'
       } else whichDose = 'Something went wrong'
+      
       ## observeEvent(input$run_sim,{
       simid <- simSet3$simid[1]
         results$simid <- simid
@@ -397,6 +410,61 @@ shinyServer(function(input, output,session) {
       ########################################################################
       # print('Running Monte Carlo')
       # print(paste('Number of doses = ',input$mcNumeric, '!', sep = ''))
+        
+        updatemenus <- list(
+          list(
+            active = 0,
+            type = 'buttons',
+            buttons = list(
+              list(
+                label = 'Default',
+                method = 'relayout',
+                args = list(
+                  list(
+                    yaxis = list(
+                      title = paste('Concentrations (mg/L)', sep = ''),
+                      type = 'linear'
+                    )
+                  )
+                )
+              ),
+              list(
+                label = 'Log Y-Axis',
+                method = 'relayout',
+                args = list(
+                  list(
+                    yaxis = list(
+                      title = paste('Log Concentrations (mg/L)', sep = ''),
+                      type = 'log'
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        
+        output$Plot1 <- renderPlotly({
+          p <- plot_ly(
+            stack(mcResults),
+            x = ~ind,
+            y = ~values,
+            type = "box"
+          ) %>%
+            layout(
+              title = paste(input$simulation, 'Monte Carlo Simulation'),
+              yaxis = list(
+                title = paste('Concentrations (mg/L)', sep = '')
+              ),
+              xaxis = list(
+                title = paste(doseName, ' Exposure (', doseUnits,')', sep = '')
+              ),
+              margin = m,
+              updatemenus = updatemenus
+            )
+        })
+        
+        
       removeModal()
     }
     else{
