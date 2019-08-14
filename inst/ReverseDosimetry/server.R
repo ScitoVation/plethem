@@ -265,7 +265,7 @@ shinyServer(function(input, output,session) {
   results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
-      print(paste('max = ',input$mySlider2[2]))
+      # print(paste('max = ',input$mySlider2[2]))
       nDoses <- 3#input$mcNumeric
       if(myExpoid == 'oral'){
         whichDose = 'bdose'
@@ -280,13 +280,11 @@ shinyServer(function(input, output,session) {
       } else if(myExpoid == 'oralv'){
         whichDose = 'bdosev'
       } else whichDose = 'Something went wrong'
-      ########################################################################
       ## observeEvent(input$run_sim,{
       simid <- simSet3$simid[1]
         results$simid <- simid
         # get the parameters needed to run the model
         model_params <<- getAllParamValuesForModel(simid,model)
-        #modedPVals <<- model_params$vals
         #get total volume
         active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
         vol_comps <- c(active_comp,"blood")
@@ -299,15 +297,15 @@ shinyServer(function(input, output,session) {
         #       })
         #   )
         # )
-        test_vol_comps <<- vol_comps
-        test_total_Vol <<- total_vol
-        test_vol_ids <<- vol_ids
+        # test_vol_comps <<- vol_comps
+        # test_total_Vol <<- total_vol
+        # test_vol_ids <<- vol_ids
         query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
         mc_num <- as.integer(projectDbSelect(query)$mc_num)
-        print(paste('mc_num: ',mc_num))
+        # print(paste('mc_num: ',mc_num))
         model_params$vals[["total_vol"]]<- total_vol
-        print(total_vol)
-        print(paste(whichDose, ': ', model_params$vals[[whichDose]]))
+        # print(total_vol)
+        # print(paste(whichDose, ': ', model_params$vals[[whichDose]]))
         if (mc_num > 1){
           MC.matrix <<- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
           query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
@@ -326,8 +324,8 @@ shinyServer(function(input, output,session) {
           increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
           # print(increaseDose)
           for(n in 1:(nDoses)){
-            print(paste('hello ', n ))
-            print(currentDose)
+            # print(paste('hello ', n ))
+            # print(currentDose)
             model_params$vals[[whichDose]] <- currentDose
             
             
@@ -352,7 +350,7 @@ shinyServer(function(input, output,session) {
           # MymcResults <<- as.data.frame(mc_results)
           plasmaResults <- as.data.frame(results$pbpk$cpls_max)
           colnames(plasmaResults) = currentDose
-          pr2 <<- plasmaResults
+          # pr2 <<- plasmaResults
           # plasmaResults <<- plasmaResults %>%
           #   rename(
           #     results$pbpk$cpls_max = 'DOSE'
@@ -363,10 +361,10 @@ shinyServer(function(input, output,session) {
           # }
           # mcResults2[n] <<- plasmaResults[1]
           if(n==1){#is.null(mcResults)){
-            print('it is null')
+            # print('it is null')
             mcResults <<- plasmaResults
           } else{
-            print('something exists')
+            # print('something exists')
             mcResults <<- cbind(mcResults,plasmaResults)# %>%
           }
           # mcResults <<- mcResults %>% 
@@ -397,8 +395,8 @@ shinyServer(function(input, output,session) {
       
       
       ########################################################################
-      print('Running Monte Carlo')
-      print(paste('Number of doses = ',input$mcNumeric, '!', sep = ''))
+      # print('Running Monte Carlo')
+      # print(paste('Number of doses = ',input$mcNumeric, '!', sep = ''))
       removeModal()
     }
     else{
