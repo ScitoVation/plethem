@@ -265,14 +265,28 @@ shinyServer(function(input, output,session) {
   results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
-      mcResults <- NULL
+      print(paste('max = ',input$mySlider2[2]))
+      nDoses <- 3#input$mcNumeric
+      if(myExpoid == 'oral'){
+        whichDose = 'bdose'
+      } else if(myExpoid == 'dw'){
+        whichDose = 'drdose'
+      } else if(myExpoid == 'inh'){
+        whichDose = 'inhdose'
+      } else if(myExpoid == 'iv'){
+        whichDose = 'ivdose'
+      } else if(myExpoid == 'derm'){
+        whichDose = 'dermrate'
+      } else if(myExpoid == 'oralv'){
+        whichDose = 'bdosev'
+      } else whichDose = 'Something went wrong'
       ########################################################################
       ## observeEvent(input$run_sim,{
       simid <- simSet3$simid[1]
-      # print(simid)
         results$simid <- simid
         # get the parameters needed to run the model
-        model_params <- getAllParamValuesForModel(simid,model)
+        model_params <<- getAllParamValuesForModel(simid,model)
+        #modedPVals <<- model_params$vals
         #get total volume
         active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
         vol_comps <- c(active_comp,"blood")
@@ -293,8 +307,9 @@ shinyServer(function(input, output,session) {
         print(paste('mc_num: ',mc_num))
         model_params$vals[["total_vol"]]<- total_vol
         print(total_vol)
+        print(paste(whichDose, ': ', model_params$vals[[whichDose]]))
         if (mc_num > 1){
-          MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+          MC.matrix <<- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
           query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
                            model)
           mc_vars<- mainDbSelect(query)$model_var
@@ -302,34 +317,56 @@ shinyServer(function(input, output,session) {
             return(x = rep(NA,n))
           },mc_num)
           names(mc_results)<- mc_vars
-          for (i in 1:mc_num){
-            model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
-            initial_values <- calculateInitialValues(model_params)
-            tempDF <- runFDPBPK(initial_values,model)
-            max_list <- unlist(lapply(mc_vars,function(x,data){
-              var_name <- gsub("_max","",x)
-
-              return(max(data[var_name]))
-            },tempDF$pbpk))
-            names(max_list)<- mc_vars
-            for (x in mc_vars){
-              mc_results[[x]][[i]]<- max_list[[x]]
-            }
-            updateProgressBar(session,"pb",value = i, total = mc_num)
+          
+          currentDose <- input$mySlider2[1]
+          if(currentDose == 0){
+            currentDose = 0.05
           }
-          results$pbpk <<- as.data.frame(mc_results)
+          # maxDose <- input$mySlider2[2]
+          increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
+          # print(increaseDose)
+          for(n in 1:(nDoses)){
+            print(paste('hello ', n ))
+            print(currentDose)
+            model_params$vals[[whichDose]] <- currentDose
+            
+            
+            for (i in 1:mc_num){
+              model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
+              initial_values <<- calculateInitialValues(model_params)
+              tempDF <- runFDPBPK(initial_values,model)
+              max_list <- unlist(lapply(mc_vars,function(x,data){
+                var_name <- gsub("_max","",x)
+                
+                return(max(data[var_name]))
+              },tempDF$pbpk))
+              names(max_list)<- mc_vars
+              for (x in mc_vars){
+                mc_results[[x]][[i]]<- max_list[[x]]
+              }
+              updateProgressBar(session,"pb",value = ((n-1)*mc_num + i), total = mc_num*nDoses)
+            }
+            
+          
+          results$pbpk <- as.data.frame(mc_results)
           # MymcResults <<- as.data.frame(mc_results)
-          plasmaResults <<- as.data.frame(results$pbpk$cpls_max)
-          colnames(plasmaResults) = 'Dose'
+          plasmaResults <- as.data.frame(results$pbpk$cpls_max)
+          colnames(plasmaResults) = currentDose
+          pr2 <<- plasmaResults
           # plasmaResults <<- plasmaResults %>%
           #   rename(
           #     results$pbpk$cpls_max = 'DOSE'
           #   )
-          if(is.null(mcResults)){
-            # print('it is null')
+          
+          # if(n == 1){
+          #   mcResults2 <<- NULL
+          # }
+          # mcResults2[n] <<- plasmaResults[1]
+          if(n==1){#is.null(mcResults)){
+            print('it is null')
             mcResults <<- plasmaResults
           } else{
-            # print('something exists')
+            print('something exists')
             mcResults <<- cbind(mcResults,plasmaResults)# %>%
           }
           # mcResults <<- mcResults %>% 
@@ -340,6 +377,8 @@ shinyServer(function(input, output,session) {
           #     xCol = as.data.frame(mc_results['cpls_max'])
           #   )
           results$mode <- "MC"
+          currentDose = currentDose * increaseDose
+        }
       #     updateNavbarPage(session,"menu","output")
         }else{
           initial_values <- calculateInitialValues(model_params)
@@ -378,7 +417,7 @@ shinyServer(function(input, output,session) {
         expoid == simSet3$expoid & 
           param == 'expo_sidebar'
       )
-    myExpoid <- exposureType$value[1]
+    myExpoid <<- exposureType$value[1]
     if(myExpoid == 'oral'){
       mySliderLabel = 'Oral (mg/kg BW/day)'
     } else if(myExpoid == 'dw'){
