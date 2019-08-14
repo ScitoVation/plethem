@@ -1172,6 +1172,60 @@ shinyUI(fluidPage(
 
 
                                   ),
+                                  tabPanel("ADME",
+                                           fluidPage(
+                                             fluidRow(
+                                               column(12,
+                                                      div(style = "height:10px")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(width = 7, offset = 0,
+                                                      selectizeInput("sel_adme",NULL,
+                                                                     choices = NULL,
+                                                                     options= list(placeholder = "ADME",
+                                                                                   openOnFocus = T))),
+                                               column(width = 5, offset = 0,
+                                                      shinyWidgets::actionGroupButtons(
+                                                        c("btn_sverest_adme","btn_saveas_adme"),
+                                                        c("Save/Restore","Save As"),
+                                                        direction = "horizontal",
+                                                        status = "info",
+                                                        fullwidth = T
+                                                        
+                                                      ))
+                                             ),
+                                             fluidRow(
+                                               column(12,
+                                                      div(style = "height:10px")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(6,
+                                                      selectizeInput("sel_chem4adme",choices = NULL,label = NULL,
+                                                                     options = list(placeholder = "Select Chemical"))
+                                               ),
+                                               column(6,
+                                                      selectizeInput("sel_physio4adme",choices=NULL,label = NULL,
+                                                                     options = list(placeholder = "Select Physiology"))
+                                                      )
+                                             ),
+                                             fluidRow(
+                                               column(12,
+                                                      div(style = "height:15px")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               tabsetPanel(id = "adme_tabs",type = "pills",
+                                                           tabPanel("Absorption"),
+                                                           tabPanel("Distribution"),
+                                                           tabPanel("Metabolism"),
+                                                           tabPanel("Excretion")
+                                             )
+                                             )
+                                           )
+                                           
+                                           ),
                                   tabPanel("Uncertanity and Variability",
                                            dashboardPage(
                                              dashboardHeader(disable = T),
