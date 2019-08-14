@@ -337,7 +337,7 @@ shinyServer(function(input, output,session) {
           increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
           # print(increaseDose)
           for(n in 1:(nDoses)){
-            # print(paste('hello ', n ))
+            print(paste('Running monte carlo simulation ', n ))
             # print(currentDose)
             model_params$vals[[whichDose]] <- currentDose
             
