@@ -83,8 +83,8 @@ shinyUI(
           ),
           br(),
           bsButton(
-            'btnRunRevDos',
-            'Run Reverse Dosimetry',
+            'btnRTRExtrapolation',
+            'Run Route To Route Extrapolation',
             block = TRUE,
             style = 'primary',
             width = '80%'

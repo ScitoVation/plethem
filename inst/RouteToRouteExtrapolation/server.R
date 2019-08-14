@@ -718,7 +718,7 @@ shinyServer(function(input, output,session) {
   
   outputOptions(output, "toggleSidebar", suspendWhenHidden = F)
   
-  observeEvent(input$btnRunRevDos,{
+  observeEvent(input$btnRTRExtrapolation,{
     ppbFiles <- list.files(pattern = 'PercentilePPB.*csv') # list of all of the files to import
     df_list <- lapply(ppbFiles,read_csv) # read each file into a data frame
     percentileDF <- as.data.frame(bind_rows(df_list)) # concatenates all of the data frames
