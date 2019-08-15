@@ -8,18 +8,34 @@
 saveAsParameterSetUI <- function(namespace, set_type){
   shinyjs::useShinyjs()
   ns <- NS(namespace)
+  
   set_name <- switch(set_type,
                      "physio" = "Physiological",
                      "chem" = "Chemical",
                      "expo" = "Exposure")
+  id_name <- paste0(set_type,"id")
+  set_table_name <- paste0(set_name,"Set")
+  
+  # get the current ID for the parameter set.
+  
+  query <- sprintf("SELECT %s FROM %s;",id_name,set_table_name)
+  id_list <- projectDbSelect(query)
+  
+  if (length(id_list[[id_name]])==0){
+    id_num = 1
+  }else{
+    id_num = max(id_list[[id_name]])+1
+  }
   showModal(modalDialog(title = paste0("Save ",set_name," Parameter Set"),easyClose = TRUE,
                         tagList(
-                          textInput(ns("name"),"Parameter Set Name",placeholder = "Enter Name for the dataset"),
-                          textInput(ns("descrp"),"Description",placeholder = "Enter description for the dataset"),
+                          textInput(ns("name"),"Parameter Set Name",value = paste0(set_name," Set ",id_num)
+                                   ),
+                          textInput(ns("descrp"),"Description",value = "Description",
+                                    placeholder = "Enter description for the dataset"),
                           shinyjs::hidden(textInput(ns("cas"),"CAS Number",placeholder = "Enter CAS Number"))
                         ),
                         footer= tagList(
-                          shinyjs::disabled(bsButton(ns("add"),"Add",type = "action")),
+                          bsButton(ns("add"),"Add",type = "action"),
                           modalButton("Cancel")
                         )
                         )
@@ -62,15 +78,8 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
   }
   returnValues$savedat<- eventReactive(input$add,{return(c("Yes",set_type,id_num))})
 
-  checkData <- reactive({
-    req(input$name,input$descrp,cancelOutput = TRUE)
-  })
-  observe({
-    if(checkData() != ""){
-      shinyjs::enable("add")
-    }
-  })
 
+  
   observeEvent(input$add,{
     main_input <- reactiveValuesToList(main_input)
 
@@ -102,3 +111,4 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
   },ignoreNULL = T,ignoreInit = T)
   return(returnValues$savedat)
 }
+

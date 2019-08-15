@@ -54,10 +54,14 @@ shinyServer(function(input, output, session) {
   observe({
     exposet <- parameterSets$expo()
     updateSelectizeInput(session,"sel_set_expo",choices = exposet)
+    updateSelectizeInput(session,"sel_expo4adme",choices = exposet)
     physioset <- parameterSets$physio()
     updateSelectizeInput(session,"sel_set_physio",choices = physioset)
+    updateSelectizeInput(session,"sel_physio4adme",choices = physioset)
     chemset <- parameterSets$chem()
     updateSelectizeInput(session,"sel_set_chem",choices = chemset)
+    updateSelectizeInput(session,"sel_chem4Partition",choices = chemset)
+    updateSelectizeInput(session,"sel_chem4adme",choices = chemset)
     metabset<- parameterSets$metab()
     metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",metabset)
     updateSelectizeInput(session,"sel_set_metab",choices = metabset)
@@ -73,24 +77,15 @@ shinyServer(function(input, output, session) {
   })
   # get global variables needed to run the model
 
-  # get the connection to the master database
-  #db <- system.file("database/plethemdb.sqlite",package = "plethem.r.package",mustWork = TRUE)
-  #master_conn <- RSQLite::dbConnect(RSQLite::SQLite(),db)
 
-  # get the parameter table for physiological and exposure variables.
+  # get the parameter table for physiological,exposure, chemical and adme variables.
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';",
                    model)
   physio_name_df <- mainDbSelect(query)
-  # res <- RSQLite::dbSendQuery(master_conn,query)
-  # physio_name_df <- RSQLite::dbFetch(res)
-  # RSQLite::dbClearResult(res)
 
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';",
                    model)
   expo_name_df <- mainDbSelect(query)
-  # res <- RSQLite::dbSendQuery(master_conn,query)
-  # expo_name_df <- RSQLite::dbFetch(res)
-  # RSQLite::dbClearResult(res)
 
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
                    model)
@@ -114,7 +109,7 @@ shinyServer(function(input, output, session) {
   }
   set_choices <- getAllSetChoices(set_type = "metab")
   if (length(set_choices)>0){
-    updateSelectizeInput(session,"sel_metab",choices = set_choices)
+    updateSelectizeInput(session,"sel_metabfiles",choices = set_choices)
   }
   set_choices <- getAllSetChoices(set_type = "sim")
   if (length(set_choices)>0){
@@ -178,30 +173,6 @@ shinyServer(function(input, output, session) {
   })
   ############ End chuck for handling lumping compartments
 
-
-   #paraValueList <- getAllParamValues(isolate(input))
-   #param_values_list <-getAllParamValues(isolate(input))
-
-
-
-
-  # ################# Updating Chemical parameter values
-  # observeEvent({input$selectedChem },{
-  #   if(input$selectedChem != ""){
-  #     if(input$useQSar){
-  #       updateAwesomeCheckbox(session,"useQSar",value = F)
-  #     }
-  #       #updateMainChemValues(session, input$selectedChem)
-  #
-  #     values <- updateMainChemValues(session, input$selectedChem)
-  #
-  #     for(name in names(values)){
-  #      paraValueList[name] <<- values[[name]]
-  #      param_values_list[name] <<- values[[name]]
-  #      }
-  #   }
-  # })
-
   ########### The next code chunk deals with updating select inputs for all parameter sets]
   # Import SEEM, SHEDS-HT, batch exposure, and TRA data
   observeEvent(input$btn_import_expo,{
@@ -223,77 +194,7 @@ shinyServer(function(input, output, session) {
   })
   
   
-  
-  
-  
-  # # Import SEEM data
-  # observeEvent(input$btn_seem_upload,{
-  #   path <-fpath_seem()
-  #   importSEEMDataUI(paste0("seem",input$btn_seem_upload))
-  #   parameterSets$importSeem <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload),
-  #                      path,expo_name_df)
-  # })
-  # 
-  # fpath_seem <- reactive({
-  #   fpath <- tcltk::tk_choose.files(multi = F)
-  #   return(fpath)
-  # })
-  # 
-  # observe({
-  #   result_vector <- parameterSets$importSeem
-  #   if(result_vector()[1]=="Yes"){
-  #     set_type <- "expo"
-  #     set_list <- getAllSetChoices(set_type)
-  #     parameterSets[[set_type]] <- reactiveVal(set_list)
-  #     updateSelectizeInput(session,paste0("sel_",set_type),
-  #                          choices = set_list)
-  #   }
-  # })
-  # 
-  # # Import SHEDS-HT data
-  # observeEvent(input$btn_sheds_upload,{
-  #   path <-fpath_sheds()
-  #   importShedsDataUI(paste0("sheds",input$btn_sheds_upload))
-  #   parameterSets$importSheds<- callModule(importShedsData,
-  #                                          paste0("sheds",input$btn_sheds_upload),
-  #                                          path,expo_name_df)
-  # })
-  # 
-  # fpath_sheds <- reactive({
-  #   fpath <- rstudioapi::selectDirectory("Select SHEDS-HT Folder")
-  #   return(fpath)
-  # })
-  # 
-  # observe({
-  #   result_vector <- parameterSets$importSheds
-  #   if(result_vector()[1]=="Yes"){
-  #     set_type <- "expo"
-  #     set_list <- getAllSetChoices(set_type)
-  #     parameterSets[[set_type]] <- reactiveVal(set_list)
-  #     updateSelectizeInput(session,paste0("sel_",set_type),
-  #                          choices = set_list)
-  #   }
-  # })
-  # # Import Batch Exposure data
-  # observeEvent(input$btn_batch_upload,{
-  #   importBatchExposureUI(paste0("batch",input$btn_batch_upload))
-  #   parameterSets$importBatch <- callModule(importBatchExposure,
-  #              paste0("batch",input$btn_batch_upload),
-  #              expo_name_df)
-  # })
-  # observe({
-  #   result_vector <- parameterSets$importBatch
-  #   if(result_vector()[1]=="Yes"){
-  #     set_type <- "expo"
-  #     set_list <- getAllSetChoices(set_type)
-  #     parameterSets[[set_type]] <- reactiveVal(set_list)
-  #     updateSelectizeInput(session,paste0("sel_",set_type),
-  #                          choices = set_list)
-  #   }
-  # })
-  
-  ### Import button current for chemicals only
-  # Import a new chemical set from user or main database
+  ### Import button handlers
    #### Chunk for handling chemical tab
    observeEvent(input$btn_import_chem,{
      
@@ -307,8 +208,6 @@ shinyServer(function(input, output, session) {
      parameterSets$importdat <- callModule(importParameterSet,input$btn_import_physio,"physio")
      
    })
-
-
    # update the paramter set dropdown if it is changed
    observe({
      result_vector <- parameterSets$importdat
@@ -339,16 +238,7 @@ shinyServer(function(input, output, session) {
     vol_comps <- c(active_comp,"blood")
     perfc <- input$ms_perfc
     total_vol <- sum(unlist(lapply(vol_comps,function(x){input[[vol_ids[x]]]})))
-    #exposure
-    # if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
-    #   showModal(
-    #     modalDialog(
-    #       tags$h4("Invalid Exposure Parameters"),
-    #       tags$h5("Atleast one route of exposure should be active"),
-    #       title = "Error"
-    #     )
-    #   )
-    # }else 
+
     if ("gi" %in% active_comp && !("liver" %in% active_comp)){
       shinyWidgets::sendSweetAlert(session,
                                    title = "Invalid Compartment Configuration",
@@ -380,9 +270,10 @@ shinyServer(function(input, output, session) {
         )
       )
     }else{
-      saveAsParameterSetUI(input$btn_saveas_physio,"physio")
+      ns <- paste0("physio",input$btn_saveas_physio)
+      saveAsParameterSetUI(ns,"physio")
       parameterSets$savedat <- callModule(saveAsParameterSet,
-                                          input$btn_saveas_physio,
+                                          ns,
                                           "physio",isolate(input),
                                           physio_name_df)
     }
@@ -396,17 +287,12 @@ shinyServer(function(input, output, session) {
                                    title = "Invalid Exposure Parameters",
                                    text = "Atleast one route of exposure should be active",
                                    type = "error")
-      # showModal(
-      #   modalDialog(
-      #     tags$h4("Invalid Exposure Parameters"),
-      #     tags$h5("Atleast one route of exposure should be active"),
-      #     title = "Error"
-      #   )
-      # )
+
     }else{
-      saveAsParameterSetUI(input$btn_saveas_expo,"expo")
+      ns <- paste0("expo",input$btn_saveas_expo)
+      saveAsParameterSetUI(ns,"expo")
       parameterSets$savedat <- callModule(saveAsParameterSet,
-                                          input$btn_saveas_expo,
+                                          ns,
                                           "expo",isolate(input),
                                           expo_name_df)
     }
@@ -415,8 +301,11 @@ shinyServer(function(input, output, session) {
 
   #Save a new chemical parameter set
   observeEvent(input$btn_saveas_chem,{
-    saveAsParameterSetUI(input$btn_saveas_chem,"chem")
-    parameterSets$savedat <- callModule(saveAsParameterSet,input$btn_saveas_chem,"chem",isolate(input),chem_name_df)
+    ns <- paste0("chem",input$btn_saveas_chem)
+    saveAsParameterSetUI(ns,"chem")
+    parameterSets$savedat <- callModule(saveAsParameterSet,ns,
+                                        "chem",isolate(input),
+                                        chem_name_df)
   })
 
 
@@ -430,7 +319,7 @@ shinyServer(function(input, output, session) {
       parameterSets[[set_type]] <- reactiveVal(set_list)
       updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
       if(set_type == "chem"){
-        updateSelectizeInput(session,"sel_chem4Partition",choices = set_list)
+        #updateSelectizeInput(session,"sel_chem4Partition",choices = set_list)
       }
       parameterSets$savedat <- reactiveVal(c("No","",0))
       # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
@@ -527,11 +416,7 @@ shinyServer(function(input, output, session) {
                               row.names = NULL,
                               stringsAsFactors = F)
       updateUIInputs(session,change_df)
-      # a <- mapply(function(var,org){
-      #   print(var)
-      #   tempvar <- name_data$ParamType[which(name_data$Var == var, arr.ind = T)]
-      #   return(var,tempvar)
-      # },table_data$Variable,table_data$Original.Value)
+
 
     }
   })
@@ -962,7 +847,7 @@ shinyServer(function(input, output, session) {
         projectDbUpdate(query)
 
         set_list <- getAllSetChoices(set_type)
-        updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = id_num)
+        updateSelectizeInput(session,"sel_metabfiles",choices = set_list, selected = id_num)
         metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",set_list)
         updateSelectizeInput(session,"sel_set_metab",choices = metabset)
         removeModal()

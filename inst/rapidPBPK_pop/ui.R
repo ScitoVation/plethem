@@ -990,7 +990,7 @@ shinyUI(fluidPage(
                         progressBar(id = "pb",value = 0, status = "success",striped = T)
                       ),
                       tabsetPanel(id= "modelSetupTabs", type = "tabs",
-                                  tabPanel("Exposure",
+                                  tabPanel("Exposure",value = "expo",
                                            fluidPage(
                                              bsModal("modalExpoSave",title = NULL,trigger = "btn_save_expo",
 
@@ -1057,7 +1057,7 @@ shinyUI(fluidPage(
                                   ),
 
 
-                                  tabPanel("Chemical",
+                                  tabPanel("Chemical",value = "chem",
                                            fluidPage(
 
 
@@ -1098,7 +1098,7 @@ shinyUI(fluidPage(
                                   ),
 
 
-                                  tabPanel("Physiological",
+                                  tabPanel("Physiological",value= "physio",
 
 
                                            fluidPage(
@@ -1172,7 +1172,7 @@ shinyUI(fluidPage(
 
 
                                   ),
-                                  tabPanel("ADME",
+                                  tabPanel("ADME",value = "adme",
                                            fluidPage(
                                              fluidRow(
                                                column(12,
@@ -1201,11 +1201,15 @@ shinyUI(fluidPage(
                                                )
                                              ),
                                              fluidRow(
-                                               column(6,
+                                               column(4,
+                                                      selectizeInput("sel_expo4adme",choices= NULL,label= NULL,
+                                                                     options = list(placeholder = "Select Exposure"))
+                                                      ),
+                                               column(4,
                                                       selectizeInput("sel_chem4adme",choices = NULL,label = NULL,
                                                                      options = list(placeholder = "Select Chemical"))
                                                ),
-                                               column(6,
+                                               column(4,
                                                       selectizeInput("sel_physio4adme",choices=NULL,label = NULL,
                                                                      options = list(placeholder = "Select Physiology"))
                                                       )
@@ -1217,16 +1221,87 @@ shinyUI(fluidPage(
                                              ),
                                              fluidRow(
                                                tabsetPanel(id = "adme_tabs",type = "pills",
-                                                           tabPanel("Absorption"),
+                                                           tabPanel("Absorption",
+                                                                    fluidPage(
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:5px")
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               numericInput("ms_fa2","Fraction absorbed in Gut Lumen",
+                                                                                            value = 1, min = 0, max = 1)
+                                                                               ),
+                                                                        column(4,
+                                                                               numericInput("ms_ka2","Rate of Absorption in Gut Lumen(per h)",
+                                                                                            value = 5,min = 0)),
+                                                                        column(4,
+                                                                               numericInput("ms_kVtoL2","Tranfer Rate from vehicle to gut lumen (per h)",
+                                                                                            value = 1, min = 0)
+                                                                               )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               numericInput("ms_KPtot2","Total Stratum Corneum permeation coefficient (cm^2\\h)",
+                                                                                            value = 1000,min = 0)),
+                                                                        column(4,
+                                                                               numericInput("ms_maxcap2","Maximum capacity of the startum corneum (mg\\cm^2)",
+                                                                                            value = 1000, min =0)),
+                                                                        column(4,
+                                                                               numericInput("ms_Kevap2","Evaporation Rate from Stratum Corneum",
+                                                                                            value = 1000,min = 0))
+                                                                      )
+                                                                    )
+                                                                    ),
                                                            tabPanel("Distribution"),
-                                                           tabPanel("Metabolism"),
+                                                           tabPanel("Metabolism",
+                                                                    fluidPage(
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:10px")
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(2,
+                                                                               shinyBS::bsButton("btn_ivive_chem",
+                                                                                                 "Perform IVIVE",block = T)
+                                                                        ),
+                                                                        column(4,
+                                                                               bsButton("btn_metab_upload",
+                                                                                        "Upload age-based hepatic metabolism data",
+                                                                                        block = T)
+                                                                        ),
+                                                                        column(6,
+                                                                               selectizeInput("sel_metabfiles",choices = NULL,label = NULL)
+                                                                               )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:5px")
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(6,
+                                                                               numericInput("ms_vmaxc2",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
+                                                                        ),
+                                                                        column(6,
+                                                                               numericInput("ms_km2","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01)
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(6,
+                                                                               numericInput("ms_vkm1c2", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
+                                                                        )
+                                                                      )
+                                                                    )),
                                                            tabPanel("Excretion")
                                              )
                                              )
                                            )
                                            
                                            ),
-                                  tabPanel("Uncertanity and Variability",
+                                  tabPanel("Uncertanity and Variability", value = "variability",
                                            dashboardPage(
                                              dashboardHeader(disable = T),
                                              dashboardSidebar(
@@ -1377,26 +1452,21 @@ shinyUI(fluidPage(
                                                ),
                                              fluidRow(
                                                conditionalPanel(
-                                                 "input.hep_metab_type=='hep_fixed'",
-                                                   fluidRow(
-                                                     column(2,
-                                                            shinyBS::bsButton("btn_ivive_chem",
-                                                                              "Perform IVIVE",block = T)
-                                                            )
-                                                     ),
-                                                 fluidRow(
-                                                   column(6,
-                                                          numericInput("ms_vmaxc2",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
-                                                          ),
-                                                   column(6,
-                                                          numericInput("ms_km2","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01)
-                                                          )
-                                                   ),
-                                                 fluidRow(
-                                                   column(6,
-                                                          numericInput("ms_vkm1c2", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
-                                                          )
-                                                   )
+                                                 "input.hep_metab_type=='hep_fixed'"
+                                                   #,
+                                                 # fluidRow(
+                                                 #   column(6,
+                                                 #          numericInput("ms_vmaxc2",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
+                                                 #          ),
+                                                 #   column(6,
+                                                 #          numericInput("ms_km2","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01)
+                                                 #          )
+                                                 #   ),
+                                                 # fluidRow(
+                                                 #   column(6,
+                                                 #          numericInput("ms_vkm1c2", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
+                                                 #          )
+                                                 #   )
                                                  ),
                                                conditionalPanel(
                                                  "input.hep_metab_type=='hep_age'",
