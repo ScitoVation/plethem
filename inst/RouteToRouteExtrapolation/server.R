@@ -6,6 +6,7 @@
 # 
 #    http://shiny.rstudio.com/
 #
+# ROUTE TO ROUTE EXTRAPOLATION
 
 library(shiny)
 library(RSQLite)
@@ -38,51 +39,25 @@ shinyServer(function(input, output,session) {
   dataset <- reactiveValues()
   dataset$savedat <- reactiveVal(c("No","none"))
   
-  monteCarloModal <- function() {
+  selectProjModal <- function() {
     modalDialog(
       useShinyjs(),
-      # title = "Upload Monte Carlo Results",
+      title = "Upload Project",
       easyClose = F,#TRUE,
-      size = "l",
+      size = "m",
       tagList(
+        tags$style(
+          type='text/css',
+          '.modal-title {
+            text-align: center;
+          }'
+        ),
         useSweetAlert(),
-        tabsetPanel(
-          id = 'modalNav',
-          tabPanel(
-            title = 'Upload Existing Results',
-            br(),
-            textInput(
-              "mcname",
-              "Dataset Name",
-              placeholder = "Enter name for the dataset"
-            ),
-            fluidRow(
-              column(
-                6,
-                shinyWidgets::radioGroupButtons(
-                  "type",
-                  "Select Exposure Type",
-                  choices = c("Inhalation", "Oral", "IV", "Dermal")
-                )
-              ),
-              column(
-                6,
-                uiOutput(
-                  "unit_ui"
-                )
-              )
-            ),
-            fileInput(
-              "csvFile",
-              label = "Upload Monte Carlo Results",
-              accept = c("text/csv","text/comma-separated-values",".csv"),
-              multiple = TRUE
-            ),
-            tags$h4("Results are displayed in mg/L")
-          ),
-          tabPanel(
-            title = 'Run Monte Carlo Simulation',
-            br(),
+        fluidRow(
+          column(
+            12,
+            # offset = 2,
+            # align = 'center',
             fileInput(
               "rDataFile",
               label = "Select Project file",
@@ -96,72 +71,126 @@ shinyServer(function(input, output,session) {
               choices = NULL,
               selected = NULL,
               multiple = F
-              # ,options = list(
-              # 'live-search' = TRUE,
-              # 'actions-box' = TRUE,
-              # 'selected-text-format' = 'count > 2',
-              # 'count-selected-text'='{0} simulations selected'
-              # )
-            ),
-            fluidRow(
-              column(
-                6,
-                shinyWidgets::radioGroupButtons(
-                  'tissue',
-                  label = "Select Tissue Type",
-                  choices = c('Plasma', 'Urine')
-                )
-              ),
-              column(
-                6,
-                shinyWidgets::radioGroupButtons(
-                  "chemType",
-                  "Select Chemical Type",
-                  choices = c("Parent", "Metabolite")
-                )
-              )
-            ),
-            fluidRow(
-              column(
-                6,
-                sliderInput(
-                  'mySlider2',
-                  label = 'Exposure Type (Units)',
-                  min = 0,
-                  max = 1000,
-                  value = c(0,1000)
-                )
-              ),
-              column(
-                6,
-                numericInput(
-                  'mcNumeric',
-                  label = 'Number of Doses',
-                  min = 20,
-                  max = 50,
-                  value = 25,
-                  step = 1,
-                  width = '156.84px'
-                ),
-                uiOutput(
-                  'validNum'
-                )
-              )
-            ),
-            fluidRow(
-              progressBar(id = "pb",value = 0, status = "success",striped = T)
             )
           )
         )
+        # tabsetPanel(
+        #   id = 'modalNav',
+        #   tabPanel(
+        #     title = 'Upload Existing Results',
+        #     br(),
+        #     textInput(
+        #       "mcname",
+        #       "Dataset Name",
+        #       placeholder = "Enter name for the dataset"
+        #     ),
+        #     fluidRow(
+        #       column(
+        #         6,
+        #         shinyWidgets::radioGroupButtons(
+        #           "type",
+        #           "Select Exposure Type",
+        #           choices = c("Inhalation", "Oral", "IV", "Dermal")
+        #         )
+        #       ),
+        #       column(
+        #         6,
+        #         uiOutput(
+        #           "unit_ui"
+        #         )
+        #       )
+        #     ),
+        #     fileInput(
+        #       "csvFile",
+        #       label = "Upload Monte Carlo Results",
+        #       accept = c("text/csv","text/comma-separated-values",".csv"),
+        #       multiple = TRUE
+        #     ),
+        #     tags$h4("Results are displayed in mg/L")
+        #   ),
+        #   tabPanel(
+        #     title = 'Run Monte Carlo Simulation',
+        #     br(),
+        #     fileInput(
+        #       "rDataFile",
+        #       label = "Select Project file",
+        #       accept = c(".RData", ".Rdata"),
+        #       placeholder = 'Upload .RData file',
+        #       multiple = F
+        #     ),
+        #     pickerInput(
+        #       'simulation',
+        #       'Select Simulation',
+        #       choices = NULL,
+        #       selected = NULL,
+        #       multiple = F
+        #       # ,options = list(
+        #       # 'live-search' = TRUE,
+        #       # 'actions-box' = TRUE,
+        #       # 'selected-text-format' = 'count > 2',
+        #       # 'count-selected-text'='{0} simulations selected'
+        #       # )
+        #     ),
+        #     fluidRow(
+        #       column(
+        #         6,
+        #         shinyWidgets::radioGroupButtons(
+        #           'tissue',
+        #           label = "Select Tissue Type",
+        #           choices = c('Plasma', 'Urine')
+        #         )
+        #       ),
+        #       column(
+        #         6,
+        #         shinyWidgets::radioGroupButtons(
+        #           "chemType",
+        #           "Select Chemical Type",
+        #           choices = c("Parent", "Metabolite")
+        #         )
+        #       )
+        #     ),
+        #     fluidRow(
+        #       column(
+        #         6,
+        #         sliderInput(
+        #           'mySlider2',
+        #           label = 'Exposure Type (Units)',
+        #           min = 0,
+        #           max = 1000,
+        #           value = c(0,1000)
+        #         )
+        #       ),
+        #       column(
+        #         6,
+        #         numericInput(
+        #           'mcNumeric',
+        #           label = 'Number of Doses',
+        #           min = 20,
+        #           max = 50,
+        #           value = 25,
+        #           step = 1,
+        #           width = '156.84px'
+        #         ),
+        #         uiOutput(
+        #           'validNum'
+        #         )
+        #       )
+        #     ),
+        #     fluidRow(
+        #       progressBar(id = "pb",value = 0, status = "success",striped = T)
+        #     )
+        #   )
+        # )
       ),
       footer= tagList(
-        uiOutput('mcFooter', inline = T),
+        # uiOutput('mcFooter', inline = T),
+        shinyjs::disabled(actionButton("runSim","Run")),
         modalButton('Cancel')
       )
     )
   }
   
-  biomonitoringModal <- function() {
+  setRouteModal <- function() {
     modalDialog(
       useShinyjs(),
       title = "Upload Biomonitoring Results",
@@ -473,7 +502,7 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$simulation, {
-    shinyjs::enable('addMC')
+    shinyjs::enable('runSim')
     simSet3 <<- simSet %>%
       filter(
         name == input$simulation
@@ -528,12 +557,12 @@ shinyServer(function(input, output,session) {
     shinyjs::enable("addBM")
   })
   
-  observeEvent(input$btnUploadMC,{
-    showModal(monteCarloModal())
+  observeEvent(input$selectProject,{
+    showModal(selectProjModal())
   })
   
-  observeEvent(input$btnUploadBMResults, {
-    showModal(biomonitoringModal())
+  observeEvent(input$setRoute, {
+    showModal(setRouteModal())
   })
   
   m  = list(
