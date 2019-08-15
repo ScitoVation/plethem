@@ -50,7 +50,7 @@ shinyUI(
       ),
       id = 'navbar',
       position = 'fixed-top',
-      windowTitle = 'PLETHEM: Reverse Dosimetry',
+      windowTitle = 'PLETHEM: Route to Route Extrapolation',
       fluid = T,
       collapsible = T,
       tabPanel(
