@@ -189,38 +189,286 @@ shinyServer(function(input, output,session) {
       )
     )
   }
-  
   setRouteModal <- function() {
+    
+    expoTypes <- c('Oral', 'Drinking Water', 'Inhalation', 'IV', 'Dermal')
+    if(myExpoid == 'oral'){
+      myExpoType = 'Oral'
+    } else if(myExpoid == 'dw'){
+      myExpoType = 'Drinking Water'
+    } else if(myExpoid == 'inh'){
+      myExpoType = 'Inhalation'
+    } else if(myExpoid == 'iv'){
+      myExpoType = 'IV'
+    } else if(myExpoid == 'derm'){
+      myExpoType = 'Dermal'
+    }
+    
+    if(is.null(input$simulation)){
+      exposureChoices <- expoTypes
+    } else{
+      exposureChoices <- setdiff(expoTypes, myExpoType)
+    }
+    
     modalDialog(
       useShinyjs(),
-      title = "Upload Biomonitoring Results",
-      easyClose = TRUE,
+      title = "Set Route of Exposure",
+      easyClose = F,
       size = "l",
       tagList(
-        textInput(
-          "bmname",
-          "Dataset Name",
-          placeholder = "Enter name for the dataset"
+        tags$style(
+          type='text/css',
+          '.modal-title {
+            text-align: center;
+          }'
         ),
-        shinyWidgets::radioGroupButtons(
-          "bmtype",
-          "Select Type",
-          choices = c("Parent", "Metabolite")
+        fluidRow(
+          column(
+            12,
+            pickerInput(
+              'exposure',
+              'Select exposure',
+              choices = exposureChoices,
+              options = list(
+                title = 'Nothing selected'
+              )
+            )
+          )
         ),
-        fileInput(
-          "bmFile",
-          label = "Upload Biomonitoring CSV File",
-          accept = c("text/csv","text/comma-separated-values",".csv"),
-          multiple = TRUE
+        fluidRow(
+          column(
+            12,
+            uiOutput('exposureParams')
+          )
         ),
-        tags$h4(tags$span(style='color:red', 'IMPORTANT:'), ' Biomonitoring results must be in mg/L', sep = '')
+        fluidRow(
+          column(
+            6,
+            sliderInput(
+              'mySlider2',
+              label = 'Exposure type (units)',
+              min = 0,
+              max = 1000,
+              value = c(0,1000)
+            )
+          ),
+          column(
+            6,
+            numericInput(
+              'mcNumeric',
+              label = 'Number of exposures',
+              min = 20,
+              max = 50,
+              value = 25,
+              step = 1,
+              width = '230px'
+            ),
+            uiOutput(
+              'validNum'
+            )
+          )
+        )
+        
+        # textInput(
+        #   "bmname",
+        #   "Dataset Name",
+        #   placeholder = "Enter name for the dataset"
+        # ),
+        # shinyWidgets::radioGroupButtons(
+        #   "bmtype",
+        #   "Select Type",
+        #   choices = c("Parent", "Metabolite")
+        # ),
+        # fileInput(
+        #   "bmFile",
+        #   label = "Upload Biomonitoring CSV File",
+        #   accept = c("text/csv","text/comma-separated-values",".csv"),
+        #   multiple = TRUE
+        # ),
+        # tags$h4(tags$span(style='color:red', 'IMPORTANT:'), ' Biomonitoring results must be in mg/L', sep = '')
       ),
       footer= tagList(
-        shinyjs::disabled(actionButton("addBM","Add Dataset")),
+        shinyjs::disabled(actionButton("runExposure","Run")),
         modalButton("Cancel")
       )
     )
   }
+  
+  observeEvent(input$exposure,{
+    shinyjs::enable('runExposure')
+    if(input$exposure == 'Oral'){
+      expoParams <- renderUI({
+        tagList(
+          fluidRow(
+            column(
+              6,
+              numericInput(
+                'blen',
+                label = 'Total length of dosing (h/day)',
+                min = 0,
+                max = 24,
+                value = 1,
+                step = 1
+              )
+            ),
+            column(
+              6,
+              numericInput(
+                'breps',
+                label = 'Number of doses',
+                min = 0,
+                max = 100,
+                value = 1,
+                step = 1,
+                width = '230px'
+              )
+            )
+          )
+        )
+      })
+      
+    } else if(input$exposure == 'Drinking Water'){
+      expoParams <- renderUI({
+        tagList(
+          fluidRow(
+            column(
+              4,
+              numericInput(
+                'vdw',
+                label = 'Volume of drinking water (L)',
+                min = 0,
+                max = 100,
+                value = 1,
+                step = 1
+              )
+            ),
+            column(
+              4,
+              numericInput(
+                'dreps',
+                label = 'Number of drinking water doses per day',
+                min = 0,
+                max = 100,
+                value = 1,
+                step = 1
+              )
+            ),
+            column(
+              4,
+              style = 'margin-top: 25px',
+              awesomeCheckbox(
+                'brep_flag',
+                label = 'Repeat oral dose',
+                value = F
+              )
+            )
+          )
+        )
+      })
+      
+    } else if(input$exposure == 'Inhalation'){
+      expoParams <- renderUI({
+        tagList(
+          fluidRow(
+            column(
+              6,
+              numericInput(
+                'inhtlen',
+                label = 'Length of inhalation dose (h)',
+                min = 0,
+                max = 24,
+                value = 1,
+                step = 1
+              )
+            ),
+            column(
+              6,
+              numericInput(
+                'inhdays',
+                label = 'Number of doses per week (days)',
+                min = 0,
+                max = 7,
+                value = 1,
+                step = 1,
+                width = '230px'
+              )
+            )
+          )
+        )
+      })
+    } else if(input$exposure == 'IV'){
+      expoParams <- renderUI({
+        tagList(
+          fluidRow(
+            column(
+              6,
+              numericInput(
+                'ivlen',
+                label = 'Length of intravenous dose (h/day)',
+                min = 0,
+                max = 24,
+                value = 1,
+                step = 1
+              )
+            ),
+            column(
+              6,
+              style = 'margin-top: 25px',
+              awesomeCheckbox(
+                'ivrep_flag',
+                label = 'Repeat IV dose',
+                value = F
+              )
+            )
+          )
+        )
+      })
+      
+    } else if(input$exposure == 'Dermal'){
+      expoParams <- renderUI({
+        tagList(
+          fluidRow(
+            column(
+              4,
+              numericInput(
+                'dermlen',
+                label = 'Length of dermal dosing per day (h)',
+                min = 0,
+                max = 24,
+                value = 1,
+                step = 1
+              )
+            ),
+            column(
+              4,
+              numericInput(
+                'skarea',
+                label = 'Exposed skin area (cm\U00B2)',
+                min = 0,
+                max = 100,
+                value = 1,
+                step = 1
+              )
+            ),
+            column(
+              4,
+              style = 'margin-top: 25px',
+              awesomeCheckbox(
+                'dermrep_flag',
+                label = 'Repeat dermal dose daily',
+                value = F
+              )
+            )
+          )
+        )
+      })
+    } else{
+      expoParams <- renderUI({
+        br()
+      })
+    }
+    output$exposureParams <- expoParams
+  })
   
   mcNum <- reactive({
     validate(
@@ -527,6 +775,17 @@ shinyServer(function(input, output,session) {
       mySliderLabel = 'Oral Vehicle (mg/kg BW/day)'
     } else mySliderLabel = 'Unknown'
     
+    # expoTypes <- c('Oral' = 'oral', 'Drinking Water' = 'dw', 'Inhalation' = 'inh', 'IV' = 'iv', 'Dermal' = 'derm')
+    # updatePickerInput(
+    #   session,
+    #   'exposure',
+    #   label = 'hello',
+    #   selected = NULL,
+    #   choices = expoTypes3
+    #   # choicesOpt = list(
+    #   #   subtext = simSet$descrp
+    #   # )
+    # )
     updateSliderInput(
       session,
       'mySlider2',
@@ -562,7 +821,10 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$setRoute, {
+    # print(input$simulation)
+    # shinyjs::disable('runExposure')
     showModal(setRouteModal())
+    # print(input$exposure)
   })
   
   m  = list(
