@@ -67,16 +67,16 @@ shinyUI(
           style = 'width: 300px; padding-top: 80px;',
           align = 'center',
           bsButton(
-            'btnUploadMC',
-            'Add Monte Carlo Simulation',
+            'selectProject',
+            'Upload Project',
             block = TRUE,
             style = 'primary',
             width = '80%'
           ),
           br(),
           bsButton(
-            'btnUploadBMResults',
-            'Add Biomonitoring Results',
+            'setRoute',
+            'Set Route of Exposure',
             block = TRUE,
             style = 'primary',
             width = '80%'
