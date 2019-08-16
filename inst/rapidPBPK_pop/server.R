@@ -711,8 +711,8 @@ shinyServer(function(input, output, session) {
     DT::replaceData(metab_proxy,metabolism_dataframe,rownames = F)
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
-
-  # Metabolism is handled in a very different manner than the rest of the sets.
+  
+  ## CHUNK FOR HANDLING METABOLISM TAB UNDER ADME
 
   # show the modal to upload files when
   observeEvent(input$btn_metab_upload,{showModal(modalDialog(title = "Upload Metabolism Data",
@@ -733,10 +733,11 @@ shinyServer(function(input, output, session) {
                                                                                         resize = "none" ,row = 1))
 
                                                                  ),
-                                                                 fluidRow(column(width = 6,
+                                                                 fluidRow(column(width = 12,
                                                                                  shinyWidgets::radioGroupButtons("metab_type",justified = T,
                                                                                                                  "Select Meatbolism Type",
-                                                                                                                 choices = c("Saturable"="m1","Linear"="m2"))
+                                                                                                                 choices = c("Saturable Hepatic"="m1","Linear Hepatic"="m2",
+                                                                                                                             "Plasma Clearance"="m3","Gut Clerance"="m4"))
                                                                  )
 
 
@@ -765,8 +766,6 @@ shinyServer(function(input, output, session) {
                                                              )
   ))
   })
-
-  ##Metabolism realated functions
   output$metab_template <- downloadHandler(
     filename = function(){"Metabolism_Template.csv"},
     content = function(file){write.csv(data.frame("Age"=c(25),"Clearence"=c(0),stringsAsFactors = F),
@@ -784,11 +783,7 @@ shinyServer(function(input, output, session) {
   # The user's data, parsed into a data frame
   metab_upload_tble <- reactive({
     validate(need(input$metab_csv,"No dataset uploaded"))
-    #if(!(is.null(input$metab_csv))){
     ret_dat <- read.csv(metabFile()$datapath,header = T,stringsAsFactors = F)
-    #}else{
-    # ret_dat <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F)
-    #}
     return(ret_dat)
   })
   output$metab_upload_tble <- DT::renderDT(DT::formatRound(DT::datatable(metab_upload_tble(),
@@ -804,8 +799,6 @@ shinyServer(function(input, output, session) {
     }else if(input$metab_set_name=="" || input$metab_set_descrp==""){
       sendSweetAlert(session,"Error","Both name and description are required","error")
     }else{
-      #validate(need(input$metab_csv,"Metabolism Data"))
-      #id <- input$sel_metab
       set_type <- "metab"
       id_name <- "metabid"
       set_table_name <- "MetabolismSet"
@@ -820,10 +813,6 @@ shinyServer(function(input, output, session) {
       }
       metab_type <- input$metab_type
       ref_age <- input$metab_ref_age
-
-
-
-
 
       # serialize and convert the loaded table to database
       metab_tble<-metab_upload_tble()
@@ -848,17 +837,58 @@ shinyServer(function(input, output, session) {
 
         set_list <- getAllSetChoices(set_type)
         updateSelectizeInput(session,"sel_metabfiles",choices = set_list, selected = id_num)
-        metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",set_list)
-        updateSelectizeInput(session,"sel_set_metab",choices = metabset)
+        
         removeModal()
       }
 
 
     }
   })
+  
+  # logic for apply button- depending on the selected physiology and metab file,
+  # populates the correct clerance value
+  observeEvent(input$btn_use_age,{
+    age_set <- input$sel_metabfiles
+    if (age_set==""){
+      sendSweetAlert(session,"Configuration Error","Please upload age dependent metabolism file",
+                     type="error")
+    }
+    else if (input$sel_physio4adme==""){
+      sendSweetAlert(session,"Configuration Error","Please create a physiology set",
+                     type="error")
+    }else{
+      sendSweetAlert(session,title = NULL,"This will overwrite any existing data",
+                     type="info")
+      #get the age from the compartment
+      physioid <- input$sel_physio4adme
+      query <- sprintf("Select value from Physiological where physioid = %d AND param = 'age';",
+                       as.integer(physioid))
+      age <- as.integer(projectDbSelect(query)$value)
+      metabid <- input$sel_metabfiles
+      query <- sprintf("Select type,ref_age,metab_tble From Metabolism where metabid = %d",
+                       as.integer(metabid))
+      ret_data <- projectDbSelect(query)
+      upload_type <- ret_data[["type"]]
+      ref_age <- as.integer(ret_data[["ref_age"]])
+      metabolism_dataframe <- unserialize(charToRaw(ret_data[["metab_tble"]]))
+      if (age %in% metabolism_dataframe$Age){
+        val2update <- metabolism_dataframe$Clearance[metabolism_dataframe$Age==age]
+      }else{
+        alert_message = sprintf("Physiology age not found in uploaded data. Using value at reference age of %d instead",
+                                ref_age)
+        sendSweetAlert(session,title = NULL,text=alert_message,type="info")
+        val2update <- metabolism_dataframe$Clearance[metabolism_dataframe$Age==ref_age]
+      }
+      switch(upload_type,
+        "m1"=updateNumericInput(session,"ms_vmaxc",value =val2update),
+        "m2"=updateNumericInput(session,"ms_vkm1c",value =val2update),
+        "m3"=updateNumericInput(session,"ms_kbld",value =val2update),
+        "m4"=updateNumericInput(session,"ms_kent",value =val2update)
+      )
+    }
+  })
 
-  #### END METABOLISM TAB
-
+  ## END METABOLISM TAB UNDER ADME
   ### CODE CHUNK FOR HANDLING SIMULATIONS TAB
 
   # Save a new simulation
