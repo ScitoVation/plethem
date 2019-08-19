@@ -402,13 +402,11 @@ comp_body <- dashboardBody(
 
       ),
       fluidRow(
-        column(4,
+        column(6,
                numericInput("ms_vbldc","Fractional Blood Compartment Volume",0.0832,0.01,1,0.01)),
-        column(4,
+        column(6,
                numericInput("ms_perfc","Total Fractional Perfused Tissue",1,0.75,0.95,0.01)
-               ),
-        column(4,
-               numericInput("ms_kbld","First Order Metabolism in Blood",0,0.75,0.95,0.01))
+               )
       ),
       fluidRow(
         column(4,
@@ -419,30 +417,12 @@ comp_body <- dashboardBody(
                numericInput("ms_ds","Dead Space (L)",min =0 , max =10, value =0.154))
       ),
       fluidRow(
-        column(4,
+        column(6,
                numericInput("ms_uflw","Urinary Flow Rate (L/kg/day)",min =0 , max =1, value =0.0214)),
-        column(4,
+        column(6,
                numericInput("ms_gfr","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
-               ),
-          column(4,
-                 numericInput("ms_pair", label = "Plasma-Air Partition Coefficient", value = 1,
-                              min = 0)
-          )
+               )
         
-      ),
-      fluidRow(
-        column(6,
-               numericInput("ms_fa","Fraction Absorbed in the Gut Lumen",1)),
-        column(6,
-               numericInput("ms_ka",label = "Rate of Absorption in Gut Lumen (per hour)", value = 5, step = 0.01))
-      ),
-      fluidRow(
-        column(6,
-               numericInput("ms_kVtoL","Transfer Rate from vehicle to gut lumen",1)),
-        
-               
-        column(6,
-               numericInput("ms_kfec","Transfer rate to elimination via fecal excretion",1))
       )
     ),
 
@@ -474,15 +454,6 @@ comp_body <- dashboardBody(
                numericInput("ms_paskin","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_skinvtbc","Skin Tissue to Total Skin Volume Ratio",0.95,0,1,0.01))
-      ),
-      fluidRow(
-        column(4, 
-               numericInput("ms_KPtot","Total Stratum Corneum permeation coefficient",1000,1,1000,1)),
-        column(4,
-               numericInput("ms_Kevap","Evaporation rate from Stratum Corneum",1000,1,1000,1)),
-        column(4,
-               numericInput("ms_maxcap","Maximum capacity of Stratum Corneum",1000,1,1000,1))
-        
       )
     ),
     tabItem(
@@ -746,15 +717,6 @@ chem_body <- dashboardBody(
                      numericInput("ms_fupls", label = "Fraction Unbound in Palsma", value = 1, 0, 1, 0.001))
             ),
             fluidRow(
-              column(6,
-                     numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)),
-              column(6,
-                     numericInput("ms_km","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01))
-            ),
-            fluidRow(
-              column(6,
-                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
-                     ),
               column(6,
                      numericInput("ms_frwsol", label = "Fraction dissolved in water", value = 1,
                                   min=0,max = 1,step = 0.01)
@@ -1029,23 +991,10 @@ shinyUI(fluidPage(
                                                                       "Use Lifecourse Equation to calcualte parameters")
                                                ),
                                                column(4,
-                                                      shinyBS::tipify(pickerInput("sel_qsar4Partition", NULL,
-                                                                     choices = c("QSAR model one" = 'one',
-                                                                     "Unified QSAR model" = 'two')),#,
-                                                                                 #"QSAR model two" = 'two')
-                                                                     
-                                                                     "Select QSAR model for partition coefficients")
-                                                      ),
-                                               column(4,
                                                       shinyBS::tipify(selectizeInput("sel_chem4Partition",NULL,
                                                                      choices ="No Chemical Added"
                                                                      ),
                                                                      "Select Chemical for qsar model")
-                                                      ),
-                                               column(2,
-                                                      shinyBS::bsButton("btn_useQSAR4Partition",
-                                                                        "Calculate Partition",style = "primary",
-                                                                        block = TRUE)
                                                       )
 
                                              ),
@@ -1126,31 +1075,71 @@ shinyUI(fluidPage(
                                                                       ),
                                                                       fluidRow(
                                                                         column(4,
-                                                                               numericInput("ms_fa2","Fraction absorbed in Gut Lumen",
+                                                                               numericInput("ms_fa","Fraction absorbed in Gut Lumen",
                                                                                             value = 1, min = 0, max = 1)
                                                                                ),
                                                                         column(4,
-                                                                               numericInput("ms_ka2","Rate of Absorption in Gut Lumen(per h)",
+                                                                               numericInput("ms_ka","Rate of Absorption in Gut Lumen(per h)",
                                                                                             value = 5,min = 0)),
                                                                         column(4,
-                                                                               numericInput("ms_kVtoL2","Tranfer Rate from vehicle to gut lumen (per h)",
+                                                                               numericInput("ms_kVtoL","Tranfer Rate from vehicle to gut lumen (per h)",
                                                                                             value = 1, min = 0)
                                                                                )
                                                                       ),
                                                                       fluidRow(
                                                                         column(4,
-                                                                               numericInput("ms_KPtot2","Total Stratum Corneum permeation coefficient (cm^2\\h)",
+                                                                               numericInput("ms_KPtot","Total Stratum Corneum permeation coefficient (cm^2\\h)",
                                                                                             value = 1000,min = 0)),
                                                                         column(4,
-                                                                               numericInput("ms_maxcap2","Maximum capacity of the startum corneum (mg\\cm^2)",
+                                                                               numericInput("ms_maxcap","Maximum capacity of the startum corneum (mg\\cm^2)",
                                                                                             value = 1000, min =0)),
                                                                         column(4,
-                                                                               numericInput("ms_Kevap2","Evaporation Rate from Stratum Corneum",
+                                                                               numericInput("ms_Kevap","Evaporation Rate from Stratum Corneum",
                                                                                             value = 1000,min = 0))
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               numericInput("ms_pair","Plasma-air Partition Coefficient",value = 0,min = 0))
                                                                       )
                                                                     )
                                                                     ),
-                                                           tabPanel("Distribution"),
+                                                           tabPanel("Distribution",
+                                                                    fluidPage(
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:5px")
+                                                                               )
+                                                                        ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               shinyBS::tipify(
+                                                                                 pickerInput("sel_qsar4Partition", NULL,
+                                                                                             choices = c("QSAR model one" = 'one',
+                                                                                                         "Unified QSAR model" = 'two')
+                                                                                             ),
+                                                                                 "Select QSAR model for partition coefficients")
+                                                                               ),
+                                                                        column(2,
+                                                                               shinyBS::bsButton("btn_useQSAR4Partition",
+                                                                                                 "Calculate Partition",style = "primary",
+                                                                                                 block = TRUE)
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:5px")
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(6,
+                                                                               selectizeInput("sel_dist_comps",label=NULL,
+                                                                                              choices = c("Fat"="fat",
+                                                                                                          "Skin"="skn",
+                                                                                                          "Muscle"="mus",
+                                                                                                          "Bone"="bne")
+                                                                                              ))
+                                                                      )
+                                                                    )),
                                                            tabPanel("Metabolism",
                                                                     fluidPage(
                                                                       fluidRow(
@@ -1177,7 +1166,7 @@ shinyUI(fluidPage(
                                                                       fluidRow(
                                                                         
                                                                         column(6,
-                                                                               numericInput("ms_km2","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01)
+                                                                               numericInput("ms_km","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01)
                                                                         ),
                                                                         column(6,
                                                                                shinyBS::bsButton("btn_ivive_chem",
@@ -1186,10 +1175,10 @@ shinyUI(fluidPage(
                                                                       ),
                                                                       fluidRow(
                                                                         column(6,
-                                                                               numericInput("ms_vmaxc2",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
+                                                                               numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
                                                                         ),
                                                                         column(6,
-                                                                               numericInput("ms_vkm1c2", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
+                                                                               numericInput("ms_vkm1c", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
                                                                         )
                                                                       ),
                                                                       fluidRow(
@@ -1205,11 +1194,17 @@ shinyUI(fluidPage(
                                                                       ),
                                                                       fluidRow(
                                                                         column(6,
-                                                                               numericInput("ms_kbld2","First Order Metabolism in Blood",0,0.75,0.95,0.01)
+                                                                               numericInput("ms_kbld","First Order Metabolism in Blood",0,0.75,0.95,0.01)
                                                                         )
                                                                       )
                                                                     )),
-                                                           tabPanel("Excretion")
+                                                           tabPanel("Excretion",
+                                                                    fluidPage(
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               numericInput("ms_kfec","Rate of Fecal Excretion",value = 0, min = 0))
+                                                                      )
+                                                                    ))
                                              )
                                              )
                                            )
@@ -1380,7 +1375,7 @@ shinyUI(fluidPage(
                                                                    selectizeInput("sel_set_physiovar","Select Variability",choices = NULL)
                                                             )
                                                           ),
-                                                          selectizeInput("sel_set_metab","Select Metabolism",choice = NULL),
+                                                          selectizeInput("sel_set_adme","Select ADME",choices = NULL),
                                                           fluidRow(
                                                             column(4,
                                                                    numericInput("sim_start","Simulation Start Time (h)",0)

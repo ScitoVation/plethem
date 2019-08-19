@@ -33,7 +33,7 @@ shinyServer(function(input, output, session) {
   expo_set <- getAllSetChoices("expo")
   physio_set <- getAllSetChoices("physio")
   chem_set <- getAllSetChoices("chem")
-  metab_set <- getAllSetChoices("metab")
+  #metab_set <- getAllSetChoices("metab")
   sim_set <- getAllSetChoices("sim")
   physiovar <-getVariabilitySetChoices("physio")
   chemvar <-getVariabilitySetChoices("chem")
@@ -42,7 +42,7 @@ shinyServer(function(input, output, session) {
   parameterSets$expo <- reactiveVal(expo_set)
   parameterSets$physio <- reactiveVal(physio_set)
   parameterSets$chem <- reactiveVal(chem_set)
-  parameterSets$metab <- reactiveVal(metab_set)
+  #parameterSets$metab <- reactiveVal(metab_set)
   parameterSets$sim <- reactiveVal(sim_set)
   parameterSets$physiovar <- reactiveVal(physiovar)
   parameterSets$chemvar <- reactiveVal(chemvar)
@@ -60,11 +60,10 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session,"sel_physio4adme",choices = physioset)
     chemset <- parameterSets$chem()
     updateSelectizeInput(session,"sel_set_chem",choices = chemset)
-    updateSelectizeInput(session,"sel_chem4Partition",choices = chemset)
     updateSelectizeInput(session,"sel_chem4adme",choices = chemset)
-    metabset<- parameterSets$metab()
-    metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",metabset)
-    updateSelectizeInput(session,"sel_set_metab",choices = metabset)
+    #metabset<- parameterSets$adme()
+    # metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",metabset)
+    # updateSelectizeInput(session,"sel_set_metab",choices = metabset)
     physiovar <- parameterSets$physiovar()
     physiovar <- c("None"="0",physiovar)
     updateSelectizeInput(session,"sel_set_physiovar",choices = physiovar)
@@ -75,6 +74,25 @@ shinyServer(function(input, output, session) {
     expovar <- c("None"="0",expovar)
     updateSelectizeInput(session,"sel_set_expovar",choices = expovar)
   })
+  observeEvent({
+    input$sel_set_chem
+    input$sel_set_physio
+    input$sel_set_expo
+  },{
+    chemid <- as.integer(input$sel_set_chem)
+    physioid <- as.integer(input$sel_set_physio)
+    expoid <- as.integer(input$sel_set_expo)
+  if(!any((is.na(c(chemid,physioid,expoid))))){
+    query <- sprintf("Select name,admeid from AdmeSet where chemid = %d AND physioid = %d AND expoid = %d;",
+                                        chemid, physioid, expoid)
+    res <- projectDbSelect(query)
+    set_list <- as.list(res[["admeid"]])
+    names(set_list)<- res$name
+    updateSelectizeInput(session,"sel_set_adme",choices = set_list)
+  }
+
+  },ignoreNULL = T, ignoreInit = T)
+ 
   # get global variables needed to run the model
 
 
@@ -90,22 +108,32 @@ shinyServer(function(input, output, session) {
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
                    model)
   chem_name_df <- mainDbSelect(query)
+  
+  query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Adme' AND UIParams = 'TRUE' ;",
+                   model)
+  adme_name_df <- mainDbSelect(query)
 
   #### Update the parameter set dropdowns if they exist for physiological and exposure sets
   set_choices <- getAllSetChoices(set_type = "physio")
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_physio",choices = set_choices)
     shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
-    shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "primary")
+    updateSelectizeInput(session,"sel_physio4adme",choices = set_choices)
+    # shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "primary")
   }
   set_choices <- getAllSetChoices(set_type = "expo")
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_expo",choices = set_choices)
+    updateSelectizeInput(session,"sel_expo4adme",choices = set_choices)
   }
   set_choices <- getAllSetChoices(set_type = "chem")
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_chem",choices = set_choices)
-    updateSelectizeInput(session,"sel_chem4Partition",choices = set_choices)
+    updateSelectizeInput(session,"sel_chem4adme",choices = set_choices)
+  }
+  set_choices <- getAllSetChoices(set_type = "adme")
+  if (length(set_choices>0)){
+    updateSelectizeInput(session,"sel_adme",choices = set_choices)
   }
   set_choices <- getAllSetChoices(set_type = "metab")
   if (length(set_choices)>0){
@@ -190,6 +218,8 @@ shinyServer(function(input, output, session) {
       parameterSets[[set_type]] <- reactiveVal(set_list)
       updateSelectizeInput(session,paste0("sel_",set_type),
                            choices = set_list)
+      updateSelectizeInput(session,"sel_expo4adme",
+                           choices = set_list)
     }
   })
   
@@ -218,8 +248,10 @@ shinyServer(function(input, output, session) {
        parameterSets[[set_type]] <- reactiveVal(set_list)
        updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
        if(set_type == "chem"){
-         updateSelectizeInput(session,"sel_chem4Partition",choices = set_list)
+         updateSelectizeInput(session,"sel_chem4adme",choices = set_list)
          
+       }else if (set_type =="physio"){
+         updateSelectizeInput(session,"sel_physio4adme",choices = set_list)
        }
        
        # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
@@ -307,6 +339,26 @@ shinyServer(function(input, output, session) {
                                         "chem",isolate(input),
                                         chem_name_df)
   })
+  
+  #Save a new chemical parameter set
+  observeEvent(input$btn_saveas_adme,{
+    chemid <- as.integer(input$sel_chem4adme)
+    physioid <- as.integer(input$sel_physio4adme)
+    expoid <- as.integer(input$sel_expo4adme)
+    id_list <- c(expoid,chemid,physioid)
+    if (any(is.na(id_list))){
+      sendSweetAlert(session,"Configuration Error",
+                     "Need to define Exposure, chemical and Physiology sets before defining an ADME set",
+                     type = "error")
+    }else{
+      ns <- paste0("adme",input$btn_saveas_adme)
+      saveAsParameterSetUI(ns,"adme")
+      parameterSets$savedat <- callModule(saveAsParameterSet,ns,
+                                          "adme",isolate(input),
+                                          adme_name_df,id_list)
+    }
+    
+  })
 
 
   # update the paramter set dropdown if it is changed
@@ -319,7 +371,12 @@ shinyServer(function(input, output, session) {
       parameterSets[[set_type]] <- reactiveVal(set_list)
       updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
       if(set_type == "chem"){
-        #updateSelectizeInput(session,"sel_chem4Partition",choices = set_list)
+        updateSelectizeInput(session,"sel_chem4adme",choices = set_list)
+        
+      }else if (set_type =="physio"){
+        updateSelectizeInput(session,"sel_physio4adme",choices = set_list)
+      }else if(set_type == "expo"){
+        updateSelectizeInput(session,"sel_expo4adme",choices = set_list)
       }
       parameterSets$savedat <- reactiveVal(c("No","",0))
       # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
@@ -369,6 +426,20 @@ shinyServer(function(input, output, session) {
                                            UI_values,set_values,
                                            chem_name_df,"chem")
   })
+  
+  #Save/Restore Button function
+  observeEvent(input$btn_sverest_adme,{
+    admeid <- input$sel_adme
+    set_values <- getParameterSet("adme",admeid)
+    #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
+    UI_values <- reactiveValuesToList(input)[paste0("ms_",adme_name_df$Var)]
+    names(UI_values) <- gsub("ms_","",names(UI_values))
+    saveRestoreParameterSetUI(input$btn_sverest_adme)
+    parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
+                                           input$btn_sverest_adme,
+                                           UI_values,set_values,
+                                           adme_name_df,"adme")
+  })
 
   observe({
     result_vector <- parameterSets$sverestdat()
@@ -381,8 +452,10 @@ shinyServer(function(input, output, session) {
         table_name <- "Physiological"
       }else if(type == "chem"){
         table_name <- "Chemical"
-      }else{
+      }else if(type == "expo"){
         table_name <- "Exposure"
+      }else{
+        table_name <- "Adme"
       }
 
 
@@ -404,8 +477,10 @@ shinyServer(function(input, output, session) {
         name_data <- physio_name_df
       }else if(type == "chem"){
         name_data <- chem_name_df
-      }else{
+      }else if(type == "expo"){
         name_data <- expo_name_df
+      }else{
+        name_data <- adme_name_df
       }
       var_type <- sapply(result_vector$Variable,function(var){
         tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = T)]

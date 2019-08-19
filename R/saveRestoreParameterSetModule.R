@@ -37,7 +37,7 @@ saveRestoreParameterSetUI <- function(namespace){
 #' @param set_values values for the parameters in the database
 #' @param param_names names of parameters to save or restore
 #' @param type type of parameter set to save
-#'@export
+#' @export
 saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,param_names,type){
   returnValues <- reactiveValues()
   returnValues$retData <- reactiveVal(c("None"))

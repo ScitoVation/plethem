@@ -12,7 +12,8 @@ saveAsParameterSetUI <- function(namespace, set_type){
   set_name <- switch(set_type,
                      "physio" = "Physiological",
                      "chem" = "Chemical",
-                     "expo" = "Exposure")
+                     "expo" = "Exposure",
+                     "adme"="Adme")
   id_name <- paste0(set_type,"id")
   set_table_name <- paste0(set_name,"Set")
   
@@ -50,8 +51,9 @@ saveAsParameterSetUI <- function(namespace, set_type){
 #' @param set_type type of parameter set to save
 #' @param main_input input from the pbpk UI
 #' @param name_df variable names for parameters
+#' @param other placeholder paramter for data needed for certain sets
 #'@export
-saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df){
+saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df,other= NULL){
 
   returnValues <- reactiveValues()
   returnValues$savedat <- c("No","",0)
@@ -62,7 +64,8 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
   set_name <- switch(set_type,
                      "physio" = "Physiological",
                      "chem" = "Chemical",
-                     "expo" = "Exposure")
+                     "expo" = "Exposure",
+                     "adme"="Adme")
   id_name <- paste0(set_type,"id")
   set_table_name <- paste0(set_name,"Set")
   vals_table_name<- set_name
@@ -89,6 +92,16 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
                        set_table_name,id_name,id_num,input$name,input$descrp,input$cas)
       projectDbUpdate(query)
       
+    }else if (set_type == "adme"){
+      expoid <- other[[1]]
+      chemid <- other[[2]]
+      physioid <- other[[3]]
+      query <- sprintf("INSERT INTO %s (%s,name,descrp,expoid,chemid,physioid) VALUES (%d,'%s','%s', %d, %d, %d );",
+                       set_table_name,id_name,id_num,input$name,input$descrp,
+                       expoid,
+                       chemid,
+                       physioid)
+      projectDbUpdate(query)
     }else{
       query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
                        set_table_name,id_name,id_num,input$name,input$descrp)

@@ -47,7 +47,7 @@ getMetabData <- function(metabid,physioid,chemid,model){
       result <- projectDbSelect(query)
       value <- as.numeric(result$value)
     }
-    
+
 
 
   }else{
@@ -104,8 +104,13 @@ getAllParamValuesForModel <- function(simid,model){
                    model)
   result <- mainDbSelect(query)
   param_names <- c(param_names,result$Var)
-  # get Esposure parameter names
+  # get Exposure parameter names
   query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Exposure' AND Model = '%s';",
+                   model)
+  result <- mainDbSelect(query)
+  param_names <- c(param_names,result$Var)
+  #get adme parameter names
+  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'ADME' AND Model = '%s';",
                    model)
   result <- mainDbSelect(query)
   param_names <- c(param_names,result$Var)
@@ -113,10 +118,10 @@ getAllParamValuesForModel <- function(simid,model){
 
 
   # get the physiological values for the simulation
-  query <- sprintf("Select metabid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
+  query <- sprintf("Select admeid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
                    simid)
   result <- projectDbSelect(query)
-  metabid <- as.integer(result[["metabid"]])
+  metabid <- as.integer(result[["admeid"]])
   chemid <- as.integer(result[["chemid"]])
   expoid <- as.integer(result[["expoid"]])
   physioid <- as.integer(result[["physioid"]])
@@ -143,8 +148,15 @@ getAllParamValuesForModel <- function(simid,model){
   result <- projectDbSelect(query)
   chem_params <- result$value
   names(chem_params)<- result$param
+  
+  # get all the ADME parameters
+  query <- sprintf("SELECT param,value FROM ADME WHERE admeid = %i;",
+                   admeid)
+  result <- projectDbSelect(query)
+  adme_params <- result$value
+  names(adme_params)<- result$param
 
-  params <- c(physio_params,expo_params,chem_params)
+  params <- c(physio_params,expo_params,chem_params,adme_params)
 
   # add time start and sim duration as tstart and totdays to work with the model
   params[["tstart"]]<- tstart
@@ -284,7 +296,8 @@ getParameterSet<- function(set_type = "physio",id = 1){
   set_name <- switch(set_type,
                      "physio" = "Physiological",
                      "chem" = "Chemical",
-                     "expo" = "Exposure")
+                     "expo" = "Exposure",
+                     "adme"="Adme")
   id_name <- paste0(set_type,"id")
   set_table_name <- paste0(set_name,"Set")
   query <- sprintf("SELECT param, value FROM %s where %s = %s ;",
@@ -310,6 +323,7 @@ getAllSetChoices <- function(set_type = "physio"){
                        "chem" = "Chemical",
                        "expo" = "Exposure",
                        "metab"="Metabolism",
+                       "adme"="Adme",
                        "sim" = "Simulations")
     id_name <- paste0(set_type,"id")
     set_table_name <- paste0(set_name,"Set")
