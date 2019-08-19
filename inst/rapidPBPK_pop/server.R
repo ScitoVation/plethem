@@ -1193,7 +1193,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$btn_useQSAR4Partition,
                {
                  shinyBS::updateButton(session,"btn_useQSAR4partition",style = "primary")
-                 chemid <- input$sel_chem4Partition
+                 chemid <- input$sel_chem4adme
                  qsar_model <- input$sel_qsar4Partition
                  org <- ifelse(input$ms_org=="ha","human","rat")
                  query <- sprintf("SELECT param,value FROM Chemical Where chemid = %i",

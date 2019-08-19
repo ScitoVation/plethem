@@ -430,8 +430,6 @@ comp_body <- dashboardBody(
       tabName = "fat_tissue",
       fluidRow(
         column(6,
-               numericInput("ms_pafat","Pearmeability Area Coefficient",1000,1,1000,1)),
-        column(6,
                numericInput("ms_fatvtbc","Fat Tissue to Total Fat Volume Ratio",0.95,0,1,0.01))
       )
     ),
@@ -442,16 +440,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vfatc","Volume Ratio",min =0, max = 1, value =0.1841, step = 0.01)),
         column(6,
                numericInput("ms_qfatc","Blood Flow Ratio",min =0 , max =1, value =0.08226))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pfat","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "skin_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_paskin","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_skinvtbc","Skin Tissue to Total Skin Volume Ratio",0.95,0,1,0.01))
       )
@@ -463,16 +456,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vskinc","Volume Ratio",min =0, max = 1, value =0.0553, step = 0.01)),
         column(6,
                numericInput("ms_qskinc","Blood Flow Ratio",min =0 , max =1, value =0.06783))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pskin","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "muscle_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pamusc","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_muscvtbc","Muscle Tissue to Total Muscle Volume Ratio",0.95,0,1,0.01))
       )
@@ -484,16 +472,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vmuscc","Volume Ratio",min =0, max = 1, value =0.4576, step = 0.01)),
         column(6,
                numericInput("ms_qmuscc","Blood Flow Ratio",min =0 , max =1, value =0.13711))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pmusc","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "bone_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pabone","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_bonevtbc","Bone Tissue to Total Bone Volume Ratio",0.95,0,1,0.01))
       )
@@ -505,16 +488,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vbonec","Volume Ratio",min =0, max = 1, value =0.1318, step = 0.01)),
         column(6,
                numericInput("ms_qbonec","Blood Flow Ratio",min =0 , max =1, value =0.1266))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pbone","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "brain_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pabrn","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_brnvtbc","Brain Tissue to Total Brain Volume Ratio",0.95,0,1,0.01))
       )
@@ -526,16 +504,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vbrnc","Volume Ratio",min =0, max = 1, value =0.0192, step = 0.01)),
         column(6,
                numericInput("ms_qbrnc","Blood Flow Ratio",min =0 , max =1, value =0.098))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pbrn","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "lung_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_palng","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_lngvtbc","Lung Tissue to Total Lung Volume Ratio",0.95,0,1,0.01))
       )
@@ -547,16 +520,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vlngc","Volume Ratio",min =0, max = 1, value =0.0144, step = 0.01)),
         column(6,
                numericInput("ms_qlngc","Blood Flow Ratio",min =0 , max =1, value =0.0234))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_plng","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "heart_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pahrt","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_hrtvtbc","Heart Tissue to Total Heart Volume Ratio",0.95,0,1,0.01))
       )
@@ -568,16 +536,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vhrtc","Volume Ratio",min =0, max = 1, value =0.0051, step = 0.01)),
         column(6,
                numericInput("ms_qhrtc","Blood Flow Ratio",min =0 , max =1, value =0.10536))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_phrt","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "gi_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pagi","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_givtbc","GI Tissue to Total GI Volume Ratio",0.95,0,1,0.01))
       )
@@ -589,17 +552,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vgic","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
         column(6,
                numericInput("ms_qgic","Blood Flow Ratio",min =0 , max =1, value =0.1139))
-      ),
-
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pgi","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "liver_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_paliv","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_livvtbc","Liver Tissue to Total Liver Volume Ratio",0.95,0,1,0.01))
       )
@@ -616,17 +573,11 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_qvlivc","Fraction of Venous Liver Flow",min =0 , max =1, value =0.152))
 
-      ),
-
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pliv","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "kidney_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pakdn","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_kdnvtbc","Kidney Tissue to Total Kidney Volume Ratio",0.95,0,1,0.01))
       )
@@ -638,16 +589,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vkdnc","Volume Ratio",min =0, max = 1, value =0.0046, step = 0.01)),
         column(6,
                numericInput("ms_qkdnc","Blood Flow Ratio",min =0 , max =1, value =0.16886))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pkdn","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "rpf_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_parpf","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_rpfvtbc","Rapidly Perfused Tissue to All Rapidly Perfused Volume Ratio",0.95,0,1,0.01))
       )
@@ -659,16 +605,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vrpfc","Volume Ratio",min =0, max = 1, value =0.00001, step = 0.01)),
         column(6,
                numericInput("ms_qrpfc","Blood Flow Ratio",min =0 , max =1, value =0))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_prpf","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "spf_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_paspf","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_spfvtbc","Slowly Perfused Tissue to All Slowly Perfused Volume Ratio",0.95,0,1,0.01))
       )
@@ -680,10 +621,7 @@ comp_body <- dashboardBody(
                numericInput("ms_vspfc","Volume Ratio",min =0, max = 1, value =0.00001, step = 0.01)),
         column(6,
                numericInput("ms_qspfc","Blood Flow Ratio",min =0 , max =1, value =0))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pspf","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     )
   )
 )
@@ -863,20 +801,6 @@ shinyUI(fluidPage(
                                                       div(style = "height:15px")
                                                )
                                              ),
-                                             # fluidRow(
-                                             #   column(2,
-                                             #          shinyBS::bsButton("btn_seem_upload",
-                                             #                            "Import From SEEM Data",
-                                             #                            block = T)),
-                                             #   column(2,
-                                             #          shinyBS::bsButton("btn_sheds_upload",
-                                             #                            "Import SHEDS-HT results",
-                                             #                            block = T)),
-                                             #   column(2,
-                                             #          shinyBS::bsButton("btn_batch_upload",
-                                             #                            "Import batch exposure file",
-                                             #                            block = T))
-                                             # ),
 
                                              fluidRow(
                                                column(12,
@@ -1138,6 +1062,148 @@ shinyUI(fluidPage(
                                                                                                           "Muscle"="mus",
                                                                                                           "Bone"="bne")
                                                                                               ))
+                                                                      ),
+                                                                      fluidRow(
+                                                                        dashboardPage(dashboardHeader(title = NULL),
+                                                                                      dashboardSidebar(
+                                                                                        sidebarMenu(id = "dist_comps",
+                                                                                                    menuItem("Fat",
+                                                                                                             tabName = "fat",selected = T),
+                                                                                                    menuItem("Skin",
+                                                                                                             tabName = "skn"),
+                                                                                                    menuItem("Muscle",
+                                                                                                             tabName = "msc"),
+                                                                                                    menuItem("Bone",
+                                                                                                             tabName = "bne"),
+                                                                                                    menuItem("Lung",
+                                                                                                             tabName = "lng"),
+                                                                                                    menuItem("Heart",
+                                                                                                             tabName = "hrt"),
+                                                                                                    menuItem("GI",
+                                                                                                             tabName = "gi"),
+                                                                                                    menuItem("Liver",
+                                                                                                             tabName = "liv"),
+                                                                                                    menuItem("Kidney",
+                                                                                                             tabName = "kdn"),
+                                                                                                    menuItem("Rapidly Perfused Tissue",
+                                                                                                             tabName = "rpf"),
+                                                                                                    menuItem("Slowly Perfused Tissue",
+                                                                                                             tabName = "spf")
+                                                                                                    )
+                                                                                          
+                                                                                      ),
+                                                                                      dashboardBody(tabItems(
+                                                                                        tabItem(tabName = "fat",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pfat",label = "Fat Partition Coefficient",value = 0.5)
+                                                                                                         ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pafat",label = "Fat Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "skn",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pskin",label = "Skin Partition Coefficient",value = 0.5)
+                                                                                                         ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_paskin",label = "Skin Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                
+                                                                                                ),
+                                                                                        tabItem(tabName = "msc",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pmusc",label = "Muscle Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pamusc",label = "Muscle Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "bne",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pbone",label = "Bone Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pabone",label = "Bone Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "brn",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pbrn",label = "Brain Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pabrn",label = "Brain Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "lng",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_plng",label = "Lung Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_palng",label = "Lung Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "hrt",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_phrt",label = "Heart Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pahrt",label = "HeartPermeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "gi",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pgi",label = "GI Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pagi",label = "GI Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "liv",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pliv",label = "Liver Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_paliv",label = "Liver Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "kdn",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pkdn",label = "Kidney Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pakdn",label = "Kidney Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "rpf",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_prpf",label = "RPF Tissue Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_parpf",label = "SPF Tissue Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "spf",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pspf",label = "SPF Tissue Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_paspf",label = "SPF Tissue Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                )
+                                                                                      ))
+                                                                                      )
                                                                       )
                                                                     )),
                                                            tabPanel("Metabolism",
