@@ -4,7 +4,7 @@
 \alias{editUserDb}
 \title{Gadget for creating/editing the a user database}
 \usage{
-editUserDb(file_path)
+editUserDb(file_path = "")
 }
 \arguments{
 \item{file_path}{Path of the database where changes are to be made}

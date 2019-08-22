@@ -1582,7 +1582,19 @@ shinyUI(fluidPage(
                                                downloadButton("btn_param_dwnld",
                                                               label = "Download All Paramters")
                                              ))
-                                  )
+                                  ),
+                                  tabPanel("NCA values",
+                                           fluidPage(
+                                             # fluidRow(
+                                             #   column(6,offset = 3,
+                                             #          pickerInput("sel_compnca"),
+                                             #          label = "Select Compartment",
+                                             #          choices = NULL)
+                                             # ),
+                                             fluidRow(
+                                               DT::DTOutput("tble_ncavals")
+                                             )
+                                           ))
 
                       )
 

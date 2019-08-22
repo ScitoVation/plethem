@@ -10,4 +10,5 @@
 #' @importFrom magrittr %>%
 #' @importFrom plotly renderPlotly plot_ly add_trace
 #' @importFrom DT DTOutput renderDT datatable dataTableProxy replaceData
+#' @importFrom NonCompart AUC
 NULL

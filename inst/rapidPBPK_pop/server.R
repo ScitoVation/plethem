@@ -1179,6 +1179,7 @@ shinyServer(function(input, output, session) {
       
       
       results$mode <- "FD"
+      performPlethemNCA(results$pbpk, mode = "FD")
       updateNavbarPage(session,"menu","output")
     }
     
@@ -1524,7 +1525,16 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return(obs_name)
     }
   })
-
+  
+  #NCA data processing
+  ncaData <- reactive({
+    mode <- results$mode
+    validate(need(mode == "FD",message = "MC mode not implemented"))
+    result <- results$pbpk
+    return(performPlethemNCA(result,mode))
+  })
+  
+  output$tble_ncavals <- DT::renderDT(ncaData())
 
   #  Concentration plot Data
   concData <- reactive({
