@@ -13,26 +13,34 @@ performPlethemNCA <- function(result, mode = "FD"){
   legend_names <- setNames(legend_df$name,legend_df$model_var)
   var_names <- setNames(legend_df$model_var,legend_df$plot_var)
   conc_data <- result[legend_df$model_var]
-  conc_auc <- lapply(legend_df$model_var,function(x,conc_data,time){
+  nca_conc_list<- lapply(legend_df$model_var,function(x,conc_data,time){
     concs <- conc_data[[x]]
     aucsdf <- as.data.frame(AUC(time,concs,"log"),stringsAsFactors = F)
-    return(dplyr::last(aucsdf$AUC))
-  },conc_data, result$time)
-
-  conc_cmax <- lapply(legend_df$model_var,function(x,conc_data){
+    comp_auc <- dplyr::last(aucsdf$AUC)
     cmax <-max(conc_data[[x]]) 
-    ifelse(cmax>1,max(cmax),cmax)
-    return(cmax)
-  },conc_data
-  )
-  conc_tmax <- lapply(legend_df$model_var,function(x,conc_data,time){
+    comp_cmax <- ifelse(cmax>1,cmax[1],cmax)
     max_idx <- which(conc_data[[x]] == max(conc_data[[x]]))
-    max_idx <- ifelse(length(max_idx)>1,max(max_idx),max_idx)
-    return(time[max_idx])
-  },conc_data,result$time
-  )
-  ncadfs <- data.frame("names"=legend_df$model_var,"auc"=conc_auc,"cmax" =conc_cmax,"tmax" =conc_tmax)
-  print(ncadfs)
+    comp_tmax <- time[ifelse(length(max_idx)>1,max_idx[1],max_idx)]
+    return(c("AUC"=comp_auc,"cmax"=comp_cmax,"tmax"=comp_tmax))
+  },conc_data, result$time)
+  ncadf <- as.data.frame(nca_conc_list)
+  colnames(ncadf)<- legend_df$model_var
+
+  # conc_cmax <- lapply(legend_df$model_var,function(x,conc_data){
+  #   cmax <-max(conc_data[[x]]) 
+  #   ifelse(cmax>1,max(cmax),cmax)
+  #   return(cmax)
+  # },conc_data
+  # )
+  # conc_tmax <- lapply(legend_df$model_var,function(x,conc_data,time){
+  #   max_idx <- which(conc_data[[x]] == max(conc_data[[x]]))
+  #   max_idx <- ifelse(length(max_idx)>1,max(max_idx),max_idx)
+  #   return(time[max_idx])
+  # },conc_data,result$time
+  # )
+  # ncadfs <- data.frame("names"=legend_df$model_var,"auc"=conc_auc,"cmax" =conc_cmax,"tmax" =conc_tmax)
+  # print(ncadfs)
+  
   query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'amt' AND model='rapidPBPK' AND mode = '%s';",mode)
   legend_df <- mainDbSelect(query)
   amt_data <- result[legend_df$model_var]
@@ -44,5 +52,5 @@ performPlethemNCA <- function(result, mode = "FD"){
   amt_auc <- setNames(amt_auc,legend_df$model_var)
   
  
-  return(ncadfs)
+  return(ncadf)
 } 
