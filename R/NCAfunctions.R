@@ -7,24 +7,30 @@
 #' @param mode Forward Dosimetry or Montecarlo
 #' @export
 #' 
-performPlethemNCA <- function(result, mode = "FD"){
+performPlethemNCA <- function(result,var_names,mode = "FD"){
   query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'conc' AND model='rapidPBPK' AND mode = '%s';",mode)
-  legend_df <- mainDbSelect(query)
-  legend_names <- setNames(legend_df$name,legend_df$model_var)
-  var_names <- setNames(legend_df$model_var,legend_df$plot_var)
-  conc_data <- result[legend_df$model_var]
-  nca_conc_list<- lapply(legend_df$model_var,function(x,conc_data,time){
-    concs <- conc_data[[x]]
-    aucsdf <- as.data.frame(AUC(time,concs,"log"),stringsAsFactors = F)
-    comp_auc <- dplyr::last(aucsdf$AUC)
-    cmax <-max(conc_data[[x]]) 
-    comp_cmax <- ifelse(cmax>1,cmax[1],cmax)
-    max_idx <- which(conc_data[[x]] == max(conc_data[[x]]))
-    comp_tmax <- time[ifelse(length(max_idx)>1,max_idx[1],max_idx)]
-    return(c("AUC"=comp_auc,"cmax"=comp_cmax,"tmax"=comp_tmax))
+  # legend_df <- mainDbSelect(query)
+  # legend_names <- setNames(legend_df$name,legend_df$model_var)
+  # var_names <- setNames(legend_df$model_var,legend_df$plot_var)
+  conc_data <- result[var_names]
+  nca_conc_list<- lapply(var_names,function(x,conc_data,time){
+    conc <- conc_data[[x]]
+    NCA_res <- sNCA(time,conc)
+    aucall <- NCA_res[["AUCALL"]]
+    aucinf <- NCA_res[["AUCIFP"]]
+    cmax <- NCA_res[["CMAX"]]
+    hlfe <- NCA_res[["LAMZHL"]]
+    termslope <- NCA_res[["LAMZ"]]
+    tmax <- NCA_res[["TMAX"]]
+    last_time <- time[length(time)]
+    start_time <- ifelse(last_time < 24,0,last_time-24)
+    auc24 <- IntAUC(time,conc,start_time,last_time,NCA_Res)
+    return(c("AUCall"=aucall,"AUCinf"=aucinf,"AUC24"=auc24,
+             "Cmax"=cmax,"T_cmax"=tmax,
+             "half_life"=hlfe,"slope"=termslope))
   },conc_data, result$time)
   ncadf <- as.data.frame(nca_conc_list)
-  colnames(ncadf)<- legend_df$model_var
+  colnames(ncadf)<- var_names
 
   # conc_cmax <- lapply(legend_df$model_var,function(x,conc_data){
   #   cmax <-max(conc_data[[x]]) 

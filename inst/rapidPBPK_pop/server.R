@@ -1179,7 +1179,6 @@ shinyServer(function(input, output, session) {
       
       
       results$mode <- "FD"
-      performPlethemNCA(results$pbpk, mode = "FD")
       updateNavbarPage(session,"menu","output")
     }
     
@@ -1529,9 +1528,12 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   #NCA data processing
   ncaData <- reactive({
     mode <- results$mode
+    query <- sprintf("Select model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",model,mode)
+    var_names<- mainDbSelect(query)$model_var
+    print(var_names)
     validate(need(mode == "FD",message = "MC mode not implemented"))
     result <- results$pbpk
-    return(performPlethemNCA(result,mode))
+    return(performPlethemNCA(result,var_names,mode))
   })
   
   output$tble_ncavals <- DT::renderDT(ncaData())
