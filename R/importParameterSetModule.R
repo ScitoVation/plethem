@@ -19,6 +19,9 @@ importParameterSetUI <- function(namespace,set_type){
                         # tabPanel("New",value = "new",
                         #          DT::DTOutput(ns("new_tble"))),
                         tabPanel("User Database",value = "user",
+                                 bsButton(ns("btn_userDb_file"),
+                                          "Select User Database",
+                                          block = T),
                                  pickerInput(ns("sel_user"),
                                                 label = "Select Chemical",
                                                 choices = NULL,multiple = T)
@@ -62,8 +65,6 @@ importParameterSet <- function(input,output,session,set_type){
   returnValues <- reactiveValues()
   returnValues$retdata <- c("No","",0)
   ns <- session$ns
-  #tables <- reactiveValues()
-  #ids <-reactiveValues()
 
   set_name <- switch(set_type,
                      "physio" = "Physiological",
@@ -83,189 +84,41 @@ importParameterSet <- function(input,output,session,set_type){
     id_num = max(id_list[[id_name]])+1
   }
 
-  # # get the current ID for the parameter set from user database
-  # query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
-  # user_id_list <- userDbSelect(query)
-  # 
-  # if (length(user_id_list[[id_name]])==0){
-  #   user_id_num = 1
-  # }else{
-  #   user_id_num = max(as.integer(user_id_list[[id_name]]))+1
-  # }
-
   all_sets_query <- sprintf("SELECT * FROM %s ;",set_table_name)
 
-  #col_names <- c("Name","Variable","Original Value","Updated Value")
   #Server operations for main table
   main_vals <- mainDbSelect(all_sets_query)
   main_chem_list <- as.list(main_vals[[id_name]])
   names(main_chem_list)<-main_vals$name
   updatePickerInput(session,"sel_main", choices = main_chem_list)
 
-  # # populate the new chemical table
-  # # get all the chemical variables
-  # if (set_name == "Chemical"){
-  #   query <- "SELECT Var FROM ParamNames Where ParamSet = 'Chemical' and ParamType = 'Numeric';"
-  #   all_chem_params <- mainDbSelect(query)$Var
-  # }
-  # query <- "SELECT Var FROM ParamNames Where ParamSet = 'Chemical' and ParamType = 'Numeric';"
-  # all_chem_params <- mainDbSelect(query)$Var
-  # new_chem_table <- data.frame("Var" = all_chem_params,
-  #                              "org_val"=rep(0,length(all_chem_params)),
-  #                              "import_val"=rep(0,length(all_chem_params)),
-  #                              stringsAsFactors = F)
-  # output$new_tble <- DT::renderDataTable(DT::datatable(new_chem_table,
-  #                                                       rownames = F,
-  #                                                       escape = T,
-  #                                                       selection = "none",
-  #                                                       colnames = c("Variable","Original Value","Imported Value"),
-  #                                                       autoHideNavigation = T,
-  #                                                       editable = F,
-  #                                                       options = list(dom = "tp",pageLength=5)
-  # 
-  # )
-  # ,server = TRUE)
-  # new_proxy = DT::dataTableProxy('new_tble')
-  # 
-  # observeEvent(input$new_tble_cell_edit,{
-  #   databck <- input$new_tble_cell_edit
-  #   row <- databck$row
-  #   col <- databck$col+1
-  #   val <- databck$value
-  #   old_table <- new_chem_table
-  #   old_table[row,col]<- val
-  #   new_chem_table<<- old_table
-  #   tables$new_store<-reactiveVal(old_table)
-  #   #tables$new_disp<-reactiveVal(old_table)
-  #   DT::replaceData(new_proxy,old_table,resetPaging = F,rownames = F)
-  # })
-  # 
-# 
-# 
-# 
-#   observeEvent(input$sel_main,{
-# 
-#     id <- input$sel_main
-#     if (id == ""){
-#       id = "1"
-#     }
-#     vals_query <- sprintf("SELECT param,value FROM %s where %s = %s;",
-#                           set_name,id_name,id)
-#     table <- mainDbSelect(vals_query)
-#     #table <-cbind(table,table[2])
-#     colnames(table)<- NULL
-#     if (set_type == "chem"){
-#       meta_query <- sprintf("SELECT name,cas FROM %s where %s = %s",set_table_name,id_name,id)
-#       metadata <- mainDbSelect(meta_query)
-#       updateTextInput(session,"cas",value = metadata$cas)
-#     }else{
-#       meta_query <- sprintf("SELECT name FROM %s where %s = %s",set_table_name,id_name,id)
-#       metadata <- mainDbSelect(meta_query)
-#     }
-#     updateTextInput(session,"name",value = metadata$name)
-#     ids$sel_user_id_num <<- reactiveVal(id)
-#     #table <- table[,c(3,1,2)]
-#     tables$main<<-reactiveVal(table)
-#     },ignoreInit = T,ignoreNULL = T)
-# 
-#   output$main_tble <- DT::renderDataTable(DT::datatable(tables$main(),
-#                                                         rownames = F,
-#                                                         escape = T,
-#                                                         selection = "none",
-#                                                         colnames = c("Variable","Value"),
-#                                                         autoHideNavigation = T,
-#                                                         editable = F,
-#                                                         options = list(dom = "tp",pageLength=10)
-# 
-#                                                         )
-#                                           ,server = TRUE)
-    # main_proxy = DT::dataTableProxy('main_tble')
-
-  # observeEvent(input$main_tble_cell_edit,{
-  #   databck <- input$main_tble_cell_edit
-  #   row <- databck$row
-  #   col <- databck$col+1
-  #   val <- databck$value
-  #   old_table <- tables$main_store()
-  #   old_table[row,col]<- val
-  #   tables$main_store<-reactiveVal(old_table)
-  #   tables$main<-reactiveVal(old_table)
-  #   DT::replaceData(main_proxy,tables$main(),resetPaging = F,rownames = F)
-  # })
   #Server operations for user table
-  user_vals <- userDbSelect(all_sets_query)
-  user_chem_list <- as.list(user_vals[[id_name]])
-  names(user_chem_list)<-user_vals$name
-  updatePickerInput(session,"sel_user", choices = user_chem_list)
-
-  # observeEvent(input$sel_user,{
-  # 
-  #   id <- input$sel_user
-  #   if (id == ""){
-  #     id = "1"
-  #   }
-  #   vals_query <- sprintf("SELECT param,value FROM %s where %s = %s;",
-  #                         set_name,id_name,id)
-  #   table <- userDbSelect(vals_query)
-  #   #table <-cbind(table,table[2])
-  #   colnames(table)<- NULL
-  #   if (set_type == "chem"){
-  #     meta_query <- sprintf("SELECT name,cas FROM %s where %s = %s",
-  #                           set_table_name,id_name,id)
-  #     metadata <- userDbSelect(meta_query)
-  #     if (input$src_type != "new"){
-  #       updateTextInput(session,"cas",value = metadata$cas)
-  #     }else{
-  #       updateTextInput(session,"cas",value = NULL,placeholder = "Enter CAS-RN")
-  #     }
-  #     
-  # 
-  #   }else{
-  #     meta_query <- sprintf("SELECT name FROM %s where %s = %s",set_table_name,id_name,id)
-  #     metadata <- userDbSelect(meta_query)
-  #   }
-  #   if (input$src_type != "new"){
-  #     updateTextInput(session,"name",value = metadata$name)
-  #   }else{
-  #     updateTextInput(session,"name",value = NULL,placeholder = "Enter Chemical Name")
-  #   }
-  # 
-  #   ids$sel_user_id_num <<- reactiveVal(id)
-  #   #table <- table[,c(3,1,2)]
-  #   tables$user<<-reactiveVal(table)
-  # },ignoreInit = T,ignoreNULL = T)
-  # 
-  # output$user_tble <- DT::renderDataTable(DT::datatable(tables$user(),
-  #                                                       rownames = F,escape = T,selection = "none",
-  #                                                       colnames = c("Variable","Original Value"),
-  #                                                       autoHideNavigation = T,
-  #                                                       editable = F,
-  #                                                       options = list(dom = "tp",pageLength=5)
-  # 
-  # )
-  # ,server = TRUE)
-  # user_proxy = DT::dataTableProxy('user_tble')
-  # 
-  # observeEvent(input$user_tble_cell_edit,{
-  #   databck <- input$user_tble_cell_edit
-  #   row <- databck$row
-  #   col <- databck$col+1
-  #   val <- databck$value
-  #   old_table <- tables$user()
-  #   old_table[row,col]<- val
-  #   tables$user<-reactiveVal(old_table)
-  #   tables$user_disp<-reactiveVal(old_table)
-  #   DT::replaceData(user_proxy,tables$user_disp(),resetPaging = F,rownames = F)
-  # })
-
-  # checkData <- reactive({
-  #   req(input$sel_user)
-  # })
-  # observe({
-  #   if(checkData() != ""){
-  #     shinyjs::enable("import")
-  #   }
-  # })
+  db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
+  if (!(is.na(db_path))){
+    user_vals <- userDbSelect(all_sets_query)
+    user_chem_list <- as.list(user_vals[[id_name]])
+    names(user_chem_list)<-user_vals$name
+    updatePickerInput(session,"sel_user", choices = user_chem_list)
+  }
+  fpath_userDb<- reactive({
+    fpath <- tcltk::tk_choose.files(multi = F,
+                                    filters = matrix(c("SQLite Db",".sqlite"),1,2,byrow = T)
+                                    )
+    return(fpath)
+  })
+  observeEvent(input$btn_userDb_file, ignoreInit = TRUE, {
+    
+    fpath <- fpath_userDb()
+    if (!(length(fpath)==0)){
+      query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",fpath)
+      mainDbUpdate(query)
+      user_vals <- userDbSelect(all_sets_query)
+      user_chem_list <- as.list(user_vals[[id_name]])
+      names(user_chem_list)<-user_vals$name
+      updatePickerInput(session,"sel_user", choices = user_chem_list)
+    }
+    
+  })
 
   observeEvent(input$import,{
     userDbIds <- input$sel_user
@@ -344,61 +197,9 @@ importParameterSet <- function(input,output,session,set_type){
                        all_values_projectDb_string)
       
       projectDbUpdate(query)
-      #print(query)
       id_num <- id_num + 1
-      #print(table)
+
     }
-    # if(input$src_type == "main"){
-    #   tble <- tables$main()
-    #   current_id_num <- 0
-    # }else if (input$src_type == "user"){
-    #   tble <- tables$user()
-    #   current_id_num <- as.integer(ids$sel_user_id_num())
-    # }else{
-    #   tble <- tables$new_store()
-    #   current_id_num <- 0
-    # }
-    # tble <- tble[c(1,2)]
-    # 
-    # colnames(tble)<- c("var","val")
-    # var_names <- tble$var
-    # names(var_names) <- NULL
-    # values <- tble$val
-    # names(values) <- NULL
-    # values <- paste0("'",values,"'")
-    # all_values_projectDb_string <- paste(paste0(sprintf('(%d,',id_num),
-    #                                             sprintf("'%s'",var_names),
-    #                                             ',',values,')'),
-    #                                      collapse = ", ")
-    # # Conver table values to query that can be used with dbs
-    # write_col_names <- sprintf("%s, param, value",id_name)
-    # var_names <- tble$var
-    # names(var_names) <- NULL
-    # values <- tble$val
-    # names(values) <- NULL
-    # values <- paste0("'",values,"'")
-    # all_values_projectDb_string <- paste(paste0(sprintf('(%d,',id_num),
-    #                                   sprintf("'%s'",var_names),
-    #                                   ',',values,')'),
-    #                            collapse = ", ")
-    # all_values_userDb_string <- paste(paste0(sprintf('(%d,',user_id_num),
-    #                                           sprintf("'%s'",var_names),
-    #                                           ',',values,')'),
-    #                                    collapse = ", ")
-    # 
-    # 
-    # #update user database
-    # if(input$add2Db==T){
-    #   query <- sprintf("INSERT INTO %s (%s, name, descrp,cas) VALUES (%d, '%s' , '%s','%s' );",
-    #                    set_table_name,id_name,user_id_num,input$name,input$descrp,input$cas)
-    #   userDbUpdate(query)
-    #   query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",
-    #                    vals_table_name,
-    #                    write_col_names,
-    #                    all_values_userDb_string)
-    #   userDbUpdate(query)
-    # }
-    # 
 
     removeModal()
   })

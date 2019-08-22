@@ -1055,18 +1055,8 @@ shinyUI(fluidPage(
                                                                         )
                                                                       ),
                                                                       fluidRow(
-                                                                        column(6,
-                                                                               selectizeInput("sel_dist_comps",label=NULL,
-                                                                                              choices = c("Fat"="fat",
-                                                                                                          "Skin"="skn",
-                                                                                                          "Muscle"="mus",
-                                                                                                          "Bone"="bne")
-                                                                                              ))
-                                                                      ),
-                                                                      fluidRow(
-                                                                        dashboardPage(dashboardHeader(title = NULL),
-                                                                                      dashboardSidebar(
-                                                                                        sidebarMenu(id = "dist_comps",
+                                                                        dashboardPage(dashboardHeader(disable = T),
+                                                                                      dashboardSidebar(sidebarMenu(id = "dist_comps",
                                                                                                     menuItem("Fat",
                                                                                                              tabName = "fat",selected = T),
                                                                                                     menuItem("Skin",
@@ -1202,8 +1192,11 @@ shinyUI(fluidPage(
                                                                                                          numericInput("ms_paspf",label = "SPF Tissue Permeability Coefficient",value = 1000))
                                                                                                 )
                                                                                                 )
-                                                                                      ))
-                                                                                      )
+                                                                                      )),skin = "green"
+                                                                        )
+                                                                        ),
+                                                                      fluidRow(
+                                                                        tags$hr(style = "border: 1px dashed black;")
                                                                       )
                                                                     )),
                                                            tabPanel("Metabolism",
@@ -1281,12 +1274,17 @@ shinyUI(fluidPage(
                                              dashboardHeader(disable = T),
                                              dashboardSidebar(
                                                shinydashboard::sidebarMenu(
+                                                 menuItem("Chemical",
+                                                          tabName = "var_chem",selected = T),
+                                                 menuItem("Exposure",
+                                                          tabName = "var_expo"),
                                                  menuItem("Physiological",
                                                           tabName = "var_physio"),
-                                                 menuItem("Chemical",
-                                                          tabName = "var_chem"),
-                                                 menuItem("Exposure",
-                                                          tabName = "var_expo")
+                                                 menuItem("ADME",
+                                                          tabName = "var_adme")
+                                            
+                                                 
+                                                 
                                                )
                                              ),
                                              dashboardBody(tabItems(
@@ -1353,44 +1351,31 @@ shinyUI(fluidPage(
                                                          column(8, offset = 2,
                                                                 DT::DTOutput("expo_var_tble"))
                                                        )
+                                               ),
+                                               tabItem(tabName = "var_adme",
+                                                       fluidRow(
+                                                         column(width = 4, offset = 0,
+                                                                selectizeInput("sel_adme_var",NULL,
+                                                                               choices = NULL,
+                                                                               options= list(placeholder = "ADME Parameter Set",
+                                                                                             openOnFocus = T))),
+                                                         column(width = 8, offset = 0,
+                                                                shinyWidgets::actionGroupButtons(
+                                                                  c("btn_new_varadme","btn_edit_varadme","btn_import_varadme"),
+                                                                  c("New","Edit","Import"),
+                                                                  direction = "horizontal",
+                                                                  status = "info",
+                                                                  fullwidth = T)
+                                                         )
+                                                       ),
+                                                       fluidRow(
+                                                         column(8, offset = 2,
+                                                                DT::DTOutput("adme_var_tble"))
+                                                       )
                                                )
                                                )
                                                )
                                            )
-                                           # fluidPage(
-                                           #   
-                                           #   fluidRow(
-                                           #     column(12,
-                                           #            div(style = "height:15px")
-                                           #     )
-                                           #   ),
-                                           #   fluidRow(tags$h5("Physiology")),
-                                           #   fluidRow(
-                                           #     column(width = 9, offset = 0,
-                                           #            selectizeInput("sel_mc_physio",NULL,
-                                           #                           choices = NULL,
-                                           #                           options= list(placeholder = "Population Parameter Set",
-                                           #                                         openOnFocus = T))),
-                                           #     column(width = 3, offset = 0,
-                                           #            shinyWidgets::actionGroupButtons(
-                                           #              c("btn_import_pop","btn_sverest_pop","btn_saveas_pop"),
-                                           #              c("Import","Save/Restore","Save As"),
-                                           #              direction = "horizontal",
-                                           #              status = "info",
-                                           #              fullwidth = T
-                                           #              
-                                           #            ))
-                                           #   ),
-                                           #   fluidRow(
-                                           #     pickerInput("param_names",label = "Select Parameters to assign variability",
-                                           #                 choices = NULL,multiple = T,
-                                           #                 options = list('selected-text-format' = "count > 3"))
-                                           #     
-                                           #   )
-                                           #   
-                                           # 
-                                           #   
-                                           # )
                                            ),
                                   tabPanel("Simulations",
                                            fluidPage(
@@ -1441,7 +1426,15 @@ shinyUI(fluidPage(
                                                                    selectizeInput("sel_set_physiovar","Select Variability",choices = NULL)
                                                             )
                                                           ),
-                                                          selectizeInput("sel_set_adme","Select ADME",choices = NULL),
+                                                          fluidRow(
+                                                            column(6,
+                                                                   selectizeInput("sel_set_adme","Select ADME",choices = NULL)
+                                                                   ),
+                                                            column(6,
+                                                                   selectizeInput("sel_set_admevar","Select Variability",choices = NULL)
+                                                                   )
+                                                          ),
+                                                          
                                                           fluidRow(
                                                             column(4,
                                                                    numericInput("sim_start","Simulation Start Time (h)",0)
@@ -1450,10 +1443,10 @@ shinyUI(fluidPage(
                                                                    numericInput("sim_dur","Simulation Duration (h)",0)
                                                                    ),
                                                             column(4,
-                                                                   numericInput("mc_num","Number of Montecarlo Runs",1000)
+                                                                   numericInput("mc_num","Number of Montecarlo Runs",0)
                                                                    )
                                                           ),
-                                                          checkboxInput("mc_mode","Run Monte Carlo Simulation",T),
+                                                          checkboxInput("mc_mode","Run Monte Carlo Simulation",F),
                                                           shinyWidgets::actionBttn("save_sim",NULL,
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")

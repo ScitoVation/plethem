@@ -38,7 +38,7 @@ shinyServer(function(input, output, session) {
   physiovar <-getVariabilitySetChoices("physio")
   chemvar <-getVariabilitySetChoices("chem")
   expovar <-getVariabilitySetChoices("expo")
-
+  admevar <-getVariabilitySetChoices("adme")
   parameterSets$expo <- reactiveVal(expo_set)
   parameterSets$physio <- reactiveVal(physio_set)
   parameterSets$chem <- reactiveVal(chem_set)
@@ -47,7 +47,7 @@ shinyServer(function(input, output, session) {
   parameterSets$physiovar <- reactiveVal(physiovar)
   parameterSets$chemvar <- reactiveVal(chemvar)
   parameterSets$expovar <- reactiveVal(expovar)
-
+  parameterSets$admevar <- reactiveVal(admevar)
   # conc_datasets <- c("none",getDatasetNames("conc"))
   # updateSelectizeInput(session,"cplt_data",choices = conc_datasets)
 
@@ -73,6 +73,9 @@ shinyServer(function(input, output, session) {
     expovar <- parameterSets$expovar()
     expovar <- c("None"="0",expovar)
     updateSelectizeInput(session,"sel_set_expovar",choices = expovar)
+    admevar <- parameterSets$admevar()
+    admevar <- c("None"="0",admevar)
+    updateSelectizeInput(session,"sel_set_admevar",choices = admevar)
   })
   observeEvent({
     input$sel_set_chem
@@ -162,6 +165,11 @@ shinyServer(function(input, output, session) {
   set_choices<- getVariabilitySetChoices("expo")
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_expo_var",
+                         choices = set_choices)
+  }
+  set_choices<- getVariabilitySetChoices("adme")
+  if (length(set_choices)>0){
+    updateSelectizeInput(session,"sel_adme_var",
                          choices = set_choices)
   }
   
@@ -556,8 +564,29 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
                                        param_vars,input$sel_expo_var)
-    ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
+    
+    observeEvent(input$btn_new_varadme,{
+      param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
+      param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
+      names(param_vars) <- param_names
+      ns <- paste0("ven_",input$btn_new_varadme)
+      newEditVariabilityUI(ns)
+      parameterSets$vardat <- callModule(newEditVariability,ns,"adme","new",param_vars)
+      ### Variability Tab
+    },ignoreInit = T, ignoreNULL = T)
+    
+    observeEvent(input$btn_edit_varadme,{
+      param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
+      param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
+      names(param_vars) <- param_names
+      ns <- paste0("vee_",input$btn_edit_varadme)
+      newEditVariabilityUI(ns)
+      parameterSets$vardat <- callModule(newEditVariability,ns,"adme","edit",
+                                         param_vars,input$sel_adme_var)
+    },ignoreInit = T, ignoreNULL = T)
+    ### Variability Tab
+  
   
   observe({
     result_vector <- parameterSets$vardat
@@ -617,6 +646,20 @@ shinyServer(function(input, output, session) {
     
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
   
+  observeEvent(input$sel_adme_var,{
+    varid <- input$sel_adme_var
+    query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
+    var_data <- projectDbSelect(query)
+    dataset <- unserialize(charToRaw(var_data$var_tble))
+    dataset <- dataset[,c(-2)]
+    output$adme_var_tble <- DT::renderDT(DT::datatable(dataset,rownames = "",
+                                                       colnames = c("Use Bounds" = 5,
+                                                                    "Upper Bound"=6,
+                                                                    "Lower Bound"=7)
+    ))
+    
+  },ignoreInit = TRUE, ignoreNULL =  TRUE)
+  
   
 
   #update the inputs for the parameter set selected
@@ -651,6 +694,16 @@ shinyServer(function(input, output, session) {
     params_df$Val <- chem_values[chem_name_df$Var]
     updateUIInputs(session,params_df)
 
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
+  
+  observeEvent(input$sel_adme,{
+    admeid <- input$sel_adme
+    #get the values for inputs
+    adme_values <- getParameterSet("adme",admeid)
+    params_df <- adme_name_df
+    params_df$Val <- adme_values[adme_name_df$Var]
+    updateUIInputs(session,params_df)
+    
   },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   ### This code chunk deals with updating pair using qsar models
@@ -954,12 +1007,17 @@ shinyServer(function(input, output, session) {
         sendSweetAlert(session,title = NULL,text=alert_message,type="info")
         val2update <- metabolism_dataframe$Clearance[metabolism_dataframe$Age==ref_age]
       }
-      switch(upload_type,
-        "m1"=updateNumericInput(session,"ms_vmaxc",value =val2update),
-        "m2"=updateNumericInput(session,"ms_vkm1c",value =val2update),
-        "m3"=updateNumericInput(session,"ms_kbld",value =val2update),
-        "m4"=updateNumericInput(session,"ms_kent",value =val2update)
-      )
+      if (upload_type == "m1"){
+        updateNumericInput(session,"ms_vmaxc",value =val2update)
+        updateNumericInput(session,"ms_vkm1c",value =0)
+      }else if (upload_type == "m2"){
+        updateNumericInput(session,"ms_vkm1c",value =val2update)
+        updateNumericInput(session,"ms_vmaxc",value =0)
+      }else if (upload_type == "m3"){
+        updateNumericInput(session,"ms_kbld",value =val2update)
+      }else{
+        updateNumericInput(session,"ms_kent",value =val2update)
+      }
     }
   })
 
@@ -983,21 +1041,23 @@ shinyServer(function(input, output, session) {
       chemid <- as.integer(input$sel_set_chem)
       physioid <- as.integer(input$sel_set_physio)
       expoid <- as.integer(input$sel_set_expo)
-      metabid <- as.integer(input$sel_set_metab)
+      admeid <- as.integer(input$sel_set_adme)
       physiovarid <- as.integer(input$sel_set_physiovar)
       chemvarid <- as.integer(input$sel_set_chemvar)
       expovarid <- as.integer(input$sel_set_expovar)
+      admevarid <- as.integer(input$sel_set_admevar)
       query <- paste(strwrap(sprintf("INSERT INTO SimulationsSet (simid,name,descrp,expoid,physioid,
-                                     chemid,metabid,physiovarid, chemvarid,expovarid,tstart,sim_dur,mc_num) Values
-                                     (%d,'%s','%s',%i,%i,%i,%i,%i,%i,%i,%f,%f,%i) ;",
+                                     chemid,admeid,physiovarid, chemvarid,expovarid,admevarid,tstart,sim_dur,mc_num) Values
+                                     (%d,'%s','%s',%i,%i,%i,%i,%i,%i,%i,%i,%f,%f,%i) ;",
                                      simid,sim_name,sim_descrp,
                                      expoid,physioid,
-                                     chemid,metabid,
+                                     chemid,admeid,
                                      physiovarid,chemvarid,
-                                     expovarid,
+                                     expovarid,admevarid,
                                      sim_start,sim_dur,mc_num),
                              simplify = T),
                      sep = " ",collapse = "")
+      print(query)
       projectDbUpdate(query)
       sim_sets <- getAllSetChoices("sim")
       updateSelectizeInput(session,"sel_sim",choices = sim_sets)
@@ -1007,19 +1067,21 @@ shinyServer(function(input, output, session) {
       sendSweetAlert(session,"Success",
                      sprintf("Simulation saved as %s",sim_name),
                      type = "success")
+      updateSelectizeInput(session,"sel_sim",selected = simid)
+      
     }
-
+    
   })
 
   observeEvent(input$sel_sim,{
     simid <- as.integer(input$sel_sim)
     # get pertinent data from the database
     # get All values from the simulations database
-    query <- sprintf("Select name,descrp,metabid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
+    query <- sprintf("Select name,descrp,admeid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
                      simid)
 
     result <- projectDbSelect(query)
-    metabid <- as.integer(result[["metabid"]])
+    admeid <- as.integer(result[["admeid"]])
     chemid <- as.integer(result[["chemid"]])
     expoid <- as.integer(result[["expoid"]])
     physioid <- as.integer(result[["physioid"]])
@@ -1049,7 +1111,7 @@ shinyServer(function(input, output, session) {
     output$sim_expo <- renderText(expo_name)
 
     # get metabolism data.
-    metab_data <- getMetabData(metabid,physioid,chemid,model)
+    metab_data <- getMetabData(admeid,model)
     output$sim_metab_type <- renderText(metab_data$Type)
     output$sim_metab_units <- renderText(metab_data$Units)
     output$sim_metab_val <- renderText(as.character(round(metab_data$Value,2)))

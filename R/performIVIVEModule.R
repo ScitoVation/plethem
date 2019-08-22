@@ -100,10 +100,17 @@ performIVIVEUI<- function(namespace){
                                                                                        "mL/h/mg Protein"="mlhmP"))
                                                             )
                                                      )
-                                          ),
-                                          shinyBS::bsButton(ns("btn_reset_metab"),"Reset All Clearance Values"),
-                                          type = "tab"
-                                          )
+                                          ),type = "tab"
+                                   )
+                                   ),
+                          fluidRow(
+                            column(4,
+                                   shinyBS::bsButton(ns("btn_reset_metab"),"Reset All Clearance Values",block = T)
+                                   ),
+                            column(8,
+                                   pickerInput(ns("sel_metabtype"),inline = T,label = "Metabolism Type",
+                                                  choices = c("Saturable"="m1","Linear"="m2"))
+                            )
                           )
                         ),size = "l",
                         footer = tagList(
@@ -152,6 +159,7 @@ performIVIVE <- function(input,output,session,km){
     updateNumericInput(session,"num_livwt",value = liver_wt)
   })
   module_calcs <- function(){
+    metab_type <- input$sel_metabtype
     hepcl_type <- input$heptype
     liver_wt <- input$num_livwt
     hpgl <- input$num_hpgl
@@ -174,7 +182,8 @@ performIVIVE <- function(input,output,session,km){
                                                                 liver_wt,hpgl,km),
                    0
     )
-    vmax <- vliv*km/(bw^0.75)
+    vmax <- ifelse(metab_type == "m1",vliv*km/(bw^0.75),0)
+    vliv <- ifelse(metab_type == "m2",vliv,0)
     #print(c(vliv,vmax,km))
     return(c("Yes",vliv/liver_wt,vmax,km))
   }
