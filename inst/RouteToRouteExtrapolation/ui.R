@@ -45,7 +45,7 @@ shinyUI(
     navbarPage(
       title = tags$img(
         height = 25,
-        src = 'sciv_logo.png'
+        src = 'sciv_logo.jpg'
         # src = "https://www.scitovation.com/wp-content/themes/scitovation/assets/images/logo/ScitoVation-Pioneers_in_Chemical_Safety_Assessment.svg"
       ),
       id = 'navbar',
@@ -103,13 +103,13 @@ shinyUI(
               12,
               wellPanel(
                 align='center',
-                tags$h3('Monte Carlo Results'),
-                plotlyOutput("Plot1", height = "600px")
+                tags$h3('Biomonitoring Results'),
+                plotlyOutput("Plot3", height = "600px")
               ),
               wellPanel(
                 align='center',
-                tags$h3('Biomonitoring Results'),
-                plotlyOutput("Plot3", height = 600)
+                tags$h3('Monte Carlo Results'),
+                plotlyOutput("Plot1", height = 600)
               )
             )
           )
