@@ -184,7 +184,7 @@ shinyServer(function(input, output,session) {
       ),
       footer= tagList(
         # uiOutput('mcFooter', inline = T),
-        shinyjs::disabled(actionButton("runSim","Run")),
+        shinyjs::disabled(actionButton("runSim","Run")), # Used to be addBM
         modalButton('Cancel')
       )
     )
@@ -483,10 +483,10 @@ shinyServer(function(input, output,session) {
   
   observeEvent(input$mcNumeric, {
     if(input$mcNumeric < 20 | input$mcNumeric > 50){
-      shinyjs::disable('addMC')
+      shinyjs::disable('runExposure')
     } else{
       if(!is.null(input$simulation)){
-        shinyjs::enable('addMC')
+        shinyjs::enable('runExposure')
       }
     }
   })
@@ -496,7 +496,7 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$rDataFile, {
-    # shinyjs::enable('addMC')
+    # shinyjs::enable('runExposure')
     inFile <- input$rDataFile
     rDFile <- inFile$datapath
     # e = new.env()
@@ -523,7 +523,7 @@ shinyServer(function(input, output,session) {
     
   })
   
-  observeEvent(input$addMC, {
+  observeEvent(input$runExposure, {
     confirmSweetAlert(
       session = session,
       inputId = "myconfirmation",
@@ -813,7 +813,7 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$bmFile, {
-    shinyjs::enable("addBM")
+    shinyjs::enable("runSim")
   })
   
   observeEvent(input$selectProject,{
@@ -898,7 +898,7 @@ shinyServer(function(input, output,session) {
   })
   
   # Actions on Add button in Upload Biomonitoring's Modal
-  observeEvent(input$addBM, {
+  observeEvent(input$runSim, {
     bmvals$name <- input$bmname
     filesIn2 <- input$bmFile
     df_list2 <- lapply(filesIn2$datapath,read_csv) # read each file into a data frame
@@ -993,11 +993,11 @@ shinyServer(function(input, output,session) {
     } else{ # input$modalNav != 'Upload Existing Results'
       if(is.null(input$rDataFile)){
         output$mcFooter <- renderUI({
-          shinyjs::disabled(actionButton("addMC","Run Simulation"))
+          shinyjs::disabled(actionButton("runExposure","Run Simulation"))
         })
       } else{
         output$mcFooter <- renderUI({
-          actionButton("addMC","Run Simulation")
+          actionButton("runExposure","Run Simulation")
         })
       }
     }
