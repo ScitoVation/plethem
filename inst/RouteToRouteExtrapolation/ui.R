@@ -45,7 +45,7 @@ shinyUI(
     navbarPage(
       title = tags$img(
         height = 25,
-        src = 'sciv_logo.jpg'
+        src = 'sciv_logo_transparent.png'
         # src = "https://www.scitovation.com/wp-content/themes/scitovation/assets/images/logo/ScitoVation-Pioneers_in_Chemical_Safety_Assessment.svg"
       ),
       id = 'navbar',
