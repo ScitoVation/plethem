@@ -140,19 +140,6 @@ shinyUI(
           id = 'Modeloutput',
           type = 'tabs',
           tabPanel(
-            'Results',
-            fluidPage(
-              fluidRow(
-                column(
-                  8,
-                  offset = 2,
-                  align = 'center',
-                  DT::dataTableOutput('percentilePPB',width = 400)
-                )
-              )
-            )
-          ),
-          tabPanel(
             'Plots',
             fluidPage(
               fluidRow(
@@ -169,6 +156,19 @@ shinyUI(
                     tags$h3('Cumulative Density Function'),
                     plotlyOutput("CDF", height = "600px")
                   )
+                )
+              )
+            )
+          ),
+          tabPanel(
+            'Results',
+            fluidPage(
+              fluidRow(
+                column(
+                  8,
+                  offset = 2,
+                  align = 'center',
+                  DT::dataTableOutput('percentilePPB',width = 400)
                 )
               )
             )

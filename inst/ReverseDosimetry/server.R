@@ -25,10 +25,12 @@ library(htmltools)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
+  #############################################################################################
   model <- "rapidPBPK"
   mcvals <- reactiveValues(
     csvFile = NULL,
-    name = NULL
+    name = NULL,
+    exposure = NULL
   )
   bmvals <- reactiveValues(
     csvFile = NULL,
@@ -124,11 +126,18 @@ shinyServer(function(input, output,session) {
             fluidRow(
               column(
                 6,
-                sliderInput(
+                # sliderInput(
+                #   'mySlider2',
+                #   label = 'Exposure Type (Units)',
+                #   min = 0,
+                #   max = 1000,
+                #   value = c(0,1000)
+                # )
+                numericRangeInput(
                   'mySlider2',
                   label = 'Exposure Type (Units)',
-                  min = 0,
-                  max = 1000,
+                  # min = 0,
+                  # max = 1000,
                   value = c(0,1000)
                 )
               ),
@@ -223,7 +232,7 @@ shinyServer(function(input, output,session) {
     inFile <- input$rDataFile
     rDFile <- inFile$datapath
     # e = new.env()
-    # name <<- load(rDFile, envir = e)
+    # name <- load(rDFile, envir = e)
     # data <- e[['name']]
     load(rDFile, envir = .GlobalEnv)
     loadReverseDosimetryProject(rDFile)
@@ -233,7 +242,7 @@ shinyServer(function(input, output,session) {
           chemvarid > 0 |
           expovarid > 0
       ) 
-    # simSet2 <<- simSet$name
+    # simSet2 <- simSet$name
     updatePickerInput(
       session,
       'simulation',
@@ -266,7 +275,7 @@ shinyServer(function(input, output,session) {
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
       # print(paste('max = ',input$mySlider2[2]))
-      nDoses <- 3#input$mcNumeric
+      nDoses <- input$mcNumeric
       if(myExpoid == 'oral'){
         whichDose = 'bdose'
         doseName = 'Oral'
@@ -295,92 +304,92 @@ shinyServer(function(input, output,session) {
       
       ## observeEvent(input$run_sim,{
       simid <- simSet3$simid[1]
-        results$simid <- simid
-        # get the parameters needed to run the model
-        model_params <<- getAllParamValuesForModel(simid,model)
-        #get total volume
-        active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
-        vol_comps <- c(active_comp,"blood")
-        total_vol <- 1#sum( #COME BACK TO #######################################
-        #   unlist(
-        #     lapply(
-        #       vol_comps,
-        #       function(x){
-        #         input[[vol_ids[x]]]
-        #       })
-        #   )
-        # )
-        # test_vol_comps <<- vol_comps
-        # test_total_Vol <<- total_vol
-        # test_vol_ids <<- vol_ids
-        query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
-        mc_num <- as.integer(projectDbSelect(query)$mc_num)
-        # print(paste('mc_num: ',mc_num))
-        model_params$vals[["total_vol"]]<- total_vol
-        # print(total_vol)
-        # print(paste(whichDose, ': ', model_params$vals[[whichDose]]))
-        if (mc_num > 1){
-          MC.matrix <<- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
-          query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
-                           model)
-          mc_vars<- mainDbSelect(query)$model_var
-          mc_results <- lapply(mc_vars,function(x,n){
-            return(x = rep(NA,n))
-          },mc_num)
-          names(mc_results)<- mc_vars
+      results$simid <- simid
+      # get the parameters needed to run the model
+      model_params <- getAllParamValuesForModel(simid,model)
+      #get total volume
+      active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
+      vol_comps <- c(active_comp,"blood")
+      total_vol <- 1#sum( #COME BACK TO #######################################
+      #   unlist(
+      #     lapply(
+      #       vol_comps,
+      #       function(x){
+      #         input[[vol_ids[x]]]
+      #       })
+      #   )
+      # )
+      # test_vol_comps <- vol_comps
+      # test_total_Vol <- total_vol
+      # test_vol_ids <- vol_ids
+      query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
+      mc_num <- 50#as.integer(projectDbSelect(query)$mc_num)
+      # print(paste('mc_num: ',mc_num))
+      model_params$vals[["total_vol"]]<- total_vol
+      # print(total_vol)
+      # print(paste(whichDose, ': ', model_params$vals[[whichDose]]))
+      if (mc_num > 1){
+        MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+        query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
+                         model)
+        mc_vars<- mainDbSelect(query)$model_var
+        mc_results <- lapply(mc_vars,function(x,n){
+          return(x = rep(NA,n))
+        },mc_num)
+        names(mc_results)<- mc_vars
+        
+        currentDose <- input$mySlider2[1]
+        if(currentDose == 0){
+          currentDose = 0.05
+        }
+        # maxDose <- input$mySlider2[2]
+        increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
+        # print(increaseDose)
+        for(n in 1:(nDoses)){
+          # print(paste('Running monte carlo simulation ', n ))
+          # print(currentDose)
+          model_params$vals[[whichDose]] <- currentDose
           
-          currentDose <- input$mySlider2[1]
-          if(currentDose == 0){
-            currentDose = 0.05
-          }
-          # maxDose <- input$mySlider2[2]
-          increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
-          # print(increaseDose)
-          for(n in 1:(nDoses)){
-            print(paste('Running monte carlo simulation ', n ))
-            # print(currentDose)
-            model_params$vals[[whichDose]] <- currentDose
-            
-            
-            for (i in 1:mc_num){
-              model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
-              initial_values <<- calculateInitialValues(model_params)
-              tempDF <- runFDPBPK(initial_values,model)
-              max_list <- unlist(lapply(mc_vars,function(x,data){
-                var_name <- gsub("_max","",x)
-                
-                return(max(data[var_name]))
-              },tempDF$pbpk))
-              names(max_list)<- mc_vars
-              for (x in mc_vars){
-                mc_results[[x]][[i]]<- max_list[[x]]
-              }
-              updateProgressBar(session,"pb",value = ((n-1)*mc_num + i), total = mc_num*nDoses)
+          
+          for (i in 1:mc_num){
+            model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
+            initial_values <- calculateInitialValues(model_params)
+            tempDF <- runFDPBPK(initial_values,model)
+            max_list <- unlist(lapply(mc_vars,function(x,data){
+              var_name <- gsub("_max","",x)
+              
+              return(max(data[var_name]))
+            },tempDF$pbpk))
+            names(max_list)<- mc_vars
+            for (x in mc_vars){
+              mc_results[[x]][[i]]<- max_list[[x]]
             }
-            
+            updateProgressBar(session,"pb",value = ((n-1)*mc_num + i), total = mc_num*nDoses)
+          }
+          
           
           results$pbpk <- as.data.frame(mc_results)
-          # MymcResults <<- as.data.frame(mc_results)
+          # MymcResults <- as.data.frame(mc_results)
           plasmaResults <- as.data.frame(results$pbpk$cpls_max)
           colnames(plasmaResults) = currentDose
-          # pr2 <<- plasmaResults
-          # plasmaResults <<- plasmaResults %>%
+          # pr2 <- plasmaResults
+          # plasmaResults <- plasmaResults %>%
           #   rename(
           #     results$pbpk$cpls_max = 'DOSE'
           #   )
           
           # if(n == 1){
-          #   mcResults2 <<- NULL
+          #   mcResults2 <- NULL
           # }
-          # mcResults2[n] <<- plasmaResults[1]
+          # mcResults2[n] <- plasmaResults[1]
           if(n==1){#is.null(mcResults)){
             # print('it is null')
-            mcResults <<- plasmaResults
+            mcResults <- plasmaResults
           } else{
             # print('something exists')
-            mcResults <<- cbind(mcResults,plasmaResults)# %>%
+            mcResults <- cbind(mcResults,plasmaResults)# %>%
           }
-          # mcResults <<- mcResults %>% 
+          # mcResults <- mcResults %>% 
           #   rename(
           #     results$pbpk$cpls_max = 'DOSE'
           #   )
@@ -390,85 +399,85 @@ shinyServer(function(input, output,session) {
           results$mode <- "MC"
           currentDose = currentDose * increaseDose
         }
-      #     updateNavbarPage(session,"menu","output")
-        }else{
-          initial_values <- calculateInitialValues(model_params)
-
-          updateProgressBar(session,"pb",value = 100, total = 100,
-                            status = "info")
-          tempDF <- runFDPBPK(initial_values,model)
-
-          results$pbpk<- tempDF$pbpk
-
-
-          results$mode <- "FD"
-      #     updateNavbarPage(session,"menu","output")
-        }
+        #     updateNavbarPage(session,"menu","output")
+      }else{
+        initial_values <- calculateInitialValues(model_params)
+        
+        updateProgressBar(session,"pb",value = 100, total = 100,
+                          status = "info")
+        tempDF <- runFDPBPK(initial_values,model)
+        
+        results$pbpk<- tempDF$pbpk
+        
+        
+        results$mode <- "FD"
+        #     updateNavbarPage(session,"menu","output")
+      }
       ## })
       
       
       ########################################################################
       # print('Running Monte Carlo')
       # print(paste('Number of doses = ',input$mcNumeric, '!', sep = ''))
-        
-        updatemenus <- list(
-          list(
-            active = 0,
-            type = 'buttons',
-            buttons = list(
-              list(
-                label = 'Default',
-                method = 'relayout',
-                args = list(
-                  list(
-                    yaxis = list(
-                      title = paste('Concentrations (mg/L)', sep = ''),
-                      type = 'linear'
-                    )
+      
+      updatemenus <- list(
+        list(
+          active = 0,
+          type = 'buttons',
+          buttons = list(
+            list(
+              label = 'Default',
+              method = 'relayout',
+              args = list(
+                list(
+                  yaxis = list(
+                    title = paste('Concentrations (mg/L)', sep = ''),
+                    type = 'linear'
                   )
                 )
-              ),
-              list(
-                label = 'Log Y-Axis',
-                method = 'relayout',
-                args = list(
-                  list(
-                    yaxis = list(
-                      title = paste('Log Concentrations (mg/L)', sep = ''),
-                      type = 'log'
-                    )
+              )
+            ),
+            list(
+              label = 'Log Y-Axis',
+              method = 'relayout',
+              args = list(
+                list(
+                  yaxis = list(
+                    title = paste('Log Concentrations (mg/L)', sep = ''),
+                    type = 'log'
                   )
                 )
               )
             )
           )
         )
-        
-        output$Plot1 <- renderPlotly({
-          p <- plot_ly(
-            stack(mcResults),
-            x = ~ind,
-            y = ~values,
-            type = "box"
-          ) %>%
-            layout(
-              title = paste(input$simulation, 'Monte Carlo Simulation'),
-              yaxis = list(
-                title = paste('Concentrations (mg/L)', sep = '')
-              ),
-              xaxis = list(
-                title = paste(doseName, ' Exposure (', doseUnits,')', sep = '')
-              ),
-              margin = m,
-              updatemenus = updatemenus
-            )
-        })
-        
-        
+      )
+      
+      output$Plot1 <- renderPlotly({
+        p <- plot_ly(
+          stack(mcResults),
+          x = ~ind,
+          y = ~values,
+          type = "box"
+        ) %>%
+          layout(
+            title = paste(input$simulation, 'Monte Carlo Simulation'),
+            yaxis = list(
+              title = paste('Concentrations (mg/L)', sep = '')
+            ),
+            xaxis = list(
+              title = paste(doseName, ' Exposure (', doseUnits,')', sep = '')
+            ),
+            margin = m,
+            updatemenus = updatemenus
+          )
+      })
+      mcvals$exposure <- paste(doseName, ' Concentration (', doseUnits,')', sep = '')
+      mcvals$csvFile <- mcResults
       removeModal()
     }
     else{
-      print('Denied Monte Carlo Simulation')
+      # print('Denied Monte Carlo Simulation')
     }
   })
   
@@ -478,7 +487,7 @@ shinyServer(function(input, output,session) {
       filter(
         name == input$simulation
       )
-    exposureType <<- Exposure %>%
+    exposureType <- Exposure %>%
       filter(
         expoid == simSet3$expoid & 
           param == 'expo_sidebar'
@@ -498,11 +507,17 @@ shinyServer(function(input, output,session) {
       mySliderLabel = 'Oral Vehicle (mg/kg BW/day)'
     } else mySliderLabel = 'Unknown'
     
-    updateSliderInput(
+    # updateSliderInput(
+    #   session,
+    #   'mySlider2',
+    #   label = mySliderLabel,
+    #   max = 1000 # This line is needed to update the label because this would create subscript out of bounds error otherwise
+    # )
+    updateNumericRangeInput(
       session,
       'mySlider2',
       label = mySliderLabel,
-      max = 1000 # This line is needed to update the label because this would create subscript out of bounds error otherwise
+      value = c(0,1000) # This line is needed to update the label because this would create subscript out of bounds error otherwise
     )
     # output$mySlider <- renderUI({
     #   # fluidRow(
@@ -550,6 +565,7 @@ shinyServer(function(input, output,session) {
     filesIn <- input$csvFile
     df_list <- lapply(filesIn$datapath,read_csv) # read each file into a data frame
     mcvals$csvFile <- bind_rows(df_list) # concatenates all of the data frames
+    mcvals$exposure <- paste(input$type, ' Concentration (',input$unit,')', sep = '')
     updatemenus <- list(
       list(
         active = 0,
@@ -602,7 +618,6 @@ shinyServer(function(input, output,session) {
           updatemenus = updatemenus
         )
     })
-    
     removeModal()
   })
   
@@ -718,14 +733,70 @@ shinyServer(function(input, output,session) {
   
   outputOptions(output, "toggleSidebar", suspendWhenHidden = F)
   
+  #############################################################################################
+  
   observeEvent(input$btnRunRevDos,{
-    ppbFiles <- list.files(pattern = 'PercentilePPB.*csv') # list of all of the files to import
-    df_list <- lapply(ppbFiles,read_csv) # read each file into a data frame
-    percentileDF <- as.data.frame(bind_rows(df_list)) # concatenates all of the data frames
     
-    plotFiles <- list.files(pattern = 'PDFandCDF.*csv') # list of all of the files to import
-    plotdf_list <- lapply(plotFiles,read_csv) # read each file into a data frame
-    pdfAndCDF <- as.data.frame(bind_rows(plotdf_list)) # concatenates all of the data frames
+    mcResult2 <- data.frame(mcvals$csvFile)
+    obsData2 <- data.frame(bmvals$csvFile)
+    # bounds2 <- bloodConcRange()
+    bounds2 <- bloodConcRange2(mcResult2)
+    
+    frequencyTable2 <- frequencyData(bounds2, mcResult2)
+    probabilityTbl <- probabilityConc(frequencyTable2)
+    
+    # logtrans <- transformObs(obsData) # Unused
+    measuredRange2 <- measuredBloodRange(maxValue = 2500)
+    dist12 <- distributionData(obsData2,measuredRange2)
+    dist22 <- distributionData(obsData2,bounds2)
+    revDosData22 <- data.frame(t(dist22[4]))
+    probabilityTbl2 <- probabilityConc(probabilityTbl, dist22$percentCol)
+    cumulative2 <- rowSums(probabilityTbl2)
+    cdfResult <- cdf(probabilityTbl2)
+    pdfCDF <- cbind(data.frame(colnames(mcvals$csvFile)), cdfResult)
+    # pdfCDF <- cbind(pdfCDF1, cdfResult)
+    pdfAndCDF <- pdfCDF
+    
+    
+    
+    
+    findPercentile <- function(whichPercentile = 25){
+      x=cdfResult[,2]
+      your.number = as.double(whichPercentile/100)
+      if(your.number != 1){
+        xIndex <- which(abs(x-your.number)==min(abs(x-your.number)))
+        closestNum <- x[xIndex]
+        if(closestNum > your.number) { # xIndex is higher than the percentile we're looking for
+          lowerIndex <- xIndex - 1
+          upperIndex <- xIndex
+        } else{ #xIndex is lower than the percentile we're looking for
+          lowerIndex <- xIndex
+          upperIndex <- xIndex + 1
+        }
+      } else{
+        upperIndex <- min(which(x == max(x))) -1 # This is -1 and lower is -2 in sample file.
+        lowerIndex <- upperIndex - 2
+      }
+      rate <- (your.number-x[lowerIndex])/(x[upperIndex]-x[lowerIndex])
+      concNames <- pdfAndCDF[[1]]
+      coNames <- as.numeric(as.character(concNames))
+      cdfValue <- coNames[lowerIndex]+(rate*(coNames[upperIndex]-coNames[lowerIndex]))
+      return(cdfValue)
+    }
+    
+    
+    percentileList <- c(5, 25, 50, 75, 90, 95, 99, 100)
+    percentileResults <- sapply(percentileList, findPercentile)
+    percentileListed <- c('5th', '25th', '50th', '75th', '90th', '95th', '99th', '100th')
+    percentileDF <- data.frame(list('Percentile' = percentileListed, 'Concentration' = percentileResults))
+
+    # ppbFiles <- list.files(pattern = 'PercentilePPB.*csv') # list of all of the files to import
+    # df_list <- lapply(ppbFiles,read_csv) # read each file into a data frame
+    # percentileDF <- as.data.frame(bind_rows(df_list)) # concatenates all of the data frames
+    
+    # plotFiles <- list.files(pattern = 'PDFandCDF.*csv') # list of all of the files to import
+    # plotdf_list <- lapply(plotFiles,read_csv) # read each file into a data frame
+    # pdfAndCDF <- as.data.frame(bind_rows(plotdf_list)) # concatenates all of the data frames
     
     updatemenus <- list(
       list(
@@ -738,7 +809,7 @@ shinyServer(function(input, output,session) {
             args = list(
               list(
                 xaxis = list(
-                  title = colnames(pdfAndCDF)[1],
+                  title = mcvals$exposure,#colnames(pdfAndCDF)[1],
                   type = 'log'
                 )
               )
@@ -750,7 +821,7 @@ shinyServer(function(input, output,session) {
             args = list(
               list(
                 xaxis = list(
-                  title = colnames(pdfAndCDF)[1],
+                  title = mcvals$exposure,#colnames(pdfAndCDF)[1],
                   type = 'linear'
                 )
               )
@@ -794,12 +865,12 @@ shinyServer(function(input, output,session) {
         y = pdfAndCDF[[2]],
         name = 'PDF',
         type = 'scatter',
-        mode = 'lines+markers'
+        mode = 'lines'#'lines+markers'
       ) %>%
         layout(
           title = 'PDF',
           xaxis = list(
-            title = colnames(pdfAndCDF)[1],
+            title = mcvals$exposure,#colnames(pdfAndCDF)[1],
             type = 'log'
           ),
           yaxis = list(
@@ -817,12 +888,12 @@ shinyServer(function(input, output,session) {
         y = pdfAndCDF[[3]],
         name = 'CDF',
         type = 'scatter',
-        mode = 'lines+markers'
+        mode = 'lines'#'lines+markers'
       ) %>%
         layout(
           title = 'CDF',
           xaxis = list(
-            title = colnames(pdfAndCDF)[1],
+            title = mcvals$exposure,#colnames(pdfAndCDF)[1],
             type = 'log'
           ),
           yaxis = list(
@@ -833,27 +904,31 @@ shinyServer(function(input, output,session) {
         )
     })
     
-    revDosDataHeaders <- read.csv(
-      'ReverseDosimetryDataHeaders.csv',
-      header=FALSE
-    )
-    revDosData1 <- read.csv(
-      'ReverseDosimetryData1.csv',
-      header=FALSE
-    )
-    revDosData2 <- read.csv(
-      'ReverseDosimetryData2.csv',
-      header=FALSE
-    )
-    revDosData3 <- read.csv(
-      'ReverseDosimetryData3.csv',
-      header=FALSE
-    )
+    revDosDataHeaders <- bounds2
+    # revDosDataHeaders <- read.csv(
+    #   'ReverseDosimetryDataHeaders.csv',
+    #   header=FALSE
+    # )
+    revDosData1 <- probabilityTbl
+    # revDosData1 <- read.csv(
+    #   'ReverseDosimetryData1.csv',
+    #   header=FALSE
+    # )
+    revDosData2 <- revDosData22
+    # revDosData2 <- read.csv(
+    #   'ReverseDosimetryData2.csv',
+    #   header=FALSE
+    # )
+    revDosData3 <- probabilityTbl2
+    # revDosData3 <- read.csv(
+    #   'ReverseDosimetryData3.csv',
+    #   header=FALSE
+    # )
     row.names(revDosData1) <- pdfAndCDF[[1]]
     row.names(revDosData2) <- list('Adjusted Weighting Factors')
     row.names(revDosData3) <- pdfAndCDF[[1]]
     
-
+    
     sketch = htmltools::withTags(
       table(
         class = 'display',
@@ -960,8 +1035,11 @@ shinyServer(function(input, output,session) {
         )
       }
     )
-    
+    updateNavbarPage(session,"navbar","Output")
+    updateNavbarPage(session,"Modeloutput","Plots")
   })
+  
+  ###################################################################################################################
   
   observeEvent(input$navbar,{
     if (input$navbar == "Quit"){
@@ -971,6 +1049,7 @@ shinyServer(function(input, output,session) {
   
 })
 
+#####################################################################################################################
 calculateInitialValues <- function(params_list){
   params <- params_list$vals
   brep_flag <- as.logical(params[["brep_flag"]])
@@ -1280,13 +1359,13 @@ calculateInitialValues <- function(params_list){
     #   # times of event
     #   event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:2,function(y){(x-1)*7+y})}))
     # }
-    print(dermlen)
-    print(event_days)
+    # print(dermlen)
+    # print(event_days)
     event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
     event_times1 <- event_times1[event_times1 < tstop]
     event_times2 <- unlist(lapply(event_days,function(x){dermlen+24*(x-1)}))
     event_times2 <- event_times2[event_times2 < tstop]
-    print(event_times1)
+    # print(event_times1)
     eventDat <- data.frame(
       var = c(rep(x = state_var1,each = length(event_times1)),rep(x = state_var2,each = length(event_times2))),
       time = c(event_times1,event_times2),
