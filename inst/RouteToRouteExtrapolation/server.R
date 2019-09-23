@@ -74,6 +74,9 @@ shinyServer(function(input, output,session) {
               multiple = F
             )
           )
+        ),
+        fluidRow(
+          progressBar(id = "bmProgress",value = 0, status = "success",striped = T)
         )
         # tabsetPanel(
         #   id = 'modalNav',
@@ -966,7 +969,7 @@ shinyServer(function(input, output,session) {
       },mc_num)
       names(mc_results)<- mc_vars
       
-      currentDose <- Exposure$vals[[whichDose]]#input$mySlider2[1]
+      currentDose <<- Exposure$value[which(Exposure$param == whichDose & Exposure$expoid == simid)]#input$mySlider2[1]
       # if(currentDose == 0){
       #   currentDose = 0.05
       # }
@@ -992,7 +995,7 @@ shinyServer(function(input, output,session) {
         for (x in mc_vars){
           mc_results[[x]][[i]]<- max_list[[x]]
         }
-        updateProgressBar(session,"pb",value = ((1-1)*mc_num + i), total = mc_num*1)
+        updateProgressBar(session,"bmProgress",value = i, total = mc_num)
       }
       
       
@@ -1031,7 +1034,7 @@ shinyServer(function(input, output,session) {
     }else{
       initial_values <- calculateInitialValues(model_params)
       
-      updateProgressBar(session,"pb",value = 100, total = 100,
+      updateProgressBar(session,"bmProgress",value = 100, total = 100,
                         status = "info")
       tempDF <- runFDPBPK(initial_values,model)
       
