@@ -612,18 +612,6 @@ shinyServer(function(input, output,session) {
             return(x = rep(NA,n))
           },mc_num)
           names(mc_results)<- mc_vars
-          
-          # currentDose <<- Exposure$value[which(Exposure$param == whichDose & Exposure$expoid == simid)]#Exposure$vals[[whichDose]]#input$mySlider2[1]
-          # if(currentDose == 0){
-          #   currentDose = 0.05
-          # }
-          # maxDose <- input$mySlider2[2]
-          # increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
-          # print(increaseDose)
-          # for(n in 1:(nDoses)){
-            # print(paste('Running monte carlo simulation ', n ))
-            # print(currentDose)
-            # model_params$vals[[whichDose]] <- currentDose
           model_params$vals[['bdose']] <- 0
           model_params$vals[['drdose']] <- 0
           model_params$vals[['inhdose']] <- 0
@@ -631,29 +619,54 @@ shinyServer(function(input, output,session) {
           model_params$vals[['dermrate']] <- 0
           model_params$vals[['bdosev']] <- 0
           
-          print(input$exposure)
           if(input$exposure == 'Oral'){
             whichDose = 'bdose'
             doseName = 'Oral'
             doseUnits = 'mg/kg BW/day'
+            model_params$vals[['blen']] <- input$blen
+            model_params$vals[['breps']] <- input$breps
           } else if(input$exposure == 'Drinking Water'){
             whichDose = 'drdose'
             doseName = 'Drinking Water'
             doseUnits = 'mg/L'
+            model_params$vals[['vdw']] <- input$vdw
+            model_params$vals[['dreps']] <- input$dreps
+            model_params$vals[['brep_flag']] <- input$brep_flag
           } else if(input$exposure == 'Inhalation'){
             whichDose = 'inhdose'
             doseName = 'Inhalation'
             doseUnits = 'ppm'
+            model_params$vals[['inhtlen']] <- input$inhtlen
+            model_params$vals[['inhdays']] <- input$inhdays
           } else if(input$exposure == 'IV'){
             whichDose = 'ivdose'
             doseName = 'IV'
             doseUnits = 'mg/L'
+            model_params$vals[['ivlen']] <- input$ivlen
+            model_params$vals[['ivrep_flag']] <- input$ivrep_flag
           } else if(input$exposure == 'Dermal'){
             whichDose = 'dermrate'
             doseName = 'Dermal'
             doseUnits = '\U00B5m/n/cm\U00B2'
+            model_params$vals[['dermlen']] <- input$dermlen
+            model_params$vals[['skarea']] <- input$skarea
+            model_params$vals[['dermrep_flag']] <- input$dermrep_flag
           }
-            
+          
+          currentDose <- input$mySlider2[1]
+          if(currentDose == 0){
+            currentDose = 0.05
+          }
+          
+          # maxDose <- input$mySlider2[2]
+          increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
+          # print(increaseDose)
+          for(n in 1:(nDoses)){
+            # print(paste('Running monte carlo simulation ', n ))
+            # print(currentDose)
+            model_params$vals[[whichDose]] <- currentDose
+          
+
             for (i in 1:mc_num){
               model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
               initial_values <<- calculateInitialValues(model_params)
@@ -700,8 +713,8 @@ shinyServer(function(input, output,session) {
           #     xCol = as.data.frame(mc_results['cpls_max'])
           #   )
           results$mode <- "MC"
-          # currentDose = currentDose * increaseDose
-        # }
+          currentDose = currentDose * increaseDose
+        }
       #     updateNavbarPage(session,"menu","output")
         }else{
           initial_values <- calculateInitialValues(model_params)
