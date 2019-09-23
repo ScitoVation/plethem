@@ -61,6 +61,7 @@ shinyServer(function(input, output, session) {
     chemset <- parameterSets$chem()
     updateSelectizeInput(session,"sel_set_chem",choices = chemset)
     updateSelectizeInput(session,"sel_chem4adme",choices = chemset)
+    
     #metabset<- parameterSets$adme()
     # metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",metabset)
     # updateSelectizeInput(session,"sel_set_metab",choices = metabset)

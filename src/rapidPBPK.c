@@ -806,7 +806,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_atbrn] = pabrn * yout[ID_cbbrn] - pabrn * yout[ID_ctbrn] / pbrn ;
 
-  ydot[ID_ablng] = qlng * yout[ID_cpls] - qlng * yout[ID_cblng] + palng * yout[ID_ctlng] / plng - palng * yout[ID_cblng] + rinh - rexh ;
+  ydot[ID_ablng] = qlng * yout[ID_cpls] - qlng * yout[ID_cblng] + palng * yout[ID_ctlng] / plng - palng * yout[ID_cblng] ;
 
   ydot[ID_atlng] = palng * yout[ID_cblng] - palng * yout[ID_ctlng] / plng ;
 
@@ -850,7 +850,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_aclbld] = raclbld ;
 
-  ydot[ID_abld] = qcp * ( yout[ID_cv] - yout[ID_cpls] ) + riv - raclbld ;
+  ydot[ID_abld] = qcp * ( yout[ID_cv] - yout[ID_cpls] ) + riv - raclbld +rinh - rexh ;
 
   totdose = y[ID_totodose] + y[ID_totddose] + y[ID_ainh] + y[ID_aiv] + y[ID_aderm] + y[ID_totodosev] ;
 
