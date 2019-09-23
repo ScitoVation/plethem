@@ -244,11 +244,11 @@ shinyServer(function(input, output,session) {
         fluidRow(
           column(
             6,
-            sliderInput(
+            numericRangeInput(
               'mySlider2',
-              label = 'Exposure type (units)',
-              min = 0,
-              max = 1000,
+              label = 'Exposure Type (Units)',
+              # min = 0,
+              # max = 1000,
               value = c(0,1000)
             )
           ),
@@ -786,11 +786,11 @@ shinyServer(function(input, output,session) {
     #   #   subtext = simSet$descrp
     #   # )
     # )
-    updateSliderInput(
+    updateNumericRangeInput(
       session,
       'mySlider2',
       label = mySliderLabel,
-      max = 1000 # This line is needed to update the label because this would create subscript out of bounds error otherwise
+      value = c(0,1000) # This line is needed to update the label because this would create subscript out of bounds error otherwise
     )
     # output$mySlider <- renderUI({
     #   # fluidRow(
