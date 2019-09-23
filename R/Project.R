@@ -3,6 +3,10 @@ interactiveReverseDosimetry <- function(name = "ReverseDosimetry"){
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
 }
 
+interactiveRouteToRouteExtrapolation <- function(name = "RouteToRouteExtrapolation"){
+  shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
+}
+
 interactivePBPK <- function(name = ""){
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
 }
