@@ -547,38 +547,41 @@ shinyServer(function(input, output,session) {
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
       # print(paste('max = ',input$mySlider2[2]))
-      # nDoses <- 3#input$mcNumeric
-      if(myExpoid == 'oral'){
-        whichDose = 'bdose'
-        doseName = 'Oral'
-        doseUnits = 'mg/kg BW/day'
-      } else if(myExpoid == 'dw'){
-        whichDose = 'drdose'
-        doseName = 'Drinking Water'
-        doseUnits = 'mg/L'
-      } else if(myExpoid == 'inh'){
-        whichDose = 'inhdose'
-        doseName = 'Inhalation'
-        doseUnits = 'ppm'
-      } else if(myExpoid == 'iv'){
-        whichDose = 'ivdose'
-        doseName = 'IV'
-        doseUnits = 'mg/L'
-      } else if(myExpoid == 'derm'){
-        whichDose = 'dermrate'
-        doseName = 'Dermal'
-        doseUnits = '\U00B5m/n/cm\U00B2'
-      } else if(myExpoid == 'oralv'){
-        whichDose = 'bdosev'
-        doseName = 'Oral Vehicle'
-        doseUnits = 'mg/kg BW/day'
-      } else whichDose = 'Something went wrong'
+      nDoses <- 3#input$mcNumeric
       
       ## observeEvent(input$run_sim,{
       simid <- simSet3$simid[1]
         results$simid <- simid
         # get the parameters needed to run the model
         model_params <<- getAllParamValuesForModel(simid,model)
+        
+        # if(myExpoid == 'oral'){
+        #   whichDose = 'bdose'
+        #   doseName = 'Oral'
+        #   doseUnits = 'mg/kg BW/day'
+        # } else if(myExpoid == 'dw'){
+        #   whichDose = 'drdose'
+        #   doseName = 'Drinking Water'
+        #   doseUnits = 'mg/L'
+        # } else if(myExpoid == 'inh'){
+        #   whichDose = 'inhdose'
+        #   doseName = 'Inhalation'
+        #   doseUnits = 'ppm'
+        # } else if(myExpoid == 'iv'){
+        #   whichDose = 'ivdose'
+        #   doseName = 'IV'
+        #   doseUnits = 'mg/L'
+        # } else if(myExpoid == 'derm'){
+        #   whichDose = 'dermrate'
+        #   doseName = 'Dermal'
+        #   doseUnits = '\U00B5m/n/cm\U00B2'
+        # } else if(myExpoid == 'oralv'){
+        #   whichDose = 'bdosev'
+        #   doseName = 'Oral Vehicle'
+        #   doseUnits = 'mg/kg BW/day'
+        # } else whichDose = 'Something went wrong'
+        # print(myExpoid)
+        
         #get total volume
         active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
         vol_comps <- c(active_comp,"blood")
@@ -610,7 +613,7 @@ shinyServer(function(input, output,session) {
           },mc_num)
           names(mc_results)<- mc_vars
           
-          currentDose <- Exposure$vals[[whichDose]]#input$mySlider2[1]
+          # currentDose <<- Exposure$value[which(Exposure$param == whichDose & Exposure$expoid == simid)]#Exposure$vals[[whichDose]]#input$mySlider2[1]
           # if(currentDose == 0){
           #   currentDose = 0.05
           # }
@@ -621,7 +624,35 @@ shinyServer(function(input, output,session) {
             # print(paste('Running monte carlo simulation ', n ))
             # print(currentDose)
             # model_params$vals[[whichDose]] <- currentDose
-            
+          model_params$vals[['bdose']] <- 0
+          model_params$vals[['drdose']] <- 0
+          model_params$vals[['inhdose']] <- 0
+          model_params$vals[['ivdose']] <- 0
+          model_params$vals[['dermrate']] <- 0
+          model_params$vals[['bdosev']] <- 0
+          
+          print(input$exposure)
+          if(input$exposure == 'Oral'){
+            whichDose = 'bdose'
+            doseName = 'Oral'
+            doseUnits = 'mg/kg BW/day'
+          } else if(input$exposure == 'Drinking Water'){
+            whichDose = 'drdose'
+            doseName = 'Drinking Water'
+            doseUnits = 'mg/L'
+          } else if(input$exposure == 'Inhalation'){
+            whichDose = 'inhdose'
+            doseName = 'Inhalation'
+            doseUnits = 'ppm'
+          } else if(input$exposure == 'IV'){
+            whichDose = 'ivdose'
+            doseName = 'IV'
+            doseUnits = 'mg/L'
+          } else if(input$exposure == 'Dermal'){
+            whichDose = 'dermrate'
+            doseName = 'Dermal'
+            doseUnits = '\U00B5m/n/cm\U00B2'
+          }
             
             for (i in 1:mc_num){
               model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
