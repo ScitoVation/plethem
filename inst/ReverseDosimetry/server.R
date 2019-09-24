@@ -306,7 +306,7 @@ shinyServer(function(input, output,session) {
       simid <- simSet3$simid[1]
       results$simid <- simid
       # get the parameters needed to run the model
-      model_params <- getAllParamValuesForModel(simid,model)
+      model_params <<- getAllParamValuesForModel(simid,model)
       #get total volume
       active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
       vol_comps <- c(active_comp,"blood")
@@ -329,11 +329,11 @@ shinyServer(function(input, output,session) {
       # print(total_vol)
       # print(paste(whichDose, ': ', model_params$vals[[whichDose]]))
       if (mc_num > 1){
-        MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+        MC.matrix <<- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
         query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
                          model)
-        mc_vars<- mainDbSelect(query)$model_var
-        mc_results <- lapply(mc_vars,function(x,n){
+        mc_vars <<- mainDbSelect(query)$model_var
+        mc_results <<- lapply(mc_vars,function(x,n){
           return(x = rep(NA,n))
         },mc_num)
         names(mc_results)<- mc_vars
@@ -345,6 +345,7 @@ shinyServer(function(input, output,session) {
         # maxDose <- input$mySlider2[2]
         increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
         # print(increaseDose)
+        
         for(n in 1:(nDoses)){
           # print(paste('Running monte carlo simulation ', n ))
           # print(currentDose)
@@ -369,6 +370,7 @@ shinyServer(function(input, output,session) {
           
           
           results$pbpk <- as.data.frame(mc_results)
+          myResults <<- results$pbpk
           # MymcResults <- as.data.frame(mc_results)
           plasmaResults <- as.data.frame(results$pbpk$cpls_max)
           colnames(plasmaResults) = currentDose
@@ -384,10 +386,10 @@ shinyServer(function(input, output,session) {
           # mcResults2[n] <- plasmaResults[1]
           if(n==1){#is.null(mcResults)){
             # print('it is null')
-            mcResults <- plasmaResults
+            mcResults <<- plasmaResults
           } else{
             # print('something exists')
-            mcResults <- cbind(mcResults,plasmaResults)# %>%
+            mcResults <<- cbind(mcResults,plasmaResults)# %>%
           }
           # mcResults <- mcResults %>% 
           #   rename(
