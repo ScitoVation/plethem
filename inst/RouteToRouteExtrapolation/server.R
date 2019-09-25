@@ -180,9 +180,9 @@ shinyServer(function(input, output,session) {
         #         )
         #       )
         #     ),
-        #     fluidRow(
-        #       progressBar(id = "pb",value = 0, status = "success",striped = T)
-        #     )
+            # fluidRow(
+            #   progressBar(id = "pb",value = 0, status = "success",striped = T)
+            # )
         #   )
         # )
       ),
@@ -271,6 +271,9 @@ shinyServer(function(input, output,session) {
               'validNum'
             )
           )
+        ),
+        fluidRow(
+          progressBar(id = "pb",value = 0, status = "success",striped = T)
         )
         
         # textInput(
@@ -547,7 +550,7 @@ shinyServer(function(input, output,session) {
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
       # print(paste('max = ',input$mySlider2[2]))
-      nDoses <- 3#input$mcNumeric
+      nDoses <- input$mcNumeric
       
       ## observeEvent(input$run_sim,{
       simid <- simSet3$simid[1]
@@ -598,7 +601,7 @@ shinyServer(function(input, output,session) {
         # test_total_Vol <<- total_vol
         # test_vol_ids <<- vol_ids
         query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
-        mc_num <<- as.integer(projectDbSelect(query)$mc_num)
+        mc_num <<- 50#as.integer(projectDbSelect(query)$mc_num)
         # print(paste('mc_num: ',mc_num))
         model_params$vals[["total_vol"]]<- total_vol
         # print(total_vol)
@@ -680,7 +683,7 @@ shinyServer(function(input, output,session) {
               for (x in mc_vars){
                 mc_results[[x]][[i]]<- max_list[[x]]
               }
-              updateProgressBar(session,"pb",value = ((1-1)*mc_num + i), total = mc_num*1)
+              updateProgressBar(session,"pb",value = ((n-1)*mc_num + i), total = mc_num*nDoses)
             }
             
           
@@ -694,17 +697,17 @@ shinyServer(function(input, output,session) {
           #     results$pbpk$cpls_max = 'DOSE'
           #   )
           
-          # if(n == 1){
+          if(n == 1){
           #   mcResults2 <<- NULL
           # }
           # mcResults2[n] <<- plasmaResults[1]
           # if(n==1){#is.null(mcResults)){
           #   # print('it is null')
             mcResults <<- plasmaResults
-          # } else{
+          } else{
           #   # print('something exists')
-          #   mcResults <<- cbind(mcResults,plasmaResults)# %>%
-          # }
+            mcResults <<- cbind(mcResults,plasmaResults)# %>%
+          }
           # mcResults <<- mcResults %>% 
           #   rename(
           #     results$pbpk$cpls_max = 'DOSE'
@@ -777,7 +780,7 @@ shinyServer(function(input, output,session) {
             type = "box"
           ) %>%
             layout(
-              title = paste(input$simulation, 'Monte Carlo Simulation'),
+              title = paste(input$exposure, 'Monte Carlo Simulation'),
               yaxis = list(
                 title = paste('Concentrations (mg/L)', sep = '')
               ),
