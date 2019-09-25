@@ -1320,8 +1320,8 @@ shinyServer(function(input, output,session) {
           upperIndex <- xIndex + 1
         }
       } else{
-        upperIndex <- min(which(x == max(x))) -1 # This is -1 and lower is -2 in sample file.
-        lowerIndex <- upperIndex - 2
+        upperIndex <- min(which(x == max(x))) # This is -1 and lower is -2 in sample file.
+        lowerIndex <- upperIndex - 1
       }
       rate <- (your.number-x[lowerIndex])/(x[upperIndex]-x[lowerIndex])
       concNames <- pdfAndCDF[[1]]
