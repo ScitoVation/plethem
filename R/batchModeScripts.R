@@ -22,10 +22,14 @@ loadBatchChemicalData <- function(file_path = NULL){
   if (is.null(file_path)){
     file_path <- file.choose()
   }
-  chemdf <-read.csv(fpath,T,stringsAsFactors = F,skip = 1)
+  chemdf <-read.csv(fpath,T,stringsAsFactors = F)
+  chemdf <- chemdf[,1:20]
+
   batchfilecols <- colnames(chemdf)
+
  # print(batchfilecols)
-  batchfilecols[3:8]<- c("mw","lkow","vpa","wsol","fupls","fresrp")
+  batchfilecols[1:8]<- c("Num","Cname","mw","lkow","vpa","wsol","fupls","fresrp")
+  
  # print(batchfilecols)
   colnames(chemdf)<- batchfilecols
   return(chemdf)
@@ -91,21 +95,26 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   c_lasts <- list()
   metab_types<- list()
   expos <- list()
+  routes <- list()
+  lengths <- list()
   fuplss <- list()
   fas<- list()
   vkm1s <- list()
   vmaxs <- list()
+
   for (i in 1:nrow(chemdf)){
     num <- chemdf[i,1]
     chem_name <- chemdf[i,2]
     chem_params <- as.list(chemdf[i,3:6])
-    organism <- tolower(chemdf[i,26])
+    organism <- tolower(chemdf[i,20])
     if (organism == "human"){
       query <- "Select param,value From Physiological where physioid = 2;"
     }
     if (organism == "rat"){
       query <- "Select param,value From Physiological where physioid = 1;"
       #print(vals)
+    }else{
+      next
     }
     vals <- mainDbSelect(query)
     
@@ -121,6 +130,7 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     km <- chemdf[i,10]
     ka <- ifelse(is.na(chemdf[i,9]),5,chemdf[i,9])
     fupls <- ifelse(is.na(chemdf[i,7]),1,chemdf[i,7])
+    fresrp <- ifelse(is.na(chemdf[i,6]),0,chemdf[i,6])
     if(is.na(km)){
       km <- 1
       km_flag <- F
@@ -134,9 +144,16 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     partitions <- calculatePartitionCoefficients("one",chem_params,selected_org = organism)
     vals[names(partitions)]<- partitions
     
+    totdays <- chemdf[i,15]
+    tstart <- 0
+    tstop <- totdays*24
+    tstep <- 0.01
+    
     initial_params <- within(as.list(vals),{
       mw <- mw
       km <- km
+      fresrp <- fresrp
+      fupls <- fupls
       #vmaxc <- vmaxc
       #vkm1c <- vkm1c
       total_vol <- vbldc+vfatc+vskinc+vmuscc+vbonec+vbrnc+vlngc+vhrtc+vkdnc+vgic+vlivc+vrpfc+vspfc
@@ -192,8 +209,8 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
       #vkm1 <- vkm1c*vliv
       #vmaxliv <- vmaxc*bw**0.75
       
-      tstop <- 0
-      tstart <- 0
+      tstop <- tstop
+      tstart <- tstart
       cinh <- 0
       qalv <- (tv-ds)*respr
       pair <- ifelse(pair >0,pair,1E-10)
@@ -252,36 +269,66 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     initial_params["vkm1c"]<- vkm1c
     initial_params["vkm1"]<- vkm1c*liver_wt
     initial_params["vmaxliv"] <- vmaxc*bw**0.75
-    totdays <- chemdf[i,15]
-    tstart <- 0
-    initial_params["tstop"]<- tstop <- totdays*24
-    initial_params["bdose"]<- bdose <- chemdf[i,14]
-    initial_params["totbreps"]<- 1
-    initial_params["blen"]<- 1
-    initial_params["breps"]<- 1
-    initial_params["ka"]<- ka
-    initial_params["fupls"]<- fupls
-    #event times
-    event_times <- seq(tstart,(tstop-0.0001),24)
-    # var to change
-    state_Var <- c("odose","totodose")
+   
+    expo_route <- tolower(chemdf[i,18])
+    dose <- chemdf[i,14]
+    dose_length <- ifelse(is.na(chemdf[i,19]),tstep,chemdf[i,19])
+    dose_length <- ifelse(expo_route == "oral",0,dose_length)
+    if (expo_route == "oral"){
+      initial_params["bdose"]<- dose
+      initial_params["totbreps"]<- 1
+      initial_params["blen"]<- 1
+      initial_params["breps"]<- 1
+      initial_params["ka"]<- ka
+     
+      #event times
+      event_times <- seq(tstart,(tstop-0.0001),24)
+      # # var to change
+      # state_Var <- c("odose","totodose")
+      # 
+      # # operation of event
+      # operation <- c("add","add")
+      # change_val1<- (bdose*bw*1000/mw)
+      # change_val2<- change_val1
+      # change_arr <- c(change_val1,change_val2)
+      # event_times <- c(tstart,tstart)
+      # eventDat <- data.frame(
+      #   
+      #   var = rep(x = state_Var,each = length(event_times)),
+      #   time = rep(event_times,length(state_Var)),
+      #   value = rep(x = change_arr,each = length(event_times)),
+      #   method = rep(x = operation,each = length(event_times))
+      #   
+      # )
+      # times <- seq(tstart,tstop,by=0.1)
+      # eventDat <- eventDat[order(eventDat$time),]
+      
+      
+      if(vehicle){
+        initial_params["kfec"]<- chemdf[i,16]
+        initial_params["kVtoL"]<- chemdf[i,17]
+        initial_params["kent"]<- chemdf[i,18]
+      }else{
+        initial_params["fa"]<- chemdf[i,16]
+      }
+      initial_params["veh_flag"]<- 0
+    }else if (expo_route=="iv"){
+      initial_params["ivdose"]<- dose
+      initial_params["ivlen"]<- ivlen <- dose_length
+      event_days <- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
+      event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
+      event_times1 <- event_times1[event_times1 < tstop]
+      event_times2 <- unlist(lapply(event_days,function(x){ivlen+24*(x-1)}))
+      event_times2 <- event_times2[event_times2 < tstop]
+      event_times <- c(event_times1,event_times2)
+    }else{
+      next
+    }
+
     
-    # operation of event
-    operation <- c("add","add")
-    change_val1<- (bdose*bw*1000/mw)
-    change_val2<- change_val1
-    change_arr <- c(change_val1,change_val2)
-    event_times <- c(tstart,tstart)
-    eventDat <- data.frame(
-      
-      var = rep(x = state_Var,each = length(event_times)),
-      time = rep(event_times,length(state_Var)),
-      value = rep(x = change_arr,each = length(event_times)),
-      method = rep(x = operation,each = length(event_times))
-      
-    )
-    times <- seq(tstart,tstop,by=0.1)
-    eventDat <- eventDat[order(eventDat$time),]
+    print(c(num,chem_name))
+    #print(c(initial_params$fupls,initial_params$bdose,initial_params$ka,
+    #       initial_params$vkm1))
     state <- c(
       #exposure related
       inhswch=0,ainh=0,aexh=0,
@@ -309,21 +356,10 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     param_names <- getAllParamNames(model)
     initial_params <- initial_params[param_names]
     initial_params <- initial_params[-which(sapply(initial_params, is.null))]
-    
-    if(vehicle){
-      initial_params["kfec"]<- chemdf[i,16]
-      initial_params["kVtoL"]<- chemdf[i,17]
-      initial_params["kent"]<- chemdf[i,18]
-    }else{
-      initial_params["fa"]<- chemdf[i,16]
-    }
-    initial_params["veh_flag"]<- 0
-    print(c(num,chem_name))
-    #print(c(initial_params$fupls,initial_params$bdose,initial_params$ka,
-    #       initial_params$vkm1))
-    initial_values <- list("event_times"= 0,
+    out_times <- seq(tstart,tstop,by=tstep)
+    initial_values <- list("event_times"= event_times,
                            "initial_params"= initial_params,
-                           "times"=times,
+                           "times"=out_times,
                            "tstop"=tstop,
                            "tstart"=tstart,
                            "state"= state)
@@ -344,7 +380,9 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
     aucs[[i]]<- auc
     c_lasts[[i]]<- c_last
     metab_types[[i]]<- metab_type
-    expos[[i]] <- bdose
+    expos[[i]] <- dose
+    routes[[i]]<- expo_route
+    lengths[[i]]<- dose_length
     fuplss[[i]]<- fupls
     fas[[i]] <- chemdf[i,16]
     vkm1s[[i]] <- vkm1c
@@ -362,11 +400,11 @@ runBatchMode <- function(chemicals =NULL, exposures =NULL, load_files = T,
   colnames(cpls_df)<- time_course_cols
   write.csv(cpls_df,paste0(dirname(chemicals),"/Batch Mode Time course.csv"),
             row.names = F)
-  results<- cbind(cmaxs,aucs,c_lasts,metab_types,expos,fuplss,fas,vkm1s,vmaxs)
+  results<- cbind(cmaxs,aucs,c_lasts,metab_types,expos,routes,lengths,fuplss,fas,vkm1s,vmaxs)
   results <- cbind(as.vector(chem_names),results)
   results <- apply(results,2,as.character)
   colnames(results)<- c("Chemicals","Cmax","AUC24","Conc24",
-                        "MetabolismTypes","Exposure",
+                        "MetabolismTypes","Exposure","Route","DosingLength",
                         "Fraction Unbound","Fraction absorbed",
                         "Clearance (L/h/kg liver)","Maximum Metabolic Rate (uM/h/BW^0.75)")
   #print(results)
