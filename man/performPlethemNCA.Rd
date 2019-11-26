@@ -4,7 +4,7 @@
 \alias{performPlethemNCA}
 \title{Functions for performing NCA and returning the data}
 \usage{
-performPlethemNCA(result, mode = "FD")
+performPlethemNCA(result, var_names, mode = "FD")
 }
 \arguments{
 \item{result}{Result from the forward dosimetry or individual montecarlo run}
