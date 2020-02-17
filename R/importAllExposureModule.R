@@ -267,7 +267,6 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     })
     
     observe({
-      print(consExpoData())
       if(is.list(consExpoData())){
         #output$file_path <- renderText({"File Uploaded"})
         exposureNames <-consExpoData()$exponames

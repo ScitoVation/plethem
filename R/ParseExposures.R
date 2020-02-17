@@ -4,7 +4,7 @@
 #' @description Parses the uploaded Consumer TRA exposure SpreadSheet to extract all the exposure names and values
 #' This function will not be called directly by the user
 #' @importFrom readxl excel_sheets read_excel
-#' 
+#' @import stringr
 #' @param path Path to Excel File
 #' 
 parseTRAFile <- function(path){
@@ -62,13 +62,23 @@ parseTRAFile <- function(path){
 #' 
 parseConsExpoFile <- function(path){
   print(path)
-  b <- read.csv(path,skipNul = T,stringsAsFactors = F,blank.lines.skip = T,encoding = "UTF-16LE")
-  names <- setNames(which(startsWith(b[,1],"Results for")),gsub("Results for scenario ","",b[which(startsWith(b[,1],"Results for")),1]))
-  inhalation_data <- setNames(b[which(b[,1]=="Mean event concentration"),2],which(b[,1]=="Mean event concentration"))
-  inhalation_data <- inhalation_data[inhalation_data != ""]
-  dermal_data <- setNames(b[which(b[,1]=="Dermal load"),2],which(b[,1]=="Dermal load"))
-  dermal_data <- dermal_data[dermal_data != ""]
-  oral_data <- setNames(b[which(b[,1]=="Oral")+1,2],which(b[,1]=="Oral")+1)
-  oral_data<- oral_data[oral_data != ""]
-  return(list("exponames"=names,inhalation_data,dermal_data,oral_data))
+  f <- readLines(file(description = path),warn = F,skipNul = T)
+  f <- f[-which(f=="")]
+  #f_frame <- setNames(f[c("value","Units")],f["Cat"])
+  # Category Keywords to scan the file fow
+  cat_keywords <- c("Substance","Product","Population","Scenario")
+  subcat_keywords <- list("Substance"=c("Name","CASNumber","Molecular Weight","KOW"),
+                          "Product"=c("Name","Weight Fraction Substance"),
+                          "Population"=c("Name","Body weight"))
+  
+  # 
+  # names <- setNames(which(startsWith(f[,1],"Results for")),gsub("Results for scenario ","",f[which(startsWith(f[,1],"Results for")),1]))
+  # inhalation_data <- setNames(f[which(f[,1]=="Mean event concentration"),2],which(f[,1]=="Mean event concentration"))
+  # inhalation_data <- inhalation_data[inhalation_data != ""]
+  # dermal_data <- setNames(f[which(f[,1]=="Dermal load"),2],which(f[,1]=="Dermal load"))
+  # dermal_data <- dermal_data[dermal_data != ""]
+  # oral_data <- setNames(f[which(f[,1]=="Oral")+1,2],which(f[,1]=="Oral")+1)
+  # oral_data<- oral_data[oral_data != ""]
+  #return(list("exponames"=names,inhalation_data,dermal_data,oral_data))
+  return(f)
 }
