@@ -12,9 +12,9 @@ calculatePartitionCoefficients<- function(selected_qsar = "one",chem_params = NU
   partCoefficients <- list()
   #decide which qsar model to run
   if(selected_qsar == "one"){
-    partCoefficients <- qsarModelDefault(chem_params,selected_org,tissue_list)
+    partCoefficients <- qsarModelone(chem_params,selected_org,tissue_list)
   }else if(selected_qsar == "two"){
-    #partCoefficients <- qsarModeltwo(chemical_params)
+    partCoefficients <- qsarModeltwo(chemical_params)
   }
 
   return(partCoefficients)
@@ -26,22 +26,32 @@ calculatePartitionCoefficients<- function(selected_qsar = "one",chem_params = NU
 #' @param selected_org Either "human" or "rat"
 #' @param tissue_list List of tissues for which partition coefficients have to be calculated
 #' @return Named list of partition coefficients, one for each tissue in the tissue list
-qsarModelDefault <- function(chem_params,selected_org,tissue_list){
+qsarModelone <- function(chem_params,selected_org,tissue_list){
 
   # chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw, "vpa"=input$ms_vpa, "dkow"=input$ms_dkow, "lkow"=input$ms_lkow, "wsol"=input$ms_wsol, "res"=input$ms_res,
   #                         "fhprt"=input$ms_fhprt, "vmaxc"=input$ms_vmaxc, "km"=input$ms_km)
 
   lkow <- chem_params[["lkow"]]
+  dkow <- chem_params[["dkow"]]
   VPa <- chem_params[["vpa"]]
   mw <- chem_params[["mw"]]
   wsol <- chem_params[["wsol"]]
   temp <- 25
+
   
   # log of henry's coeff
   lhen <- log(VPa*mw/wsol/8.314/(temp+273.15))/log(10)
   lkoair <- lkow-lhen
   
   frwsol <- 0.993 / (0.993 + 0.007 * 10^lkow)
+  
+  #dermal model related parameters
+  LKPic = -2.59 + 0.7318 * dkow- 0.006832 * mw
+  KPic = 10^LKPic
+  KPtc = 0.043/(mw^1.361)
+  KSCair <- 36*sqrt(76/mw) # assuming 10 cm stagnant air above skin ( person at rest)
+  Kwa_skin <- 8.314*(25+temp)*wsol/(mw*VPa)
+  fpart <- 0.72*dkow^0.43
   
   if (selected_org == "human"){
     if (lhen < -1){
@@ -77,6 +87,12 @@ qsarModelDefault <- function(chem_params,selected_org,tissue_list){
     pliv  <- (0.049 * kow^0.81 + 0.711) / (0.0056 * kow^0.81 + 0.83) - 0.35
     pkdn  <- (0.053 * kow^0.57 + 0.785) / (0.0056 * kow^0.57 + 0.83) - 0.19
     
+    #dermal related parameters
+    SkinSC_depth <- 0.002  #cm
+    species_skin_factor <- 1
+    KPtot  <- species_skin_factor * (KPic + KPtc)
+    Kevap <- 1/(1/KPtot+Kwa_skin/KSCair)
+    maxcap <- fpart*SkinSC_depth*wsol/1000
     
   }else if(selected_org == "rat"){
     # pbair calculation
@@ -106,6 +122,14 @@ qsarModelDefault <- function(chem_params,selected_org,tissue_list){
     pliv  <- 10^(0.15094 * lkow - 0.1111)
     pkdn  <- 10^(0.3125 * lkow - 0.1784)
     pkdn <- max(pkdn,0.5)
+    
+    #dermal related parameters
+    SkinSC_depth <- 0.002  #cm
+    species_skin_factor <- 1
+    KPtot  <- species_skin_factor * (KPic + KPtc)
+    Kevap <- 1/(1/KPtot+Kwa_skin/KSCair)
+    maxcap <- fpart*SkinSC_depth*wsol/1000
+    
   }
 
   frwsol = 0.993 / (0.993 + 0.007 * 10^lkow)
@@ -119,10 +143,19 @@ qsarModelDefault <- function(chem_params,selected_org,tissue_list){
   partCoefficients <- NULL
   partCoefficients <- list("pfat"=pfat, "pskin"=pskin, "pmusc"=pmusc, "pbone"=pmarr, "pbone"=pbne,
                            "pbrn"=pbrn, "plng"=plng, "phrt"=phrt, "pgi"=pgs, "pliv"=pliv, "pkdn"=pkdn,
-                           "prpf"= pliv,"pspf"= pmusc,"pair"= pbair,"frwsol"= frwsol)
+                           "prpf"= pliv,"pspf"= pmusc,"pair"= pbair,"frwsol"= frwsol,
+                           "KPtot"=KPtot,"Kevap"=Kevap,"maxcap"=maxcap)
   partCoefficients <- lapply(partCoefficients,function(x){signif(x,4)})
 
   return(partCoefficients)
 }
 
-
+#' Calculate Partition Coefficient using the default QSAR model
+#' @description Calculates the partition coefficient using the default QSAR model. This QSAR model is based on the one described by Jongneelan et al as a part of the IndusChemFate model
+#' @param chem_params A named list of parameters needed to run the model
+#' @param selected_org Either "human" or "rat"
+#' @param tissue_list List of tissues for which partition coefficients have to be calculated
+#' @return Named list of partition coefficients, one for each tissue in the tissue list
+qsarModeltwo <- function(chem_params,selected_org,tissue_list){
+  
+}

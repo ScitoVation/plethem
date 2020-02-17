@@ -18,6 +18,7 @@ shinyServer(function(input,output,session){
   vals$m_table <- data.table::data.table(
     #"row_number"=numeric(),
     "rn"=numeric(),
+    "Name"=character(),
     "Chemical"=numeric(),
     "Organism"=numeric(),
     "Type" = numeric(),
@@ -28,6 +29,7 @@ shinyServer(function(input,output,session){
     "Plasma Clearance"=numeric(),keep.rownames = TRUE
   )
   vals$result_table <- data.table::data.table(
+    "Name"=character(),
 
     "Chemical"=numeric(),#c("Chemical A",
                  # "Chemical B",
@@ -49,7 +51,8 @@ shinyServer(function(input,output,session){
     "Scaled Blood Clearance (L/h)"=numeric(),#10,#numeric(),
     "Css (mg/L)"=numeric(),#10,#numeric(),
     #"Equivalent Dose Type"=numeric(),#10,#numeric(),
-    "Equivalent dose (Exposure Units)"=character()#15#numeric()
+    "Equivalent dose (Exposure Units)"=character(),#15#numeric()
+    "Margin of exposure"=numeric()
   )
   output$master_table <- DT::renderDataTable(
     DT::datatable(data = vals$m_table,rownames = F,escape = F,selection = "single",
@@ -63,12 +66,18 @@ shinyServer(function(input,output,session){
                       visible = FALSE
                     ))
                   )),server = T)
+  # scientific_notation_js <- c("function(row,data){",
+  #                             "for (i=6,i< data.length,i++){",
+  #                             "$('td:eq('+i+')',row).html(data[i].toExponential(2);",
+  #                             "}",
+  #                             "}")
 
   output$result_table <- DT::renderDataTable(
     DT::datatable(data = vals$result_table,rownames = F,escape = F,selection = "single",extensions = "Buttons",
                   options = list(
                     dom="Btpl",
-                    buttons = c("copy","csv","colvis"))
+                    buttons = c("copy","csv","colvis"))#,
+                    #rowCallback = DT::JS(scientific_notation_js))
                     ),server = T)
     # ,extensions = "Buttons",
     #               options = list(buttons=c('copy'),
@@ -227,6 +236,7 @@ shinyServer(function(input,output,session){
 
 makeResultTable <- function(input_table,result){
   output_table <- data.table::data.table(
+    "Name"=input_table$Name,
 
     "Chemical"=input_table$Chemical,
     "Organism"=input_table$Organism,
@@ -238,7 +248,8 @@ makeResultTable <- function(input_table,result){
     "Actual Plasma Clearance (L/h)"=paste0(lapply(result,"[[","pls")),
     "Css (mg/L)"=paste0(lapply(result,"[[","css")),
     #"Equivalent Dose Type"=numeric(),
-    "Equivalent dose"=paste0(lapply(result,"[[","eqdose"))
+    "Equivalent dose"=paste0(lapply(result,"[[","eqdose")),
+    "Margin of exposure"=paste0(lapply(result,"[[","moe"))
   )
 
 }

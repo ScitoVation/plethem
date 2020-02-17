@@ -17,7 +17,14 @@ HT_IVIVEUI <- function(namespace=""){
                   tabPanel("Physiologcal and Chemical Parameters",
                            fluidPage(
                              fluidRow(
-                               column(4,offset = 2,
+                               column(8, offset = 2,
+                                      textInput(ns("txt_IVIVE_name"),"Name",
+                                                width = validateCssUnit("100%"),
+                                                placeholder = "Identifier for HT-IVIVE"))
+                               ),
+                             
+                             fluidRow(
+                               column(4,
                                       tags$h5("Oragnism"),
                                       tags$h4("Standard Human")
                                       # selectInput(ns("sel_org"),label = "Select Organism",
@@ -29,34 +36,41 @@ HT_IVIVEUI <- function(namespace=""){
                                       selectInput(ns("sel_chem"),
                                                   label = "Select Chemical",
                                                   choices = list())
+                                      ),
+                               column(4,
+                                      numericInput(ns("num_expo"),
+                                                   label = "Exposure in mg/kg/day for margin of exposure",
+                                                   value = 0,width = validateCssUnit("100%"))
                                       )
                              ),
                              fluidRow(
+                               column(4,
+                                      numericInput(ns("num_fupls"),
+                                                   label = "Fraction unbound in Plasma",
+                                                   value = 1,width = validateCssUnit("100%"))
+                               ),
+                               column(4,
+                                      numericInput(ns("num_km"),
+                                                   "Michelis Menten Constant",
+                                                   1)
+                               ),
+                               
+                               
+
                                column(4,
                                       numericInput(ns("num_bw"),
                                                    label = "Body Weight(kg)",
                                                    value = 70,
                                                    width = validateCssUnit("100%"))
-                                      ),
+                               )
+                               ),
+                             fluidRow(
                                column(4,
                                       numericInput(ns("num_qc"),
                                                    label = "Cardiac Output(L/h)",
                                                    value = 421.96,
                                                    width = validateCssUnit("100%"))
-                                      ),
-
-                               column(4,
-                                      numericInput(ns("num_fup"),
-                                                   label = "Fraction unbound in Plasma",
-                                                   value = 1,width = validateCssUnit("100%"))
-                               )
                                ),
-                             fluidRow(
-                               column(4,
-                                      numericInput(ns("num_km"),
-                                                   "Michelis Menten Constant",
-                                                   1)
-                                      ),
 
                                column(4,
                                       numericInput(ns("num_lw"),
@@ -349,7 +363,7 @@ HT_IVIVEUI <- function(namespace=""){
                            ))
 
     ),
-    title = "HT modal",
+    title = "Input HT-IVIVE data",
     size = "l",
     easyClose = FALSE,
     fade = TRUE,
@@ -465,10 +479,10 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
       #print(chem_list)
       fupls <- chem_list[[as.integer(chid)]]["fupls"]
       km <- chem_list[[as.integer(chid)]]["km"]
-      updateNumericInput(session,"num_fup",value = as.numeric(fupls))
+      updateNumericInput(session,"num_fupls",value = as.numeric(fupls))
       updateNumericInput(session,"num_km",value = as.numeric(km))
       }
-    },priority = 10)
+    })
 
 
 
@@ -507,7 +521,6 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     row_number <- vals$m_table[row_selected,]["rn"]
     row_key <- paste0("row_",row_number)
     row_values <- vals[[row_key]]
-
     #update numeric Values
     values <- row_values[grep("num_",names(row_values),value = TRUE)]
     lapply(names(values),function(x){updateNumericInput(session,x,value = values[[x]])})
@@ -523,6 +536,9 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     #update checkbox inputs
     values <- row_values[grep("ch_",names(row_values),value = TRUE)]
     lapply(names(values),function(x){updateCheckboxInput(session,x,value = values[[x]])})
+    #update text inputs
+    values <- row_values[grep("txt_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateTextInput(session,x,value = values[[x]])})
   }
 
   # On Organism Change
@@ -530,11 +546,11 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     if(input$sel_org == "ha"){
       # default is to assume adult human age of 25 years
       age = 25
-      bw <- 70
+      bw <- 81.2079
       qcc <- 421.96
-      liv_wt <- 1.820
-      liv_flw <- 90
-      gfr <- 6.7
+      liv_wt <- 1.58
+      liv_flw <- 99.5
+      gfr <- 8.85
       updateNumericInput(session,"num_bw",value = bw)
       updateNumericInput(session,"num_lw",value = liv_wt)
       updateNumericInput(session,"num_qc",value = qcc)
@@ -555,6 +571,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     # Organism data
     org <- input$sel_org
     org_type_name <- "Standard Human"
+    name <- input$txt_IVIVE_name
     # Type of reverse dosimetry
     rd_type  <- input$rdo_rdtype
     rd_type_name <- text_ui_dict[[rd_type]]
@@ -605,12 +622,17 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     # get all checkbox inputs
     temp <- sapply(names(input_list),function(x){grepl("ch_",x)})
     chkbox_param_names_list <- names(temp[temp==TRUE])
+    # get all text inputs
+    temp <- sapply(names(input_list),function(x){grepl("txt_",x)})
+    txt_param_names_list <- names(temp[temp=TRUE])
     row_values <-c(input_list[numeric_param_names_list],input_list[select_param_names_list],
                    input_list[radio_param_names_list],input_list[tab_param_names_list],
-                   input_list[chkbox_param_names_list],cypCl())
+                   input_list[chkbox_param_names_list],input_list[txt_param_names_list],
+                   cypCl())
 
     # create the row that will either be added or replace existing row
     data_added<- data.table::data.table("rn"=0,
+                                        "Name" = name,
                                         "Chemical"=chem_list[[as.integer(chem)]]["names"],
                                         "Organism"=org_type_name,
                                         "Type" = rd_type_name,

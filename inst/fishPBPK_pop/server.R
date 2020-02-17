@@ -11,11 +11,8 @@ shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
   # define the model name once here. It will be used throughout this server file
   # this will make it easier to create new model UI/SERVERS
-  model <- "rapidPBPK"
-  # this dataframe is only used to display the metabolism data.
-  #The actual model uses values stored in the database
-  metabolism_dataframe <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F)
-
+  model <- "fishPBPK"
+  
   dataset <- reactiveValues()
   dataset$savedat <- reactiveVal(c("No","none"))
   dataset$iviveDat <- reactiveVal(c("No",0,0,0))
@@ -33,38 +30,29 @@ shinyServer(function(input, output, session) {
   expo_set <- getAllSetChoices("expo")
   physio_set <- getAllSetChoices("physio")
   chem_set <- getAllSetChoices("chem")
-  #metab_set <- getAllSetChoices("metab")
   sim_set <- getAllSetChoices("sim")
   physiovar <-getVariabilitySetChoices("physio")
   chemvar <-getVariabilitySetChoices("chem")
   expovar <-getVariabilitySetChoices("expo")
-  admevar <-getVariabilitySetChoices("adme")
+
   parameterSets$expo <- reactiveVal(expo_set)
   parameterSets$physio <- reactiveVal(physio_set)
   parameterSets$chem <- reactiveVal(chem_set)
-  #parameterSets$metab <- reactiveVal(metab_set)
   parameterSets$sim <- reactiveVal(sim_set)
   parameterSets$physiovar <- reactiveVal(physiovar)
   parameterSets$chemvar <- reactiveVal(chemvar)
   parameterSets$expovar <- reactiveVal(expovar)
-  parameterSets$admevar <- reactiveVal(admevar)
+
   # conc_datasets <- c("none",getDatasetNames("conc"))
   # updateSelectizeInput(session,"cplt_data",choices = conc_datasets)
 
   observe({
     exposet <- parameterSets$expo()
     updateSelectizeInput(session,"sel_set_expo",choices = exposet)
-    updateSelectizeInput(session,"sel_expo4adme",choices = exposet)
     physioset <- parameterSets$physio()
     updateSelectizeInput(session,"sel_set_physio",choices = physioset)
-    updateSelectizeInput(session,"sel_physio4adme",choices = physioset)
     chemset <- parameterSets$chem()
     updateSelectizeInput(session,"sel_set_chem",choices = chemset)
-    updateSelectizeInput(session,"sel_chem4adme",choices = chemset)
-    
-    #metabset<- parameterSets$adme()
-    # metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",metabset)
-    # updateSelectizeInput(session,"sel_set_metab",choices = metabset)
     physiovar <- parameterSets$physiovar()
     physiovar <- c("None"="0",physiovar)
     updateSelectizeInput(session,"sel_set_physiovar",choices = physiovar)
@@ -74,74 +62,47 @@ shinyServer(function(input, output, session) {
     expovar <- parameterSets$expovar()
     expovar <- c("None"="0",expovar)
     updateSelectizeInput(session,"sel_set_expovar",choices = expovar)
-    admevar <- parameterSets$admevar()
-    admevar <- c("None"="0",admevar)
-    updateSelectizeInput(session,"sel_set_admevar",choices = admevar)
   })
-  observeEvent({
-    input$sel_set_chem
-    input$sel_set_physio
-    input$sel_set_expo
-  },{
-    chemid <- as.integer(input$sel_set_chem)
-    physioid <- as.integer(input$sel_set_physio)
-    expoid <- as.integer(input$sel_set_expo)
-  if(!any((is.na(c(chemid,physioid,expoid))))){
-    query <- sprintf("Select name,admeid from AdmeSet where chemid = %d AND physioid = %d AND expoid = %d;",
-                                        chemid, physioid, expoid)
-    res <- projectDbSelect(query)
-    set_list <- as.list(res[["admeid"]])
-    names(set_list)<- res$name
-    updateSelectizeInput(session,"sel_set_adme",choices = set_list)
-  }
-
-  },ignoreNULL = T, ignoreInit = T)
- 
   # get global variables needed to run the model
 
+  # get the connection to the master database
+  #db <- system.file("database/plethemdb.sqlite",package = "plethem.r.package",mustWork = TRUE)
+  #master_conn <- RSQLite::dbConnect(RSQLite::SQLite(),db)
 
-  # get the parameter table for physiological,exposure, chemical and adme variables.
+  # get the parameter table for physiological and exposure variables.
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';",
                    model)
   physio_name_df <- mainDbSelect(query)
+  # res <- RSQLite::dbSendQuery(master_conn,query)
+  # physio_name_df <- RSQLite::dbFetch(res)
+  # RSQLite::dbClearResult(res)
 
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';",
                    model)
   expo_name_df <- mainDbSelect(query)
+  # res <- RSQLite::dbSendQuery(master_conn,query)
+  # expo_name_df <- RSQLite::dbFetch(res)
+  # RSQLite::dbClearResult(res)
 
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
                    model)
   chem_name_df <- mainDbSelect(query)
-  
-  query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Adme' AND UIParams = 'TRUE' ;",
-                   model)
-  adme_name_df <- mainDbSelect(query)
 
   #### Update the parameter set dropdowns if they exist for physiological and exposure sets
   set_choices <- getAllSetChoices(set_type = "physio")
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_physio",choices = set_choices)
     shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
-    updateSelectizeInput(session,"sel_physio4adme",choices = set_choices)
-    # shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "primary")
+    shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "primary")
   }
   set_choices <- getAllSetChoices(set_type = "expo")
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_expo",choices = set_choices)
-    updateSelectizeInput(session,"sel_expo4adme",choices = set_choices)
   }
   set_choices <- getAllSetChoices(set_type = "chem")
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_chem",choices = set_choices)
-    updateSelectizeInput(session,"sel_chem4adme",choices = set_choices)
-  }
-  set_choices <- getAllSetChoices(set_type = "adme")
-  if (length(set_choices>0)){
-    updateSelectizeInput(session,"sel_adme",choices = set_choices)
-  }
-  set_choices <- getAllSetChoices(set_type = "metab")
-  if (length(set_choices)>0){
-    updateSelectizeInput(session,"sel_metabfiles",choices = set_choices)
+    updateSelectizeInput(session,"sel_chem4Partition",choices = set_choices)
   }
   set_choices <- getAllSetChoices(set_type = "sim")
   if (length(set_choices)>0){
@@ -168,47 +129,20 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session,"sel_expo_var",
                          choices = set_choices)
   }
-  set_choices<- getVariabilitySetChoices("adme")
-  if (length(set_choices)>0){
-    updateSelectizeInput(session,"sel_adme_var",
-                         choices = set_choices)
-  }
+
+
+  compartment_list <-c("fat","liver","kidney","rpf","spf")
+  vol_ids <- c("fat"="ms_vfatc",
+               "liver"="ms_vlivc","kidney"="ms_vkdnc",
+               "rpf"="ms_vrpfc","spf"="ms_vspfc",
+               "bw"="ms_bw")
+  flow_ids <- c("fat"="ms_qfatc","liver"="ms_qlivc",
+                "kidney"="ms_qkdnc",
+                "rpf"="ms_qrpfc","spf"="ms_qspfc")
   
 
+  
 
-
-  ########### The next chunck enables lumping compartments.
-  compartment_list <-c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
-  vol_ids <- c("fat"="ms_vfatc","skin"="ms_vskinc",
-               "muscle"="ms_vmuscc","bone"="ms_vbonec",
-               "brain"="ms_vbrnc","lung"="ms_vlngc",
-               "heart"="ms_vhrtc","gi"="ms_vgic",
-               "liver"="ms_vlivc","kidney"="ms_vkdnc",
-               "rpf"="ms_vrpfc","spf"="ms_vspfc","blood"="ms_vbldc",
-               "bw"="ms_bw")
-  flow_ids <- c("fat"="ms_qfatc","skin"="ms_qskinc",
-                "muscle"="ms_qmuscc","bone"="ms_qbonec",
-                "brain"="ms_qbrnc","lung"="ms_qlngc",
-                "heart"="ms_qhrtc","gi"="ms_qgic","kidney"="ms_qkdnc",
-                "rpf"="ms_qrpfc","spf"="ms_qspfc")
-
-  observe({
-    selected_list<- as.vector(input$ms_cmplist)
-    inactive_list <- base::setdiff(compartment_list,selected_list)
-    # set volumes of inactive compartments to 1e-12 ( very low)
-    # set flows of inactive compartments to zero
-    for(x in inactive_list){
-      input_id <- as.character(flow_ids[x])
-      updateNumericInput(session,input_id,value =0)
-      input_id <- as.character(vol_ids[x])
-      updateNumericInput(session,input_id,value = 1e-12)
-
-    }
-    # disable the tab for inactive compartments
-    sapply(compartment_list,function(x){js$enableTab(x)})
-    sapply(inactive_list,function(x){js$disableTab(x)})
-  })
-  ############ End chuck for handling lumping compartments
 
   ########### The next code chunk deals with updating select inputs for all parameter sets]
   # Import SEEM, SHEDS-HT, batch exposure, and TRA data
@@ -227,13 +161,14 @@ shinyServer(function(input, output, session) {
       parameterSets[[set_type]] <- reactiveVal(set_list)
       updateSelectizeInput(session,paste0("sel_",set_type),
                            choices = set_list)
-      updateSelectizeInput(session,"sel_expo4adme",
-                           choices = set_list)
     }
   })
   
   
-  ### Import button handlers
+  
+  
+  ### Import button current for chemicals only
+  # Import a new chemical set from user or main database
    #### Chunk for handling chemical tab
    observeEvent(input$btn_import_chem,{
      
@@ -247,6 +182,8 @@ shinyServer(function(input, output, session) {
      parameterSets$importdat <- callModule(importParameterSet,input$btn_import_physio,"physio")
      
    })
+
+
    # update the paramter set dropdown if it is changed
    observe({
      result_vector <- parameterSets$importdat
@@ -256,12 +193,7 @@ shinyServer(function(input, output, session) {
        set_list <- getAllSetChoices(set_type)
        parameterSets[[set_type]] <- reactiveVal(set_list)
        updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
-       if(set_type == "chem"){
-         updateSelectizeInput(session,"sel_chem4adme",choices = set_list)
-         
-       }else if (set_type =="physio"){
-         updateSelectizeInput(session,"sel_physio4adme",choices = set_list)
-       }
+       
        
        # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
      }
@@ -274,25 +206,13 @@ shinyServer(function(input, output, session) {
   #Save a new physiological parameter set
   observeEvent(input$btn_saveas_physio,{
     active_comp <- input$ms_cmplist
-    compartment_list <-c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
+    compartment_list <-c("fat","liver","kidney","rpf","spf")
     inactive_comp <- setdiff(compartment_list,active_comp)
-    vol_comps <- c(active_comp,"blood")
-    perfc <- input$ms_perfc
+    vol_comps <- compartment_list
+    perfc <- 1
     total_vol <- sum(unlist(lapply(vol_comps,function(x){input[[vol_ids[x]]]})))
-
-    if ("gi" %in% active_comp && !("liver" %in% active_comp)){
-      shinyWidgets::sendSweetAlert(session,
-                                   title = "Invalid Compartment Configuration",
-                                   text = "Liver compartment needs to be active if GI compartment is active",
-                                   type = "error")
-
-    }else if (length(active_comp) == 0){
-      shinyWidgets::sendSweetAlert(session,
-                                   title = "Invalid Compartment Configuration",
-                                   text = "At least one compartment needs to be active for the model to run",
-                                   type = "error")
-
-    }else if(abs(total_vol-perfc)>0.03){
+    
+    if(abs(total_vol-perfc)>0.03){
 
       error_text <- sprintf("The total volume of all compartments does not add up to %i %%",
               as.integer(perfc*100))
@@ -302,19 +222,10 @@ shinyServer(function(input, output, session) {
                                    text = error_text,
                                    type = "error")
 
-    }else if((input$ms_bdose>0 || input$ms_drdose>0) && !("gi" %in% active_comp)){
-      showModal(
-        modalDialog(
-          tags$h4("Invalid Compartment Configuration"),
-          tags$h5("GI compartment must be active for Oral and Drinking water routes of exposure"),
-          title = "Error"
-        )
-      )
     }else{
-      ns <- paste0("physio",input$btn_saveas_physio)
-      saveAsParameterSetUI(ns,"physio")
+      saveAsParameterSetUI(input$btn_saveas_physio,"physio")
       parameterSets$savedat <- callModule(saveAsParameterSet,
-                                          ns,
+                                          input$btn_saveas_physio,
                                           "physio",isolate(input),
                                           physio_name_df)
     }
@@ -323,50 +234,20 @@ shinyServer(function(input, output, session) {
 
   #Save a new exposure parameter set
   observeEvent(input$btn_saveas_expo,{
-    if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && (input$ms_bdosev==0 || input$ms_brepsv == 0)&& input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
-      shinyWidgets::sendSweetAlert(session,
-                                   title = "Invalid Exposure Parameters",
-                                   text = "Atleast one route of exposure should be active",
-                                   type = "error")
-
-    }else{
-      ns <- paste0("expo",input$btn_saveas_expo)
-      saveAsParameterSetUI(ns,"expo")
+    
+      saveAsParameterSetUI(input$btn_saveas_expo,"expo")
       parameterSets$savedat <- callModule(saveAsParameterSet,
-                                          ns,
+                                          input$btn_saveas_expo,
                                           "expo",isolate(input),
                                           expo_name_df)
-    }
+    
 
   })
 
   #Save a new chemical parameter set
   observeEvent(input$btn_saveas_chem,{
-    ns <- paste0("chem",input$btn_saveas_chem)
-    saveAsParameterSetUI(ns,"chem")
-    parameterSets$savedat <- callModule(saveAsParameterSet,ns,
-                                        "chem",isolate(input),
-                                        chem_name_df)
-  })
-  
-  #Save a new chemical parameter set
-  observeEvent(input$btn_saveas_adme,{
-    chemid <- as.integer(input$sel_chem4adme)
-    physioid <- as.integer(input$sel_physio4adme)
-    expoid <- as.integer(input$sel_expo4adme)
-    id_list <- c(expoid,chemid,physioid)
-    if (any(is.na(id_list))){
-      sendSweetAlert(session,"Configuration Error",
-                     "Need to define Exposure, chemical and Physiology sets before defining an ADME set",
-                     type = "error")
-    }else{
-      ns <- paste0("adme",input$btn_saveas_adme)
-      saveAsParameterSetUI(ns,"adme")
-      parameterSets$savedat <- callModule(saveAsParameterSet,ns,
-                                          "adme",isolate(input),
-                                          adme_name_df,id_list)
-    }
-    
+    saveAsParameterSetUI(input$btn_saveas_chem,"chem")
+    parameterSets$savedat <- callModule(saveAsParameterSet,input$btn_saveas_chem,"chem",isolate(input),chem_name_df)
   })
 
 
@@ -379,14 +260,7 @@ shinyServer(function(input, output, session) {
       set_list <- getAllSetChoices(set_type)
       parameterSets[[set_type]] <- reactiveVal(set_list)
       updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
-      if(set_type == "chem"){
-        updateSelectizeInput(session,"sel_chem4adme",choices = set_list)
-        
-      }else if (set_type =="physio"){
-        updateSelectizeInput(session,"sel_physio4adme",choices = set_list)
-      }else if(set_type == "expo"){
-        updateSelectizeInput(session,"sel_expo4adme",choices = set_list)
-      }
+      
       parameterSets$savedat <- reactiveVal(c("No","",0))
       # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
     }
@@ -435,20 +309,6 @@ shinyServer(function(input, output, session) {
                                            UI_values,set_values,
                                            chem_name_df,"chem")
   })
-  
-  #Save/Restore Button function
-  observeEvent(input$btn_sverest_adme,{
-    admeid <- input$sel_adme
-    set_values <- getParameterSet("adme",admeid)
-    #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
-    UI_values <- reactiveValuesToList(input)[paste0("ms_",adme_name_df$Var)]
-    names(UI_values) <- gsub("ms_","",names(UI_values))
-    saveRestoreParameterSetUI(input$btn_sverest_adme)
-    parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
-                                           input$btn_sverest_adme,
-                                           UI_values,set_values,
-                                           adme_name_df,"adme")
-  })
 
   observe({
     result_vector <- parameterSets$sverestdat()
@@ -461,10 +321,8 @@ shinyServer(function(input, output, session) {
         table_name <- "Physiological"
       }else if(type == "chem"){
         table_name <- "Chemical"
-      }else if(type == "expo"){
-        table_name <- "Exposure"
       }else{
-        table_name <- "Adme"
+        table_name <- "Exposure"
       }
 
 
@@ -486,10 +344,8 @@ shinyServer(function(input, output, session) {
         name_data <- physio_name_df
       }else if(type == "chem"){
         name_data <- chem_name_df
-      }else if(type == "expo"){
-        name_data <- expo_name_df
       }else{
-        name_data <- adme_name_df
+        name_data <- expo_name_df
       }
       var_type <- sapply(result_vector$Variable,function(var){
         tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = T)]
@@ -500,7 +356,7 @@ shinyServer(function(input, output, session) {
                               row.names = NULL,
                               stringsAsFactors = F)
       updateUIInputs(session,change_df)
-
+     
 
     }
   })
@@ -565,29 +421,8 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
                                        param_vars,input$sel_expo_var)
-  },ignoreInit = T, ignoreNULL = T)
-    
-    observeEvent(input$btn_new_varadme,{
-      param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
-      param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
-      names(param_vars) <- param_names
-      ns <- paste0("ven_",input$btn_new_varadme)
-      newEditVariabilityUI(ns)
-      parameterSets$vardat <- callModule(newEditVariability,ns,"adme","new",param_vars)
-      ### Variability Tab
-    },ignoreInit = T, ignoreNULL = T)
-    
-    observeEvent(input$btn_edit_varadme,{
-      param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
-      param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
-      names(param_vars) <- param_names
-      ns <- paste0("vee_",input$btn_edit_varadme)
-      newEditVariabilityUI(ns)
-      parameterSets$vardat <- callModule(newEditVariability,ns,"adme","edit",
-                                         param_vars,input$sel_adme_var)
-    },ignoreInit = T, ignoreNULL = T)
     ### Variability Tab
-  
+  },ignoreInit = T, ignoreNULL = T)
   
   observe({
     result_vector <- parameterSets$vardat
@@ -647,20 +482,6 @@ shinyServer(function(input, output, session) {
     
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
   
-  observeEvent(input$sel_adme_var,{
-    varid <- input$sel_adme_var
-    query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
-    var_data <- projectDbSelect(query)
-    dataset <- unserialize(charToRaw(var_data$var_tble))
-    dataset <- dataset[,c(-2)]
-    output$adme_var_tble <- DT::renderDT(DT::datatable(dataset,rownames = "",
-                                                       colnames = c("Use Bounds" = 5,
-                                                                    "Upper Bound"=6,
-                                                                    "Lower Bound"=7)
-    ))
-    
-  },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
   
 
   #update the inputs for the parameter set selected
@@ -696,333 +517,7 @@ shinyServer(function(input, output, session) {
     updateUIInputs(session,params_df)
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
-  
-  observeEvent(input$sel_adme,{
-    admeid <- input$sel_adme
-    #get the values for inputs
-    adme_values <- getParameterSet("adme",admeid)
-    params_df <- adme_name_df
-    params_df$Val <- adme_values[adme_name_df$Var]
-    updateUIInputs(session,params_df)
-    
-  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
-  ### This code chunk deals with updating pair using qsar models
-  observeEvent(input$qsar4chem_props,{
-    qsar_model <- input$qsarModelChem
-    org <- ifelse(input$ms_org=="ha","human","rat")
-    
-    chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw,
-                            "vpa"=input$ms_vpa, "dkow"=input$ms_dkow,
-                            "lkow"=input$ms_lkow, "wsol"=input$ms_wsol,
-                            "res"=input$ms_res,  "vmaxc"=input$ms_vmaxc,
-                            "km"=input$ms_km)
-    partitions <- calculatePartitionCoefficients(qsar_model,
-                                                 chemical_params,
-                                                 NULL,
-                                                 org)
-    pair <- partitions$pair
-    frwsol <- partitions$frwsol
-   
-    updateNumericInput(session,"ms_frwsol",value = frwsol)
-  })
-  
-  ## This code chunk deals with performing IVIVE for the chemical
-  observeEvent(input$btn_ivive_chem,{
-    performIVIVEUI(input$btn_ivive_chem)
-    dataset$iviveDat <<- callModule(performIVIVE,input$btn_ivive_chem,input$ms_km)
-  })
-  
-  observe({
-    ivive_val <- dataset$iviveDat()
-    if(ivive_val[1]=="Yes"){
-      updateNumericInput(session,"ms_vkm1c",value = signif(as.numeric(ivive_val[2]),4))
-      updateNumericInput(session,"ms_vmaxc",value = signif(as.numeric(ivive_val[3]),4))
-      updateNumericInput(session,"ms_km",value = signif(as.numeric(ivive_val[4]),4))
-    }
-  })
-
-
-
-
-
-  #### The next code chunk resets all the exposures in the app to zero.
-  observeEvent(input$clear_expo,{
-    input_names <- c("ms_bdose","ms_drdose","ms_vdw","ms_inhdose","ms_ivdose")
-    lapply(input_names, function(x){updateNumericInput(session,x,value = 0)})
-  })
-
-
-  # metab_colnames <- reactive({
-  #   if (input$metab_type == "m2"){
-  #     c("Age(years)","Clearance(L/h/kg Liver)")
-  #   }else{
-  #     c("Age(years)","Clearance (\u00B5M/h/kg BW ^ 0.75)")
-  #   }
-  # })
-  output$metab_tble <- DT::renderDT(DT::formatRound(DT::datatable(metabolism_dataframe,
-                                                              caption = "Metabolism Table",
-
-                                                              rowname = NULL,editable = F,
-                                                              options= list(dom = "tp",pageLength = 5)),
-                                                2,digits = 4,mark = "" ),
-                                    server = T)
-  metab_proxy <- DT::dataTableProxy("metab_tble",session)
-
-  #Save current metabolism set.
-  observeEvent(input$btn_saveas_metab,{
-    if(is.null(input$metab_csv)){
-      sendSweetAlert(session,"Error","No Dataset Uploaded","error")
-    }else if(input$metab_set_name=="" || input$metab_set_descrp==""){
-      sendSweetAlert(session,"Error","Both name and description are required","error")
-    }else{
-      #validate(need(input$metab_csv,"Metabolism Data"))
-      #id <- input$sel_metab
-      set_type <- "metab"
-      id_name <- "metabid"
-      set_table_name <- "MetabolismSet"
-      set_name <- "Metabolism"
-      # get the current ID for the parameter set.
-      query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
-      id_list <- projectDbSelect(query)
-      if (length(id_list[[id_name]])==0){
-        id_num = 1
-      }else{
-        id_num = max(id_list[[id_name]])+1
-      }
-      metab_type <- input$metab_type
-      ref_age <- input$metab_ref_age
-      use_ref <- as.character(input$use_ref)
-
-
-      # write the name to correct "Set" table
-      query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
-                       set_table_name,id_name,id_num,
-                       input$metab_set_name,input$metab_set_descrp)
-      projectDbUpdate(query)
-
-      # serialize and convert the loaded table to database
-      serialized_metab_tble <- rawToChar(serialize(metab_tble(),NULL,T))
-
-      query <- sprintf("INSERT INTO Metabolism (metabid,type,use_ref,ref_age,metab_tble) Values (%d,'%s','%s',%f,'%s');",
-                       id_num,
-                       metab_type,
-                       use_ref,
-                       ref_age,
-                       serialized_metab_tble)
-      projectDbUpdate(query)
-
-      set_list <- getAllSetChoices(set_type)
-      parameterSets[[set_type]]<- reactiveVal(set_list)
-      updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = id_num)
-    }
-  })
-
-  #update the UI on selecting input
-  observeEvent(input$sel_metab,{
-    metab_id <- input$sel_metab
-    # get the name a description and update
-    query <- sprintf("Select name,descrp From MetabolismSet where metabid = %d;",
-                     as.integer(metab_id))
-
-    ret_data <- projectDbSelect(query)
-    updateTextInput(session,"metab_set_name",value = ret_data[["name"]])
-    updateTextAreaInput(session,"metab_set_descrp",value = ret_data[["descrp"]])
-
-    query <- sprintf("Select type,ref_age,metab_tble From Metabolism where metabid = %d",
-                     as.integer(metab_id))
-    ret_data <- projectDbSelect(query)
-    #print(ret_data)
-    shinyWidgets::updateRadioGroupButtons(session,"metab_type",selected = ret_data[["type"]])
-    shinyWidgets::updateAwesomeCheckbox(session,"use_ref",value = as.logical(ret_data[["use_ref"]]))
-    updateNumericInput(session,"metab_ref_age",value = ret_data[["ref_age"]])
-    metabolism_dataframe <<- unserialize(charToRaw(ret_data[["metab_tble"]]))
-    DT::replaceData(metab_proxy,metabolism_dataframe,rownames = F)
-
-  },ignoreInit = TRUE, ignoreNULL = TRUE)
-  
-  ## CHUNK FOR HANDLING METABOLISM TAB UNDER ADME
-
-  # show the modal to upload files when
-  observeEvent(input$btn_metab_upload,{showModal(modalDialog(title = "Upload Metabolism Data",
-                                                             tagList(
-                                                               fluidPage(
-                                                                 fluidRow(
-                                                                   column(width = 5,
-                                                                          fileInput("metab_csv","Upload Metabolism Data")),
-                                                                   column(width = 5,
-                                                                          downloadLink("metab_template","Template for metabolism file"))
-                                                                 ),
-                                                                 fluidRow(
-                                                                   column(width = 4,
-                                                                          textInput("metab_set_name","Name",
-                                                                                    placeholder = "Enter the name for this metabolism set")),
-                                                                   column(width = 8,
-                                                                          textAreaInput("metab_set_descrp","Description",
-                                                                                        resize = "none" ,row = 1))
-
-                                                                 ),
-                                                                 fluidRow(column(width = 12,
-                                                                                 shinyWidgets::radioGroupButtons("metab_type",justified = T,
-                                                                                                                 "Select Meatbolism Type",
-                                                                                                                 choices = c("Saturable Hepatic"="m1","Linear Hepatic"="m2",
-                                                                                                                             "Plasma Clearance"="m3","Gut Clerance"="m4"))
-                                                                 )
-
-
-
-                                                                 ),
-                                                                 fluidRow(
-                                                                 column(width = 6,
-                                                                        shinyBS::popify(numericInput("metab_ref_age",
-                                                                                     "Reference age in Years",
-                                                                                     value = 25, min = 0),
-                                                                                     title = "",
-                                                                                     content = "If age defined in the physiological parameters is not a part of the table, the value at this age will be used")
-                                                                 )
-                                                                 ),
-                                                                 fluidRow(
-                                                                   fluidRow(column(width = 6, offset = 3,
-                                                                                   DT::DTOutput("metab_upload_tble")))
-                                                                 )
-
-                                                               )
-                                                             ),
-                                                             size ="l",
-                                                             footer = tagList(
-                                                               actionButton("metab_upload_done","Add Metabolism"),
-                                                               modalButton("Cancel")
-                                                             )
-  ))
-  })
-  output$metab_template <- downloadHandler(
-    filename = function(){"Metabolism_Template.csv"},
-    content = function(file){write.csv(data.frame("Age"=c(25),"Clearence"=c(0),stringsAsFactors = F),
-                                       file,
-                                       row.names = F)
-    },
-    contentType = "text/csv"
-  )
-
-  # The selected file
-  metabFile <- reactive({
-    input$metab_csv
-  })
-
-  # The user's data, parsed into a data frame
-  metab_upload_tble <- reactive({
-    validate(need(input$metab_csv,"No dataset uploaded"))
-    ret_dat <- read.csv(metabFile()$datapath,header = T,stringsAsFactors = F)
-    return(ret_dat)
-  })
-  output$metab_upload_tble <- DT::renderDT(DT::formatRound(DT::datatable(metab_upload_tble(),
-                                                                     caption = "Metabolism Table",
-                                                                     rowname = NULL,editable = F,
-                                                                     options= list(dom = "tp",pageLength = 5)),
-                                                       2,digits = 4,mark = "" ),
-                                           server = T)
-
-  observeEvent(input$metab_upload_done,{
-    if(is.null(input$metab_csv)){
-      sendSweetAlert(session,"Error","No Dataset Uploaded","error")
-    }else if(input$metab_set_name=="" || input$metab_set_descrp==""){
-      sendSweetAlert(session,"Error","Both name and description are required","error")
-    }else{
-      set_type <- "metab"
-      id_name <- "metabid"
-      set_table_name <- "MetabolismSet"
-      set_name <- "Metabolism"
-      # get the current ID for the parameter set.
-      query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
-      id_list <- projectDbSelect(query)
-      if (length(id_list[[id_name]])==0){
-        id_num = 2
-      }else{
-        id_num = max(id_list[[id_name]])+1
-      }
-      metab_type <- input$metab_type
-      ref_age <- input$metab_ref_age
-
-      # serialize and convert the loaded table to database
-      metab_tble<-metab_upload_tble()
-      if (!(ref_age %in% metab_tble$Age)){
-        sendSweetAlert(session,"Error","Reference age must be a part of the table","error")
-      }else{
-        # write the name to correct "Set" table
-        query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
-                         set_table_name,id_name,id_num,
-                         input$metab_set_name,input$metab_set_descrp)
-        projectDbUpdate(query)
-
-        serialized_metab_tble <- rawToChar(serialize(metab_tble,NULL,T))
-
-        query <- sprintf("INSERT INTO Metabolism (metabid,type,ref_age,metab_tble) Values (%d,'%s',%f,'%s');",
-                         id_num,
-                         metab_type,
-
-                         ref_age,
-                         serialized_metab_tble)
-        projectDbUpdate(query)
-
-        set_list <- getAllSetChoices(set_type)
-        updateSelectizeInput(session,"sel_metabfiles",choices = set_list, selected = id_num)
-        
-        removeModal()
-      }
-
-
-    }
-  })
-  
-  # logic for apply button- depending on the selected physiology and metab file,
-  # populates the correct clerance value
-  observeEvent(input$btn_use_age,{
-    age_set <- input$sel_metabfiles
-    if (age_set==""){
-      sendSweetAlert(session,"Configuration Error","Please upload age dependent metabolism file",
-                     type="error")
-    }
-    else if (input$sel_physio4adme==""){
-      sendSweetAlert(session,"Configuration Error","Please create a physiology set",
-                     type="error")
-    }else{
-      sendSweetAlert(session,title = NULL,"This will overwrite any existing data",
-                     type="info")
-      #get the age from the compartment
-      physioid <- input$sel_physio4adme
-      query <- sprintf("Select value from Physiological where physioid = %d AND param = 'age';",
-                       as.integer(physioid))
-      age <- as.integer(projectDbSelect(query)$value)
-      metabid <- input$sel_metabfiles
-      query <- sprintf("Select type,ref_age,metab_tble From Metabolism where metabid = %d",
-                       as.integer(metabid))
-      ret_data <- projectDbSelect(query)
-      upload_type <- ret_data[["type"]]
-      ref_age <- as.integer(ret_data[["ref_age"]])
-      metabolism_dataframe <- unserialize(charToRaw(ret_data[["metab_tble"]]))
-      if (age %in% metabolism_dataframe$Age){
-        val2update <- metabolism_dataframe$Clearance[metabolism_dataframe$Age==age]
-      }else{
-        alert_message = sprintf("Physiology age not found in uploaded data. Using value at reference age of %d instead",
-                                ref_age)
-        sendSweetAlert(session,title = NULL,text=alert_message,type="info")
-        val2update <- metabolism_dataframe$Clearance[metabolism_dataframe$Age==ref_age]
-      }
-      if (upload_type == "m1"){
-        updateNumericInput(session,"ms_vmaxc",value =val2update)
-        updateNumericInput(session,"ms_vkm1c",value =0)
-      }else if (upload_type == "m2"){
-        updateNumericInput(session,"ms_vkm1c",value =val2update)
-        updateNumericInput(session,"ms_vmaxc",value =0)
-      }else if (upload_type == "m3"){
-        updateNumericInput(session,"ms_kbld",value =val2update)
-      }else{
-        updateNumericInput(session,"ms_kent",value =val2update)
-      }
-    }
-  })
-
-  ## END METABOLISM TAB UNDER ADME
   ### CODE CHUNK FOR HANDLING SIMULATIONS TAB
 
   # Save a new simulation
@@ -1042,23 +537,21 @@ shinyServer(function(input, output, session) {
       chemid <- as.integer(input$sel_set_chem)
       physioid <- as.integer(input$sel_set_physio)
       expoid <- as.integer(input$sel_set_expo)
-      admeid <- as.integer(input$sel_set_adme)
+      metabid <- 0
       physiovarid <- as.integer(input$sel_set_physiovar)
       chemvarid <- as.integer(input$sel_set_chemvar)
       expovarid <- as.integer(input$sel_set_expovar)
-      admevarid <- as.integer(input$sel_set_admevar)
       query <- paste(strwrap(sprintf("INSERT INTO SimulationsSet (simid,name,descrp,expoid,physioid,
-                                     chemid,admeid,physiovarid, chemvarid,expovarid,admevarid,tstart,sim_dur,mc_num) Values
-                                     (%d,'%s','%s',%i,%i,%i,%i,%i,%i,%i,%i,%f,%f,%i) ;",
+                                     chemid,metabid,physiovarid, chemvarid,expovarid,tstart,sim_dur,mc_num) Values
+                                     (%d,'%s','%s',%i,%i,%i,%i,%i,%i,%i,%f,%f,%i) ;",
                                      simid,sim_name,sim_descrp,
                                      expoid,physioid,
-                                     chemid,admeid,
+                                     chemid,metabid,
                                      physiovarid,chemvarid,
-                                     expovarid,admevarid,
+                                     expovarid,
                                      sim_start,sim_dur,mc_num),
                              simplify = T),
                      sep = " ",collapse = "")
-      print(query)
       projectDbUpdate(query)
       sim_sets <- getAllSetChoices("sim")
       updateSelectizeInput(session,"sel_sim",choices = sim_sets)
@@ -1068,21 +561,19 @@ shinyServer(function(input, output, session) {
       sendSweetAlert(session,"Success",
                      sprintf("Simulation saved as %s",sim_name),
                      type = "success")
-      updateSelectizeInput(session,"sel_sim",selected = simid)
-      
     }
-    
+
   })
 
   observeEvent(input$sel_sim,{
     simid <- as.integer(input$sel_sim)
     # get pertinent data from the database
     # get All values from the simulations database
-    query <- sprintf("Select name,descrp,admeid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
+    query <- sprintf("Select name,descrp,metabid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
                      simid)
 
     result <- projectDbSelect(query)
-    admeid <- as.integer(result[["admeid"]])
+    metabid <- as.integer(result[["metabid"]])
     chemid <- as.integer(result[["chemid"]])
     expoid <- as.integer(result[["expoid"]])
     physioid <- as.integer(result[["physioid"]])
@@ -1112,7 +603,7 @@ shinyServer(function(input, output, session) {
     output$sim_expo <- renderText(expo_name)
 
     # get metabolism data.
-    metab_data <- getMetabData(admeid,model)
+    metab_data <- getMetabData(metabid,physioid,chemid,model)
     output$sim_metab_type <- renderText(metab_data$Type)
     output$sim_metab_units <- renderText(metab_data$Units)
     output$sim_metab_val <- renderText(as.character(round(metab_data$Value,2)))
@@ -1188,96 +679,6 @@ shinyServer(function(input, output, session) {
   })
 
 
-  
-# Life course equation
-  tissue_volumes<- reactive({
-    tissues <- c(input$ms_cmplist,"blood")
-    perfc <- input$ms_perfc
-    vols <- getLifecourseTissueVolumes(input$ms_age, input$ms_gender,perfc, tissues)
-    vols["bw"] <- getLifecourseBodyWeight(input$ms_age,input$ms_gender)
-    return(vols)
-  })
-  tissue_ratios<- reactive({
-    tissues <- c(input$ms_cmplist)
-    flows <- getLifecourseTissuePerfusion(input$ms_age, input$ms_gender, tissues)
-    flows["qc"]<- getLifecourseCardiacOutput(input$ms_age,input$ms_gender)
-    #tissues <- list("fat", "skin", "muscle", "bone", "boneMarow", "brain", "lung", "heart", "gastric", "liver", "kidney")
-    return(flows)
-  })
-#LifeCourse Equation
-  observeEvent(input$btn_use_lifecourse,{
-    org <- input$ms_org
-    if (org == "ha"){
-      shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
-      age <- input$ms_age
-      
-      gender<- input$ms_gender
-      # get volumes from life course equations
-      tissues <- c(input$ms_cmplist,"blood")
-      perfc <- input$ms_perfc
-      vols <- getLifecourseTissueVolumes(age,gender,perfc, tissues)
-      vols["bw"] <- getLifecourseBodyWeight(age,gender)
-      #update the UI with new volumes
-      updateVolumes(session,vols)
-      #Get blood flow ratios from life course equations
-      tissues <- input$ms_cmplist # since there is no blood flow through blood
-      flows <- getLifecourseTissuePerfusion(age,gender, tissues)
-      flows["qc"]<- getLifecourseCardiacOutput(age,gender)
-      updateRatios(session, flows)
-      ventilation_rate <- getLifecourseVentilationRate(age,gender)
-      updateNumericInput(session,"ms_respr",value = signif(ventilation_rate,4))
-      tidal_volume <- getLifecourseTidalVolume(age,gender)
-      updateNumericInput(session,"ms_tv",value = signif(tidal_volume,4))
-      ds <- getLifecourseLungDeadSpace(age,gender)
-      updateNumericInput(session,"ms_ds",value = signif(ds,4))
-      gfr<- getLifecourseGlomerularFiltrationRate(age,gender)
-      updateNumericInput(session,"ms_gfr",value = signif(gfr,4))
-    }else{
-      shinyBS::createAlert(session,"physio_header_alert",style = "error",
-                           content = "Only human parameters can be estimated using lifecourse equations")
-    }
-    })
-
-  # when age and gender are changed, change the type of button to indicate things are out of sync
-  observeEvent({input$ms_age ;input$ms_gender; input$ms_cmplist},{
-    shinyBS::updateButton(session,"btn_use_lifecourse",style = "warning")
-  },ignoreInit = TRUE )
-
- observeEvent(input$ms_org,{
-   if (input$ms_org == "ha"){
-     updatePickerInput(session,"sel_qsar4Partition",choices =  c("QSAR model one" = 'one'))
-   } else{
-     updatePickerInput(session,"sel_qsar4Partition",choices = c("QSAR model one" = 'one',
-                                                                "Unified QSAR model" = 'two'))
-   } 
- })
-  
-#Qsar models
-  observeEvent(input$btn_useQSAR4Partition,
-               {
-                 shinyBS::updateButton(session,"btn_useQSAR4partition",style = "primary")
-                 chemid <- input$sel_chem4adme
-                 qsar_model <- input$sel_qsar4Partition
-                 org <- ifelse(input$ms_org=="ha","human","rat")
-                 query <- sprintf("SELECT param,value FROM Chemical Where chemid = %i",
-                                  as.integer(chemid))
-                 ret_data <- projectDbSelect(query)
-                 chemical_params <- setNames(ret_data$value,ret_data$param)
-
-                 tissue_list <- list()
-                 active_tissues <- input$ms_cmplist
-                 active_tissues <- active_tissues[!(active_tissues %in% c("rpf","spf"))]
-                 tissue_list$active <- active_tissues
-                 tissue_list$spf <- c()
-                 tissue_list$rpf <- c()
-                 calculatedCoeff <- calculatePartitionCoefficients(qsar_model,chemical_params,tissue_list,org)
-                 updateCoeffs(session, calculatedCoeff)
-                 updateNumericInput(session,"ms_pair",value = calculatedCoeff$pair)
-                 })
-  # when chemical and/or model are changed, change the type of button to indicate things are out of sync
-  observeEvent({input$sel_chem4partition ;input$sel_qsar4Partition},{
-    shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "warning")
-  },ignoreInit = TRUE )
 
 #Current Parameters table under Model output
 current_params <-  reactive({
@@ -1525,19 +926,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return(obs_name)
     }
   })
-  
-  #NCA data processing
-  ncaData <- reactive({
-    mode <- results$mode
-    query <- sprintf("Select model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",model,mode)
-    var_names<- mainDbSelect(query)$model_var
-    print(var_names)
-    validate(need(mode == "FD",message = "MC mode not implemented"))
-    result <- results$pbpk
-    return(performPlethemNCA(result,var_names,mode))
-  })
-  
-  output$tble_ncavals <- DT::renderDT(ncaData())
+
 
   #  Concentration plot Data
   concData <- reactive({
@@ -1545,7 +934,6 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     units <- input$r_cplt_type
     simid <- results$simid
     mode <- results$mode
- 
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
 
@@ -1561,9 +949,9 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     #get value multiplier based on concentration units
     if(units == "um"){
-      multiplier <- 1
+      multiplier <- 1000/mw
     }else{
-      multiplier <- mw/1000
+      multiplier <- 1
     }
 
     result<- as.data.frame(result)
@@ -1643,9 +1031,9 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
     #get value multiplier based on concentration units
     if(units == "um"){
-      multiplier <- 1
+      multiplier <- 1000/mw
     }else{
-      multiplier <- mw/1000
+      multiplier <- 1
     }
 
     values <- c()
@@ -1656,6 +1044,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     plot_vals<- input$aplt_comp
     values <- unlist(lapply(plot_vals,function(x){var_names[x]}))
     names(values)<- NULL
+
     
     if (exists("plot_frame")){
       rm(plot_frame)
@@ -1725,7 +1114,13 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     return(plot_frame)
   })
-  
+
+  # output$concplt <- plotly::renderPlotly(plotly::ggplotly(ggplot()
+  #                              +geom_line(data = concData(), aes(x=time,y=value,color = variable))
+  #                              +geom_pointrange(data = concDataset(),aes(x = time,y = mean, ymin = mean-sd ,ymax = mean+sd,fill = "Dataset (mg/L)"))
+  # 
+  #                              +labs(x="Time (h)",y="Concentration")
+  #                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
   concplt <- reactive({
     if (results$mode == "FD"){
       plotly::plot_ly()%>%
@@ -1886,384 +1281,57 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
 calculateInitialValues <- function(params_list){
   params <- params_list$vals
-  brep_flag <- as.logical(params[["brep_flag"]])
-  brepv_flag <- as.logical(params[["brepv_flag"]])
-  iv_flag <- as.logical(params[["ivrep_flag"]])
-  derm_flag <- as.logical(params[["dermrep_flag"]])
   params <- params[which(grepl("[-]?[0-9]+[.]?[0-9]*|[-]?[0-9]+[L]?|[-]?[0-9]+[.]?[0-9]*[eE][0-9]+",params))]
   params <- lapply(params,function(x){as.numeric(x)})
 
   initial_params <- within(as.list(params),{
-
+    perfc <- 1
+    total_vol <- vlivc + vfatc + vkdnc + vrpfc + vspfc
     #Scaled Tissue Volumes
-    vbld <- vbldc*(perfc/total_vol)*bw     #L;Blood
-    vpls <- vbld*(1-hct)
     vfat <- vfatc*(perfc/total_vol)*bw
-    vskin <- vskinc*(perfc/total_vol)*bw
-    vmusc <- vmuscc*(perfc/total_vol)*bw
-    vbone <- vbonec*(perfc/total_vol)*bw
-    vbrn <- vbrnc*(perfc/total_vol)*bw
-    vlng <- vlngc*(perfc/total_vol)*bw
-    vhrt <- vhrtc*(perfc/total_vol)*bw
     vkdn <- vkdnc*(perfc/total_vol)*bw
-    vgi <- vgic*(perfc/total_vol)*bw
     vliv <- vlivc*(perfc/total_vol)*bw
     vrpf <- vrpfc*(perfc/total_vol)*bw
     vspf <- vspfc*(perfc/total_vol)*bw
 
     #Total Fractional Perfusion
-    total_perf <- qfatc+qskinc+qmuscc+qbonec+qbrnc+qlngc+qhrtc+qkdnc+qvlivc+qrpfc+qspfc  # This does not include flow to GI since that is a part of liver venous flow
+    total_perf <- qfatc+qkdnc+qlivc+qrpfc+qspfc  # This does not include flow to GI since that is a part of liver venous flow
 
     #Scaled Perfusion
-    qcp <- qcc*(1-hct)
-    qfat <- qfatc*(1/total_perf)*qcp
-    qskin <- qskinc*(1/total_perf)*qcp
-    qmusc <- qmuscc*(1/total_perf)*qcp
-    qbone <- qbonec*(1/total_perf)*qcp
-    qbrn <- qbrnc*(1/total_perf)*qcp
-    qlng <- qlngc*(1/total_perf)*qcp
-    qhrt <- qhrtc*(1/total_perf)*qcp
-    qkdn <- qkdnc*(1/total_perf)*qcp
-    qvliv <- qvlivc*(1/total_perf)*qcp
-    qgi <- (qgic/(qgic+qalivc))*qvliv
-    qaliv <- (qalivc/(qgic+qalivc))*qvliv
-    qrpf <- qrpfc*(1/total_perf)*qcp
-    qspf <- qspfc*(1/total_perf)*qcp
-
-    #Scaled tissue permeability coefs
-    pafat <- pafat*vfat**0.75
-    paskin <- paskin*vskin**0.75
-    pamusc <- pamusc*vmusc**0.75
-    pabone <- pabone*vbone**0.75
-    pabrn <- pabrn*vbrn**0.75
-    palng <- palng*vlng**0.75
-    pahrt <- pahrt*vhrt**0.75
-    pakdn <- pakdn*vkdn**0.75
-    pagi <- pagi*vgi**0.75
-    paliv <- paliv*vliv**0.75
-    parpf <- parpf*vrpf**0.75
-    paspf <- paspf*vspf**0.75
-
-    vkm1 <- vkm1c*vliv
-    vmaxliv <- vmaxc*bw**0.75
+    qfat <- qfatc*(1/total_perf)*qc
+    qkdn <- qkdnc*(1/total_perf)*qc
+    qliv <- qlivc*(1/total_perf)*qc
+    qrpf <- qrpfc*(1/total_perf)*qc
+    qspf <- qspfc*(1/total_perf)*qc
 
     tstop <- tstart+sim_dur
-
-    cinh <- (inhdose/24.45)#*1000/mw # converting from  ppm to mg/L(/24.45) and then to umoles/L for the model
-    qalv <- (tv-ds)*respr
-    pair <- ifelse(pair >0,pair,1E-10)
+    #calculate gut uptake limit
+    gul <- ifelse(qc*pbldw > qrpf,qg,qc*pbldw)
+    
   })
 
   #function for dosing
 
   mw <- initial_params[["mw"]]
   bw <- initial_params[["bw"]]
-  #ORAL
-  bdose <- initial_params[["bdose"]]
-  breps <- initial_params[["breps"]]
-  blen <- initial_params[["blen"]]
-
-  totbreps <- initial_params[["totbreps"]]<-breps*blen
-  #Drinking Water
-  ddose <- initial_params[["drdose"]]
-  vdw <- initial_params[["vdw"]]
-  dreps <- initial_params[["dreps"]]
-  
-  #ORAL  with vehicle
-  bdosev <- initial_params[["bdosev"]]
-  brepsv <- initial_params[["brepsv"]]
-  blenv <- initial_params[["blenv"]]
-  
-  totbrepsv <- initial_params[["totbrepsv"]]<-brepsv*blenv
-
-  #inhalation
-  inhdose <- initial_params[["inhdose"]]
-  inhtlen <- initial_params[["inhtlen"]]
-  inhdays <- initial_params[["inhdays"]]
-
-  #iv
-  ivdose <- initial_params[["ivdose"]]
-  ivlen <- initial_params[["ivlen"]]
-  
-  #dermal
-  dermrate <- initial_params[["dermrate"]]
-  dermlen <- initial_params[["dermlen"]]
-  skarea <- initial_params[["skarea"]]
-
-  #simulation
+  #Chemical Inspiration
+  cins <- initial_params[["cins"]]
   tstart <- initial_params[["tstart"]]
-  totdays <- initial_params[["totdays"]]
   tstop <- initial_params[["tstop"]]
-  #if bolus oral dose is administered
-  if (bdose > 0){
-    # var to change
-    state_Var <- c("odose","totodose")
-
-    # operation of event
-    operation <- c("add","add")
-    # times of event
-    if (breps==1){
-      # Value  of change
-      change_val1<- (bdose*bw*1000/mw)
-      change_val2<- change_val1
-      change_arr <- c(change_val1,change_val2)
-      #only one bolus dose per day
-      if (brep_flag){
-        event_times <- head(seq(tstart,tstop,24),-1)
-      }else{
-        event_times <- c(tstart)
-      }
-
-    }else{
-      # Value  of change
-      change_val1<- (bdose*bw*1000/mw)/totbreps
-      change_val2<- change_val1
-      change_arr <- c(change_val1,change_val2)
-      #multiple bolus doses per day
-      if (brep_flag){
-        event_times <- unlist(lapply(X = 1:totdays,
-                                     FUN = function(x){
-                                       head(seq(0,blen,1/breps),-1)+(24*(x-1))
-                                       }
-                                     )
-                              )
-      }else{
-        #only one day
-        event_times <- unlist(lapply(X = 1,
-                                     FUN = function(x){
-                                       head(seq(0,blen,1/breps),-1)+(24*(x-1))
-                                     }
-        )
-        )
-      }
-
-    }
-
-    eventDat <- data.frame(
-
-      var = rep(x = state_Var,each = length(event_times)),
-      time = rep(event_times,length(state_Var)),
-      value = rep(x = change_arr,each = length(event_times)),
-      method = rep(x = operation,each = length(event_times))
-
-    )
-
-    # if drinking water dose is administered
-  }else if (ddose >0){
-    # var to change
-    state_Var <- c("ddose","totddose")
-    # Value  of change
-    change_val1 <- (ddose*1000*vdw/mw)/dreps
-    change_val2 <- change_val1
-    change_arr <- c(change_val1,change_val2)
-    # operation of event
-    operation <- c("add","add")
-    # times of event
-    event_times <- unlist(lapply(X = 1:totdays,function(x){head(seq(0,24,by = 24/dreps),-1)+24*(x-1)}))
-
-    eventDat <- data.frame(
-
-      var = rep(x = state_Var,each = length(event_times)),
-      time = rep(event_times,length(state_Var)),
-      value = rep(x = change_arr,each = length(event_times)),
-      method = rep(x = operation,each = length(event_times))
-
-    )
-    # if inhalation dose is administered
-  }else if(bdosev > 0){
-    # var to change
-    state_Var <- c("odosev","totodosev")
-    
-    # operation of event
-    operation <- c("add","add")
-    # times of event
-    if (brepsv==1){
-      # Value  of change
-      change_val1<- (bdosev*bw*1000/mw)
-      change_val2<- change_val1
-      change_arr <- c(change_val1,change_val2)
-      #only one bolus dose per day
-      if (brepv_flag){
-        event_times <- head(seq(tstart,tstop,24),-1)
-      }else{
-        event_times <- c(tstart)
-      }
-      
-    }else{
-      # Value  of change
-      change_val1<- (bdosev*bw*1000/mw)/totbrepsv
-      change_val2<- change_val1
-      change_arr <- c(change_val1,change_val2)
-      #multiple bolus doses per day
-      if (brepv_flag){
-        event_times <- unlist(lapply(X = 1:totdays,
-                                     FUN = function(x){
-                                       head(seq(0,blenv,1/brepsv),-1)+(24*(x-1))
-                                     }
-        )
-        )
-      }else{
-        #only one day
-        event_times <- unlist(lapply(X = 1,
-                                     FUN = function(x){
-                                       head(seq(0,blenv,1/brepsv),-1)+(24*(x-1))
-                                     }
-        )
-        )
-      }
-      
-    }
-    
-    eventDat <- data.frame(
-      
-      var = rep(x = state_Var,each = length(event_times)),
-      time = rep(event_times,length(state_Var)),
-      value = rep(x = change_arr,each = length(event_times)),
-      method = rep(x = operation,each = length(event_times))
-      
-    )
-    
-  }else if (inhdose >0){
-    # var to change
-    state_var1 <- "inhswch"
-    state_var2 <- "inhswch"
-    # Value  of change
-    change_val1 <- 1
-    change_val2 <- 0
-    # operation of event
-    operation1 <- "rep"
-    operation2 <- "rep"
-    # times of event
-
-    #days on which dosing can occue
-    event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:inhdays,function(y){(x-1)*7+y})}))
-
-    event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
-    event_times1 <- event_times1[event_times1 < tstop]
-    event_times2 <- unlist(lapply(event_days,function(x){inhtlen+24*(x-1)}))
-    event_times2 <- event_times2[event_times2 < tstop]
-    eventDat <- data.frame(
-      var = c(rep(x = state_var1,each = length(event_times1)),rep(x = state_var2,each = length(event_times2))),
-      time = c(event_times1,event_times2),
-      value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
-      method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
-    )
-  }else if (ivdose >0){
-    # var to change
-    state_var1 <- "ivswch"
-    state_var2 <- "ivswch"
-    # Value  of change
-    change_val1 <- 1
-    change_val2 <- 0
-    # operation of event
-    operation1 <- "rep"
-    operation2 <- "rep"
-    # times of event
-
-    #days on which dosing can occue
-    #event_days = unlist(lapply(X=1:7,function(x){lapply(1:inhdays,function(y){(x-1)*7+y})}))
-    event_days <- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
-    event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
-    event_times1 <- event_times1[event_times1 < tstop]
-    event_times2 <- unlist(lapply(event_days,function(x){ivlen+24*(x-1)}))
-    event_times2 <- event_times2[event_times2 < tstop]
-    eventDat <- data.frame(
-      var = c(rep(x = state_var1,each = length(event_times1)),rep(x = state_var2,each = length(event_times2))),
-      time = c(event_times1,event_times2),
-      value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
-      method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
-    )
-  }
-  else if(dermlen >0){
-    # var to change
-    state_var1 <- "drmswch"
-    state_var2 <- "drmswch"
-    # Value  of change
-    change_val1 <- 1
-    change_val2 <- 0
-    # operation of event
-    operation1 <- "rep"
-    operation2 <- "rep"
-    event_days <- 1:totdays
-    #event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
-    # if (derm_flag){
-    #   # times of event
-    #   event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:7,function(y){(x-1)*7+y})}))
-    # }else{
-    #   # times of event
-    #   event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:2,function(y){(x-1)*7+y})}))
-    # }
-    print(dermlen)
-    print(event_days)
-    event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
-    event_times1 <- event_times1[event_times1 < tstop]
-    event_times2 <- unlist(lapply(event_days,function(x){dermlen+24*(x-1)}))
-    event_times2 <- event_times2[event_times2 < tstop]
-    print(event_times1)
-    eventDat <- data.frame(
-      var = c(rep(x = state_var1,each = length(event_times1)),rep(x = state_var2,each = length(event_times2))),
-      time = c(event_times1,event_times2),
-      value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
-      method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
-    )
-    
-  }
+  
 
   times <- seq(tstart,tstop,by=0.1)
-  eventDat <- eventDat[order(eventDat$time),]
+  eventDat <- list("time"= 0)
 
   state <- c(
-    inhswch = 0.0,
-    ainh = 0.0,
-    aexh = 0.0,
-    totodose = 0.0,
-    odose = 0.0,
-    totddose = 0.0,
-    ddose = 0.0,
-    odosev = 0.0,
-    totodosev = 0.0,
-    alas = 0.0,
-    akent = 0.0,
-    afec = 0.0,
-    aabsgut = 0.0,
-    ivswch = 0.0,
-    aiv = 0.0,
-    dermswch = 0.0,
-    aderm = 0.0,
-    adermabs = 0.0,
-    adermevap = 0.0,
-    abld = 0.0,
-    abfat = 0.0,
-    atfat = 0.0,
-    abskin = 0.0,
-    asc = 0.0,
-    ascMgcm2 = 0.0,
-    atskin = 0.0,
-    abmusc = 0.0,
-    atmusc = 0.0,
-    abbone = 0.0,
-    atbone = 0.0,
-    abbrn = 0.0,
-    atbrn = 0.0,
-    ablng = 0.0,
-    atlng = 0.0,
-    abhrt = 0.0,
-    athrt = 0.0,
-    abgi = 0.0,
-    atgi = 0.0,
-    abliv = 0.0,
-    atliv = 0.0,
-    abkdn = 0.0,
-    atkdn = 0.0,
-    abrpf = 0.0,
-    atrpf = 0.0,
-    abspf = 0.0,
-    atspf = 0.0,
-    ametliv1 = 0.0,
-    ametliv2 = 0.0,
-    aclbld = 0.0,
-    auexc = 0.0,
-    anabsgut = 0.0)
+    cfat = 0.0,
+    cliv = 0.0,
+    cspf = 0.0,
+    crpf = 0.0,
+    ckdn = 0.0,
+    cmet = 0.0,
+    ains = 0.0,
+    insswch = 0.0)
 
   initial_values <- list("evnt_data"= eventDat,
                          "initial_params"= initial_params[params_list$names],
@@ -2274,52 +1342,3 @@ calculateInitialValues <- function(params_list){
   return(initial_values)
 }
 
-#Update Volume ratios
-updateVolumes <- function(session, tissue_volumes){
-  input_ids <- c("fat"="ms_vfatc","skin"="ms_vskinc",
-                 "muscle"="ms_vmuscc","bone"="ms_vbonec",
-                 "brain"="ms_vbrnc","lung"="ms_vlngc",
-                 "heart"="ms_vhrtc","gi"="ms_vgic",
-                 "liver"="ms_vlivc","kidney"="ms_vkdnc",
-                 "rpf"="ms_vrpfc","spf"="ms_vspfc","blood"="ms_vbldc",
-                 "bw"="ms_bw")
-  tissue_volumes <- isolate(tissue_volumes)
-  volumes <- tissue_volumes
-  names(volumes)<- lapply(names(tissue_volumes),function(x){input_ids[x]})
-  for(elem in names(volumes)){
-    if(elem!="ms_bw"){
-      volumes[[elem]]<- volumes[[elem]]/(volumes[["ms_bw"]])
-    }
-    updateNumericInput(session, elem, value = signif(volumes[[elem]],4))
-  }
-}
-
-#Update tissues Blood flow ratio
-updateRatios <- function(session, tissue_ratios){
-  tissue_ratios <- isolate(tissue_ratios)
-  input_ids <- c("fat"="ms_qfatc","skin"="ms_qskinc",
-                 "muscle"="ms_qmuscc","bone"="ms_qbonec",
-                 "brain"="ms_qbrnc","lung"="ms_qlngc",
-                 "heart"="ms_qhrtc","gi"="ms_qgic",
-                 "liver_art"="ms_qalivc","liver_ven"="ms_qvlivc",
-                 "kidney"="ms_qkdnc","rpf"="ms_qrpfc","spf"="ms_qspfc",
-                 "qc"="ms_qcc")
-  ratios <- tissue_ratios
-  names(ratios)<- lapply(names(tissue_ratios),function(x){input_ids[x]})
-  for(elem in names(ratios)){
-    if(elem!="ms_qcc"){
-      ratios[[elem]]<- ratios[[elem]]/ratios[["ms_qcc"]]
-    }
-    updateNumericInput(session, elem, value = signif(ratios[[elem]],4))
-  }
-}
-
-
-#Update tissue coefficient when Qsar is being used
-updateCoeffs <- function(session, calculatedCoeff){
-  names(calculatedCoeff) <- paste("ms_", names(calculatedCoeff), sep = "")
-
-  for(elem in names(calculatedCoeff)){
-    updateNumericInput(session, elem, value = calculatedCoeff[[elem]])
-  }
-}

@@ -1,3 +1,2 @@
 *.o
-*plethem.dll
-plethem.dll
+*.dll

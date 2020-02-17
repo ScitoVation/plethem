@@ -30,17 +30,25 @@ newEditVariabilityUI <- function(namespace){
                             "Update list",color = "default")
                )
       ),
-      textOutput(ns("debug_text")),
       tags$div(id = ns("added_ui"),
                fluidRow(
-                 column(4,
-                        tags$h4("Parameter Name")
-                        ),
                  column(3,
-                        tags$h4("Coefficient of Variation")
+                        tags$h5("Parameter Name")
                         ),
-                 column(3,
-                        tags$h4("Type of Distribution")
+                 column(2,
+                        tags$h5("Coefficient of Variation")
+                        ),
+                 column(2,
+                        tags$h5("Type of Distribution")
+                        ),
+                 column(1,
+                        tags$h5("Use Limits")
+                        ),
+                 column(2,
+                        tags$h5("Upper Limit")
+                        ),
+                 column(2,
+                        tags$h5("Lower Limit")
                         )
                ))
     ),
@@ -86,23 +94,34 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
       name <- var_data$Name[x]
       cv <-var_data$CV[x]
       type <- type_name2var[[var_data$Type[x]]]
-      print(type)
+      ubound <- var_data$LowerBound[x] # change this to reflect data saved in table
+      lbound <- var_data$UpperBound[x] # change this to reflect data saved in table
+      bflag <- var_data$BFlag[x]
       insertUI(selector = div_id,
                ui = tagList(
                  tags$div(id = ns(paste0("div_",param)),
                           fluidRow(
-                            column(4,
+                            column(3,
                                    name
                             ),
-                            column(3,
-                                   numericInput(ns(paste0("cv_",param)),label = NULL,value = as.numeric(cv))
+                            column(2,
+                                   numericInput(ns(paste0("cv_",param)),label = NULL,min = 0,max = 1,step = 0.01,value = as.numeric(cv))
                             ),
-                            column(3,
+                            column(2,
                                    selectInput(ns(paste0("type_",param)),label = NULL,selected = as.character(type),
                                                choices = c("Normal"="norm",
-                                                           "Log-normal"="lnorm",
-                                                           "Unifrom"= "uform"))
-                            )
+                                                           "Log-normal"="lnorm"))#,
+                                                           #"Unifrom"= "uform"))
+                            ),
+                            column(1,
+                                   checkboxInput(ns(paste0("bflag_",param)),label = NULL,value = as.logical(bflag))
+                                   ),
+                            column(2,
+                                   numericInput(ns(paste0("ubound_",param)),label = NULL, 
+                                                step = 0.1,value = as.numeric(ubound))),
+                            column(2,
+                                   numericInput(ns(paste0("lbound_",param)),label = NULL, 
+                                                step = 0.1,value = as.numeric(lbound)))
                           )
                  )
                )
@@ -123,15 +142,14 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
     updatePickerInput(session,"param_names",choices = var_params_list)
   }
   
-  output$debug_text <- renderText({input$param_names})
   
   observeEvent(input$update,{
     current_list <- data4module$current_list
-    print(current_list)
+    #print(current_list)
     add_list <- setdiff(input$param_names,current_list)
-    print(add_list)
+    #print(add_list)
     remove_list <- setdiff(current_list,input$param_names)
-    print(remove_list)
+    #print(remove_list)
     # if new elements are selected, add UI
     if(length(add_list) != 0){
       for(x in add_list){
@@ -139,19 +157,29 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
                  ui = tagList(
                    tags$div(id = ns(paste0("div_",x)),
                             fluidRow(
-                              column(4,
+                              column(3,
                                      param_names[which(var_params_list == x)]
                                      ),
-                              column(3,
-                                     numericInput(ns(paste0("cv_",x)),label = NULL,value = 0)
-                                     ),
-                              column(3,
-                                     selectInput(ns(paste0("type_",x)),label = NULL,
+                              column(2,
+                                     numericInput(ns(paste0("cv_",x)),label = NULL,min = 0,max = 1,step = 0.01,value = 0)
+                              ),
+                              column(2,
+                                     selectInput(ns(paste0("type_",x)),label = NULL,selected = "norm",
                                                  choices = c("Normal"="norm",
-                                                             "Log-normal"="lnorm",
-                                                             "Uniform","uform"))
-                                     )
-                   )
+                                                             "Log-normal"="lnorm"))#,
+                                     #"Unifrom"= "uform"))
+                              ),
+                              column(1,
+                                     checkboxInput(ns(paste0("bflag_",x)),label = NULL,value = F)
+                              ),
+                              column(2,
+                                     numericInput(ns(paste0("ubound_",x)),label = NULL, 
+                                                  step = 0.1,value = 0)),
+                              column(2,
+                                     numericInput(ns(paste0("lbound_",x)),label = NULL, 
+                                                  step = 0.1,value = 0))
+                            )
+                   
                    )
                  )
                  )
@@ -177,9 +205,16 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
     save_names <- unlist(param_names[which(var_params_list %in% save_vars)])
     cvs <- unlist(input_list[paste0("cv_",save_vars)])
     types <- unlist(lapply(input_list[paste0("type_",save_vars)],function(x){type_var2name[[x]]}))
+    bound_flags <- unlist(lapply(input_list[paste0("bflag_",save_vars)],
+                                function(x){as.character(x)}))
+    ubounds <- unlist(input_list[paste0("ubound_",save_vars)])
+    lbounds <- unlist(input_list[paste0("lbound_",save_vars)])
     var_tble <- data.frame("Name"=save_names,
                            "Parameter"=save_vars,
                            "CV" = cvs,"Type" = types,
+                           "BFlag"=bound_flags,
+                           "UpperBound"=ubounds,
+                           "LowerBound"=lbounds,
                            stringsAsFactors = F)
     var_tble_serialized<- rawToChar(serialize(var_tble,NULL,T))
     name <- input$name
@@ -188,7 +223,7 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
       query <-sprintf("Insert Into Variability (varid,name,descrp,type,var_tble) Values (%d,'%s','%s','%s','%s');",
                       set_id,name,descrp,set_type,var_tble_serialized)
     }else{
-      print("Update is query")
+     
       query <- sprintf("Update Variability Set name = '%s', descrp = '%s',type = '%s',var_tble = '%s' Where varid = %d;",
                        name,descrp,set_type,var_tble_serialized,as.integer(set_id))
     }

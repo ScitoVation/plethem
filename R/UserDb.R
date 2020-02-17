@@ -10,8 +10,9 @@
 setUserDb<- function(path = NULL){
   filters <- matrix(c("SQLite DB",".sqlite"),1,2,byrow = T)
   if (is.null(path)){
-    userDbPath <- tcltk::tk_choose.files(caption = "Select User database",multi = F,
-                                         filters = filters)
+    userDbPath <- getFileFolderPath(type="file",
+                      caption = "Select user database",
+                      c("SQLite DB","*.sqlite"))
   }else{
     userDbPath <- path
   }
@@ -28,13 +29,13 @@ setUserDb<- function(path = NULL){
 #' @param path path to where the user database needs to be stored. Make sure you have write permission to this folder. If no path is provided, it launches a folder select dialog.
 #' @examples
 #' \dontrun{
-#' createUserDb(),
-#' createUserDb("C:/Users/Documents/")
+#' createEmptyUserDb(),
+#' createEmptyUserDb("C:/Users/Documents/")
 #' }
 #' @export
-createUserDb <- function(path = NULL){
+createEmptyUserDb <- function(path = NULL){
   if(is.null(path)){
-    userDbPath <- tcltk::tk_choose.dir(caption = "Create a new database")
+    userDbPath <- getFileFolderPath(type = "dir",caption = "Create a new database")
   }else{
     userDbPath <- path
   }

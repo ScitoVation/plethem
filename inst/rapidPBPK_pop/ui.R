@@ -36,8 +36,10 @@ expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   tags$div(actionButton("clear_expo","Reset exposures")),
   menuItem("Oral", tabName = "oral", selected = TRUE),
   menuItem("Drinking Water", tabName = "dw"),
+  menuItem("Oral exposure with vehicle",tabName = "oralv"),
   menuItem("Inhalation", tabName = "inh"),
-  menuItem("Intravenous", tabName = "iv")
+  menuItem("Intravenous", tabName = "iv"),
+  menuItem("Dermal",tabName = "dermal")
 ))
 
 ################################compartment sidebar
@@ -170,12 +172,12 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
 ###############################Chemical Sidebar
 chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="chem_sidebar",
-  selectizeInput("qsarModelChem", "Select A QSAR Model",
-                          choices = c("QSAR model one" = 'one',
-                                      "QSAR model two" = 'two'),
+  pickerInput("qsarModelChem", "Select A QSAR Model",
+                          choices = c("QSAR model one" = 'one'),
+                                      #"Unified QSAR model" = 'two'),
                           width = "99%"),
-  shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary"),
-  shinyBS::bsButton("btn_ivive_chem","Perform IVIVE",style = "primary")
+  shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary")
+  
 )
   #actionButton("newChem", "Modify Chemical DB"),
   #selectizeInput("selectedChem", "Select a chemical", choices = getAllMainChemicals(), width = validateCssUnit("99%")),
@@ -287,8 +289,8 @@ plot_body <- fluidPage(
                                                                                                  "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf"
                                                                               )
 
-                                                           ),
-                                                selectizeInput("aplt_data",tags$h4("Select Data Sets"),choices = c("a","b","c"))
+                                                           )
+                                                #selectizeInput("aplt_data",tags$h4("Select Data Sets"),choices = c("a","b","c"))
 
                                               )
                                        ),
@@ -297,7 +299,7 @@ plot_body <- fluidPage(
                                                      tabPanel("Plot",
                                                               fluidRow(
                                                                 tags$h5(class="text-center",
-                                                                        radioButtons("r_aplt_type",label = "Concentration Units",inline = TRUE,
+                                                                        radioButtons("r_aplt_type",label = "Amount Units",inline = TRUE,
                                                                                      choices = c("mg"="mg","\u00B5moles"="um"))
                                                                 )
                                                               ),
@@ -400,13 +402,11 @@ comp_body <- dashboardBody(
 
       ),
       fluidRow(
-        column(4,
+        column(6,
                numericInput("ms_vbldc","Fractional Blood Compartment Volume",0.0832,0.01,1,0.01)),
-        column(4,
+        column(6,
                numericInput("ms_perfc","Total Fractional Perfused Tissue",1,0.75,0.95,0.01)
-               ),
-        column(4,
-               numericInput("ms_kbld","First Order Metabolism in Blood",0,0.75,0.95,0.01))
+               )
       ),
       fluidRow(
         column(4,
@@ -417,30 +417,18 @@ comp_body <- dashboardBody(
                numericInput("ms_ds","Dead Space (L)",min =0 , max =10, value =0.154))
       ),
       fluidRow(
-        column(4,
+        column(6,
                numericInput("ms_uflw","Urinary Flow Rate (L/kg/day)",min =0 , max =1, value =0.0214)),
-        column(4,
+        column(6,
                numericInput("ms_gfr","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
-               ),
-          column(4,
-                 numericInput("ms_pair", label = "Plasma-Air Partition Coefficient", value = 1,
-                              min = 0)
-          )
+               )
         
-      ),
-      fluidRow(
-        column(6,
-               numericInput("ms_fa","Fraction Absorbed in the Gut Lumen",1)),
-        column(6,
-               numericInput("ms_ka",label = "Rate of Absorption in Gut Lumen (per hour)", value = 5, step = 0.01))
       )
     ),
 
     tabItem(
       tabName = "fat_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pafat","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_fatvtbc","Fat Tissue to Total Fat Volume Ratio",0.95,0,1,0.01))
       )
@@ -452,16 +440,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vfatc","Volume Ratio",min =0, max = 1, value =0.1841, step = 0.01)),
         column(6,
                numericInput("ms_qfatc","Blood Flow Ratio",min =0 , max =1, value =0.08226))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pfat","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "skin_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_paskin","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_skinvtbc","Skin Tissue to Total Skin Volume Ratio",0.95,0,1,0.01))
       )
@@ -473,16 +456,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vskinc","Volume Ratio",min =0, max = 1, value =0.0553, step = 0.01)),
         column(6,
                numericInput("ms_qskinc","Blood Flow Ratio",min =0 , max =1, value =0.06783))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pskin","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "muscle_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pamusc","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_muscvtbc","Muscle Tissue to Total Muscle Volume Ratio",0.95,0,1,0.01))
       )
@@ -494,16 +472,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vmuscc","Volume Ratio",min =0, max = 1, value =0.4576, step = 0.01)),
         column(6,
                numericInput("ms_qmuscc","Blood Flow Ratio",min =0 , max =1, value =0.13711))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pmusc","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "bone_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pabone","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_bonevtbc","Bone Tissue to Total Bone Volume Ratio",0.95,0,1,0.01))
       )
@@ -515,16 +488,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vbonec","Volume Ratio",min =0, max = 1, value =0.1318, step = 0.01)),
         column(6,
                numericInput("ms_qbonec","Blood Flow Ratio",min =0 , max =1, value =0.1266))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pbone","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "brain_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pabrn","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_brnvtbc","Brain Tissue to Total Brain Volume Ratio",0.95,0,1,0.01))
       )
@@ -536,16 +504,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vbrnc","Volume Ratio",min =0, max = 1, value =0.0192, step = 0.01)),
         column(6,
                numericInput("ms_qbrnc","Blood Flow Ratio",min =0 , max =1, value =0.098))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pbrn","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "lung_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_palng","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_lngvtbc","Lung Tissue to Total Lung Volume Ratio",0.95,0,1,0.01))
       )
@@ -557,16 +520,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vlngc","Volume Ratio",min =0, max = 1, value =0.0144, step = 0.01)),
         column(6,
                numericInput("ms_qlngc","Blood Flow Ratio",min =0 , max =1, value =0.0234))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_plng","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "heart_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pahrt","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_hrtvtbc","Heart Tissue to Total Heart Volume Ratio",0.95,0,1,0.01))
       )
@@ -578,16 +536,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vhrtc","Volume Ratio",min =0, max = 1, value =0.0051, step = 0.01)),
         column(6,
                numericInput("ms_qhrtc","Blood Flow Ratio",min =0 , max =1, value =0.10536))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_phrt","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "gi_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pagi","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_givtbc","GI Tissue to Total GI Volume Ratio",0.95,0,1,0.01))
       )
@@ -599,17 +552,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vgic","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
         column(6,
                numericInput("ms_qgic","Blood Flow Ratio",min =0 , max =1, value =0.1139))
-      ),
-
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pgi","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "liver_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_paliv","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_livvtbc","Liver Tissue to Total Liver Volume Ratio",0.95,0,1,0.01))
       )
@@ -626,17 +573,11 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_qvlivc","Fraction of Venous Liver Flow",min =0 , max =1, value =0.152))
 
-      ),
-
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pliv","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "kidney_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_pakdn","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_kdnvtbc","Kidney Tissue to Total Kidney Volume Ratio",0.95,0,1,0.01))
       )
@@ -648,16 +589,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vkdnc","Volume Ratio",min =0, max = 1, value =0.0046, step = 0.01)),
         column(6,
                numericInput("ms_qkdnc","Blood Flow Ratio",min =0 , max =1, value =0.16886))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pkdn","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "rpf_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_parpf","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_rpfvtbc","Rapidly Perfused Tissue to All Rapidly Perfused Volume Ratio",0.95,0,1,0.01))
       )
@@ -669,16 +605,11 @@ comp_body <- dashboardBody(
                numericInput("ms_vrpfc","Volume Ratio",min =0, max = 1, value =0.00001, step = 0.01)),
         column(6,
                numericInput("ms_qrpfc","Blood Flow Ratio",min =0 , max =1, value =0))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_prpf","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     ),
     tabItem(
       tabName = "spf_tissue",
       fluidRow(
-        column(6,
-               numericInput("ms_paspf","Pearmeability Area Coefficient",1000,1,1000,1)),
         column(6,
                numericInput("ms_spfvtbc","Slowly Perfused Tissue to All Slowly Perfused Volume Ratio",0.95,0,1,0.01))
       )
@@ -690,10 +621,7 @@ comp_body <- dashboardBody(
                numericInput("ms_vspfc","Volume Ratio",min =0, max = 1, value =0.00001, step = 0.01)),
         column(6,
                numericInput("ms_qspfc","Blood Flow Ratio",min =0 , max =1, value =0))
-      ),
-      fluidRow(class="",
-               column(6,
-                      numericInput("ms_pspf","Partition Coefficient",0.5,0,2, 0.01)))
+      )
     )
   )
 )
@@ -727,15 +655,6 @@ chem_body <- dashboardBody(
                      numericInput("ms_fupls", label = "Fraction Unbound in Palsma", value = 1, 0, 1, 0.001))
             ),
             fluidRow(
-              column(6,
-                     numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)),
-              column(6,
-                     numericInput("ms_km","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01))
-            ),
-            fluidRow(
-              column(6,
-                     numericInput("ms_vkm1c", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
-                     ),
               column(6,
                      numericInput("ms_frwsol", label = "Fraction dissolved in water", value = 1,
                                   min=0,max = 1,step = 0.01)
@@ -780,6 +699,23 @@ expo_body <- dashboardBody(
             )
     ),
     tabItem(
+      tabName = "oralv",
+      fluidRow(
+        column(6,
+               numericInput("ms_bdosev",label="Daily Oral Dose (mg/kg BW)", value =0, step= 0.01)),
+        column(6,
+               numericInput("ms_blenv",label = "Total length of dosing (h/day)", value = 1, step = 0.1))
+      ),
+      fluidRow(
+        column(6,
+               numericInput("ms_brepsv","Number of Bolus Doses",0,0,100, 1)),
+        column(6,
+               awesomeCheckbox("ms_brepv_flag","Repeat Dose Daily?",value = F))
+      )
+      
+      
+    ),
+    tabItem(
       tabName = "inh",
       fluidRow(
         column(4,
@@ -803,9 +739,28 @@ expo_body <- dashboardBody(
         column(6,
                awesomeCheckbox("ms_ivrep_flag","Repeat Dose Daily?",value = F))
       )
-    )
+    ),
+    tabItem(
+      tabName = "dermal",
+      fluidRow(
+        column(6,
+               numericInput("ms_dermrate","Dermal deposition rate (mg/cm2/h)",0,step = 0.1)),
+        column(6,
+               numericInput("ms_skarea","Skin Area (cm2)",0,step = 0.1))
+        ),
+      fluidRow(
+        column(6, 
+               numericInput("ms_dermlen","Length of dermal dosing (h)",0.1,step=0.01)),
+        column(6,
+               awesomeCheckbox("ms_dermrep_flag","Repeat Dose Daily?",value = F))
+      )
+        
+      )
+    
+    
   )
 )
+
 
 #################Shiny UI
 shinyUI(fluidPage(
@@ -831,7 +786,7 @@ shinyUI(fluidPage(
                         progressBar(id = "pb",value = 0, status = "success",striped = T)
                       ),
                       tabsetPanel(id= "modelSetupTabs", type = "tabs",
-                                  tabPanel("Exposure",
+                                  tabPanel("Exposure",value = "expo",
                                            fluidPage(
                                              bsModal("modalExpoSave",title = NULL,trigger = "btn_save_expo",
 
@@ -846,20 +801,6 @@ shinyUI(fluidPage(
                                                       div(style = "height:15px")
                                                )
                                              ),
-                                             # fluidRow(
-                                             #   column(2,
-                                             #          shinyBS::bsButton("btn_seem_upload",
-                                             #                            "Import From SEEM Data",
-                                             #                            block = T)),
-                                             #   column(2,
-                                             #          shinyBS::bsButton("btn_sheds_upload",
-                                             #                            "Import SHEDS-HT results",
-                                             #                            block = T)),
-                                             #   column(2,
-                                             #          shinyBS::bsButton("btn_batch_upload",
-                                             #                            "Import batch exposure file",
-                                             #                            block = T))
-                                             # ),
 
                                              fluidRow(
                                                column(12,
@@ -898,7 +839,7 @@ shinyUI(fluidPage(
                                   ),
 
 
-                                  tabPanel("Chemical",
+                                  tabPanel("Chemical",value = "chem",
                                            fluidPage(
 
 
@@ -939,7 +880,7 @@ shinyUI(fluidPage(
                                   ),
 
 
-                                  tabPanel("Physiological",
+                                  tabPanel("Physiological",value= "physio",
 
 
                                            fluidPage(
@@ -974,24 +915,15 @@ shinyUI(fluidPage(
                                                                       "Use Lifecourse Equation to calcualte parameters")
                                                ),
                                                column(4,
-                                                      shinyBS::tipify(selectizeInput("sel_qsar4Partition", NULL,
-                                                                     choices = c("QSAR model one" = 'one',
-                                                                                 "QSAR model two" = 'two')
-                                                                     ),
-                                                                     "Select QSAR model for partition coefficients")
-                                                      ),
-                                               column(4,
                                                       shinyBS::tipify(selectizeInput("sel_chem4Partition",NULL,
                                                                      choices ="No Chemical Added"
                                                                      ),
                                                                      "Select Chemical for qsar model")
-                                                      ),
-                                               column(2,
-                                                      shinyBS::bsButton("btn_useQSAR4Partition",
-                                                                        "Calculate Partition",style = "primary",
-                                                                        block = TRUE)
                                                       )
 
+                                             ),
+                                             fluidRow(
+                                               shinyBS::bsAlert("physio_header_alert")
                                              ),
                                              fluidRow(
                                                column(12,
@@ -1009,17 +941,350 @@ shinyUI(fluidPage(
 
 
                                   ),
-                                  tabPanel("Uncertanity and Variability",
+                                  tabPanel("ADME",value = "adme",
+                                           fluidPage(
+                                             fluidRow(
+                                               column(12,
+                                                      div(style = "height:10px")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(width = 7, offset = 0,
+                                                      selectizeInput("sel_adme",NULL,
+                                                                     choices = NULL,
+                                                                     options= list(placeholder = "ADME",
+                                                                                   openOnFocus = T))),
+                                               column(width = 5, offset = 0,
+                                                      shinyWidgets::actionGroupButtons(
+                                                        c("btn_sverest_adme","btn_saveas_adme"),
+                                                        c("Save/Restore","Save As"),
+                                                        direction = "horizontal",
+                                                        status = "info",
+                                                        fullwidth = T
+                                                        
+                                                      ))
+                                             ),
+                                             fluidRow(
+                                               column(12,
+                                                      div(style = "height:10px")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(4,
+                                                      selectizeInput("sel_expo4adme",choices= NULL,label= NULL,
+                                                                     options = list(placeholder = "Select Exposure"))
+                                                      ),
+                                               column(4,
+                                                      selectizeInput("sel_chem4adme",choices = NULL,label = NULL,
+                                                                     options = list(placeholder = "Select Chemical"))
+                                               ),
+                                               column(4,
+                                                      selectizeInput("sel_physio4adme",choices=NULL,label = NULL,
+                                                                     options = list(placeholder = "Select Physiology"))
+                                                      )
+                                             ),
+                                             fluidRow(
+                                               column(12,
+                                                      div(style = "height:15px")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               tabsetPanel(id = "adme_tabs",type = "pills",
+                                                           tabPanel("Absorption",
+                                                                    fluidPage(
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:5px")
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               numericInput("ms_fa","Fraction absorbed in Gut Lumen",
+                                                                                            value = 1, min = 0, max = 1)
+                                                                               ),
+                                                                        column(4,
+                                                                               numericInput("ms_ka","Rate of Absorption in Gut Lumen(per h)",
+                                                                                            value = 5,min = 0)),
+                                                                        column(4,
+                                                                               numericInput("ms_kVtoL","Tranfer Rate from vehicle to gut lumen (per h)",
+                                                                                            value = 1, min = 0)
+                                                                               )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               numericInput("ms_KPtot","Total Stratum Corneum permeation coefficient (cm^2\\h)",
+                                                                                            value = 1000,min = 0)),
+                                                                        column(4,
+                                                                               numericInput("ms_maxcap","Maximum capacity of the startum corneum (mg\\cm^2)",
+                                                                                            value = 1000, min =0)),
+                                                                        column(4,
+                                                                               numericInput("ms_Kevap","Evaporation Rate from Stratum Corneum",
+                                                                                            value = 1000,min = 0))
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               numericInput("ms_pair","Plasma-air Partition Coefficient",value = 0,min = 0))
+                                                                      )
+                                                                    )
+                                                                    ),
+                                                           tabPanel("Distribution",
+                                                                    fluidPage(
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:5px")
+                                                                               )
+                                                                        ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               shinyBS::tipify(
+                                                                                 pickerInput("sel_qsar4Partition", NULL,
+                                                                                             choices = c("QSAR model one" = 'one',
+                                                                                                         "Unified QSAR model" = 'two')
+                                                                                             ),
+                                                                                 "Select QSAR model for partition coefficients")
+                                                                               ),
+                                                                        column(2,
+                                                                               shinyBS::bsButton("btn_useQSAR4Partition",
+                                                                                                 "Calculate Partition",style = "primary",
+                                                                                                 block = TRUE)
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:5px")
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        dashboardPage(dashboardHeader(disable = T),
+                                                                                      dashboardSidebar(sidebarMenu(id = "dist_comps",
+                                                                                                    menuItem("Fat",
+                                                                                                             tabName = "fat",selected = T),
+                                                                                                    menuItem("Skin",
+                                                                                                             tabName = "skn"),
+                                                                                                    menuItem("Muscle",
+                                                                                                             tabName = "msc"),
+                                                                                                    menuItem("Bone",
+                                                                                                             tabName = "bne"),
+                                                                                                    menuItem("Lung",
+                                                                                                             tabName = "lng"),
+                                                                                                    menuItem("Heart",
+                                                                                                             tabName = "hrt"),
+                                                                                                    menuItem("GI",
+                                                                                                             tabName = "gi"),
+                                                                                                    menuItem("Liver",
+                                                                                                             tabName = "liv"),
+                                                                                                    menuItem("Kidney",
+                                                                                                             tabName = "kdn"),
+                                                                                                    menuItem("Rapidly Perfused Tissue",
+                                                                                                             tabName = "rpf"),
+                                                                                                    menuItem("Slowly Perfused Tissue",
+                                                                                                             tabName = "spf")
+                                                                                                    )
+                                                                                          
+                                                                                      ),
+                                                                                      dashboardBody(tabItems(
+                                                                                        tabItem(tabName = "fat",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pfat",label = "Fat Partition Coefficient",value = 0.5)
+                                                                                                         ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pafat",label = "Fat Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "skn",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pskin",label = "Skin Partition Coefficient",value = 0.5)
+                                                                                                         ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_paskin",label = "Skin Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                
+                                                                                                ),
+                                                                                        tabItem(tabName = "msc",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pmusc",label = "Muscle Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pamusc",label = "Muscle Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "bne",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pbone",label = "Bone Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pabone",label = "Bone Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "brn",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pbrn",label = "Brain Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pabrn",label = "Brain Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "lng",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_plng",label = "Lung Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_palng",label = "Lung Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "hrt",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_phrt",label = "Heart Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pahrt",label = "HeartPermeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "gi",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pgi",label = "GI Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pagi",label = "GI Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "liv",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pliv",label = "Liver Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_paliv",label = "Liver Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "kdn",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pkdn",label = "Kidney Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pakdn",label = "Kidney Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "rpf",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_prpf",label = "RPF Tissue Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_parpf",label = "SPF Tissue Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                ),
+                                                                                        tabItem(tabName = "spf",
+                                                                                                fluidRow(
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_pspf",label = "SPF Tissue Partition Coefficient",value = 0.5)
+                                                                                                  ),
+                                                                                                  column(6,
+                                                                                                         numericInput("ms_paspf",label = "SPF Tissue Permeability Coefficient",value = 1000))
+                                                                                                )
+                                                                                                )
+                                                                                      )),skin = "green"
+                                                                        )
+                                                                        ),
+                                                                      fluidRow(
+                                                                        tags$hr(style = "border: 1px dashed black;")
+                                                                      )
+                                                                    )),
+                                                           tabPanel("Metabolism",
+                                                                    fluidPage(
+                                                                      fluidRow(
+                                                                        column(12,
+                                                                               div(style = "height:10px")
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               bsButton("btn_metab_upload",
+                                                                                        "Upload age-based metabolism data",
+                                                                                        block = T)
+                                                                        ),
+                                                                        column(6,
+                                                                               selectizeInput("sel_metabfiles",choices = NULL,label = NULL)
+                                                                               ),
+                                                                        column(2,
+                                                                               actionBttn("btn_use_age","Apply data"))
+                                                                      ),
+                                                                      fluidRow(
+                                                                        tags$hr(style = "border: 1px dashed black;")
+                                                                      ),
+                                                                      
+                                                                      fluidRow(
+                                                                        
+                                                                        column(6,
+                                                                               numericInput("ms_km","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01)
+                                                                        ),
+                                                                        column(6,
+                                                                               shinyBS::bsButton("btn_ivive_chem",
+                                                                                                 "Perform IVIVE",block = F)
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(6,
+                                                                               numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
+                                                                        ),
+                                                                        column(6,
+                                                                               numericInput("ms_vkm1c", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        tags$hr(style = "border: 1px dashed black;")
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(6,
+                                                                               numericInput("ms_kent",label = "Rate of metabolism in the gut lumen", value = 5, step = 0.01)
+                                                                        )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        tags$hr(style = "border: 1px dashed black;")
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(6,
+                                                                               numericInput("ms_kbld","First Order Metabolism in Blood",0,0.75,0.95,0.01)
+                                                                        )
+                                                                      )
+                                                                    )),
+                                                           tabPanel("Excretion",
+                                                                    fluidPage(
+                                                                      fluidRow(
+                                                                        column(4,
+                                                                               numericInput("ms_kfec","Rate of Fecal Excretion",value = 0, min = 0))
+                                                                      )
+                                                                    ))
+                                             )
+                                             )
+                                           )
+                                           
+                                           ),
+                                  tabPanel("Uncertanity and Variability", value = "variability",
                                            dashboardPage(
                                              dashboardHeader(disable = T),
                                              dashboardSidebar(
                                                shinydashboard::sidebarMenu(
+                                                 menuItem("Chemical",
+                                                          tabName = "var_chem",selected = T),
+                                                 menuItem("Exposure",
+                                                          tabName = "var_expo"),
                                                  menuItem("Physiological",
                                                           tabName = "var_physio"),
-                                                 menuItem("Chemical",
-                                                          tabName = "var_chem"),
-                                                 menuItem("Exposure",
-                                                          tabName = "var_expo")
+                                                 menuItem("ADME",
+                                                          tabName = "var_adme")
+                                            
+                                                 
+                                                 
                                                )
                                              ),
                                              dashboardBody(tabItems(
@@ -1050,7 +1315,7 @@ shinyUI(fluidPage(
                                                          column(width = 4, offset = 0,
                                                                 selectizeInput("sel_chem_var",NULL,
                                                                                choices = NULL,
-                                                                               options= list(placeholder = "Metabolism Parameter Set",
+                                                                               options= list(placeholder = "Chemical Parameter Set",
                                                                                              openOnFocus = T))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
@@ -1063,7 +1328,7 @@ shinyUI(fluidPage(
                                                        ),
                                                        fluidRow(
                                                          column(8, offset = 2,
-                                                                tableOutput("chem_var_tble"))
+                                                                DT::DTOutput("chem_var_tble"))
                                                        )
                                                        ),
                                                tabItem(tabName = "var_expo",
@@ -1084,129 +1349,34 @@ shinyUI(fluidPage(
                                                        ),
                                                        fluidRow(
                                                          column(8, offset = 2,
-                                                                tableOutput("expo_var_tble"))
+                                                                DT::DTOutput("expo_var_tble"))
+                                                       )
+                                               ),
+                                               tabItem(tabName = "var_adme",
+                                                       fluidRow(
+                                                         column(width = 4, offset = 0,
+                                                                selectizeInput("sel_adme_var",NULL,
+                                                                               choices = NULL,
+                                                                               options= list(placeholder = "ADME Parameter Set",
+                                                                                             openOnFocus = T))),
+                                                         column(width = 8, offset = 0,
+                                                                shinyWidgets::actionGroupButtons(
+                                                                  c("btn_new_varadme","btn_edit_varadme","btn_import_varadme"),
+                                                                  c("New","Edit","Import"),
+                                                                  direction = "horizontal",
+                                                                  status = "info",
+                                                                  fullwidth = T)
+                                                         )
+                                                       ),
+                                                       fluidRow(
+                                                         column(8, offset = 2,
+                                                                DT::DTOutput("adme_var_tble"))
                                                        )
                                                )
                                                )
                                                )
                                            )
-                                           # fluidPage(
-                                           #   
-                                           #   fluidRow(
-                                           #     column(12,
-                                           #            div(style = "height:15px")
-                                           #     )
-                                           #   ),
-                                           #   fluidRow(tags$h5("Physiology")),
-                                           #   fluidRow(
-                                           #     column(width = 9, offset = 0,
-                                           #            selectizeInput("sel_mc_physio",NULL,
-                                           #                           choices = NULL,
-                                           #                           options= list(placeholder = "Population Parameter Set",
-                                           #                                         openOnFocus = T))),
-                                           #     column(width = 3, offset = 0,
-                                           #            shinyWidgets::actionGroupButtons(
-                                           #              c("btn_import_pop","btn_sverest_pop","btn_saveas_pop"),
-                                           #              c("Import","Save/Restore","Save As"),
-                                           #              direction = "horizontal",
-                                           #              status = "info",
-                                           #              fullwidth = T
-                                           #              
-                                           #            ))
-                                           #   ),
-                                           #   fluidRow(
-                                           #     pickerInput("param_names",label = "Select Parameters to assign variability",
-                                           #                 choices = NULL,multiple = T,
-                                           #                 options = list('selected-text-format' = "count > 3"))
-                                           #     
-                                           #   )
-                                           #   
-                                           # 
-                                           #   
-                                           # )
                                            ),
-                                  tabPanel("Metabolism",
-
-                                           fluidPage(
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
-                                               )
-                                             ),
-                                             fluidRow(
-
-                                               column(2,
-                                                      bsButton("btn_metab_upload",
-                                                               "Upload Metabolism Files",
-
-                                                               block = T)
-                                                      )
-                                             ),
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
-                                               )
-                                             ),
-                                             fluidRow(
-                                               column(width = 7, offset = 0,
-                                                      selectizeInput("sel_metab",NULL,
-                                                                     choices = NULL,
-                                                                     options= list(placeholder = "Metabolism Parameter Set",
-                                                                                   openOnFocus = T))),
-                                               column(width = 5, offset = 0,
-                                                      shinyWidgets::actionGroupButtons(
-                                                        c("btn_sve_metab","btn_saveas_metab"),
-                                                        c("Save","Save As"),
-                                                        direction = "horizontal",
-                                                        status = "info",
-                                                        fullwidth = T
-
-                                                      ))
-                                             ),
-                                             fluidRow(
-                                               column(12,
-                                                      div(style = "height:10px")
-                                               )
-                                             ),
-                                             # fluidRow(
-                                             #   column(width = 3,
-                                             #          fileInput("metab_csv","Upload Metabolism Data")),
-                                             #   column(width = 3,
-                                             #          downloadLink("metab_template","Template for metabolism file"))
-                                             #   ),
-                                             # fluidRow(
-                                             #   column(width = 4,
-                                             #          textInput("metab_set_name","Name",
-                                             #                    placeholder = "Enter the name for this metabolism set")),
-                                             #   column(width = 8,
-                                             #          textAreaInput("metab_set_descrp","Description",
-                                             #                        resize = "none" ,row = 1))
-                                             #
-                                             # ),
-                                             # fluidRow(column(width = 6,
-                                             #                 shinyWidgets::radioGroupButtons("metab_type",justified = T,
-                                             #                                                 "Select Meatbolism Type",
-                                             #                                                 choices = c("VmaxC"="m1","VlivC"="m2"))
-                                             #                 )
-                                             #
-                                             #
-                                             #
-                                             #  ),
-                                             # fluidRow(column(width = 4,
-                                             #                 shinyWidgets::awesomeCheckbox("use_ref",
-                                             #                                               "Use clearance at reference age for ages not in the metabolism table",
-                                             #                                               value = T)
-                                             #                 ),
-                                             #          column(width = 4,
-                                             #                 numericInput("metab_ref_age","Referance age in Years",value = 25, min = 0))
-                                             # ),
-                                             fluidRow(column(width = 6, offset = 3,
-                                                             DT::DTOutput("metab_tble")))
-
-
-                                           )
-
-                                          ),
                                   tabPanel("Simulations",
                                            fluidPage(
                                              # fluidRow(tags$h4("")),
@@ -1256,7 +1426,15 @@ shinyUI(fluidPage(
                                                                    selectizeInput("sel_set_physiovar","Select Variability",choices = NULL)
                                                             )
                                                           ),
-                                                          selectizeInput("sel_set_metab","Select Metabolism",choice = NULL),
+                                                          fluidRow(
+                                                            column(6,
+                                                                   selectizeInput("sel_set_adme","Select ADME",choices = NULL)
+                                                                   ),
+                                                            column(6,
+                                                                   selectizeInput("sel_set_admevar","Select Variability",choices = NULL)
+                                                                   )
+                                                          ),
+                                                          
                                                           fluidRow(
                                                             column(4,
                                                                    numericInput("sim_start","Simulation Start Time (h)",0)
@@ -1265,10 +1443,10 @@ shinyUI(fluidPage(
                                                                    numericInput("sim_dur","Simulation Duration (h)",0)
                                                                    ),
                                                             column(4,
-                                                                   numericInput("mc_num","Number of Montecarlo Runs",1000)
+                                                                   numericInput("mc_num","Number of Montecarlo Runs",0)
                                                                    )
                                                           ),
-                                                          checkboxInput("mc_mode","Run Monte Carlo Simulation",T),
+                                                          checkboxInput("mc_mode","Run Monte Carlo Simulation",F),
                                                           shinyWidgets::actionBttn("save_sim",NULL,
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")
@@ -1389,7 +1567,7 @@ shinyUI(fluidPage(
                                              fluidRow(
                                                       box(title = "Exposure Parameters",width = 4,
                                                           DT::DTOutput("expo_params_tble")),
-                                                      box(title = "All Parameters",width = 4,
+                                                      box(title = "Chemical Specific Parameters",width = 4,
                                                           DT::DTOutput("chem_params_tble")),
                                                       box(title = "Physiological Parameters",width = 4,
                                                           DT::DTOutput("physio_params_tble"))
@@ -1404,13 +1582,26 @@ shinyUI(fluidPage(
                                                downloadButton("btn_param_dwnld",
                                                               label = "Download All Paramters")
                                              ))
-                                  )
+                                  ),
+                                  tabPanel("NCA values",
+                                           fluidPage(
+                                             # fluidRow(
+                                             #   column(6,offset = 3,
+                                             #          pickerInput("sel_compnca"),
+                                             #          label = "Select Compartment",
+                                             #          choices = NULL)
+                                             # ),
+                                             fluidRow(
+                                               DT::DTOutput("tble_ncavals")
+                                             )
+                                           ))
 
                       )
 
              ),
-             tabPanel( id = "help" , title= "help", value = "Help", icon = icon("info")),
-             tabPanel(title = "",value = "Stop",icon=icon("power-off"))
+             tabPanel(title = "Save",value = "save",icon = icon("save")),
+             #tabPanel( id = "help" , title= "help", value = "Help", icon = icon("info")),
+             tabPanel(title = "Quit",value = "stop",icon=icon("power-off"))
   )
 ))
 

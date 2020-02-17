@@ -1,9 +1,9 @@
-/* rapidPBPK.model.c for R deSolve package
+/* rapidPBPK.c for R deSolve package
    ___________________________________________________
 
    Model File:  rapidPBPK.model
 
-   Date:  Sun Jun 10 15:10:21 2018
+   Date:  Fri Jun 21 15:41:12 2019
 
    Created by:  "C:/MCSIM-~1.6/mod/.libs/mod.exe v5.6.6"
     -- a model preprocessor by Don Maszle
@@ -13,7 +13,7 @@
 
    Model calculations for compartmental model:
 
-   40 States:
+   51 States:
      inhswch = 0.0,
      ainh = 0.0,
      aexh = 0.0,
@@ -21,13 +21,24 @@
      odose = 0.0,
      totddose = 0.0,
      ddose = 0.0,
+     odosev = 0.0,
+     totodosev = 0.0,
+     alas = 0.0,
+     akent = 0.0,
+     afec = 0.0,
      aabsgut = 0.0,
      ivswch = 0.0,
      aiv = 0.0,
+     dermswch = 0.0,
+     aderm = 0.0,
+     adermabs = 0.0,
+     adermevap = 0.0,
      abld = 0.0,
      abfat = 0.0,
      atfat = 0.0,
      abskin = 0.0,
+     asc = 0.0,
+     ascMgcm2 = 0.0,
      atskin = 0.0,
      abmusc = 0.0,
      atmusc = 0.0,
@@ -55,7 +66,7 @@
      auexc = 0.0,
      anabsgut = 0.0,
 
-   52 Outputs:
+   53 Outputs:
     "abone",
     "abrn",
     "alng",
@@ -107,11 +118,12 @@
     "ctspf",
     "cbspf",
     "InstInhDose",
+    "InstDermDose",
     "mbal",
 
    0 Inputs:
 
-   125 Parameters:
+   138 Parameters:
      mw = 0,
      bdose = 0,
      blen = 0,
@@ -125,6 +137,19 @@
      inhdays = 0,
      ivdose = 0,
      ivlen = 0,
+     dermrate = 0,
+     KPtot = 0,
+     Kevap = 0,
+     maxcap = 0,
+     wsol = 0,
+     skarea = 0,
+     bdosev = 0,
+     blenv = 0,
+     brepsv = 0,
+     totbrepsv = 0,
+     kfec = 0,
+     kVtoL = 0,
+     kent = 0,
      bw = 0,
      qcc = 0,
      hct = 0,
@@ -252,39 +277,50 @@
 #define ID_odose 0x00004
 #define ID_totddose 0x00005
 #define ID_ddose 0x00006
-#define ID_aabsgut 0x00007
-#define ID_ivswch 0x00008
-#define ID_aiv 0x00009
-#define ID_abld 0x0000a
-#define ID_abfat 0x0000b
-#define ID_atfat 0x0000c
-#define ID_abskin 0x0000d
-#define ID_atskin 0x0000e
-#define ID_abmusc 0x0000f
-#define ID_atmusc 0x00010
-#define ID_abbone 0x00011
-#define ID_atbone 0x00012
-#define ID_abbrn 0x00013
-#define ID_atbrn 0x00014
-#define ID_ablng 0x00015
-#define ID_atlng 0x00016
-#define ID_abhrt 0x00017
-#define ID_athrt 0x00018
-#define ID_abgi 0x00019
-#define ID_atgi 0x0001a
-#define ID_abliv 0x0001b
-#define ID_atliv 0x0001c
-#define ID_abkdn 0x0001d
-#define ID_atkdn 0x0001e
-#define ID_abrpf 0x0001f
-#define ID_atrpf 0x00020
-#define ID_abspf 0x00021
-#define ID_atspf 0x00022
-#define ID_ametliv1 0x00023
-#define ID_ametliv2 0x00024
-#define ID_aclbld 0x00025
-#define ID_auexc 0x00026
-#define ID_anabsgut 0x00027
+#define ID_odosev 0x00007
+#define ID_totodosev 0x00008
+#define ID_alas 0x00009
+#define ID_akent 0x0000a
+#define ID_afec 0x0000b
+#define ID_aabsgut 0x0000c
+#define ID_ivswch 0x0000d
+#define ID_aiv 0x0000e
+#define ID_dermswch 0x0000f
+#define ID_aderm 0x00010
+#define ID_adermabs 0x00011
+#define ID_adermevap 0x00012
+#define ID_abld 0x00013
+#define ID_abfat 0x00014
+#define ID_atfat 0x00015
+#define ID_abskin 0x00016
+#define ID_asc 0x00017
+#define ID_ascMgcm2 0x00018
+#define ID_atskin 0x00019
+#define ID_abmusc 0x0001a
+#define ID_atmusc 0x0001b
+#define ID_abbone 0x0001c
+#define ID_atbone 0x0001d
+#define ID_abbrn 0x0001e
+#define ID_atbrn 0x0001f
+#define ID_ablng 0x00020
+#define ID_atlng 0x00021
+#define ID_abhrt 0x00022
+#define ID_athrt 0x00023
+#define ID_abgi 0x00024
+#define ID_atgi 0x00025
+#define ID_abliv 0x00026
+#define ID_atliv 0x00027
+#define ID_abkdn 0x00028
+#define ID_atkdn 0x00029
+#define ID_abrpf 0x0002a
+#define ID_atrpf 0x0002b
+#define ID_abspf 0x0002c
+#define ID_atspf 0x0002d
+#define ID_ametliv1 0x0002e
+#define ID_ametliv2 0x0002f
+#define ID_aclbld 0x00030
+#define ID_auexc 0x00031
+#define ID_anabsgut 0x00032
 
 /* Model variables: Outputs */
 #define ID_abone 0x00000
@@ -338,10 +374,11 @@
 #define ID_ctspf 0x00030
 #define ID_cbspf 0x00031
 #define ID_InstInhDose 0x00032
-#define ID_mbal 0x00033
+#define ID_InstDermDose 0x00033
+#define ID_mbal 0x00034
 
 /* Parameters */
-static double parms[125];
+static double parms[138];
 
 #define mw parms[0]
 #define bdose parms[1]
@@ -356,121 +393,134 @@ static double parms[125];
 #define inhdays parms[10]
 #define ivdose parms[11]
 #define ivlen parms[12]
-#define bw parms[13]
-#define qcc parms[14]
-#define hct parms[15]
-#define vbldc parms[16]
-#define perfc parms[17]
-#define kbld parms[18]
-#define respr parms[19]
-#define tv parms[20]
-#define ds parms[21]
-#define uflw parms[22]
-#define gfr parms[23]
-#define frwsol parms[24]
-#define fatvtbc parms[25]
-#define vfatc parms[26]
-#define qfatc parms[27]
-#define pfat parms[28]
-#define skinvtbc parms[29]
-#define vskinc parms[30]
-#define qskinc parms[31]
-#define pskin parms[32]
-#define muscvtbc parms[33]
-#define vmuscc parms[34]
-#define qmuscc parms[35]
-#define pmusc parms[36]
-#define bonevtbc parms[37]
-#define vbonec parms[38]
-#define qbonec parms[39]
-#define pbone parms[40]
-#define brnvtbc parms[41]
-#define vbrnc parms[42]
-#define qbrnc parms[43]
-#define pbrn parms[44]
-#define lngvtbc parms[45]
-#define vlngc parms[46]
-#define qlngc parms[47]
-#define plng parms[48]
-#define hrtvtbc parms[49]
-#define vhrtc parms[50]
-#define qhrtc parms[51]
-#define phrt parms[52]
-#define givtbc parms[53]
-#define vgic parms[54]
-#define qgic parms[55]
-#define pgi parms[56]
-#define fa parms[57]
-#define ka parms[58]
-#define livvtbc parms[59]
-#define vlivc parms[60]
-#define qalivc parms[61]
-#define qvlivc parms[62]
-#define pliv parms[63]
-#define kdnvtbc parms[64]
-#define vkdnc parms[65]
-#define qkdnc parms[66]
-#define pkdn parms[67]
-#define rpfvtbc parms[68]
-#define vrpfc parms[69]
-#define qrpfc parms[70]
-#define prpf parms[71]
-#define spfvtbc parms[72]
-#define vspfc parms[73]
-#define qspfc parms[74]
-#define pspf parms[75]
-#define res parms[76]
-#define fupls parms[77]
-#define vbld parms[78]
-#define vpls parms[79]
-#define vfat parms[80]
-#define vskin parms[81]
-#define vmusc parms[82]
-#define vbone parms[83]
-#define vbrn parms[84]
-#define vlng parms[85]
-#define vhrt parms[86]
-#define vkdn parms[87]
-#define vgi parms[88]
-#define vliv parms[89]
-#define vrpf parms[90]
-#define vspf parms[91]
-#define total_perf parms[92]
-#define qcp parms[93]
-#define qfat parms[94]
-#define qskin parms[95]
-#define qmusc parms[96]
-#define qbone parms[97]
-#define qbrn parms[98]
-#define qlng parms[99]
-#define qhrt parms[100]
-#define qkdn parms[101]
-#define qvliv parms[102]
-#define qgi parms[103]
-#define qaliv parms[104]
-#define qrpf parms[105]
-#define qspf parms[106]
-#define pafat parms[107]
-#define paskin parms[108]
-#define pamusc parms[109]
-#define pabone parms[110]
-#define pabrn parms[111]
-#define palng parms[112]
-#define pahrt parms[113]
-#define pakdn parms[114]
-#define pagi parms[115]
-#define paliv parms[116]
-#define parpf parms[117]
-#define paspf parms[118]
-#define vkm1 parms[119]
-#define vmaxliv parms[120]
-#define km parms[121]
-#define cinh parms[122]
-#define qalv parms[123]
-#define pair parms[124]
+#define dermrate parms[13]
+#define KPtot parms[14]
+#define Kevap parms[15]
+#define maxcap parms[16]
+#define wsol parms[17]
+#define skarea parms[18]
+#define bdosev parms[19]
+#define blenv parms[20]
+#define brepsv parms[21]
+#define totbrepsv parms[22]
+#define kfec parms[23]
+#define kVtoL parms[24]
+#define kent parms[25]
+#define bw parms[26]
+#define qcc parms[27]
+#define hct parms[28]
+#define vbldc parms[29]
+#define perfc parms[30]
+#define kbld parms[31]
+#define respr parms[32]
+#define tv parms[33]
+#define ds parms[34]
+#define uflw parms[35]
+#define gfr parms[36]
+#define frwsol parms[37]
+#define fatvtbc parms[38]
+#define vfatc parms[39]
+#define qfatc parms[40]
+#define pfat parms[41]
+#define skinvtbc parms[42]
+#define vskinc parms[43]
+#define qskinc parms[44]
+#define pskin parms[45]
+#define muscvtbc parms[46]
+#define vmuscc parms[47]
+#define qmuscc parms[48]
+#define pmusc parms[49]
+#define bonevtbc parms[50]
+#define vbonec parms[51]
+#define qbonec parms[52]
+#define pbone parms[53]
+#define brnvtbc parms[54]
+#define vbrnc parms[55]
+#define qbrnc parms[56]
+#define pbrn parms[57]
+#define lngvtbc parms[58]
+#define vlngc parms[59]
+#define qlngc parms[60]
+#define plng parms[61]
+#define hrtvtbc parms[62]
+#define vhrtc parms[63]
+#define qhrtc parms[64]
+#define phrt parms[65]
+#define givtbc parms[66]
+#define vgic parms[67]
+#define qgic parms[68]
+#define pgi parms[69]
+#define fa parms[70]
+#define ka parms[71]
+#define livvtbc parms[72]
+#define vlivc parms[73]
+#define qalivc parms[74]
+#define qvlivc parms[75]
+#define pliv parms[76]
+#define kdnvtbc parms[77]
+#define vkdnc parms[78]
+#define qkdnc parms[79]
+#define pkdn parms[80]
+#define rpfvtbc parms[81]
+#define vrpfc parms[82]
+#define qrpfc parms[83]
+#define prpf parms[84]
+#define spfvtbc parms[85]
+#define vspfc parms[86]
+#define qspfc parms[87]
+#define pspf parms[88]
+#define res parms[89]
+#define fupls parms[90]
+#define vbld parms[91]
+#define vpls parms[92]
+#define vfat parms[93]
+#define vskin parms[94]
+#define vmusc parms[95]
+#define vbone parms[96]
+#define vbrn parms[97]
+#define vlng parms[98]
+#define vhrt parms[99]
+#define vkdn parms[100]
+#define vgi parms[101]
+#define vliv parms[102]
+#define vrpf parms[103]
+#define vspf parms[104]
+#define total_perf parms[105]
+#define qcp parms[106]
+#define qfat parms[107]
+#define qskin parms[108]
+#define qmusc parms[109]
+#define qbone parms[110]
+#define qbrn parms[111]
+#define qlng parms[112]
+#define qhrt parms[113]
+#define qkdn parms[114]
+#define qvliv parms[115]
+#define qgi parms[116]
+#define qaliv parms[117]
+#define qrpf parms[118]
+#define qspf parms[119]
+#define pafat parms[120]
+#define paskin parms[121]
+#define pamusc parms[122]
+#define pabone parms[123]
+#define pabrn parms[124]
+#define palng parms[125]
+#define pahrt parms[126]
+#define pakdn parms[127]
+#define pagi parms[128]
+#define paliv parms[129]
+#define parpf parms[130]
+#define paspf parms[131]
+#define vkm1 parms[132]
+#define vmaxliv parms[133]
+#define km parms[134]
+#define cinh parms[135]
+#define qalv parms[136]
+#define pair parms[137]
 
 /* Forcing (Input) functions */
-static double forc[1];
+static double forc[0];
 
 
 /* Function definitions for delay differential equations */
@@ -479,13 +529,13 @@ int Nout=1;
 int nr[1]={0};
 double ytau[1] = {0.0};
 
-static double yini[40] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; /*Array of initial state variables*/
+static double yini[51] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; /*Array of initial state variables*/
 
 void lagvalue(double T, int *nr, int N, double *ytau) {
   static void(*fun)(double, int*, int, double*) = NULL;
   if (fun == NULL)
     fun = (void(*)(double, int*, int, double*))R_GetCCallable("deSolve", "lagvalue");
-  
+  return fun(T, nr, N, ytau);
 }
 
 double CalcDelay(int hvar, double dTime, double delay) {
@@ -503,7 +553,7 @@ double CalcDelay(int hvar, double dTime, double delay) {
 /*----- Initializers */
 void initmod (void (* odeparms)(int *, double *))
 {
-  int N=125;
+  int N=138;
   odeparms(&N, parms);
 }
 
@@ -551,6 +601,12 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   /* local */ double rinh;
   /* local */ double rexh;
   /* local */ double riv;
+  /* local */ double unit_ratio;
+  /* local */ double rderm;
+  /* local */ double tempRtVar;
+  /* local */ double RtSCMc;
+  /* local */ double rdermabs;
+  /* local */ double rdermevap;
   /* local */ double rauexc;
   /* local */ double rametliv1;
   /* local */ double rametliv2;
@@ -672,7 +728,17 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   available_dose = dose_in_gut ;
 
-  raabsgut = fa * available_dose ;
+  ydot[ID_totodosev] = 0 ;
+
+  ydot[ID_odosev] = - kfec * y[ID_odosev] - kVtoL * y[ID_odosev] ;
+
+  ydot[ID_alas] = kVtoL * y[ID_odosev] - kfec * y[ID_alas] - kent * y[ID_alas] ;
+
+  ydot[ID_akent] = kent * y[ID_alas] ;
+
+  ydot[ID_afec] = kfec * y[ID_alas] ;
+
+  raabsgut = ka * y[ID_alas] + fa * available_dose ;
 
   ydot[ID_aabsgut] = raabsgut ;
 
@@ -696,13 +762,37 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_aiv] = riv ;
 
+  unit_ratio = 1000 * skarea / mw ;
+
+  ydot[ID_dermswch] = 0 ;
+
+  rderm = dermrate * y[ID_dermswch] ;
+
+  ydot[ID_aderm] = rderm * unit_ratio ;
+
+  tempRtVar = 2 * y[ID_asc] / maxcap ;
+
+  RtSCMc = ( tempRtVar > 1 ? 1 : tempRtVar ) ;
+
+  rdermabs = RtSCMc * KPtot * wsol / 1000 ;
+
+  rdermevap = RtSCMc * Kevap * wsol / 1000 ;
+
+  ydot[ID_adermabs] = rdermabs * unit_ratio ;
+
+  ydot[ID_adermevap] = rdermevap * unit_ratio ;
+
+  ydot[ID_ascMgcm2] = rderm - rdermabs - rdermevap ;
+
   ydot[ID_abfat] = qfat * yout[ID_cpls] - qfat * yout[ID_cbfat] + pafat * yout[ID_ctfat] / pfat - pafat * yout[ID_cbfat] ;
 
   ydot[ID_atfat] = pafat * yout[ID_cbfat] - pafat * yout[ID_ctfat] / pfat ;
 
+  ydot[ID_asc] = ( rderm - rdermabs - rdermevap ) * unit_ratio ;
+
   ydot[ID_abskin] = qskin * yout[ID_cpls] - qskin * yout[ID_cbskin] + paskin * yout[ID_ctskin] / pskin - paskin * yout[ID_cbskin] ;
 
-  ydot[ID_atskin] = paskin * yout[ID_cbskin] - paskin * yout[ID_ctskin] / pskin ;
+  ydot[ID_atskin] = paskin * yout[ID_cbskin] - paskin * yout[ID_ctskin] / pskin + rdermabs * unit_ratio ;
 
   ydot[ID_abmusc] = qmusc * yout[ID_cpls] - qmusc * yout[ID_cbmusc] + pamusc * yout[ID_ctmusc] / pmusc - pamusc * yout[ID_cbmusc] ;
 
@@ -716,7 +806,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_atbrn] = pabrn * yout[ID_cbbrn] - pabrn * yout[ID_ctbrn] / pbrn ;
 
-  ydot[ID_ablng] = qlng * yout[ID_cpls] - qlng * yout[ID_cblng] + palng * yout[ID_ctlng] / plng - palng * yout[ID_cblng] + rinh - rexh ;
+  ydot[ID_ablng] = qlng * yout[ID_cpls] - qlng * yout[ID_cblng] + palng * yout[ID_ctlng] / plng - palng * yout[ID_cblng] ;
 
   ydot[ID_atlng] = palng * yout[ID_cblng] - palng * yout[ID_ctlng] / plng ;
 
@@ -760,17 +850,18 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_aclbld] = raclbld ;
 
-  ydot[ID_abld] = qcp * ( yout[ID_cv] - yout[ID_cpls] ) + riv - raclbld ;
+  ydot[ID_abld] = qcp * ( yout[ID_cv] - yout[ID_cpls] ) + riv - raclbld +rinh - rexh ;
 
-  totdose = y[ID_totodose] + y[ID_totddose] + y[ID_ainh] + y[ID_aiv] ;
+  totdose = y[ID_totodose] + y[ID_totddose] + y[ID_ainh] + y[ID_aiv] + y[ID_aderm] + y[ID_totodosev] ;
 
-  totbody = y[ID_abld] + yout[ID_afat] + yout[ID_askin] + yout[ID_amusc] + yout[ID_abone] + yout[ID_abrn] + yout[ID_alng] + yout[ID_ahrt] + yout[ID_agi] + yout[ID_aliv] + yout[ID_akdn] + yout[ID_arpf] + yout[ID_aspf] + y[ID_odose] + y[ID_ddose] ;
+  totbody = y[ID_abld] + yout[ID_afat] + yout[ID_askin] + yout[ID_amusc] + yout[ID_abone] + yout[ID_abrn] + yout[ID_alng] + yout[ID_ahrt] + yout[ID_agi] + yout[ID_aliv] + yout[ID_akdn] + yout[ID_arpf] + yout[ID_aspf] + y[ID_odose] + y[ID_ddose] + y[ID_asc] + y[ID_odosev] + y[ID_alas] ;
 
-  totclear = y[ID_ametliv1] + y[ID_ametliv2] + y[ID_aclbld] + y[ID_auexc] + y[ID_anabsgut] + y[ID_aexh] ;
+  totclear = y[ID_ametliv1] + y[ID_ametliv2] + y[ID_aclbld] + y[ID_auexc] + y[ID_anabsgut] + y[ID_aexh] + y[ID_adermevap] + y[ID_akent] + y[ID_afec] ;
 
   tmass = totdose - totbody - totclear ;
 
   yout[ID_InstInhDose] = rinh ;
+  yout[ID_InstDermDose] = rderm * 1000 * skarea / mw ;
   yout[ID_mbal] = tmass ;
 
 } /* derivs */
@@ -793,8 +884,13 @@ void event (int *n, double *t, double *y)
   y[ID_ddose] = ( drdose > 0 ? y[ID_ddose] + ( drdose * 1000. * vdw / mw ) / dreps : y[ID_ddose] ) ;
   y[ID_totddose] = ( drdose > 0 ? y[ID_totddose] + ( drdose * 1000. * vdw / mw ) / dreps : y[ID_totddose] ) ;
 
+  y[ID_odosev] = ( bdosev > 0 ? y[ID_odosev] + ( bdosev * bw * 1000. / mw ) / totbrepsv : y[ID_odosev] ) ;
+
   y[ID_inhswch] = ( inhdose > 0 ? ( y[ID_inhswch] == 0 ? 1 : 0 ) : 0 ) ;
+
   y[ID_ivswch] = ( ivdose > 0 ? ( y[ID_ivswch] == 0 ? 1 : 0 ) : 0 ) ;
+
+  y[ID_dermswch] = ( dermrate > 0 ? ( y[ID_dermswch] == 0 ? 1 : 0 ) : 0 ) ;
 
 } /* event */
 

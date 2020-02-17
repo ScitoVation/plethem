@@ -1,7 +1,6 @@
 .Rproj.user
 .Rhistory
 .RData
-inst/doc
-plethem_final.Rproj
+inst/docs
 src/plethem.dll
-*.dll
+plethem_final.Rproj

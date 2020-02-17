@@ -8,18 +8,35 @@
 saveAsParameterSetUI <- function(namespace, set_type){
   shinyjs::useShinyjs()
   ns <- NS(namespace)
+  
   set_name <- switch(set_type,
                      "physio" = "Physiological",
                      "chem" = "Chemical",
-                     "expo" = "Exposure")
+                     "expo" = "Exposure",
+                     "adme"="Adme")
+  id_name <- paste0(set_type,"id")
+  set_table_name <- paste0(set_name,"Set")
+  
+  # get the current ID for the parameter set.
+  
+  query <- sprintf("SELECT %s FROM %s;",id_name,set_table_name)
+  id_list <- projectDbSelect(query)
+  
+  if (length(id_list[[id_name]])==0){
+    id_num = 1
+  }else{
+    id_num = max(id_list[[id_name]])+1
+  }
   showModal(modalDialog(title = paste0("Save ",set_name," Parameter Set"),easyClose = TRUE,
                         tagList(
-                          textInput(ns("name"),"Parameter Set Name",placeholder = "Enter Name for the dataset"),
-                          textInput(ns("descrp"),"Description",placeholder = "Enter description for the dataset"),
+                          textInput(ns("name"),"Parameter Set Name",value = paste0(set_name," Set ",id_num)
+                                   ),
+                          textInput(ns("descrp"),"Description",value = "Description",
+                                    placeholder = "Enter description for the dataset"),
                           shinyjs::hidden(textInput(ns("cas"),"CAS Number",placeholder = "Enter CAS Number"))
                         ),
                         footer= tagList(
-                          shinyjs::disabled(bsButton(ns("add"),"Add",type = "action")),
+                          bsButton(ns("add"),"Add",type = "action"),
                           modalButton("Cancel")
                         )
                         )
@@ -34,8 +51,9 @@ saveAsParameterSetUI <- function(namespace, set_type){
 #' @param set_type type of parameter set to save
 #' @param main_input input from the pbpk UI
 #' @param name_df variable names for parameters
+#' @param other placeholder paramter for data needed for certain sets
 #'@export
-saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df){
+saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df,other= NULL){
 
   returnValues <- reactiveValues()
   returnValues$savedat <- c("No","",0)
@@ -46,13 +64,14 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
   set_name <- switch(set_type,
                      "physio" = "Physiological",
                      "chem" = "Chemical",
-                     "expo" = "Exposure")
+                     "expo" = "Exposure",
+                     "adme"="Adme")
   id_name <- paste0(set_type,"id")
   set_table_name <- paste0(set_name,"Set")
   vals_table_name<- set_name
 
   # get the current ID for the parameter set.
-  query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
+  query <- sprintf("SELECT %s FROM %s;",id_name,set_table_name)
   id_list <- projectDbSelect(query)
 
   if (length(id_list[[id_name]])==0){
@@ -62,15 +81,8 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
   }
   returnValues$savedat<- eventReactive(input$add,{return(c("Yes",set_type,id_num))})
 
-  checkData <- reactive({
-    req(input$name,input$descrp,cancelOutput = TRUE)
-  })
-  observe({
-    if(checkData() != ""){
-      shinyjs::enable("add")
-    }
-  })
 
+  
   observeEvent(input$add,{
     main_input <- reactiveValuesToList(main_input)
 
@@ -80,6 +92,16 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
                        set_table_name,id_name,id_num,input$name,input$descrp,input$cas)
       projectDbUpdate(query)
       
+    }else if (set_type == "adme"){
+      expoid <- other[[1]]
+      chemid <- other[[2]]
+      physioid <- other[[3]]
+      query <- sprintf("INSERT INTO %s (%s,name,descrp,expoid,chemid,physioid) VALUES (%d,'%s','%s', %d, %d, %d );",
+                       set_table_name,id_name,id_num,input$name,input$descrp,
+                       expoid,
+                       chemid,
+                       physioid)
+      projectDbUpdate(query)
     }else{
       query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
                        set_table_name,id_name,id_num,input$name,input$descrp)
@@ -102,3 +124,4 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df)
   },ignoreNULL = T,ignoreInit = T)
   return(returnValues$savedat)
 }
+

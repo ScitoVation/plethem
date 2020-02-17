@@ -10,7 +10,7 @@
 runPlthemHTIVIVE<- function(vals){
   row_keys <- names(vals)
   num_rows <- length(row_keys)
-  #print(row_keys)
+  print(row_keys)
   result <- lapply(vals,preprocessUIData)
   return(result)
 }
@@ -30,6 +30,7 @@ preprocessUIData<- function(val){
   casn <- chem_data$casn
   mw <- chem_data$mw
   km <- val$num_km
+  expo <- val$num_expo
   # get POD
   pod <- val$num_ivc
   pod_unit <- val$sel_ivunit
@@ -42,7 +43,7 @@ preprocessUIData<- function(val){
   liver_wt <- val$num_lw
   bw <- val$num_bw
   hpgl <- val$num_hpgl
-  km <- val$num_km
+
   mpcppgl <- c(val$num_mppgl,val$num_cppgl)
   # get hepatic clerance type
   hepcl_type <- val$tab_heptype
@@ -84,7 +85,7 @@ preprocessUIData<- function(val){
   ql <- val$num_ql
   qalv <- getLifecourseVentilationRate(25,"M")
   qc <- val$num_qc
-  fup <- val$num_fup
+  fup <- val$num_fupls
   bw<- val$num_bw
   pair <- val$num_pair
   dose <- 1
@@ -101,14 +102,19 @@ preprocessUIData<- function(val){
                              stop("Invalid IVIVE type")
   )
   equivalent_dose <- pod/ss_concentration
+  #print(ss_concentration)
+  moe <- expo/equivalent_dose
+  #print(moe)
   #equivalent_dose <- getEquivalentDose(ss_concentration)
   calcualted_vals_list <- list("hep"=signif(scaled_hepcl,4),
                                "ren"=signif(scaled_rencl,4),
                                "pls"=signif(scaled_plcl,4),
                                "css"=signif(ss_concentration,4),
-                               "eqdose"= signif(equivalent_dose,4))
+                               "eqdose"= signif(equivalent_dose,4),
+                               "moe"=signif(moe,4))
 
   existing_vals_list <- list()#getValsMetadata(vals)
+  #print(calcualted_vals_list)
   return(calcualted_vals_list)
 }
 
@@ -289,6 +295,7 @@ calculateRecombClearance <- function(clearance,organism,age,
 #
 calculateOralNonvolCss <- function(dose,bw,ql,qc,fup,cl_type,scaled_hepcl,
                                   scaled_rencl,scaled_plcl){
+  #print(c(ql,fup))
 
   if (cl_type == "cl_eq1"){
     clh<- ql*fup*scaled_hepcl/(ql+(fup*scaled_hepcl))
@@ -299,6 +306,7 @@ calculateOralNonvolCss <- function(dose,bw,ql,qc,fup,cl_type,scaled_hepcl,
   }
   clb<- qc*scaled_plcl/(qc+scaled_plcl)
   css<- (dose*bw/24)/(clh+clb+scaled_rencl)
+  #print(css)
   return(css)
 }
 #calculate steady state concentration of orally administered volatile compounds

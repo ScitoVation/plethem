@@ -11,66 +11,26 @@
 #' @return List containing the metabolism values needed to run PBPK model or
 #' display simulation information
 #' @export
-getMetabData <- function(metabid,physioid,chemid,model){
-  metabid <- as.integer(metabid)
-  physioid <- as.integer(physioid)
-  chemid <- as.integer(chemid)
-  if (metabid==0 || metabid == 1){
-    if (model == "rapidPBPK"){
-      metab_type <- ifelse(metabid==0,
-                           "Michaelis Menten Kinetics",
-                           "First Order Metabolism")
-      metab_units <- ifelse(metabid==0,
-                            "\u00B5M/h/kg BW^0.75",
-                            "L/h/kg Liver")
-      variable <- ifelse(metabid==0,
-                         "vmaxc",
-                         "vkm1c")
-      query <- sprintf("SELECT value from Chemical WHERE chemid = %i AND param = '%s';",
-                       chemid,variable)
-      result <- projectDbSelect(query)
-      value <- as.numeric(result$value)
-    }else if(model == "httk_pbtk"){
-      metab_type <- "First Order Metabolism"
-      metab_units <- "L/h/kg BW"
-      variable <- "Clmetabolismc"
-      query <- sprintf("SELECT value from Chemical WHERE chemid = %i AND param = '%s';",
-                       chemid,variable)
-      result <- projectDbSelect(query)
-      print(result)
-      value <- as.numeric(result$value)
-    }
-    
-
-
+getMetabData <- function(admeid,model="rapidPBPK"){
+  admeid <- as.integer(admeid)
+  # Get metabolism data from the table
+  query <- sprintf("SELECT param,value FROM Adme WHERE admeid = %i AND (param = 'vmaxc' OR param = 'vkm1c');",admeid)
+  result <- projectDbSelect(query)
+  result <- setNames(result$value,result$param)
+  # unserialize the table to get it back
+  if (result[["vmaxc"]] == 0){
+    metab_units <- "L/h/kg Liver"
+    metab_type <- "First Order Metabolism"
+    variable <- "vkm1c"
+    value <- result[["vkm1c"]]
   }else{
-    # Get metabolism data from the table
-    query <- sprintf("SELECT * FROM Metabolism WHERE metabid = %i",metabid)
-    result <- projectDbSelect(query)
-    # unserialize the table to get it back
-    metab_tble <- unserialize(charToRaw(result[["metab_tble"]]))
-    metab_units <- ifelse(result[["type"]]=="m1",
-                         "\u00B5M/h/kg BW^0.75",
-                         "L/h/kg Liver")
-    metab_type <- ifelse(result[["type"]]=="m1",
-                         "Michaelis Menten Kinetics",
-                         "First Order Metabolism")
-    variable <- ifelse(result[["type"]]=="m1",
-                         "vmaxc",
-                         "vkm1c")
-    ref_age <- result[["ref_age"]]
-
-    # get the age of the physiological set selected
-    query <- sprintf("SELECT value FROM Physiological WHERE physioid = %i AND param = 'age' ;",
-                     physioid)
-    result <- projectDbSelect(query)
-    age <- as.numeric(result[["value"]])
-    # if age is a part of the table use that to get metabolism value else use the referance
-    # age
-    metab_age <- ifelse(age %in% metab_tble$Age,age,ref_age)
-    value <- metab_tble$Clearance[which(metab_tble$Age == metab_age)]
+    metab_units <- "\u00B5M/h/kg BW^0.75"
+    metab_type <- "Michaelis Menten Kinetics"
+    variable <- "vmaxc"
+    value <- result[["vmaxc"]]
   }
-  print(value)
+ 
+  
   return(list("Type"= metab_type,
               "Units"=metab_units,
               "Value"= value,
@@ -98,8 +58,13 @@ getAllParamValuesForModel <- function(simid,model){
                    model)
   result <- mainDbSelect(query)
   param_names <- c(param_names,result$Var)
-  # get Esposure parameter names
+  # get Exposure parameter names
   query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Exposure' AND Model = '%s';",
+                   model)
+  result <- mainDbSelect(query)
+  param_names <- c(param_names,result$Var)
+  #get adme parameter names
+  query <- sprintf("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Adme' AND Model = '%s';",
                    model)
   result <- mainDbSelect(query)
   param_names <- c(param_names,result$Var)
@@ -107,10 +72,10 @@ getAllParamValuesForModel <- function(simid,model){
 
 
   # get the physiological values for the simulation
-  query <- sprintf("Select metabid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
+  query <- sprintf("Select admeid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
                    simid)
   result <- projectDbSelect(query)
-  metabid <- as.integer(result[["metabid"]])
+  admeid <- as.integer(result[["admeid"]])
   chemid <- as.integer(result[["chemid"]])
   expoid <- as.integer(result[["expoid"]])
   physioid <- as.integer(result[["physioid"]])
@@ -137,36 +102,39 @@ getAllParamValuesForModel <- function(simid,model){
   result <- projectDbSelect(query)
   chem_params <- result$value
   names(chem_params)<- result$param
+  
+  # get all the ADME parameters
+  query <- sprintf("SELECT param,value FROM Adme WHERE admeid = %i;",
+                   admeid)
+  result <- projectDbSelect(query)
+  adme_params <- result$value
+  names(adme_params)<- result$param
 
-  params <- c(physio_params,expo_params,chem_params)
+  params <- c(physio_params,expo_params,chem_params,adme_params)
 
   # add time start and sim duration as tstart and totdays to work with the model
   params[["tstart"]]<- tstart
   params[["totdays"]]<- as.integer(sim_dur/24)
   params[["sim_dur"]]<- sim_dur
   # get the metabolism data and adjust params accordingly
-  metab_data <- getMetabData(metabid,physioid,chemid,model)
+  metab_data <- getMetabData(admeid,model)
   metab_var <- metab_data$Var
   if (model == "rapidPBPK"){
     
     if(metab_var == "vmaxc"){
       params[["vmaxc"]]<- metab_data$Value
-      params[["vkm1c"]]<- 1e-10
+      params[["vkm1c"]]<- 0
     }else{
       params[["vkm1c"]]<- metab_data$Value
-      params[["vmaxc"]]<- 1e-10
+      params[["vmaxc"]]<- 0
     }
   }else if(model == "httk_pbtk"){
-    print(metab_data)
+   
     params[["Clmetabolismc"]]<- metab_data$Value
+  }else if(model == "fishPBPK"){
+   
+    params[["vmax"]]<- metab_data$Value
   }
-  
-  # query <- "Select Var FROM ParamNames WHERE (Model = 'rapidPBPK' OR Model = 'All') AND ModelParams = 'TRUE';"
-  # result <- mainDbSelect(query)
-  # uiParamNames <- result$Var
-  # print(length(names(params)))
-  # print(length(uiParamNames))
-  # params[!(names(params) %in% uiParamNames )]<- NULL
 
 
   return(list("vals" = params,"names" =param_names))
@@ -252,15 +220,22 @@ getAllVariabilityValuesForModel<- function(simid, params,mc_num){
         MC.matrix[,this.param]<- truncdist::rtrunc(mc_num,"lnorm",a = lowerlim, 
                                         b = upperlim, mean = meanlog, 
                                         sd = sdlog)
-      }else{
-        stop(sprintf("Undefined distribution %s",dist_type))
+      }else if(dist_type == "uform"){
+        upperlim = mean+2*sd
+        lowerlim = mean-2*sd
+        MC.matrix[,this.param]<- stats::runif(mc_num,lowerlim,upperlim)
+      }
+      else{
+        #default to uniform distribution
+        upperlim = mean+2*sd
+        lowerlim = mean-2*sd
+        MC.matrix[,this.param]<- stats::runif(mc_num,
+                                              ifelse(lowerlim>=0,lowerlim,0),
+                                              upperlim)
       }
       
     }else{
       MC.matrix[, this.param] <- 0
-      warning(paste(this.param,
-                    "has mean of zero, yielding SD of zero for fixed cv.  Parameter value fixed at zero.")
-              )
     }
   }
   return(MC.matrix)
@@ -275,7 +250,8 @@ getParameterSet<- function(set_type = "physio",id = 1){
   set_name <- switch(set_type,
                      "physio" = "Physiological",
                      "chem" = "Chemical",
-                     "expo" = "Exposure")
+                     "expo" = "Exposure",
+                     "adme"="Adme")
   id_name <- paste0(set_type,"id")
   set_table_name <- paste0(set_name,"Set")
   query <- sprintf("SELECT param, value FROM %s where %s = %s ;",
@@ -301,6 +277,7 @@ getAllSetChoices <- function(set_type = "physio"){
                        "chem" = "Chemical",
                        "expo" = "Exposure",
                        "metab"="Metabolism",
+                       "adme"="Adme",
                        "sim" = "Simulations")
     id_name <- paste0(set_type,"id")
     set_table_name <- paste0(set_name,"Set")
@@ -354,8 +331,15 @@ getVariabilitySetChoices <- function(var_type="physio"){
 #' @description Reshapes plot data in long form to wide form. The plot data has time as the id
 #' @param plotData Plot Data in long form
 #' @export
-reshapePlotData<- function(plotData){
-  data <- unique.data.frame(plotData)
+reshapePlotData<- function(plotData,type = "FD"){
+  
+  if (type == "FD"){
+    data <- unique.data.frame(plotData)
+    return(reshape2::dcast(data,time~variable))
+  }else{
+    data <- plotData
+    return(reshape2::dcast(data,sample~variable))
+  }
                           
-  return(reshape2::dcast(data,time~variable))
+  
 }

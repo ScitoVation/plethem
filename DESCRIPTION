@@ -38,7 +38,8 @@ Imports:
   DT,
   shinyjs,
   V8,
-  httk
+  httk,
+  NonCompart
 Suggests: testthat,
     rmarkdown,
     knitr
