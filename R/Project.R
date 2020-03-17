@@ -2,6 +2,18 @@
 interactivePBPK <- function(name = ""){
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
 }
+#' Launch Reverse Dosimetry Interface
+#' @description Used to launch the reverse dosimetry UI. The UI is identical to the one found on \href{https://scitovation.shinyapps.io/ReverseDosimetry/}{ShinyApps Reverse Dosimetry App}
+#' @examples
+#' \dontrun{
+#' interactiveReverseDosimetry()
+#' } 
+#' @export
+interactiveReverseDosimetry <- function(){
+  shiny::runApp(system.file("ReverseDosimetry",package = "plethem"),launch.browser = T)
+}
+
+
 #' Launch HT-IVIVE interface
 #' @description Used internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses.
 #' @param name name of the  model. Has to be "HT-IVIVE"
