@@ -1910,6 +1910,7 @@ calculateInitialValues <- function(params_list){
     vliv <- vlivc*(perfc/total_vol)*bw
     vrpf <- vrpfc*(perfc/total_vol)*bw
     vspf <- vspfc*(perfc/total_vol)*bw
+    vdmet <- vdmetc*bw #volume of distribution for the metabolite
 
     #Total Fractional Perfusion
     total_perf <- qfatc+qskinc+qmuscc+qbonec+qbrnc+qlngc+qhrtc+qkdnc+qvlivc+qrpfc+qspfc  # This does not include flow to GI since that is a part of liver venous flow
@@ -1952,6 +1953,8 @@ calculateInitialValues <- function(params_list){
     cinh <- (inhdose/24.45)#*1000/mw # converting from  ppm to mg/L(/24.45) and then to umoles/L for the model
     qalv <- (tv-ds)*respr
     pair <- ifelse(pair >0,pair,1E-10)
+    # scaled urinary flow rate per day
+    uflw <- uflwc*bw/24.0
   })
 
   #function for dosing
@@ -2263,7 +2266,10 @@ calculateInitialValues <- function(params_list){
     ametliv2 = 0.0,
     aclbld = 0.0,
     auexc = 0.0,
-    anabsgut = 0.0)
+    anabsgut = 0.0,
+    auexcmet = 0.0,
+    amet = 0.0,
+    vurine = 1e-10)
 
   initial_values <- list("evnt_data"= eventDat,
                          "initial_params"= initial_params[params_list$names],

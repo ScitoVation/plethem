@@ -235,7 +235,8 @@ plot_body <- fluidPage(
                                                                              "Rapidly Perused Total"="to_rpf",
                                                                              "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf",
                                                                              "Slowly Perused Total"="to_spf",
-                                                                             "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf"
+                                                                             "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf",
+                                                                             "Parent urine concentration"="urine","Metabolite Urine Concentration"="meturine"
                                                               )
                                                    )
                                                    ),
@@ -418,7 +419,7 @@ comp_body <- dashboardBody(
       ),
       fluidRow(
         column(6,
-               numericInput("ms_uflw","Urinary Flow Rate (L/kg/day)",min =0 , max =1, value =0.0214)),
+               numericInput("ms_uflwc","Urinary Flow Rate (L/kg/day)",min =0 , max =1, value =0.0214)),
         column(6,
                numericInput("ms_gfr","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
                )
@@ -1255,6 +1256,12 @@ shinyUI(fluidPage(
                                                                         column(6,
                                                                                numericInput("ms_kbld","First Order Metabolism in Blood",0,0.75,0.95,0.01)
                                                                         )
+                                                                      ),
+                                                                      fluidRow(
+                                                                        column(6,
+                                                                               numericInput("ms_fuplsmet","Fraction unbound in plasma of the metabolite",1,0,1,0.01,width = validateCssUnit("100%"))),
+                                                                        column(6,
+                                                                               numericInput("ms_vdmetc","Fractional volume of distribution for the metabolite",0.6,0,1,0.01, width = validateCssUnit("100%")))
                                                                       )
                                                                     )),
                                                            tabPanel("Excretion",

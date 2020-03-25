@@ -102,7 +102,7 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
 #' }
 
 #' @export
-loadProject <- function(file_path = ""){
+loadProject <- function(file_path = "",runUI = T){
   if(file_path == ""){
     file_path <- getFileFolderPath(type = "file",
                                    caption = "Select PLETHEM Project",
@@ -126,19 +126,22 @@ loadProject <- function(file_path = ""){
   for (x in table_names_list){
     projectWriteTable(eval(parse(text = x)),x)
   }
-  if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
-    shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
+  if (runUI == T){
+    if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
+      shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
+    }
+    if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
+      
+      shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
+    }
+    if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
+      shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = T)
+    }
+    if (type == "PBPK" && model == "fishPBPK" && mode == "MC"){
+      shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = T)
+    }
   }
-  if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
-    
-    shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
-  }
-  if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
-    shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = T)
-  }
-  if (type == "PBPK" && model == "fishPBPK" && mode == "MC"){
-    shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = T)
-  }
+  
 }
 
 

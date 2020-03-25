@@ -137,7 +137,9 @@ rapidPBPK_initParms <- function(newParms = NULL) {
     km = 0,
     cinh = 0,
     qalv = 0,
-    pair = 1e10
+    pair = 1e10,
+    fuplsmet = 1,
+    vdmet = 42
   )
 
   if (!is.null(newParms)) {
@@ -210,7 +212,9 @@ rapidPBPK_Outputs <- c(
     "cbspf",
     "InstInhDose",
     "InstDermDose",
-    "mbal"
+    "mbal",
+    "curine",
+    "curinemet"
 )
 
 rapidPBPK_initStates <- function(parms, newStates = NULL) {
@@ -265,7 +269,10 @@ rapidPBPK_initStates <- function(parms, newStates = NULL) {
     ametliv2 = 0.0,
     aclbld = 0.0,
     auexc = 0.0,
-    anabsgut = 0.0
+    anabsgut = 0.0,
+    auexcmet = 0.0,
+    amet = 0.0,
+    vurine = 1e-10
   )
 
   if (!is.null(newStates)) {
