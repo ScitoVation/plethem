@@ -13,7 +13,7 @@
 
    Model calculations for compartmental model:
 
-   51 States:
+   54 States:
      inhswch = 0.0,
      ainh = 0.0,
      aexh = 0.0,
@@ -65,6 +65,9 @@
      aclbld = 0.0,
      auexc = 0.0,
      anabsgut = 0.0,
+     auexcmet = 0.0,
+     amet = 0.0,
+     vurine = 1e-10
 
    53 Outputs:
     "abone",
@@ -123,7 +126,7 @@
 
    0 Inputs:
 
-   138 Parameters:
+   140 Parameters:
      mw = 0,
      bdose = 0,
      blen = 0,
@@ -262,6 +265,9 @@
      cinh = 0,
      qalv = 0,
      pair = 1e10,
+     fuplsmet = 1, 
+     frwsolmet = 1, 
+     vdmet = 42
 */
 
 #include <R.h>
@@ -321,6 +327,9 @@
 #define ID_aclbld 0x00030
 #define ID_auexc 0x00031
 #define ID_anabsgut 0x00032
+#define ID_auexcmet 0x00033
+#define ID_amet 0x00034
+#define ID_vurine 0x00035
 
 /* Model variables: Outputs */
 #define ID_abone 0x00000
@@ -376,9 +385,11 @@
 #define ID_InstInhDose 0x00032
 #define ID_InstDermDose 0x00033
 #define ID_mbal 0x00034
+#define ID_curine 0x00035
+#define ID_curinemet 0x00036
 
 /* Parameters */
-static double parms[138];
+static double parms[140];
 
 #define mw parms[0]
 #define bdose parms[1]
@@ -518,6 +529,8 @@ static double parms[138];
 #define cinh parms[135]
 #define qalv parms[136]
 #define pair parms[137]
+#define fuplsmet parms[138]
+#define vdmet parms[139]
 
 /* Forcing (Input) functions */
 static double forc[0];
@@ -529,7 +542,7 @@ int Nout=1;
 int nr[1]={0};
 double ytau[1] = {0.0};
 
-static double yini[51] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; /*Array of initial state variables*/
+static double yini[53] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; /*Array of initial state variables*/
 
 void lagvalue(double T, int *nr, int N, double *ytau) {
   static void(*fun)(double, int*, int, double*) = NULL;
@@ -553,7 +566,7 @@ double CalcDelay(int hvar, double dTime, double delay) {
 /*----- Initializers */
 void initmod (void (* odeparms)(int *, double *))
 {
-  int N=138;
+  int N=140;
   odeparms(&N, parms);
 }
 
@@ -615,6 +628,7 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
   /* local */ double totbody;
   /* local */ double totclear;
   /* local */ double tmass;
+  /* local */ double rauexcmet;
 
   yout[ID_cpls] = y[ID_abld] / vpls ;
 
@@ -716,6 +730,11 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   yout[ID_cv] = ( qfat * yout[ID_cbfat] + qskin * yout[ID_cbskin] + qmusc * yout[ID_cbmusc] + qbone * yout[ID_cbbone] + qbrn * yout[ID_cbbrn] + qlng * yout[ID_cblng] + qhrt * yout[ID_cbhrt] + qkdn * yout[ID_cbkdn] + qvliv * yout[ID_cbliv] + qrpf * yout[ID_cbrpf] + qspf * yout[ID_cbspf] ) / qcp ;
 
+  ydot[ID_vurine] = uflw;
+  
+  yout[ID_curine]= y[ID_auexc]/y[ID_vurine];
+  yout[ID_curinemet]= y[ID_auexcmet]/y[ID_vurine];
+ 
   ydot[ID_odose] = - ka * y[ID_odose] ;
 
   ydot[ID_ddose] = - ka * y[ID_ddose] ;
@@ -852,6 +871,12 @@ void derivs (int *neq, double *pdTime, double *y, double *ydot, double *yout, in
 
   ydot[ID_abld] = qcp * ( yout[ID_cv] - yout[ID_cpls] ) + riv - raclbld +rinh - rexh ;
 
+  ydot[ID_amet]=rametliv1 + rametliv2 + raclbld;
+  
+  rauexcmet = gfr * fuplsmet *yout[ID_amet] ;
+  
+  ydot[ID_auexcmet] = rauexcmet ;
+  
   totdose = y[ID_totodose] + y[ID_totddose] + y[ID_ainh] + y[ID_aiv] + y[ID_aderm] + y[ID_totodosev] ;
 
   totbody = y[ID_abld] + yout[ID_afat] + yout[ID_askin] + yout[ID_amusc] + yout[ID_abone] + yout[ID_abrn] + yout[ID_alng] + yout[ID_ahrt] + yout[ID_agi] + yout[ID_aliv] + yout[ID_akdn] + yout[ID_arpf] + yout[ID_aspf] + y[ID_odose] + y[ID_ddose] + y[ID_asc] + y[ID_odosev] + y[ID_alas] ;
