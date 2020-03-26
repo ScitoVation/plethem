@@ -134,6 +134,7 @@ shinyServer(function(input, output, session) {
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_chem",choices = set_choices)
     updateSelectizeInput(session,"sel_chem4adme",choices = set_choices)
+    updateSelectizeInput(session,"sel_metabolite4adme",choices = set_choices)
   }
   set_choices <- getAllSetChoices(set_type = "adme")
   if (length(set_choices>0)){
@@ -381,11 +382,13 @@ shinyServer(function(input, output, session) {
       updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
       if(set_type == "chem"){
         updateSelectizeInput(session,"sel_chem4adme",choices = set_list)
-        
+        updateSelectizeInput(session,"sel_metabolite4adme")
       }else if (set_type =="physio"){
         updateSelectizeInput(session,"sel_physio4adme",choices = set_list)
       }else if(set_type == "expo"){
         updateSelectizeInput(session,"sel_expo4adme",choices = set_list)
+      }else if(set_type == "adme"){
+        updateSelectizeInput(session,"sel_")
       }
       parameterSets$savedat <- reactiveVal(c("No","",0))
       # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
@@ -1120,6 +1123,13 @@ shinyServer(function(input, output, session) {
 
 
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
+  
+  #Code Chunk to perform route to route extrapolation
+  observeEvent(input$extrapolate_route,{
+    simid <- input$run_sim
+    runRoute2RouteUI(paste0("r2r",input$extrapolate_route),simid,model)
+    module_return <- callModule(runRoute2Route,paste0("r2r",input$extrapolate_route),simid,model)
+  })
 
   # Code chunk to run the simulation.
   results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
@@ -1640,6 +1650,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       query <- sprintf("Select value FROM Chemical WHERE chemid = %i AND param = 'mw';",
                        chemid)
       mw <- projectDbSelect(query)$value
+      
     }
     #get value multiplier based on concentration units
     if(units == "um"){

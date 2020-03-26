@@ -289,8 +289,12 @@ shinyServer(function(input, output,session) {
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
       simid <- as.integer(input$simulation)
-      expoid <- projectDbSelect(sprintf("Select expoid from SimulationsSet where simid = %f",as.integer(simid)))
-      print(expoid)
+      ids_list <- projectDbSelect(sprintf("Select chemid,metaboliteid,expoid from SimulationsSet where simid = %f",as.integer(simid)))
+      metaboliteid <- as.integer(ids_list$metaboliteid)
+      mw_metabolite <- projectDbSelect(sprintf("Select value from Chemical where param = 'mw' AND chemid = %f",as.integer(metaboliteid)))
+      chemid <- as.integer(ids_list$chemid)
+      mw_parent <- projectDbSelect(sprintf("Select value from Chemical where param = 'mw' AND chemid = %f",as.integer(chemid)))
+      expoid <- ids_list$expoid
       expotype <- projectDbSelect(sprintf("Select value from Exposure where param = 'expo_sidebar' AND expoid = %f",as.integer(expoid)))
       # print(paste('max = ',input$mySlider2[2]))
       nDoses <- input$mcNumeric
@@ -363,6 +367,11 @@ shinyServer(function(input, output,session) {
         # maxDose <- input$mySlider2[2]
         increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
         # print(increaseDose)
+        if (input$chemType == "Parent"){
+          multiplier <- as.numeric(mw_parent)/1000
+        }else{
+          multiplier <- as.numeric(mw_metabolite)/1000
+        }
         
         for(n in 1:(nDoses)){
           # print(paste('Running monte carlo simulation ', n ))
@@ -381,7 +390,7 @@ shinyServer(function(input, output,session) {
             },tempDF$pbpk))
             names(max_list)<- mc_vars
             for (x in mc_vars){
-              mc_results[[x]][[i]]<- max_list[[x]]
+              mc_results[[x]][[i]]<- max_list[[x]]*multiplier
             }
             updateProgressBar(session,"pb",value = ((n-1)*mc_num + i), total = mc_num*nDoses)
           }
@@ -389,6 +398,7 @@ shinyServer(function(input, output,session) {
           
           results$pbpk <- as.data.frame(mc_results)
           myResults <<- results$pbpk
+          
           # MymcResults <- as.data.frame(mc_results)
           if (input$tissue=="Plasma"){
             max_var <- "cpls_max"
@@ -514,9 +524,9 @@ shinyServer(function(input, output,session) {
     shinyjs::enable('addMC')
     simid <- input$simulation
     expoid <- projectDbSelect(sprintf("Select expoid from SimulationsSet where simid = %f",as.integer(simid)))
-    print(expoid)
+    #print(expoid)
     expotype <- projectDbSelect(sprintf("Select value from Exposure where param = 'expo_sidebar' AND expoid = %f",as.integer(expoid)))
-    print(expotype)
+   # print(expotype)
     # simSet3 <<- simSet %>%
     #   filter(
     #     name == input$simulation
@@ -659,10 +669,10 @@ shinyServer(function(input, output,session) {
   observeEvent(input$addBM, {
     bmvals$name <- input$bmname
     filesIn2 <- input$bmFile
-    bmCSV <- read.csv(filesIn2$datapath)
-    # df_list2 <- lapply(filesIn2$datapath,read_csv) # read each file into a data frame
-    # bmvals$csvFile <- bind_rows(df_list2) # concatenates all of the data frames
-    # bmCSV <- data.frame(bmvals$csvFile)
+    #bmCSV <- read.csv(filesIn2$datapath)
+    df_list2 <- lapply(filesIn2$datapath,read.csv) # read each file into a data frame
+    bmvals$csvFile <- bind_rows(df_list2) # concatenates all of the data frames
+    bmCSV <- data.frame(bmvals$csvFile)
     updatemenus <- list(
       list(
         active = 0,
@@ -776,22 +786,21 @@ shinyServer(function(input, output,session) {
     obsData2 <- data.frame(bmvals$csvFile)
     # bounds2 <- bloodConcRange()
     bounds2 <- bloodConcRange2(mcResult2)
-    
     frequencyTable2 <- frequencyData(bounds2, mcResult2)
     probabilityTbl <- probabilityConc(frequencyTable2)
     
     # logtrans <- transformObs(obsData) # Unused
-    measuredRange2 <- measuredBloodRange(maxValue = 2500)
-    dist12 <- distributionData(obsData2,measuredRange2)
+    #measuredRange2 <- measuredBloodRange(maxValue = 2500)
+    #dist12 <- distributionData(obsData2,measuredRange2)
     dist22 <- distributionData(obsData2,bounds2)
     revDosData22 <- data.frame(t(dist22[4]))
     probabilityTbl2 <- probabilityConc(probabilityTbl, dist22$percentCol)
     cumulative2 <- rowSums(probabilityTbl2)
+
     cdfResult <- cdf(probabilityTbl2)
     pdfCDF <- cbind(data.frame(colnames(mcvals$csvFile)), cdfResult)
     # pdfCDF <- cbind(pdfCDF1, cdfResult)
     pdfAndCDF <- pdfCDF
-    
     
     
     
@@ -814,7 +823,9 @@ shinyServer(function(input, output,session) {
       }
       rate <- (your.number-x[lowerIndex])/(x[upperIndex]-x[lowerIndex])
       concNames <- pdfAndCDF[[1]]
-      coNames <- as.numeric(as.character(concNames))
+      coNames <- as.numeric(lapply(as.character(concNames),function(x){
+        gsub("[A-z]","",x)}))
+      print(coNames)
       cdfValue <- coNames[lowerIndex]+(rate*(coNames[upperIndex]-coNames[lowerIndex]))
       return(cdfValue)
     }

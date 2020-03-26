@@ -914,13 +914,13 @@ shinyUI(fluidPage(
                                                                                  "Calculate Parameters",
                                                                                  style = "primary",block = TRUE),
                                                                       "Use Lifecourse Equation to calcualte parameters")
-                                               ),
-                                               column(4,
-                                                      shinyBS::tipify(selectizeInput("sel_chem4Partition",NULL,
-                                                                     choices ="No Chemical Added"
-                                                                     ),
-                                                                     "Select Chemical for qsar model")
-                                                      )
+                                               )#,
+                                               # column(4,
+                                               #        shinyBS::tipify(selectizeInput("sel_chem4Partition",NULL,
+                                               #                       choices ="No Chemical Added"
+                                               #                       ),
+                                               #                       "Select Chemical for qsar model")
+                                               #        )
 
                                              ),
                                              fluidRow(
@@ -971,15 +971,20 @@ shinyUI(fluidPage(
                                                )
                                              ),
                                              fluidRow(
-                                               column(4,
+                                               column(3,
                                                       selectizeInput("sel_expo4adme",choices= NULL,label= NULL,
                                                                      options = list(placeholder = "Select Exposure"))
                                                       ),
-                                               column(4,
+                                               column(3,
                                                       selectizeInput("sel_chem4adme",choices = NULL,label = NULL,
-                                                                     options = list(placeholder = "Select Chemical"))
+                                                                     options = list(placeholder = "Select Parent"))
                                                ),
-                                               column(4,
+                                               column(3,
+                                                      selectizeInput("sel_metabolite4adme",choices = NULL, label=NULL,
+                                                                     options = list(placeholder = "Select Metabolite"))
+                                                 
+                                               ),
+                                               column(3,
                                                       selectizeInput("sel_physio4adme",choices=NULL,label = NULL,
                                                                      options = list(placeholder = "Select Physiology"))
                                                       )
@@ -1465,7 +1470,11 @@ shinyUI(fluidPage(
                                                         status = "default" )),
                                                column(3,
                                                       shinyBS::bsButton("run_sim","Run Simulation",
-                                                                               style = "primary",block = TRUE))
+                                                                               style = "primary",block = TRUE)
+                                                      ),
+                                               column(3,
+                                                      shinyBS::bsButton("extrapolate_route","Extrapolate to a new route of exposure",
+                                                                        style = "primary",block = TRUE))
                                              ),
                                              fluidRow(
                                                br(),

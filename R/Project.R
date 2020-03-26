@@ -13,6 +13,17 @@ interactiveReverseDosimetry <- function(){
   shiny::runApp(system.file("ReverseDosimetry",package = "plethem"),launch.browser = T)
 }
 
+#' Launch RouteToRouteExtrapolation Interface
+#' @description Used to launch the route to route UI. The UI is identical to the one found on \href{https://scitovation.shinyapps.io/ReverseDosimetry/}{ShinyApps Reverse Dosimetry App}
+#' @examples
+#' \dontrun{
+#' interactiveRouteToRoute()
+#' } 
+#' @export
+interactiveRouteToRoute <- function(){
+  shiny::runApp(system.file("Route2Route",package = "plethem"),launch.browser = T)
+}
+
 
 #' Launch HT-IVIVE interface
 #' @description Used internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses.

@@ -112,8 +112,13 @@ transformObs <- function(obsData) {
 #' @param 
 #' @return 
 #' @export
-measuredBloodRange <- function(minValue = 0, firstMaxValue = 10, maxValue = 2511.886, 
-                               stepSize= 1.5848){
+measuredBloodRange <- function(MCbins, obsData){
+  
+  # get minimum and maxmimum value from the observed data
+  minObs <- min(obsData)
+  maxObs <- max(obsData)
+  
+  # first bin for observed data begins at 
   
   a <- c(minValue, firstMaxValue)
   while(max(a) < maxValue){
