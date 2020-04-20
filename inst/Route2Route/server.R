@@ -25,12 +25,12 @@ library(shinyalert)
 library(sqldf)
 library(V8)
 library(deSolve)
-paste("R/", list.files("R/"), sep = "")
-for (file in paste("R/", list.files("R/"), sep = "")){
-  source(file)
-}
-system(paste("R CMD SHLIB ", "src/rapidPBPK.c", sep = ""))
-`%then%` <- shiny:::`%OR%`
+# paste("R/", list.files("R/"), sep = "")
+# for (file in paste("R/", list.files("R/"), sep = "")){
+#   source(file)
+# }
+# system(paste("R CMD SHLIB ", "src/rapidPBPK.c", sep = ""))
+# `%then%` <- shiny:::`%OR%`
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
@@ -47,172 +47,25 @@ shinyServer(function(input, output,session) {
   shinyjs::useShinyjs()
   dataset <- reactiveValues()
   dataset$savedat <- reactiveVal(c("No","none"))
-  
-  # selectProjModal <- function() {
-  #   modalDialog(
-  #     useShinyjs(),
-  #     title = "Upload Project",
-  #     easyClose = F,#TRUE,
-  #     size = "m",
-  #     tagList(
-  #       tags$style(
-  #         type='text/css',
-  #         '.modal-title {
-  #           text-align: center;
-  #         }'
-  #       ),
-  #       useSweetAlert(),
-  #       # fluidRow(
-  #       #   column(
-  #       #     12,
-  #       #     # offset = 2,
-  #       #     # align = 'center',
-  #       #     fileInput(
-  #       #       "rDataFile",
-  #       #       label = "Select Project file",
-  #       #       accept = c(".RData", ".Rdata"),
-  #       #       placeholder = 'Upload .RData file',
-  #       #       multiple = F
-  #       #     ),
-  #       #     pickerInput(
-  #       #       'simulation',
-  #       #       'Select Simulation',
-  #       #       choices = NULL,
-  #       #       selected = NULL,
-  #       #       multiple = F
-  #       #     )
-  #       #   )
-  #       # ),
-  #       fluidRow(
-  #         progressBar(id = "bmProgress",value = 0, status = "success",striped = T)
-  #       )
-  #       # tabsetPanel(
-  #       #   id = 'modalNav',
-  #       #   tabPanel(
-  #       #     title = 'Upload Existing Results',
-  #       #     br(),
-  #       #     textInput(
-  #       #       "mcname",
-  #       #       "Dataset Name",
-  #       #       placeholder = "Enter name for the dataset"
-  #       #     ),
-  #       #     fluidRow(
-  #       #       column(
-  #       #         6,
-  #       #         shinyWidgets::radioGroupButtons(
-  #       #           "type",
-  #       #           "Select Exposure Type",
-  #       #           choices = c("Inhalation", "Oral", "IV", "Dermal")
-  #       #         )
-  #       #       ),
-  #       #       column(
-  #       #         6,
-  #       #         uiOutput(
-  #       #           "unit_ui"
-  #       #         )
-  #       #       )
-  #       #     ),
-  #       #     fileInput(
-  #       #       "csvFile",
-  #       #       label = "Upload Monte Carlo Results",
-  #       #       accept = c("text/csv","text/comma-separated-values",".csv"),
-  #       #       multiple = TRUE
-  #       #     ),
-  #       #     tags$h4("Results are displayed in mg/L")
-  #       #   ),
-  #       #   tabPanel(
-  #       #     title = 'Run Monte Carlo Simulation',
-  #       #     br(),
-  #       #     fileInput(
-  #       #       "rDataFile",
-  #       #       label = "Select Project file",
-  #       #       accept = c(".RData", ".Rdata"),
-  #       #       placeholder = 'Upload .RData file',
-  #       #       multiple = F
-  #       #     ),
-  #       #     pickerInput(
-  #       #       'simulation',
-  #       #       'Select Simulation',
-  #       #       choices = NULL,
-  #       #       selected = NULL,
-  #       #       multiple = F
-  #       #       # ,options = list(
-  #       #       # 'live-search' = TRUE,
-  #       #       # 'actions-box' = TRUE,
-  #       #       # 'selected-text-format' = 'count > 2',
-  #       #       # 'count-selected-text'='{0} simulations selected'
-  #       #       # )
-  #       #     ),
-  #       #     fluidRow(
-  #       #       column(
-  #       #         6,
-  #       #         shinyWidgets::radioGroupButtons(
-  #       #           'tissue',
-  #       #           label = "Select Tissue Type",
-  #       #           choices = c('Plasma', 'Urine')
-  #       #         )
-  #       #       ),
-  #       #       column(
-  #       #         6,
-  #       #         shinyWidgets::radioGroupButtons(
-  #       #           "chemType",
-  #       #           "Select Chemical Type",
-  #       #           choices = c("Parent", "Metabolite")
-  #       #         )
-  #       #       )
-  #       #     ),
-  #       #     fluidRow(
-  #       #       column(
-  #       #         6,
-  #       #         sliderInput(
-  #       #           'mySlider2',
-  #       #           label = 'Exposure Type (Units)',
-  #       #           min = 0,
-  #       #           max = 1000,
-  #       #           value = c(0,1000)
-  #       #         )
-  #       #       ),
-  #       #       column(
-  #       #         6,
-  #       #         numericInput(
-  #       #           'mcNumeric',
-  #       #           label = 'Number of Doses',
-  #       #           min = 20,
-  #       #           max = 50,
-  #       #           value = 25,
-  #       #           step = 1,
-  #       #           width = '156.84px'
-  #       #         ),
-  #       #         uiOutput(
-  #       #           'validNum'
-  #       #         )
-  #       #       )
-  #       #     ),
-  #           # fluidRow(
-  #           #   progressBar(id = "pb",value = 0, status = "success",striped = T)
-  #           # )
-  #       #   )
-  #       # )
-  #     ),
-  #     footer= tagList(
-  #       # uiOutput('mcFooter', inline = T),
-  #       shinyjs::disabled(actionButton("runSim","Run")), # Used to be addBM
-  #       modalButton('Cancel')
-  #     )
-  #   )
-  # }
+
   setRouteModal <- function() {
+    simid <- as.integer(input$simulation2)
+    query <- sprintf("Select chemid, expoid, metaboliteid from SimulationsSet where simid = %i",simid)
+    ids_list <- projectDbSelect(query)
+    expoid <- as.integer(ids_list$expoid)
+    query <- sprintf("Select value from Exposure where param = 'expo_sidebar' and expoid = %f",expoid)
+    current_expo <- projectDbSelect(query)$value
     
     expoTypes <- c('Oral', 'Drinking Water', 'Inhalation', 'IV', 'Dermal')
-    if(myExpoid == 'oral'){
+    if(current_expo == 'oral'){
       myExpoType = 'Oral'
-    } else if(myExpoid == 'dw'){
+    } else if(current_expo == 'dw'){
       myExpoType = 'Drinking Water'
-    } else if(myExpoid == 'inh'){
+    } else if(current_expo == 'inh'){
       myExpoType = 'Inhalation'
-    } else if(myExpoid == 'iv'){
+    } else if(current_expo == 'iv'){
       myExpoType = 'IV'
-    } else if(myExpoid == 'derm'){
+    } else if(current_expo == 'derm'){
       myExpoType = 'Dermal'
     }
     
@@ -255,7 +108,7 @@ shinyServer(function(input, output,session) {
         ),
         fluidRow(
           column(
-            6,
+            4,
             numericRangeInput(
               'mySlider2',
               label = 'Exposure Type (Units)',
@@ -265,7 +118,7 @@ shinyServer(function(input, output,session) {
             )
           ),
           column(
-            6,
+            4,
             numericInput(
               'mcNumeric',
               label = 'Number of exposures',
@@ -273,34 +126,23 @@ shinyServer(function(input, output,session) {
               max = 50,
               value = 25,
               step = 1,
-              width = '230px'
+              width = validateCssUnit("100%")
             ),
             uiOutput(
               'validNum'
             )
-          )
+          ),
+          column(4,
+                   numericInput('mcNums',
+                                label = 'Number of MC runs',
+                                min = 1,
+                                value = 1000))
         ),
         fluidRow(
           progressBar(id = "pb",value = 0, status = "success",striped = T)
         )
         
-        # textInput(
-        #   "bmname",
-        #   "Dataset Name",
-        #   placeholder = "Enter name for the dataset"
-        # ),
-        # shinyWidgets::radioGroupButtons(
-        #   "bmtype",
-        #   "Select Type",
-        #   choices = c("Parent", "Metabolite")
-        # ),
-        # fileInput(
-        #   "bmFile",
-        #   label = "Upload Biomonitoring CSV File",
-        #   accept = c("text/csv","text/comma-separated-values",".csv"),
-        #   multiple = TRUE
-        # ),
-        # tags$h4(tags$span(style='color:red', 'IMPORTANT:'), ' Biomonitoring results must be in mg/L', sep = '')
+        
       ),
       footer= tagList(
         shinyjs::disabled(actionButton("runExposure","Run")),
@@ -487,9 +329,10 @@ shinyServer(function(input, output,session) {
   
   mcNum <- reactive({
     validate(
-      need(input$mcNumeric > 19, 'Invalid input. Please enter a number 20-50.') %then%
-        need(input$mcNumeric < 51, 'Invalid input. Please enter a number 20-50.')
-    )
+      need((input$mcNumeric > 19||input$mcNumeric < 51),
+           'Invalid input. Please enter a number 20-50.')
+      ) 
+    
   })
   
   output$validNum <- renderUI({
@@ -517,22 +360,23 @@ shinyServer(function(input, output,session) {
     # e = new.env()
     # name <<- load(rDFile, envir = e)
     # data <- e[['name']]
-    load(rDFile, envir = .GlobalEnv)
-    loadReverseDosimetryProject(rDFile)
-    simSet <<- SimulationsSet %>%
-      filter(
-        physiovarid > 0 |
-          chemvarid > 0 |
-          expovarid > 0
-      ) 
+    loadProject(rDFile,runUI = F)
+    simulation_data <- projectDbSelect("Select simid, name, descrp from SimulationsSet;")
+    #loadReverseDosimetryProject(rDFile)
+    # simSet <<- SimulationsSet %>%
+    #   filter(
+    #     physiovarid > 0 |
+    #       chemvarid > 0 |
+    #       expovarid > 0
+    #   ) 
     # simSet2 <<- simSet$name
     updatePickerInput(
       session,
       'simulation2',
       selected = NULL,
-      choices = simSet$name,
+      choices = setNames(simulation_data$simid,simulation_data$name),
       choicesOpt = list(
-        subtext = simSet$descrp
+        subtext = simulation_data$descrp
       )
     )
     
@@ -544,7 +388,8 @@ shinyServer(function(input, output,session) {
       inputId = "myconfirmation",
       type = "warning",
       title = "Are you sure you want to run a simulation?",
-      text = "This may take a while to complete."
+      text = "This may take a while to complete.",
+      closeOnClickOutside = F
     )
   })
   vol_ids <- c("fat"="vfatc","skin"="vskinc",
@@ -555,321 +400,228 @@ shinyServer(function(input, output,session) {
                "rpf"="vrpfc","spf"="vspfc","blood"="vbldc")
   # ,"bw"="bw")
   
-  observeEvent(input$myconfirmation, {
+  mcData <- eventReactive(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){
       # print(paste('max = ',input$mySlider2[2]))
       nDoses <- input$mcNumeric
-      
+      mc_num <- input$mcNums
       ## observeEvent(input$run_sim,{
-      simid <- simSet3$simid[1]
-        results$simid <- simid
-        # get the parameters needed to run the model
-        model_params <<- getAllParamValuesForModel(simid,model)
+      simid <- as.integer(input$simulation2)
+      # get the parameters needed to run the model
+      model_params <- getAllParamValuesForModel(simid,model)
+      #get total volume
+      active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
+      vol_comps <- c(active_comp,"blood")
+      total_vol <- 1
+      query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
+      
+      # print(paste('mc_num: ',mc_num))
+      model_params$vals[["total_vol"]]<- total_vol
+      #set all exposures to zero so they can be reset later
+      model_params$vals[['bdose']] <- 0
+      model_params$vals[['drdose']] <- 0
+      model_params$vals[['inhdose']] <- 0
+      model_params$vals[['ivdose']] <- 0
+      model_params$vals[['dermrate']] <- 0
+      model_params$vals[['bdosev']] <- 0
+      
+      MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+      query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
+                       model)
+      mc_vars<- mainDbSelect(query)$model_var
+      mc_results <- lapply(mc_vars,function(x,n){
+        return(x = rep(NA,n))
+      },mc_num)
+      names(mc_results)<- mc_vars
+      # lapply(mc_vars,function(x,n){
+      #   return(x = rep(NA,n))
+      # },mc_num)
+      # names(multiDose_mcResults)<- mc_vars
+      
+      
+      if(input$exposure == 'Oral'){
+        whichDose = 'bdose'
+        doseName = 'Oral'
+        doseUnits = 'mg/kg BW/day'
+        model_params$vals[['blen']] <- input$blen
+        model_params$vals[['breps']] <- input$breps
+      } else if(input$exposure == 'Drinking Water'){
+        whichDose = 'drdose'
+        doseName = 'Drinking Water'
+        doseUnits = 'mg/L'
+        model_params$vals[['vdw']] <- input$vdw
+        model_params$vals[['dreps']] <- input$dreps
+        model_params$vals[['brep_flag']] <- input$brep_flag
+      } else if(input$exposure == 'Inhalation'){
+        whichDose = 'inhdose'
+        doseName = 'Inhalation'
+        doseUnits = 'ppm'
+        model_params$vals[['inhtlen']] <- input$inhtlen
+        model_params$vals[['inhdays']] <- input$inhdays
+      } else if(input$exposure == 'IV'){
+        whichDose = 'ivdose'
+        doseName = 'IV'
+        doseUnits = 'mg/L'
+        model_params$vals[['ivlen']] <- input$ivlen
+        model_params$vals[['ivrep_flag']] <- input$ivrep_flag
+      } else if(input$exposure == 'Dermal'){
+        whichDose = 'dermrate'
+        doseName = 'Dermal'
+        doseUnits = '\U00B5m/n/cm\U00B2'
+        model_params$vals[['dermlen']] <- input$dermlen
+        model_params$vals[['skarea']] <- input$skarea
+        model_params$vals[['dermrep_flag']] <- input$dermrep_flag
+      }
+      currentDose <- input$mySlider2[1]
+      if(currentDose == 0){
+        currentDose <- 1e-10
+      }
+      
+      # maxDose <- input$mySlider2[2]
+      increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
+      dose_list <- currentDose
+      # print(increaseDose)
+      for(dose_num in 1:(nDoses)){
+        # print(paste('Running monte carlo simulation ', n ))
+        # print(currentDose)
+        model_params$vals[[whichDose]] <- currentDose
         
-        # if(myExpoid == 'oral'){
-        #   whichDose = 'bdose'
-        #   doseName = 'Oral'
-        #   doseUnits = 'mg/kg BW/day'
-        # } else if(myExpoid == 'dw'){
-        #   whichDose = 'drdose'
-        #   doseName = 'Drinking Water'
-        #   doseUnits = 'mg/L'
-        # } else if(myExpoid == 'inh'){
-        #   whichDose = 'inhdose'
-        #   doseName = 'Inhalation'
-        #   doseUnits = 'ppm'
-        # } else if(myExpoid == 'iv'){
-        #   whichDose = 'ivdose'
-        #   doseName = 'IV'
-        #   doseUnits = 'mg/L'
-        # } else if(myExpoid == 'derm'){
-        #   whichDose = 'dermrate'
-        #   doseName = 'Dermal'
-        #   doseUnits = '\U00B5m/n/cm\U00B2'
-        # } else if(myExpoid == 'oralv'){
-        #   whichDose = 'bdosev'
-        #   doseName = 'Oral Vehicle'
-        #   doseUnits = 'mg/kg BW/day'
-        # } else whichDose = 'Something went wrong'
-        # print(myExpoid)
         
-        #get total volume
-        active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
-        vol_comps <- c(active_comp,"blood")
-        total_vol <- 1#sum( #COME BACK TO #######################################
-        #   unlist(
-        #     lapply(
-        #       vol_comps,
-        #       function(x){
-        #         input[[vol_ids[x]]]
-        #       })
-        #   )
-        # )
-        # test_vol_comps <<- vol_comps
-        # test_total_Vol <<- total_vol
-        # test_vol_ids <<- vol_ids
-        query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
-        mc_num <<- 50#as.integer(projectDbSelect(query)$mc_num)
-        # print(paste('mc_num: ',mc_num))
-        model_params$vals[["total_vol"]]<- total_vol
-        # print(total_vol)
-        # print(paste(whichDose, ': ', model_params$vals[[whichDose]]))
-        if (mc_num > 1){
-          MC.matrix <<- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
-          query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
-                           model)
-          mc_vars<- mainDbSelect(query)$model_var
-          mc_results <- lapply(mc_vars,function(x,n){
-            return(x = rep(NA,n))
-          },mc_num)
-          names(mc_results)<- mc_vars
-          model_params$vals[['bdose']] <- 0
-          model_params$vals[['drdose']] <- 0
-          model_params$vals[['inhdose']] <- 0
-          model_params$vals[['ivdose']] <- 0
-          model_params$vals[['dermrate']] <- 0
-          model_params$vals[['bdosev']] <- 0
-          
-          if(input$exposure == 'Oral'){
-            whichDose = 'bdose'
-            doseName = 'Oral'
-            doseUnits = 'mg/kg BW/day'
-            model_params$vals[['blen']] <- input$blen
-            model_params$vals[['breps']] <- input$breps
-          } else if(input$exposure == 'Drinking Water'){
-            whichDose = 'drdose'
-            doseName = 'Drinking Water'
-            doseUnits = 'mg/L'
-            model_params$vals[['vdw']] <- input$vdw
-            model_params$vals[['dreps']] <- input$dreps
-            model_params$vals[['brep_flag']] <- input$brep_flag
-          } else if(input$exposure == 'Inhalation'){
-            whichDose = 'inhdose'
-            doseName = 'Inhalation'
-            doseUnits = 'ppm'
-            model_params$vals[['inhtlen']] <- input$inhtlen
-            model_params$vals[['inhdays']] <- input$inhdays
-          } else if(input$exposure == 'IV'){
-            whichDose = 'ivdose'
-            doseName = 'IV'
-            doseUnits = 'mg/L'
-            model_params$vals[['ivlen']] <- input$ivlen
-            model_params$vals[['ivrep_flag']] <- input$ivrep_flag
-          } else if(input$exposure == 'Dermal'){
-            whichDose = 'dermrate'
-            doseName = 'Dermal'
-            doseUnits = '\U00B5m/n/cm\U00B2'
-            model_params$vals[['dermlen']] <- input$dermlen
-            model_params$vals[['skarea']] <- input$skarea
-            model_params$vals[['dermrep_flag']] <- input$dermrep_flag
-          }
-          
-          currentDose <- input$mySlider2[1]
-          if(currentDose == 0){
-            currentDose = 0.05
-          }
-          
-          # maxDose <- input$mySlider2[2]
-          increaseDose <- (input$mySlider2[2]/currentDose)^(1/(nDoses-1))
-          # print(increaseDose)
-          for(n in 1:(nDoses)){
-            # print(paste('Running monte carlo simulation ', n ))
-            # print(currentDose)
-            model_params$vals[[whichDose]] <- currentDose
-          
-
-            for (i in 1:mc_num){
-              model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
-              initial_values <<- calculateInitialValues(model_params)
-              tempDF <- runFDPBPK(initial_values,model)
-              max_list <- unlist(lapply(mc_vars,function(x,data){
-                var_name <- gsub("_max","",x)
-                
-                return(max(data[var_name]))
-              },tempDF$pbpk))
-              names(max_list)<- mc_vars
-              for (x in mc_vars){
-                mc_results[[x]][[i]]<- max_list[[x]]
-              }
-              updateProgressBar(session,"pb",value = ((n-1)*mc_num + i), total = mc_num*nDoses)
-            }
-            
-          
-          results$pbpk <- as.data.frame(mc_results)
-          # MymcResults <<- as.data.frame(mc_results)
-          plasmaResults <- as.data.frame(results$pbpk$cpls_max)
-          colnames(plasmaResults) = currentDose
-          # pr2 <<- plasmaResults
-          # plasmaResults <<- plasmaResults %>%
-          #   rename(
-          #     results$pbpk$cpls_max = 'DOSE'
-          #   )
-          
-          if(n == 1){
-          #   mcResults2 <<- NULL
-          # }
-          # mcResults2[n] <<- plasmaResults[1]
-          # if(n==1){#is.null(mcResults)){
-          #   # print('it is null')
-            mcResults <<- plasmaResults
-          } else{
-          #   # print('something exists')
-            mcResults <<- cbind(mcResults,plasmaResults)# %>%
-          }
-          # mcResults <<- mcResults %>% 
-          #   rename(
-          #     results$pbpk$cpls_max = 'DOSE'
-          #   )
-          #   mutate(
-          #     xCol = as.data.frame(mc_results['cpls_max'])
-          #   )
-          results$mode <- "MC"
-          currentDose = currentDose * increaseDose
-          }
-      #     updateNavbarPage(session,"menu","output")
-        }else{
+        for (i in 1:mc_num){
+          model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
           initial_values <- calculateInitialValues(model_params)
-
-          updateProgressBar(session,"pb",value = 100, total = 100,
-                            status = "info")
           tempDF <- runFDPBPK(initial_values,model)
-
-          results$pbpk<- tempDF$pbpk
-
-
-          results$mode <- "FD"
-      #     updateNavbarPage(session,"menu","output")
+          max_list <- unlist(lapply(mc_vars,function(x,data){
+            var_name <- gsub("_max","",x)
+            
+            return(max(data[var_name]))
+          },tempDF$pbpk))
+          names(max_list)<- mc_vars
+          for (x in mc_vars){
+            mc_results[[x]][[i]]<- max_list[[x]]
+          }
+          updateProgressBar(session,"pb",value = ((dose_num-1)*mc_num + i), total = mc_num*nDoses)
         }
-      ## })
-      
-      
-      ########################################################################
-      # print('Running Monte Carlo')
-      # print(paste('Number of doses = ',input$mcNumeric, '!', sep = ''))
+        plasmaResults <-as.data.frame(mc_results$cpls_max)
+        colnames(plasmaResults) <- currentDose
         
-        updatemenus <- list(
-          list(
-            active = 0,
-            type = 'buttons',
-            buttons = list(
-              list(
-                label = 'Default',
-                method = 'relayout',
-                args = list(
-                  list(
-                    yaxis = list(
-                      title = paste('Concentrations (mg/L)', sep = ''),
-                      type = 'linear'
-                    )
-                  )
-                )
-              ),
-              list(
-                label = 'Log Y-Axis',
-                method = 'relayout',
-                args = list(
-                  list(
-                    yaxis = list(
-                      title = paste('Log Concentrations (mg/L)', sep = ''),
-                      type = 'log'
-                    )
-                  )
-                )
+        if(dose_num == 1){
+          mcResults <- plasmaResults
+        } else{
+          mcResults <- cbind(mcResults,plasmaResults)# %>%
+        }
+        results$mode <- "MC"
+        currentDose <- currentDose * increaseDose
+        dose_list <- c(dose_list,currentDose)
+      }
+      print(mcResults)
+      data2return <- list("data"=mcResults,"expoRoute"=doseName,"doseUnits"=doseUnits)
+      removeModal()
+      return(data2return)
+      
+    }else{
+      removeModal()
+      return(NULL)
+      
+    }
+  })
+  
+      
+  
+  
+  updatemenus <- list(
+    list(
+      active = 0,
+      type = 'buttons',
+      buttons = list(
+        list(
+          label = 'Default',
+          method = 'relayout',
+          args = list(
+            list(
+              yaxis = list(
+                title = paste('Concentrations (mg/L)', sep = ''),
+                type = 'linear'
+              )
+            )
+          )
+        ),
+        list(
+          label = 'Log Y-Axis',
+          method = 'relayout',
+          args = list(
+            list(
+              yaxis = list(
+                title = paste('Log Concentrations (mg/L)', sep = ''),
+                type = 'log'
               )
             )
           )
         )
-        
-        output$Plot1 <- renderPlotly({
-          p <- plot_ly(
-            stack(mcResults),
-            x = ~ind,
-            y = ~values,
-            type = "box"
-          ) %>%
-            layout(
-              title = paste(input$exposure, 'Monte Carlo Simulation'),
-              yaxis = list(
-                title = paste('Concentrations (mg/L)', sep = '')
-              ),
-              xaxis = list(
-                title = paste(doseName, ' Exposure (', doseUnits,')', sep = '')
-              ),
-              margin = m,
-              updatemenus = updatemenus
-            )
-        })
-        mcvals$exposure <- paste(doseName, ' Concentration (', doseUnits,')', sep = '')
-        mcvals$csvFile <- mcResults
-        removeModal()
-    }
-    else{
-      # print('Denied Monte Carlo Simulation')
-    }
+      )
+    )
+  )
+  
+  output$Plot1 <- renderPlotly({
+    p <- plot_ly(
+      stack(mcData()$data),
+      x = ~ind,
+      y = ~values,
+      type = "box"
+    ) %>%
+      layout(
+        title = paste(input$exposure, 'Monte Carlo Simulation'),
+        yaxis = list(
+          title = paste('Concentrations (mg/L)', sep = '')
+        ),
+        xaxis = list(
+          title = paste(mcData()$expoRoute, ' Exposure (', mcData()$doseUnits,')', sep = '')
+        ),
+        margin = m,
+        updatemenus = updatemenus
+      )
   })
   
-  observeEvent(input$simulation2, {
-    shinyjs::enable('runSim2')
-    simSet3 <<- simSet %>%
-      filter(
-        name == input$simulation2
-      )
-    exposureType <<- Exposure %>%
-      filter(
-        expoid == simSet3$expoid & 
-          param == 'expo_sidebar'
-      )
-    myExpoid <<- exposureType$value[1]
-    if(myExpoid == 'oral'){
-      mySliderLabel = 'Oral (mg/kg BW/day)'
-    } else if(myExpoid == 'dw'){
-      mySliderLabel = 'Drinking Water (mg/L)'
-    } else if(myExpoid == 'inh'){
-      mySliderLabel = 'Inhalation (ppm)'
-    } else if(myExpoid == 'iv'){
-      mySliderLabel = 'IV (mg/L)'
-    } else if(myExpoid == 'derm'){
-      mySliderLabel = 'Dermal (\U00B5m/n/cm\U00B2)'
-    } else if(myExpoid == 'oralv'){
-      mySliderLabel = 'Oral Vehicle (mg/kg BW/day)'
-    } else mySliderLabel = 'Unknown'
-    
-    # expoTypes <- c('Oral' = 'oral', 'Drinking Water' = 'dw', 'Inhalation' = 'inh', 'IV' = 'iv', 'Dermal' = 'derm')
-    # updatePickerInput(
-    #   session,
-    #   'exposure',
-    #   label = 'hello',
-    #   selected = NULL,
-    #   choices = expoTypes3
-    #   # choicesOpt = list(
-    #   #   subtext = simSet$descrp
-    #   # )
-    # )
-    updateNumericRangeInput(
-      session,
-      'mySlider2',
-      label = mySliderLabel,
-      value = c(0,1000) # This line is needed to update the label because this would create subscript out of bounds error otherwise
-    )
-    # output$mySlider <- renderUI({
-    #   # fluidRow(
-    #   sliderInput(
-    #     'mySlider',
-    #     label = exposureType$value[1],
-    #     min = 0,
-    #     max = 1000,
-    #     value = c(0,1000)
-    #   )    
-    #   # )
-    # })
-    
-    # mySliderLabel <- simset3$expoid
-    # updateNoUiSliderInput(
-    #   session,
-    #   'mySlider',
-    #   label = 'simSet3'
-    # )
-  })
+  # mcvals$exposure <- paste(doseName, ' Concentration (', doseUnits,')', sep = '')
+  # mcvals$csvFile <- mcResults
+  
+
+  
+  # observeEvent(input$simulation2, {
+  #   shinyjs::enable('runSim2')
+  #   simSet3 <<- simSet %>%
+  #     filter(
+  #       name == input$simulation2
+  #     )
+  #   exposureType <<- Exposure %>%
+  #     filter(
+  #       expoid == simSet3$expoid & 
+  #         param == 'expo_sidebar'
+  #     )
+  #   myExpoid <<- exposureType$value[1]
+  #   if(myExpoid == 'oral'){
+  #     mySliderLabel = 'Oral (mg/kg BW/day)'
+  #   } else if(myExpoid == 'dw'){
+  #     mySliderLabel = 'Drinking Water (mg/L)'
+  #   } else if(myExpoid == 'inh'){
+  #     mySliderLabel = 'Inhalation (ppm)'
+  #   } else if(myExpoid == 'iv'){
+  #     mySliderLabel = 'IV (mg/L)'
+  #   } else if(myExpoid == 'derm'){
+  #     mySliderLabel = 'Dermal (\U00B5m/n/cm\U00B2)'
+  #   } else if(myExpoid == 'oralv'){
+  #     mySliderLabel = 'Oral Vehicle (mg/kg BW/day)'
+  #   } else mySliderLabel = 'Unknown'
+  #   
+  #  
+  #   updateNumericRangeInput(
+  #     session,
+  #     'mySlider2',
+  #     label = mySliderLabel,
+  #     value = c(0,1000) # This line is needed to update the label because this would create subscript out of bounds error otherwise
+  #   )
+  #   
+  # })
   
   # observeEvent(input$bmFile, {
   #   shinyjs::enable("runSim")
@@ -957,62 +709,50 @@ shinyServer(function(input, output,session) {
   })
   
   # Actions on Add button in Upload Biomonitoring's Modal
-  observeEvent(input$runSim2, {
-    # print(myExpoid)
-    # print(paste('max = ',input$mySlider2[2]))
-    # nDoses <- 3#input$mcNumeric
-    if(is.null(input$simulation2)){
-      myExpoid <<- 'oral'
-      simSet3 <<- SimulationsSet[2,]
-    }
-    if(myExpoid == 'oral'){
+  bmResults <- eventReactive(input$runSim2, {
+    simid <- as.integer(input$simulation2)
+    query <- sprintf("Select chemid, expoid, metaboliteid from SimulationsSet where simid = %i",simid)
+    ids_list <- projectDbSelect(query)
+    expoid <- as.integer(ids_list$expoid)
+    query <- sprintf("Select value from Exposure where param = 'expo_sidebar' and expoid = %f",expoid)
+    expo_type <- projectDbSelect(query)$value
+    if(expo_type == 'oral'){
       whichDose = 'bdose'
       doseName = 'Oral'
       doseUnits = 'mg/kg BW/day'
-    } else if(myExpoid == 'dw'){
+    } else if(expo_type == 'dw'){
       whichDose = 'drdose'
       doseName = 'Drinking Water'
       doseUnits = 'mg/L'
-    } else if(myExpoid == 'inh'){
+    } else if(expo_type == 'inh'){
       whichDose = 'inhdose'
       doseName = 'Inhalation'
       doseUnits = 'ppm'
-    } else if(myExpoid == 'iv'){
+    } else if(expo_type == 'iv'){
       whichDose = 'ivdose'
       doseName = 'IV'
       doseUnits = 'mg/L'
-    } else if(myExpoid == 'derm'){
+    } else if(expo_type == 'derm'){
       whichDose = 'dermrate'
       doseName = 'Dermal'
       doseUnits = '\U00B5m/n/cm\U00B2'
-    } else if(myExpoid == 'oralv'){
+    } else if(expo_type == 'oralv'){
       whichDose = 'bdosev'
       doseName = 'Oral Vehicle'
       doseUnits = 'mg/kg BW/day'
     } else whichDose = 'Something went wrong'
     
+    currentDose <- 1#Exposure$value[which(Exposure$param == whichDose & Exposure$expoid == simid)]
     ## observeEvent(input$run_sim,{
-    simid <- simSet3$simid[1]
     results$simid <- simid
     # get the parameters needed to run the model
-    model_params <<- getAllParamValuesForModel(simid,model)
+    model_params <- getAllParamValuesForModel(simid,model)
     #get total volume
     active_comp <- c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
     vol_comps <- c(active_comp,"blood")
-    total_vol <- 1#sum( #COME BACK TO #######################################
-    #   unlist(
-    #     lapply(
-    #       vol_comps,
-    #       function(x){
-    #         input[[vol_ids[x]]]
-    #       })
-    #   )
-    # )
-    # test_vol_comps <<- vol_comps
-    # test_total_Vol <<- total_vol
-    # test_vol_ids <<- vol_ids
+    total_vol <- 1
     query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
-    mc_num <<- as.integer(projectDbSelect(query)$mc_num)
+    mc_num <- as.integer(projectDbSelect(query)$mc_num)
     # print(paste('mc_num: ',mc_num))
     model_params$vals[["total_vol"]]<- total_vol
     # print(total_vol)
@@ -1028,7 +768,7 @@ shinyServer(function(input, output,session) {
         tryCatch({
     
     if (mc_num > 1){
-      MC.matrix <<- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
+      MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
       query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
                        model)
       mc_vars<- mainDbSelect(query)$model_var
@@ -1036,8 +776,7 @@ shinyServer(function(input, output,session) {
         return(x = rep(NA,n))
       },mc_num)
       names(mc_results)<- mc_vars
-      
-      currentDose <<- Exposure$value[which(Exposure$param == whichDose & Exposure$expoid == simid)]#input$mySlider2[1]
+      #input$mySlider2[1]
       # if(currentDose == 0){
       #   currentDose = 0.05
       # }
@@ -1084,7 +823,7 @@ shinyServer(function(input, output,session) {
       # bmResults2[n] <<- plasmaResults[1]
       # if(n==1){#is.null(bmResults)){
       #   # print('it is null')
-      bmResults <<- plasmaResults
+     # bmResults <- plasmaResults
       # } else{
       #   # print('something exists')
       #   bmResults <<- cbind(bmResults,plasmaResults)# %>%
@@ -1096,23 +835,12 @@ shinyServer(function(input, output,session) {
       #   mutate(
       #     xCol = as.data.frame(mc_results['cpls_max'])
       #   )
-      bmvals$csvFile <- bmResults
+     # bmvals$csvFile <- bmResults
       results$mode <- "MC"
       # currentDose = currentDose * increaseDose
       # }
       #     updateNavbarPage(session,"menu","output")
-    }else{
-      initial_values <- calculateInitialValues(model_params)
       
-      # updateProgressBar(session,"bmProgress",value = 100, total = 100,
-      #                   status = "info")
-      tempDF <- runFDPBPK(initial_values,model)
-      
-      results$pbpk<- tempDF$pbpk
-      
-      
-      results$mode <- "FD"
-      #     updateNavbarPage(session,"menu","output")
     }
           
           #setProgress(1)
@@ -1120,6 +848,9 @@ shinyServer(function(input, output,session) {
     error = function(e) {
       shinyalert("Failed to run the simulation.", conditionMessage(e), type = "error", closeOnClickOutside = TRUE)
     })
+      })
+    data2return <- list("plasmaCmax" = plasmaResults[,1],"expoRoute"=doseName)
+    return(data2return)
       })
     ## })
     
@@ -1159,11 +890,11 @@ shinyServer(function(input, output,session) {
     
     output$Plot3 <- renderPlotly({
       p <- plot_ly(
-        x = bmResults[,1],
+        x = bmResults()$plasmaCmax,
         type = "histogram"
       ) %>%
         layout(
-          title = doseName,
+          title = bmResults()$expoRoute,
           yaxis = list(
             title = 'Count'
           ),
@@ -1176,7 +907,7 @@ shinyServer(function(input, output,session) {
     })
     
     # removeModal()
-  })
+
     
     
     
@@ -1313,25 +1044,26 @@ shinyServer(function(input, output,session) {
   
   observeEvent(input$btnRTRExtrapolation,{
     
-    mcResult2 <<- data.frame(mcvals$csvFile)
-    obsData2 <<- data.frame(bmvals$csvFile)
-    # bounds2 <<- bloodConcRange()
-    bounds2 <<- bloodConcRange2(mcResult2)
+    mcResult2 <- data.frame(mcData()$data)
     
-    frequencyTable2 <<- frequencyData(bounds2, mcResult2)
-    probabilityTbl <<- probabilityConc(frequencyTable2)
+    obsData2 <- data.frame(bmResults()$plasmaCmax)
+    # bounds2 <<- bloodConcRange()
+    bounds2 <- bloodConcRange2(mcResult2)
+    
+    frequencyTable2 <- frequencyData(bounds2, mcResult2)
+    probabilityTbl <- probabilityConc(frequencyTable2)
     
     # logtrans <<- transformObs(obsData) # Unused
-    measuredRange2 <<- measuredBloodRange(maxValue = 2500)
-    dist12 <<- distributionData(obsData2,measuredRange2)
-    dist22 <<- distributionData(obsData2,bounds2)
-    revDosData22 <<- data.frame(t(dist22[4]))
-    probabilityTbl2 <<- probabilityConc(probabilityTbl, dist22$percentCol)
-    cumulative2 <<- rowSums(probabilityTbl2)
-    cdfResult <<- cdf(probabilityTbl2)
-    pdfCDF <<- cbind(data.frame(colnames(mcvals$csvFile)), cdfResult)
+    # measuredRange2 <<- measuredBloodRange(maxValue = 2500)
+    # dist12 <<- distributionData(obsData2,measuredRange2)
+    dist22 <- distributionData(obsData2,bounds2)
+    revDosData22 <- data.frame(t(dist22[4]))
+    probabilityTbl2 <- probabilityConc(probabilityTbl, dist22$percentCol)
+    cumulative2 <- rowSums(probabilityTbl2)
+    cdfResult <- cdf(probabilityTbl2)
+    pdfAndCDF <- cbind(data.frame(colnames(mcData()$data)), cdfResult)
     # pdfCDF <<- cbind(pdfCDF1, cdfResult)
-    pdfAndCDF <<- pdfCDF
+
     
     
     
@@ -1355,15 +1087,17 @@ shinyServer(function(input, output,session) {
       }
       rate <- (your.number-x[lowerIndex])/(x[upperIndex]-x[lowerIndex])
       concNames <- pdfAndCDF[[1]]
-      coNames <- as.numeric(as.character(concNames))
+      coNames <- as.numeric(lapply(as.character(concNames),function(x){
+        gsub("[A-z]","",x)}))
       cdfValue <- coNames[lowerIndex]+(rate*(coNames[upperIndex]-coNames[lowerIndex]))
       return(cdfValue[1])
     }
     
     percentileList <- c(5, 25, 50, 75, 90, 95, 99, 100)
-    percentileResults <<- sapply(percentileList, findPercentile)
+    percentileResults <- sapply(percentileList, findPercentile)
     percentileListed <- c('5th', '25th', '50th', '75th', '90th', '95th', '99th', '100th')
-    percentileDF <<- data.frame(list('Percentile' = percentileListed, 'Concentration' = percentileResults))
+    print(percentileResults)
+    percentileDF <- data.frame(list('Percentile' = percentileListed, 'Concentration' = percentileResults))
     
     # ppbFiles <- list.files(pattern = 'PercentilePPB.*csv') # list of all of the files to import
     # df_list <- lapply(ppbFiles,read_csv) # read each file into a data frame
@@ -1891,6 +1625,7 @@ calculateInitialValues <- function(params_list){
     vliv <- vlivc*(perfc/total_vol)*bw
     vrpf <- vrpfc*(perfc/total_vol)*bw
     vspf <- vspfc*(perfc/total_vol)*bw
+    vdmet <- vdmetc*bw #volume of distribution for the metabolite
     
     #Total Fractional Perfusion
     total_perf <- qfatc+qskinc+qmuscc+qbonec+qbrnc+qlngc+qhrtc+qkdnc+qvlivc+qrpfc+qspfc  # This does not include flow to GI since that is a part of liver venous flow
@@ -1933,6 +1668,8 @@ calculateInitialValues <- function(params_list){
     cinh <- (inhdose/24.45)#*1000/mw # converting from  ppm to mg/L(/24.45) and then to umoles/L for the model
     qalv <- (tv-ds)*respr
     pair <- ifelse(pair >0,pair,1E-10)
+    # scaled urinary flow rate per day
+    uflw <- uflwc*bw/24.0
   })
   
   #function for dosing
@@ -2244,7 +1981,10 @@ calculateInitialValues <- function(params_list){
     ametliv2 = 0.0,
     aclbld = 0.0,
     auexc = 0.0,
-    anabsgut = 0.0)
+    anabsgut = 0.0,
+    auexcmet = 0.0,
+    amet = 0.0,
+    vurine = 1e-10)
   
   initial_values <- list("evnt_data"= eventDat,
                          "initial_params"= initial_params[params_list$names],
