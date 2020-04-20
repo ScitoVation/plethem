@@ -4,8 +4,7 @@
 \alias{getLifecourseVentilationRate}
 \title{Get the ventilation rate for a given age and gender}
 \usage{
-getLifecourseVentilationRate(age, gender, activity = "rest",
-  source = "sciv")
+getLifecourseVentilationRate(age, gender, activity = "rest", source = "sciv")
 }
 \arguments{
 \item{age}{Age in years}

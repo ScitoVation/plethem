@@ -4,8 +4,12 @@
 \alias{getLifecourseTissuePerfusion}
 \title{Get perfusion for tissues provided on the basis of age and gender}
 \usage{
-getLifecourseTissuePerfusion(age = 25, gender = "M",
-  tissues = list(), source = "sciv")
+getLifecourseTissuePerfusion(
+  age = 25,
+  gender = "M",
+  tissues = list(),
+  source = "sciv"
+)
 }
 \arguments{
 \item{age}{Age of the organism in years}

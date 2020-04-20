@@ -44,5 +44,5 @@ Imports:
 Suggests: testthat,
     rmarkdown,
     knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr

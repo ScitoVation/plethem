@@ -4,8 +4,12 @@
 \alias{newProject}
 \title{Start a new PLETHEM project.}
 \usage{
-newProject(name = "new_project", type = "PBPK", model = "rapidPBPK",
-  mode = "MC")
+newProject(
+  name = "new_project",
+  type = "PBPK",
+  model = "rapidPBPK",
+  mode = "MC"
+)
 }
 \arguments{
 \item{name}{The name for the project}

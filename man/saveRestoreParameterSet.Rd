@@ -4,8 +4,15 @@
 \alias{saveRestoreParameterSet}
 \title{Server for the restore/save dialog}
 \usage{
-saveRestoreParameterSet(input, output, session, UI_values, set_values,
-  param_names, type)
+saveRestoreParameterSet(
+  input,
+  output,
+  session,
+  UI_values,
+  set_values,
+  param_names,
+  type
+)
 }
 \arguments{
 \item{input}{input object for the UI}

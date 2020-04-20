@@ -4,8 +4,15 @@
 \alias{newEditVariability}
 \title{Server function for defining variability and uncertainty datasets}
 \usage{
-newEditVariability(input, output, session, set_type, ops_type,
-  var_params_list, set_id = 0)
+newEditVariability(
+  input,
+  output,
+  session,
+  set_type,
+  ops_type,
+  var_params_list,
+  set_id = 0
+)
 }
 \arguments{
 \item{input}{input object from UI}

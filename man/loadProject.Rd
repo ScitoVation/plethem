@@ -4,7 +4,7 @@
 \alias{loadProject}
 \title{Load the project from the project file located at the given path}
 \usage{
-loadProject(file_path = "")
+loadProject(file_path = "", runUI = T)
 }
 \arguments{
 \item{file_path}{path to the project file. If no path is provided, launches a select file dialog box for the user to select the path}

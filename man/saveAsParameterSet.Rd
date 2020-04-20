@@ -4,8 +4,15 @@
 \alias{saveAsParameterSet}
 \title{server side function for saving a new physiological, chemical or exposure set to the project database}
 \usage{
-saveAsParameterSet(input, output, session, set_type, main_input, name_df,
-  other = NULL)
+saveAsParameterSet(
+  input,
+  output,
+  session,
+  set_type,
+  main_input,
+  name_df,
+  other = NULL
+)
 }
 \arguments{
 \item{input}{input object for the UI}

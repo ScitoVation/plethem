@@ -11,4 +11,5 @@
 #' @importFrom plotly renderPlotly plot_ly add_trace
 #' @importFrom DT DTOutput renderDT datatable dataTableProxy replaceData
 #' @importFrom NonCompart IntAUC sNCA
+#' @importFrom dplyr bind_rows
 NULL

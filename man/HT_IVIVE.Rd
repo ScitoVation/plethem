@@ -4,8 +4,16 @@
 \alias{HT_IVIVE}
 \title{server function of high throughput dosimetry}
 \usage{
-HT_IVIVE(input, output, session, vals = "", type = "",
-  chem_list = list(), idx = 0, row_selected = 0)
+HT_IVIVE(
+  input,
+  output,
+  session,
+  vals = "",
+  type = "",
+  chem_list = list(),
+  idx = 0,
+  row_selected = 0
+)
 }
 \arguments{
 \item{input}{input object from the data input UI}

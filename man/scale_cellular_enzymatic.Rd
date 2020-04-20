@@ -4,8 +4,14 @@
 \alias{scale_cellular_enzymatic}
 \title{Scale clearance by age when both cellular and enzymatic clearance are known at referance age.}
 \usage{
-scale_cellular_enzymatic(out_ages, tot_scaled_hepcl, tot_scaled_recomcl,
-  cypDb, cypCl, gender)
+scale_cellular_enzymatic(
+  out_ages,
+  tot_scaled_hepcl,
+  tot_scaled_recomcl,
+  cypDb,
+  cypCl,
+  gender
+)
 }
 \arguments{
 \item{out_ages}{Ages for which the clearance needs to be calculated including reference age}

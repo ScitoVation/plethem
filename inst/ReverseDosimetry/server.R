@@ -608,7 +608,7 @@ shinyServer(function(input, output,session) {
     mcvals$name <- input$mcname
     filesIn <- input$csvFile
     df_list <- lapply(filesIn$datapath,read.csv) # read each file into a data frame
-    mcvals$csvFile <- bind_rows(df_list) # concatenates all of the data frames
+    mcvals$csvFile <- dplyr::bind_rows(df_list) # concatenates all of the data frames
     mcvals$exposure <- paste(input$type, ' Concentration (',input$unit,')', sep = '')
     updatemenus <- list(
       list(
@@ -671,7 +671,7 @@ shinyServer(function(input, output,session) {
     filesIn2 <- input$bmFile
     #bmCSV <- read.csv(filesIn2$datapath)
     df_list2 <- lapply(filesIn2$datapath,read.csv) # read each file into a data frame
-    bmvals$csvFile <- bind_rows(df_list2) # concatenates all of the data frames
+    bmvals$csvFile <- dplyr::bind_rows(df_list2) # concatenates all of the data frames
     bmCSV <- data.frame(bmvals$csvFile)
     updatemenus <- list(
       list(
@@ -838,11 +838,11 @@ shinyServer(function(input, output,session) {
 
     # ppbFiles <- list.files(pattern = 'PercentilePPB.*csv') # list of all of the files to import
     # df_list <- lapply(ppbFiles,read_csv) # read each file into a data frame
-    # percentileDF <- as.data.frame(bind_rows(df_list)) # concatenates all of the data frames
+    # percentileDF <- as.data.frame(dplyr::bind_rows(df_list)) # concatenates all of the data frames
     
     # plotFiles <- list.files(pattern = 'PDFandCDF.*csv') # list of all of the files to import
     # plotdf_list <- lapply(plotFiles,read_csv) # read each file into a data frame
-    # pdfAndCDF <- as.data.frame(bind_rows(plotdf_list)) # concatenates all of the data frames
+    # pdfAndCDF <- as.data.frame(dplyr::bind_rows(plotdf_list)) # concatenates all of the data frames
     
     updatemenus <- list(
       list(
@@ -1032,7 +1032,7 @@ shinyServer(function(input, output,session) {
     # Creates the dataframe for the user to download
     td1 <- data.frame(t(revDosDataHeaders))
     colnames(td1) = colnames(revDosData1)
-    dlTable1 <- bind_rows(td1, revDosData1)
+    dlTable1 <- dplyr::bind_rows(td1, revDosData1)
     rownames(dlTable1) = c('Larger than','Smaller than or equal to',pdfAndCDF[[1]])
     
     output$downloadTablerevDosData1 <- downloadHandler(
@@ -1049,7 +1049,7 @@ shinyServer(function(input, output,session) {
     )
     
     # Creates the dataframe for the user to download
-    dlTable2 <- bind_rows(td1, revDosData2)
+    dlTable2 <- dplyr::bind_rows(td1, revDosData2)
     rownames(dlTable2) = c('Larger than','Smaller than or equal to','Adjusted Weighting Factors')
     
     output$downloadTablerevDosData2 <- downloadHandler(
@@ -1066,7 +1066,7 @@ shinyServer(function(input, output,session) {
     )
     
     # Creates the dataframe for the user to download
-    dlTable3 <- bind_rows(td1, revDosData3)
+    dlTable3 <- dplyr::bind_rows(td1, revDosData3)
     rownames(dlTable3) = c('Larger than','Smaller than or equal to',pdfAndCDF[[1]])
     
     output$downloadTablerevDosData3 <- downloadHandler(
