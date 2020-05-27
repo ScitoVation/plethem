@@ -284,7 +284,6 @@ shinyServer(function(input, output,session) {
                "heart"="vhrtc","gi"="vgic",
                "liver"="vlivc","kidney"="vkdnc",
                "rpf"="vrpfc","spf"="vspfc","blood"="vbldc")
-  # ,"bw"="bw")
   results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
   observeEvent(input$myconfirmation, {
     if(isTRUE(input$myconfirmation)){

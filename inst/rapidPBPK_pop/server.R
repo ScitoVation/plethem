@@ -1760,7 +1760,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                           y = ~value,color = ~variable,
                           type = "box")%>%
         plotly::layout(yaxis = list(title = (ifelse(input$r_cplt_type=="um",
-                                                    'Concentration (\u00B5M)',
+                                                    'Concentration (\U00B5M)',
                                                     'Concentration (mg/L)'))
                                     )
                        )
