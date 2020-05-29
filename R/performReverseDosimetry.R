@@ -4,6 +4,10 @@
 #' @param maxValue
 #' @param stepSize
 #' @return upperAndLowerBounds
+#' @examples 
+#' \dontrun{
+#' bloodConcRange(-0.6,4.6,0.2)
+#' }
 #' @export
 bloodConcRange <- function(minValue = -0.6, maxValue = 4.6, stepSize= 0.2){
   a <- c(0, 10^(seq(minValue, maxValue,by=stepSize)))
