@@ -2,13 +2,10 @@
 % Please edit documentation in R/performReverseDosimetry.R
 \name{isBetween}
 \alias{isBetween}
-\title{Function to}
+\title{bolean to check if a number is within a given range}
 \usage{
 isBetween(largerThan, smallerThanEqualTo, testValue)
 }
-\value{
-
-}
 \description{
-Function to
+bolean to check if a number is within a given range
 }

@@ -2,13 +2,10 @@
 % Please edit documentation in R/performReverseDosimetry.R
 \name{cdf}
 \alias{cdf}
-\title{Function to}
+\title{calcualte CDF from the probability table}
 \usage{
 cdf(probabilityTable)
 }
-\value{
-
-}
 \description{
-Function to
+Converts a PDF to a CDF so it can be used for plotting and calculating percentile values
 }

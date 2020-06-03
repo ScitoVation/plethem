@@ -781,8 +781,14 @@ shinyServer(function(input, output,session) {
   
   observeEvent(input$btnRunRevDos,{
     
-    mcResult2 <- data.frame(mcvals$csvFile)
-    obsData2 <- data.frame(bmvals$csvFile)
+    mcData <- data.frame(mcvals$csvFile)
+    biomData <- data.frame(bmvals$csvFile)
+    percentileList <- c(5, 25, 50, 75, 90, 95, 99, 100)
+    revDosResults <- runReverseDosimetry(mcData,
+                                         biomData,
+                                         exposureBounds,
+                                         percentileList
+                                         )
     # bounds2 <- bloodConcRange()
     bounds2 <- bloodConcRange2(mcResult2)
     frequencyTable2 <- frequencyData(bounds2, mcResult2)
