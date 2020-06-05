@@ -84,94 +84,94 @@ shinyServer(function(input, output,session) {
               "csvFile",
               label = "Upload Monte Carlo Results",
               accept = c("text/csv","text/comma-separated-values",".csv"),
-              multiple = TRUE
+              multiple = FALSE
             ),
             tags$h4("Results are displayed in mg/L")
-          ),
-          tabPanel(
-            title = 'Run Monte Carlo Simulation',
-            br(),
-            fileInput(
-              "rDataFile",
-              label = "Select Project file",
-              accept = c(".RData", ".Rdata"),
-              placeholder = 'Upload .RData file',
-              multiple = F
-            ),
-            pickerInput(
-              'simulation',
-              'Select Simulation',
-              choices = NULL,
-              selected = NULL,
-              multiple = F
-              # ,options = list(
-              # 'live-search' = TRUE,
-              # 'actions-box' = TRUE,
-              # 'selected-text-format' = 'count > 2',
-              # 'count-selected-text'='{0} simulations selected'
-              # )
-            ),
-            fluidRow(
-              column(
-                6,
-                shinyWidgets::radioGroupButtons(
-                  'tissue',
-                  label = "Select Tissue Type",
-                  choices = c('Plasma', 'Urine')
-                )
-              ),
-              column(
-                6,
-                shinyWidgets::radioGroupButtons(
-                  "chemType",
-                  "Select Chemical Type",
-                  choices = c("Parent", "Metabolite")
-                )
-              )
-            ),
-            fluidRow(
-              column(
-                4,
-                # sliderInput(
-                #   'mySlider2',
-                #   label = 'Exposure Type (Units)',
-                #   min = 0,
-                #   max = 1000,
-                #   value = c(0,1000)
-                # )
-                numericRangeInput(
-                  'mySlider2',
-                  label = 'Exposure Type (Units)',
-                  # min = 0,
-                  # max = 1000,
-                  value = c(0,1000)
-                )
-              ),
-              column(
-                4,
-                numericInput(
-                  'mcNumeric',
-                  label = 'Number of Doses',
-                  min = 20,
-                  max = 50,
-                  value = 25,
-                  step = 1,
-                  width = '156.84px'
-                ),
-                uiOutput(
-                  'validNum'
-                )
-              ),
-              column(4,
-                     numericInput('mcNums',
-                                  label = 'Number of MC runs',
-                                  min = 1,
-                                  value = 1000))
-            ),
-            fluidRow(
-              progressBar(id = "pb",value = 0, status = "success",striped = T)
-            )
-          )
+          )#,
+          # tabPanel(
+          #   title = 'Run Monte Carlo Simulation',
+          #   br(),
+          #   fileInput(
+          #     "rDataFile",
+          #     label = "Select Project file",
+          #     accept = c(".RData", ".Rdata"),
+          #     placeholder = 'Upload .RData file',
+          #     multiple = F
+          #   ),
+          #   pickerInput(
+          #     'simulation',
+          #     'Select Simulation',
+          #     choices = NULL,
+          #     selected = NULL,
+          #     multiple = F
+          #     # ,options = list(
+          #     # 'live-search' = TRUE,
+          #     # 'actions-box' = TRUE,
+          #     # 'selected-text-format' = 'count > 2',
+          #     # 'count-selected-text'='{0} simulations selected'
+          #     # )
+          #   ),
+          #   fluidRow(
+          #     column(
+          #       6,
+          #       shinyWidgets::radioGroupButtons(
+          #         'tissue',
+          #         label = "Select Tissue Type",
+          #         choices = c('Plasma', 'Urine')
+          #       )
+          #     ),
+          #     column(
+          #       6,
+          #       shinyWidgets::radioGroupButtons(
+          #         "chemType",
+          #         "Select Chemical Type",
+          #         choices = c("Parent", "Metabolite")
+          #       )
+          #     )
+          #   ),
+          #   fluidRow(
+          #     column(
+          #       4,
+          #       # sliderInput(
+          #       #   'mySlider2',
+          #       #   label = 'Exposure Type (Units)',
+          #       #   min = 0,
+          #       #   max = 1000,
+          #       #   value = c(0,1000)
+          #       # )
+          #       numericRangeInput(
+          #         'mySlider2',
+          #         label = 'Exposure Type (Units)',
+          #         # min = 0,
+          #         # max = 1000,
+          #         value = c(0,1000)
+          #       )
+          #     ),
+          #     column(
+          #       4,
+          #       numericInput(
+          #         'mcNumeric',
+          #         label = 'Number of Doses',
+          #         min = 20,
+          #         max = 50,
+          #         value = 25,
+          #         step = 1,
+          #         width = '156.84px'
+          #       ),
+          #       uiOutput(
+          #         'validNum'
+          #       )
+          #     ),
+          #     column(4,
+          #            numericInput('mcNums',
+          #                         label = 'Number of MC runs',
+          #                         min = 1,
+          #                         value = 1000))
+          #   ),
+          #   fluidRow(
+          #     progressBar(id = "pb",value = 0, status = "success",striped = T)
+          #   )
+          # )
         )
       ),
       footer= tagList(
@@ -606,8 +606,9 @@ shinyServer(function(input, output,session) {
   observeEvent(input$add, {
     mcvals$name <- input$mcname
     filesIn <- input$csvFile
-    df_list <- lapply(filesIn$datapath,read.csv) # read each file into a data frame
-    mcvals$csvFile <- dplyr::bind_rows(df_list) # concatenates all of the data frames
+    mcvals$csvFile <- read.csv(filesIn$datapath)
+    # df_list <- lapply(filesIn$datapath,read.csv) # read each file into a data frame
+    # mcvals$csvFile <- dplyr::bind_rows(df_list) # concatenates all of the data frames
     mcvals$exposure <- paste(input$type, ' Concentration (',input$unit,')', sep = '')
     updatemenus <- list(
       list(
@@ -784,71 +785,80 @@ shinyServer(function(input, output,session) {
     mcData <- data.frame(mcvals$csvFile)
     biomData <- data.frame(bmvals$csvFile)
     percentileList <- c(5, 25, 50, 75, 90, 95, 99, 100)
+    # exposures <- as.numeric(lapply(as.character(colnames(mcData)),
+    #                                function(x){
+    #                                  gsub("[A-z]","",x)
+    #                                  }
+    #                                )
+    #                         )
+    # 
+    # exposureBounds <- c(min(exposures),max(exposures))
+
     revDosResults <- runReverseDosimetry(mcData,
                                          biomData,
-                                         exposureBounds,
                                          percentileList
                                          )
-    # bounds2 <- bloodConcRange()
-    bounds2 <- bloodConcRange2(mcResult2)
-    frequencyTable2 <- frequencyData(bounds2, mcResult2)
-    probabilityTbl <- probabilityConc(frequencyTable2)
     
-    # logtrans <- transformObs(obsData) # Unused
-    #measuredRange2 <- measuredBloodRange(maxValue = 2500)
-    #dist12 <- distributionData(obsData2,measuredRange2)
-    dist22 <- distributionData(obsData2,bounds2)
-    revDosData22 <- data.frame(t(dist22[4]))
-    probabilityTbl2 <- probabilityConc(probabilityTbl, dist22$percentCol)
-    cumulative2 <- rowSums(probabilityTbl2)
-
-    cdfResult <- cdf(probabilityTbl2)
-    pdfCDF <- cbind(data.frame(colnames(mcvals$csvFile)), cdfResult)
-    # pdfCDF <- cbind(pdfCDF1, cdfResult)
-    pdfAndCDF <- pdfCDF
-    
-    
-    
-    findPercentile <- function(whichPercentile = 25){
-      x=cdfResult[,2]
-      your.number = as.double(whichPercentile/100)
-      if(your.number != 1){
-        xIndex <- which(abs(x-your.number)==min(abs(x-your.number)))
-        closestNum <- x[xIndex]
-        if(closestNum > your.number) { # xIndex is higher than the percentile we're looking for
-          lowerIndex <- xIndex - 1
-          upperIndex <- xIndex
-        } else{ #xIndex is lower than the percentile we're looking for
-          lowerIndex <- xIndex
-          upperIndex <- xIndex + 1
-        }
-      } else{
-        upperIndex <- min(which(x == max(x))) -1 # This is -1 and lower is -2 in sample file.
-        lowerIndex <- upperIndex - 2
-      }
-      rate <- (your.number-x[lowerIndex])/(x[upperIndex]-x[lowerIndex])
-      concNames <- pdfAndCDF[[1]]
-      coNames <- as.numeric(lapply(as.character(concNames),function(x){
-        gsub("[A-z]","",x)}))
-      print(coNames)
-      cdfValue <- coNames[lowerIndex]+(rate*(coNames[upperIndex]-coNames[lowerIndex]))
-      return(cdfValue)
-    }
-    
-    
-    percentileList <- c(5, 25, 50, 75, 90, 95, 99, 100)
-    percentileResults <- sapply(percentileList, findPercentile)
-    percentileListed <- c('5th', '25th', '50th', '75th', '90th', '95th', '99th', '100th')
-    percentileDF <- data.frame(list('Percentile' = percentileListed, 'Concentration' = percentileResults))
-
-    # ppbFiles <- list.files(pattern = 'PercentilePPB.*csv') # list of all of the files to import
-    # df_list <- lapply(ppbFiles,read_csv) # read each file into a data frame
-    # percentileDF <- as.data.frame(dplyr::bind_rows(df_list)) # concatenates all of the data frames
-    
-    # plotFiles <- list.files(pattern = 'PDFandCDF.*csv') # list of all of the files to import
-    # plotdf_list <- lapply(plotFiles,read_csv) # read each file into a data frame
-    # pdfAndCDF <- as.data.frame(dplyr::bind_rows(plotdf_list)) # concatenates all of the data frames
-    
+    # # bounds2 <- bloodConcRange()
+    # bounds2 <- bloodConcRange2(mcResult2)
+    # frequencyTable2 <- frequencyData(bounds2, mcResult2)
+    # probabilityTbl <- probabilityConc(frequencyTable2)
+    # 
+    # # logtrans <- transformObs(obsData) # Unused
+    # #measuredRange2 <- measuredBloodRange(maxValue = 2500)
+    # #dist12 <- distributionData(obsData2,measuredRange2)
+    # dist22 <- distributionData(obsData2,bounds2)
+    # revDosData22 <- data.frame(t(dist22[4]))
+    # probabilityTbl2 <- probabilityConc(probabilityTbl, dist22$percentCol)
+    # cumulative2 <- rowSums(probabilityTbl2)
+    # 
+    # cdfResult <- cdf(probabilityTbl2)
+    # pdfCDF <- cbind(data.frame(colnames(mcvals$csvFile)), cdfResult)
+    # # pdfCDF <- cbind(pdfCDF1, cdfResult)
+    # pdfAndCDF <- pdfCDF
+    # 
+    # 
+    # 
+    # findPercentile <- function(whichPercentile = 25){
+    #   x=cdfResult[,2]
+    #   your.number = as.double(whichPercentile/100)
+    #   if(your.number != 1){
+    #     xIndex <- which(abs(x-your.number)==min(abs(x-your.number)))
+    #     closestNum <- x[xIndex]
+    #     if(closestNum > your.number) { # xIndex is higher than the percentile we're looking for
+    #       lowerIndex <- xIndex - 1
+    #       upperIndex <- xIndex
+    #     } else{ #xIndex is lower than the percentile we're looking for
+    #       lowerIndex <- xIndex
+    #       upperIndex <- xIndex + 1
+    #     }
+    #   } else{
+    #     upperIndex <- min(which(x == max(x))) -1 # This is -1 and lower is -2 in sample file.
+    #     lowerIndex <- upperIndex - 2
+    #   }
+    #   rate <- (your.number-x[lowerIndex])/(x[upperIndex]-x[lowerIndex])
+    #   concNames <- pdfAndCDF[[1]]
+    #   coNames <- as.numeric(lapply(as.character(concNames),function(x){
+    #     gsub("[A-z]","",x)}))
+    #   print(coNames)
+    #   cdfValue <- coNames[lowerIndex]+(rate*(coNames[upperIndex]-coNames[lowerIndex]))
+    #   return(cdfValue)
+    # }
+    # 
+    # 
+    # percentileList <- c(5, 25, 50, 75, 90, 95, 99, 100)
+    # percentileResults <- sapply(percentileList, findPercentile)
+    # percentileListed <- c('5th', '25th', '50th', '75th', '90th', '95th', '99th', '100th')
+    # percentileDF <- data.frame(list('Percentile' = percentileListed, 'Concentration' = percentileResults))
+    # 
+    # # ppbFiles <- list.files(pattern = 'PercentilePPB.*csv') # list of all of the files to import
+    # # df_list <- lapply(ppbFiles,read_csv) # read each file into a data frame
+    # # percentileDF <- as.data.frame(dplyr::bind_rows(df_list)) # concatenates all of the data frames
+    # 
+    # # plotFiles <- list.files(pattern = 'PDFandCDF.*csv') # list of all of the files to import
+    # # plotdf_list <- lapply(plotFiles,read_csv) # read each file into a data frame
+    # # pdfAndCDF <- as.data.frame(dplyr::bind_rows(plotdf_list)) # concatenates all of the data frames
+    # 
     updatemenus <- list(
       list(
         active = 0,
@@ -884,7 +894,7 @@ shinyServer(function(input, output,session) {
     
     output$percentilePPB <- DT::renderDataTable({
       DT::datatable(
-        data = percentileDF,
+        data = revDosResults$expoEstimates,
         extensions = 'Buttons',
         class = 'cell-border stripe',
         rownames = F,
@@ -911,9 +921,9 @@ shinyServer(function(input, output,session) {
     
     output$PDF <- renderPlotly({
       p <- plot_ly(
-        pdfAndCDF,
-        x = pdfAndCDF[[1]],
-        y = pdfAndCDF[[2]],
+        revDosResults$pdf,
+        x = ~dose_list,
+        y = ~pdf,
         name = 'PDF',
         type = 'scatter',
         mode = 'lines'#'lines+markers'
@@ -934,9 +944,9 @@ shinyServer(function(input, output,session) {
     
     output$CDF <- renderPlotly({
       p <- plot_ly(
-        pdfAndCDF,
-        x = pdfAndCDF[[1]],
-        y = pdfAndCDF[[3]],
+        revDosResults$cdf,
+        x = ~dose_list,
+        y = ~cdf,
         name = 'CDF',
         type = 'scatter',
         mode = 'lines'#'lines+markers'
@@ -955,137 +965,137 @@ shinyServer(function(input, output,session) {
         )
     })
     
-    revDosDataHeaders <- bounds2
-    # revDosDataHeaders <- read.csv(
-    #   'ReverseDosimetryDataHeaders.csv',
-    #   header=FALSE
+    # revDosDataHeaders <- bounds2
+    # # revDosDataHeaders <- read.csv(
+    # #   'ReverseDosimetryDataHeaders.csv',
+    # #   header=FALSE
+    # # )
+    # revDosData1 <- probabilityTbl
+    # # revDosData1 <- read.csv(
+    # #   'ReverseDosimetryData1.csv',
+    # #   header=FALSE
+    # # )
+    # revDosData2 <- revDosData22
+    # # revDosData2 <- read.csv(
+    # #   'ReverseDosimetryData2.csv',
+    # #   header=FALSE
+    # # )
+    # revDosData3 <- probabilityTbl2
+    # # revDosData3 <- read.csv(
+    # #   'ReverseDosimetryData3.csv',
+    # #   header=FALSE
+    # # )
+    # row.names(revDosData1) <- pdfAndCDF[[1]]
+    # row.names(revDosData2) <- list('Adjusted Weighting Factors')
+    # row.names(revDosData3) <- pdfAndCDF[[1]]
+    # 
+    # 
+    # sketch = htmltools::withTags(
+    #   table(
+    #     class = 'display',
+    #     thead(
+    #       style='text-align: right;',
+    #       tr(
+    #         th(colspan = 1, 'Larger than', style='text-align: left; background-color: #f5f5f5'),
+    #         lapply(rep(revDosDataHeaders[[1]], 1), th)
+    #       ),
+    #       tr(
+    #         th(colspan = 1, 'Smaller than or equal to', style='text-align: left; background-color: #f5f5f5'),
+    #         lapply(rep(revDosDataHeaders[[2]], 1), th)
+    #       )
+    #     )
+    #   )
     # )
-    revDosData1 <- probabilityTbl
-    # revDosData1 <- read.csv(
-    #   'ReverseDosimetryData1.csv',
-    #   header=FALSE
+    # 
+    # revDosDataTable <- function(userData){
+    #   DT::datatable(
+    #     data = userData,
+    #     container = sketch,
+    #     rownames = T,
+    #     extensions = c('FixedColumns','FixedHeader'),
+    #     options = list(
+    #       ordering = F,
+    #       autoWidth = T,
+    #       fixedColumns = T,
+    #       scrollX = '100%',
+    #       scrollY = 600,
+    #       scrollCollapse = T, # When scrollY is defined, bottom of table won't "float" below the table
+    #       pageLength = 50, # How many rows to display by default
+    #       # ,dom='rt',
+    #       columnDefs = list(
+    #         list(
+    #           width = '160px',
+    #           targets = c(0)
+    #         )
+    #       )
+    #     )
+    #   )
+    # }
+    # 
+    # output$revDosData1 <- DT::renderDataTable({
+    #   revDosDataTable(revDosData1)
+    # })
+    # 
+    # output$revDosData2 <- DT::renderDataTable({
+    #   revDosDataTable(revDosData2)
+    # })
+    # 
+    # output$revDosData3 <- DT::renderDataTable({
+    #   revDosDataTable(revDosData3)
+    # })
+    # 
+    # # Creates the dataframe for the user to download
+    # td1 <- data.frame(t(revDosDataHeaders))
+    # colnames(td1) = colnames(revDosData1)
+    # dlTable1 <- dplyr::bind_rows(td1, revDosData1)
+    # rownames(dlTable1) = c('Larger than','Smaller than or equal to',pdfAndCDF[[1]])
+    # 
+    # output$downloadTablerevDosData1 <- downloadHandler(
+    #   filename = "Probability_Table.csv",
+    #   function(file){
+    #     write.table(
+    #       dlTable1,
+    #       file = file,
+    #       sep = ",",
+    #       row.names = T,
+    #       col.names = F
+    #     )
+    #   }
     # )
-    revDosData2 <- revDosData22
-    # revDosData2 <- read.csv(
-    #   'ReverseDosimetryData2.csv',
-    #   header=FALSE
+    # 
+    # # Creates the dataframe for the user to download
+    # dlTable2 <- dplyr::bind_rows(td1, revDosData2)
+    # rownames(dlTable2) = c('Larger than','Smaller than or equal to','Adjusted Weighting Factors')
+    # 
+    # output$downloadTablerevDosData2 <- downloadHandler(
+    #   filename = "Adjusted_Weighting_Factors.csv",
+    #   function(file){
+    #     write.table(
+    #       dlTable2,
+    #       file = file,
+    #       sep = ",",
+    #       row.names = T,
+    #       col.names = F
+    #     )
+    #   }
     # )
-    revDosData3 <- probabilityTbl2
-    # revDosData3 <- read.csv(
-    #   'ReverseDosimetryData3.csv',
-    #   header=FALSE
+    # 
+    # # Creates the dataframe for the user to download
+    # dlTable3 <- dplyr::bind_rows(td1, revDosData3)
+    # rownames(dlTable3) = c('Larger than','Smaller than or equal to',pdfAndCDF[[1]])
+    # 
+    # output$downloadTablerevDosData3 <- downloadHandler(
+    #   filename = "Weight_ECF.csv",
+    #   function(file){
+    #     write.table(
+    #       dlTable3,
+    #       file = file,
+    #       sep = ",",
+    #       row.names = T,
+    #       col.names = F
+    #     )
+    #   }
     # )
-    row.names(revDosData1) <- pdfAndCDF[[1]]
-    row.names(revDosData2) <- list('Adjusted Weighting Factors')
-    row.names(revDosData3) <- pdfAndCDF[[1]]
-    
-    
-    sketch = htmltools::withTags(
-      table(
-        class = 'display',
-        thead(
-          style='text-align: right;',
-          tr(
-            th(colspan = 1, 'Larger than', style='text-align: left; background-color: #f5f5f5'),
-            lapply(rep(revDosDataHeaders[[1]], 1), th)
-          ),
-          tr(
-            th(colspan = 1, 'Smaller than or equal to', style='text-align: left; background-color: #f5f5f5'),
-            lapply(rep(revDosDataHeaders[[2]], 1), th)
-          )
-        )
-      )
-    )
-    
-    revDosDataTable <- function(userData){
-      DT::datatable(
-        data = userData,
-        container = sketch,
-        rownames = T,
-        extensions = c('FixedColumns','FixedHeader'),
-        options = list(
-          ordering = F,
-          autoWidth = T,
-          fixedColumns = T,
-          scrollX = '100%',
-          scrollY = 600,
-          scrollCollapse = T, # When scrollY is defined, bottom of table won't "float" below the table
-          pageLength = 50, # How many rows to display by default
-          # ,dom='rt',
-          columnDefs = list(
-            list(
-              width = '160px',
-              targets = c(0)
-            )
-          )
-        )
-      )
-    }
-    
-    output$revDosData1 <- DT::renderDataTable({
-      revDosDataTable(revDosData1)
-    })
-    
-    output$revDosData2 <- DT::renderDataTable({
-      revDosDataTable(revDosData2)
-    })
-    
-    output$revDosData3 <- DT::renderDataTable({
-      revDosDataTable(revDosData3)
-    })
-    
-    # Creates the dataframe for the user to download
-    td1 <- data.frame(t(revDosDataHeaders))
-    colnames(td1) = colnames(revDosData1)
-    dlTable1 <- dplyr::bind_rows(td1, revDosData1)
-    rownames(dlTable1) = c('Larger than','Smaller than or equal to',pdfAndCDF[[1]])
-    
-    output$downloadTablerevDosData1 <- downloadHandler(
-      filename = "Probability_Table.csv",
-      function(file){
-        write.table(
-          dlTable1,
-          file = file,
-          sep = ",",
-          row.names = T,
-          col.names = F
-        )
-      }
-    )
-    
-    # Creates the dataframe for the user to download
-    dlTable2 <- dplyr::bind_rows(td1, revDosData2)
-    rownames(dlTable2) = c('Larger than','Smaller than or equal to','Adjusted Weighting Factors')
-    
-    output$downloadTablerevDosData2 <- downloadHandler(
-      filename = "Adjusted_Weighting_Factors.csv",
-      function(file){
-        write.table(
-          dlTable2,
-          file = file,
-          sep = ",",
-          row.names = T,
-          col.names = F
-        )
-      }
-    )
-    
-    # Creates the dataframe for the user to download
-    dlTable3 <- dplyr::bind_rows(td1, revDosData3)
-    rownames(dlTable3) = c('Larger than','Smaller than or equal to',pdfAndCDF[[1]])
-    
-    output$downloadTablerevDosData3 <- downloadHandler(
-      filename = "Weight_ECF.csv",
-      function(file){
-        write.table(
-          dlTable3,
-          file = file,
-          sep = ",",
-          row.names = T,
-          col.names = F
-        )
-      }
-    )
     updateNavbarPage(session,"navbar","Output")
     updateNavbarPage(session,"Modeloutput","Plots")
   })

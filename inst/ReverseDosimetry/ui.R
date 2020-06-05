@@ -172,33 +172,6 @@ shinyUI(
                 )
               )
             )
-          ),
-          tabPanel(
-            'Data',
-            fluidPage(
-              fluidRow(
-                column(
-                  12,
-                  br(),
-                  wellPanel(
-                    tags$style('.datatables th {text-align: right;} h3 {text-align: center;}'),
-                    tags$h3('Probability Table'),
-                    DT::dataTableOutput('revDosData1'),
-                    downloadButton('downloadTablerevDosData1',label = "Download Table")
-                  ),
-                  wellPanel(
-                    tags$h3('Adjusted Weighting Factors from Worksheet "Measured blood conc"'),
-                    DT::dataTableOutput('revDosData2'),
-                    downloadButton('downloadTablerevDosData2',label = "Download Table")
-                  ),
-                  wellPanel(
-                    tags$h3('Weight the ECFs with the Adjusted Weighting Factors'),
-                    DT::dataTableOutput('revDosData3'),
-                    downloadButton('downloadTablerevDosData3',label = "Download Table")
-                  )
-                )
-              )
-            )
           )
         )
       ),

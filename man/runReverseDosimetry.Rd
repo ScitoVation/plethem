@@ -7,18 +7,18 @@
 runReverseDosimetry(
   mcData,
   biomData,
-  exposureBounds,
-  percentiles = c(5, 50, 95, 99)
+  percentiles = c(5, 50, 95, 99),
+  dose_list = NULL
 )
 }
 \arguments{
-\item{mcData}{M by N data frame where M is the the individual exposures at which the PBPK model is run and N is the number of monte carlo runs at each exposure. It is recmmonded that M is between 25 and 40 and N is greater than 1000}
+\item{mcData}{M by N data frame where M is the the individual exposures at which the PBPK model is run and N is the number of monte carlo runs at each exposure. It is recmmonded that M is between 25 and 40 and N is greater than 1000.}
 
-\item{biomData}{List consisting of biomonitering data. It is recommeded that atleast 1000 biomonitering values be provided to ensure accuracy for results}
+\item{biomData}{List consisting of biomonitering data. It is recommeded that atleast 1000 biomonitering values be provided to ensure accuracy for results.}
 
-\item{exposureBounds}{upper and lower bounds of the exposure for which the mcData was run}
+\item{percentiles}{Vector of percentiles for which exposure needs to be estimated. By default returns the 5th, 50th, 95th and 99th exposure estimate.}
 
-\item{percentiles}{vector of percentiles for which exposure needs to be estimated. By default returns the 5th, 50th, 95th and 99th exposure estimate}
+\item{dose_list}{A list of M elements that contain exposures at which monte carlo simulations were run. If no list is provided, the first column names of the mcData input are assumed to contain exposure values.}
 }
 \value{
 List of values related to reverse dosimetry
@@ -36,6 +36,7 @@ The montecarlo results and biomonitoring data should have the same units and sho
 }
 \examples{
 \dontrun{
-runReverseDosimetry(mcData,biomdata,exposureBounds = c(0.01,1.4), percentiles = c(5,50,95))
+runReverseDosimetry(mcData,biomData,percentiles = c(5,50,95))
+runReverseDosimetry(mcData,biomData,percentiles = c(50,95),dose_list = c(0.04,0.10,0.15,0.2,0.25,1))
 }
 }
