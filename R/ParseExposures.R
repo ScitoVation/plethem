@@ -72,13 +72,13 @@ parseConsExpoFile <- function(path){
                           "Population"=c("Name","Body weight"))
   
   # 
-  # names <- setNames(which(startsWith(f[,1],"Results for")),gsub("Results for scenario ","",f[which(startsWith(f[,1],"Results for")),1]))
-  # inhalation_data <- setNames(f[which(f[,1]=="Mean event concentration"),2],which(f[,1]=="Mean event concentration"))
-  # inhalation_data <- inhalation_data[inhalation_data != ""]
-  # dermal_data <- setNames(f[which(f[,1]=="Dermal load"),2],which(f[,1]=="Dermal load"))
-  # dermal_data <- dermal_data[dermal_data != ""]
-  # oral_data <- setNames(f[which(f[,1]=="Oral")+1,2],which(f[,1]=="Oral")+1)
-  # oral_data<- oral_data[oral_data != ""]
-  #return(list("exponames"=names,inhalation_data,dermal_data,oral_data))
-  return(f)
+  names <- setNames(which(startsWith(f[,1],"Results for")),gsub("Results for scenario ","",f[which(startsWith(f[,1],"Results for")),1]))
+  inhalation_data <- setNames(f[which(f[,1]=="Mean event concentration"),2],which(f[,1]=="Mean event concentration"))
+  inhalation_data <- inhalation_data[inhalation_data != ""]
+  dermal_data <- setNames(f[which(f[,1]=="Dermal load"),2],which(f[,1]=="Dermal load"))
+  dermal_data <- dermal_data[dermal_data != ""]
+  oral_data <- setNames(f[which(f[,1]=="Oral")+1,2],which(f[,1]=="Oral")+1)
+  oral_data<- oral_data[oral_data != ""]
+  return(list("exponames"=names,inhalation_data,dermal_data,oral_data))
+  #return(f)
 }

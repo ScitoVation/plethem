@@ -62,13 +62,14 @@ getLifecourseTissueVolumes<- function(age = 25, gender = "M",perf_frct = 0.85,
   # for richly perfused get value
   #from equation and add inactive tissue volumes
   vol <- getLifecourseRapidlyPerfusedVolume(age,gender)
-  rpf_inact_vol <- sum(tissue_vol_list[rpf_inactive_tissues])
+  
+  rpf_inact_vol <- sum(unlist(tissue_vol_list[rpf_inactive_tissues]))
   tissue_vol_list[["rpf"]]<-vol+rpf_inact_vol
 
   # for slowly perfused get value
   #from equation and add inactive tissue volumes
   vol <- getLifecourseSlowlyPerfusedVolume(age,gender,perf_frct)
-  spf_inact_vol <- sum(tissue_vol_list[spf_inactive_tissues])
+  spf_inact_vol <- sum(unlist(tissue_vol_list[spf_inactive_tissues]))
   tissue_vol_list[["spf"]]<-vol+spf_inact_vol
 
   #print(tissue_vol_list[tissues])
@@ -155,11 +156,11 @@ getLifecourseTissuePerfusion<- function(age = 25, gender = "M", tissues = list()
 
   # for rapidly perfused tissue flow
   rpf_perf <-  getLifecourseRichlyPerfusedTissuePerfusion(age,gender)* qc_scaling
-  inact_perf <- sum(tissue_perf_list[rpf_inactive_tissues])
+  inact_perf <- sum(unlist(tissue_perf_list[rpf_inactive_tissues]))
   tissue_perf_list[["rpf"]]<- rpf_perf+inact_perf
   # for slowly perfused tissue flow
   spf_perf <-  getLifecourseSlowlyPerfusedTissuePerfusion(age,gender)* qc_scaling
-  inact_perf <- sum(tissue_perf_list[spf_inactive_tissues])
+  inact_perf <- sum(unlist(tissue_perf_list[spf_inactive_tissues]))
   tissue_perf_list[["spf"]]<- spf_perf+inact_perf
 
   if("liver" %in% tissues){
@@ -855,7 +856,7 @@ getLifecourseKidneyVolume <- function(age, gender, source = "sciv")
   if(is.na(age)) return(NA)
   # remove this block once we have scitovation equations
   if (source == "sciv"){
-    warning("Scitovation equations not found, Using bosgra equations instead")
+    #warning("Scitovation equations not found, Using bosgra equations instead")
     source = "bosgra"
   }
   if(source == "bosgra"){
@@ -979,7 +980,7 @@ getLifecourseLungVolume <- function(age, gender,source = "bosgra")
 
   # remove this block once we have scitovation equations
   if (source == "sciv"){
-    warning("Scitovation equations not found, Using bosgra equations instead")
+    # warning("Scitovation equations not found, Using bosgra equations instead")
     source = "bosgra"
   }
 
@@ -1238,7 +1239,7 @@ getLifecourseRapidlyPerfusedVolume <- function(age, gender,source = "sciv")
 
   # remove this block once we have bosgra equations
   if (source == "bosgra"){
-    warning("Bosgra equations not found, Using ScitoVation equations instead")
+    # warning("Bosgra equations not found, Using ScitoVation equations instead")
     source = "sciv"
   }
   if(source == "sciv"){
@@ -2542,10 +2543,10 @@ getLifecourseVentilationRate <- function(age, gender,activity="rest",source="sci
 
   if (source == "bosgra"){
     if (activity != "rest"){
-      warning(sprintf(
-        "The source does not have valid equations for activity type '%s'.
-        Using the default 'rest' activity instead",activity)
-      )
+      # warning(sprintf(
+      #   "The source does not have valid equations for activity type '%s'.
+      #   Using the default 'rest' activity instead",activity)
+      # )
     }
     if(gender == "M") {
       return(getLifecourseVentilationRateMale(age))

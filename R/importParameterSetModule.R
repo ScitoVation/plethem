@@ -15,9 +15,25 @@ importParameterSetUI <- function(namespace,set_type){
                      "expo" = "Exposure")
   showModal(modalDialog(
     title =paste0("Import ",set_name),size = "m",
-    tagList(tabsetPanel(id = ns("src_type"),selected = "user",
-                        # tabPanel("New",value = "new",
-                        #          DT::DTOutput(ns("new_tble"))),
+    tagList(tabsetPanel(id = ns("src_type"),selected = "main",
+                        
+                        # # tabPanel("New",value = "new",
+                        # #          DT::DTOutput(ns("new_tble"))),
+                       
+
+                                 #DTOutput(ns("user_tble"))),
+                        tabPanel("PLETHEM Database",value = "main",
+                                 pickerInput(ns("sel_main"),
+                                                label = "Select Chemical",multiple = T,
+                                                choices = NULL)),
+                        tabPanel("Import from file",value = "batch",
+                                 fileInput(ns("btn_batch_upload"),"Upload File",
+                                           multiple = F),
+                                 radioButtons(ns("rdo_ftype"),
+                                              label = "Select file type",
+                                              choices = list("Chemical Input File"="chem_batch",
+                                                             "OPERA Predictions"="opera_predictions"))
+                                 ),
                         tabPanel("User Database",value = "user",
                                  bsButton(ns("btn_userDb_file"),
                                           "Select User Database",
@@ -25,25 +41,13 @@ importParameterSetUI <- function(namespace,set_type){
                                  pickerInput(ns("sel_user"),
                                                 label = "Select Chemical",
                                                 choices = NULL,multiple = T)
-                                 ),
-
-                                 #DTOutput(ns("user_tble"))),
-                        tabPanel("Main Database",value = "main",
-                                 pickerInput(ns("sel_main"),
-                                                label = "Select Chemical",multiple = T,
-                                                choices = NULL))
+                                 )
                                # DTOutput(ns("main_tble")))
 
 
 
 
-                   )#,
-            #textInput(ns("name"),"Name",placeholder = "Chemical Name"),
-            #textAreaInput(ns("descrp"),"Description"),
-            #shinyjs::hidden(textInput(ns("cas"),"CAS Number",
-             #                         placeholder = "Enter CAS Number")),
-
-            #checkboxInput(ns("add2Db"),label = "Add to user database")
+                   )
     ),
     footer =tagList(actionButton(ns("import"),"Import"),
       modalButton("Dismiss")
@@ -119,6 +123,29 @@ importParameterSet <- function(input,output,session,set_type){
     }
     
   })
+  
+  batch_data <- reactive({
+    req(input$btn_batch_upload)
+    tryCatch(
+      {
+        datafile <- read.csv(input$btn_batch_upload$datapath,header = T)
+      },
+      error = function(e){
+        stop(safeError(e))
+      }
+    )
+    return(datafile)
+  })
+  
+  observeEvent(input$btn_batch_upload,{
+    batch_file <- reactive({
+      input$btn_batch_upload
+    })
+    batch_fpath <- batch_file()$datapath
+    batchdata <- reactive({
+      
+    })
+  },ignoreInit = T)
 
   observeEvent(input$import,{
     userDbIds <- input$sel_user

@@ -6,7 +6,7 @@ library(V8)
 library(ggplot2)
 library(shinyjs)
 library(magrittr)
-
+source("scripts/createSimulationModule.R")
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
   # define the model name once here. It will be used throughout this server file
@@ -33,6 +33,7 @@ shinyServer(function(input, output, session) {
   expo_set <- getAllSetChoices("expo")
   physio_set <- getAllSetChoices("physio")
   chem_set <- getAllSetChoices("chem")
+  adme_set <- getAllSetChoices("adme")
   #metab_set <- getAllSetChoices("metab")
   sim_set <- getAllSetChoices("sim")
   physiovar <-getVariabilitySetChoices("physio")
@@ -42,14 +43,12 @@ shinyServer(function(input, output, session) {
   parameterSets$expo <- reactiveVal(expo_set)
   parameterSets$physio <- reactiveVal(physio_set)
   parameterSets$chem <- reactiveVal(chem_set)
-  #parameterSets$metab <- reactiveVal(metab_set)
   parameterSets$sim <- reactiveVal(sim_set)
   parameterSets$physiovar <- reactiveVal(physiovar)
   parameterSets$chemvar <- reactiveVal(chemvar)
   parameterSets$expovar <- reactiveVal(expovar)
   parameterSets$admevar <- reactiveVal(admevar)
-  # conc_datasets <- c("none",getDatasetNames("conc"))
-  # updateSelectizeInput(session,"cplt_data",choices = conc_datasets)
+
 
   observe({
     exposet <- parameterSets$expo()
@@ -61,10 +60,8 @@ shinyServer(function(input, output, session) {
     chemset <- parameterSets$chem()
     updateSelectizeInput(session,"sel_set_chem",choices = chemset)
     updateSelectizeInput(session,"sel_chem4adme",choices = chemset)
-    
-    #metabset<- parameterSets$adme()
-    # metabset <- c("Use Chemical Vmax"="0","Use Chemical Vkm1"="1",metabset)
-    # updateSelectizeInput(session,"sel_set_metab",choices = metabset)
+    updateSelectizeInput(session,"sel_metabolite4adme",choices = c("No Metabolite"=0,chemset))
+
     physiovar <- parameterSets$physiovar()
     physiovar <- c("None"="0",physiovar)
     updateSelectizeInput(session,"sel_set_physiovar",choices = physiovar)
@@ -235,43 +232,21 @@ shinyServer(function(input, output, session) {
   
   
   ### Import button handlers
-   #### Chunk for handling chemical tab
+   # Chunk for handling chemical tab
    observeEvent(input$btn_import_chem,{
      
      importParameterSetUI(paste0("chem",input$btn_import_chem),"chem")
-     parameterSets$importdat <- callModule(importParameterSet,paste0("chem",input$btn_import_chem),"chem")
+     parameterSets$savedat <- callModule(importParameterSet,paste0("chem",input$btn_import_chem),"chem")
 
    })
-   #### Chunk for handling physiological tab
+   # Chunk for handling physiological tab
    observeEvent(input$btn_import_physio,{
      importParameterSetUI(input$btn_import_physio,"physio")
-     parameterSets$importdat <- callModule(importParameterSet,input$btn_import_physio,"physio")
+     parameterSets$savedat <- callModule(importParameterSet,input$btn_import_physio,"physio")
      
    })
-   # update the paramter set dropdown if it is changed
-   observe({
-     result_vector <- parameterSets$importdat
-     if(result_vector()[1]=="Yes"){
-       set_type <- result_vector()[2]
-       set_id <- result_vector()[3]
-       set_list <- getAllSetChoices(set_type)
-       parameterSets[[set_type]] <- reactiveVal(set_list)
-       updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
-       if(set_type == "chem"){
-         updateSelectizeInput(session,"sel_chem4adme",choices = set_list)
-         
-       }else if (set_type =="physio"){
-         updateSelectizeInput(session,"sel_physio4adme",choices = set_list)
-       }
-       
-       # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
-     }
-   })
+  ### SAVE AS BUTTON HANDLERS
    
-   
-   
-  
-
   #Save a new physiological parameter set
   observeEvent(input$btn_saveas_physio,{
     active_comp <- input$ms_cmplist
@@ -280,20 +255,25 @@ shinyServer(function(input, output, session) {
     vol_comps <- c(active_comp,"blood")
     perfc <- input$ms_perfc
     total_vol <- sum(unlist(lapply(vol_comps,function(x){input[[vol_ids[x]]]})))
-
+    # QC checks for the physiological set
+    # ensure liver is an active compartment if gi is an active compartment
     if ("gi" %in% active_comp && !("liver" %in% active_comp)){
       shinyWidgets::sendSweetAlert(session,
                                    title = "Invalid Compartment Configuration",
                                    text = "Liver compartment needs to be active if GI compartment is active",
                                    type = "error")
 
-    }else if (length(active_comp) == 0){
+    }
+    # Ensure at least one compartment in the model is active
+    else if (length(active_comp) == 0){
       shinyWidgets::sendSweetAlert(session,
                                    title = "Invalid Compartment Configuration",
                                    text = "At least one compartment needs to be active for the model to run",
                                    type = "error")
 
-    }else if(abs(total_vol-perfc)>0.03){
+    }
+    # the volume of active compartments and the volume of perfused tissue do not match
+    else if(abs(total_vol-perfc)>0.03){
 
       error_text <- sprintf("The total volume of all compartments does not add up to %i %%",
               as.integer(perfc*100))
@@ -303,15 +283,18 @@ shinyServer(function(input, output, session) {
                                    text = error_text,
                                    type = "error")
 
-    }else if((input$ms_bdose>0 || input$ms_drdose>0) && !("gi" %in% active_comp)){
-      showModal(
-        modalDialog(
-          tags$h4("Invalid Compartment Configuration"),
-          tags$h5("GI compartment must be active for Oral and Drinking water routes of exposure"),
-          title = "Error"
-        )
-      )
-    }else{
+    }
+    # # GI is an active compartment if oral dosing is selected
+    # else if((input$ms_bdose>0 || input$ms_drdose>0) && !("gi" %in% active_comp)){
+    #   showModal(
+    #     modalDialog(
+    #       tags$h4("Invalid Compartment Configuration"),
+    #       tags$h5("GI compartment must be active for Oral and Drinking water routes of exposure"),
+    #       title = "Error"
+    #     )
+    #   )
+    # }
+    else{
       ns <- paste0("physio",input$btn_saveas_physio)
       saveAsParameterSetUI(ns,"physio")
       parameterSets$savedat <- callModule(saveAsParameterSet,
@@ -324,6 +307,7 @@ shinyServer(function(input, output, session) {
 
   #Save a new exposure parameter set
   observeEvent(input$btn_saveas_expo,{
+    # make sure atleast one route of exposure is active before saving the data
     if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && (input$ms_bdosev==0 || input$ms_brepsv == 0)&& input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
       shinyWidgets::sendSweetAlert(session,
                                    title = "Invalid Exposure Parameters",
@@ -356,6 +340,7 @@ shinyServer(function(input, output, session) {
     physioid <- as.integer(input$sel_physio4adme)
     expoid <- as.integer(input$sel_expo4adme)
     id_list <- c(expoid,chemid,physioid)
+    # select chemical, exposure and physiology that the given adme set relates to
     if (any(is.na(id_list))){
       sendSweetAlert(session,"Configuration Error",
                      "Need to define Exposure, chemical and Physiology sets before defining an ADME set",
@@ -382,7 +367,7 @@ shinyServer(function(input, output, session) {
       updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
       if(set_type == "chem"){
         updateSelectizeInput(session,"sel_chem4adme",choices = set_list)
-        updateSelectizeInput(session,"sel_metabolite4adme")
+        updateSelectizeInput(session,"sel_metabolite4adme",choices = c("No Metabolite"=0,set_list))
       }else if (set_type =="physio"){
         updateSelectizeInput(session,"sel_physio4adme",choices = set_list)
       }else if(set_type == "expo"){
@@ -395,7 +380,8 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  #Save/Restore Button function
+  ### Code chunk for handling save/restore buttons
+  #Save restore physiologcal set
   observeEvent(input$btn_sverest_physio,{
     physioid <- input$sel_physio
     set_values <- getParameterSet("physio",physioid)
@@ -409,7 +395,7 @@ shinyServer(function(input, output, session) {
 
   })
 
-  #Save/Restore Button function
+  #Save-restore exposure set
   observeEvent(input$btn_sverest_expo,{
     expoid <- input$sel_expo
     set_values <- getParameterSet("expo",expoid)
@@ -423,7 +409,7 @@ shinyServer(function(input, output, session) {
                                            expo_name_df,"expo")
   })
 
-  #Save/Restore Button function
+  #Save-restore chemical set
   observeEvent(input$btn_sverest_chem,{
     chemid <- input$sel_chem
     set_values <- getParameterSet("chem",chemid)
@@ -754,6 +740,34 @@ shinyServer(function(input, output, session) {
     input_names <- c("ms_bdose","ms_drdose","ms_vdw","ms_inhdose","ms_ivdose")
     lapply(input_names, function(x){updateNumericInput(session,x,value = 0)})
   })
+  
+  # Code chuck for displaying the correct absorptions inputs based on the exposure set seleted
+  # in the ADME tab
+  observeEvent(input$sel_expo4adme,{
+    expoid <- as.integer(input$sel_expo4adme)
+    query <- sprintf("SELECT value from Exposure where expoid = %i AND param = 'expo_sidebar'",expoid)
+    expo_route <- projectDbSelect(query)$value
+    toggleElement(id = "ms_pair",condition = (expo_route=="inh"))
+    toggleElement(id = "ms_ka",
+                  condition = (expo_route=="oral"||expo_route == "dw"||expo_route == "oralv"))
+    toggleElement(id = "ms_fa",
+                  condition = (expo_route == "oral"||expo_route == "dw"))
+    toggleElement(id = "ms_kVtoL",condition = (expo_route == "oralv"))
+    toggleElement(id = "ms_KPtot",condition = (expo_route == "derm"))
+    toggleElement(id = "ms_maxcap",condition = (expo_route == "derm"))
+    toggleElement(id = "ms_Kevap",condition = (expo_route == "derm"))
+                  
+    # if (expo_route=='inh'){
+    #   hide
+    # } 
+  },ignoreNULL = T,ignoreInit = T)
+  
+  # if no metabolite is selected, remove metabolite specific value from the 
+  # UI
+  observeEvent(input$sel_metabolite4adme,{
+    toggleElement("ms_fuplsmet",condition =input$sel_metabolite4adme != 0)
+    toggleElement("ms_vdmetc",condition =input$sel_metabolite4adme != 0)
+  })
 
 
   # metab_colnames <- reactive({
@@ -978,7 +992,7 @@ shinyServer(function(input, output, session) {
   })
   
   # logic for apply button- depending on the selected physiology and metab file,
-  # populates the correct clerance value
+  # populates the correct clearence value
   observeEvent(input$btn_use_age,{
     age_set <- input$sel_metabfiles
     if (age_set==""){
@@ -1027,6 +1041,90 @@ shinyServer(function(input, output, session) {
 
   ## END METABOLISM TAB UNDER ADME
   ### CODE CHUNK FOR HANDLING SIMULATIONS TAB
+  
+  #New Create simulation dialog
+  observeEvent(input$btn_new_sim,{
+    set_names <-c("expo","physio","chem","adme",
+                  "expovar","physiovar","chemvar","admevar",
+                  "biomonitering","extrapolate") 
+    selected_list <- list()
+    selected_list[set_names]<- list(NULL)
+    set_list <- lapply(set_names,function(x){
+      if(x == "adme" || x == "admevar" || x =="biomonitering" || x=="extrapolate"){
+        return(NULL)
+      }else{
+        return(parameterSets[[x]]())
+      }
+    })
+    set_list <-setNames(set_list,set_names)
+    module_namespace <- paste0("newSim",input$btn_new_sim)
+    createSimulationUI(module_namespace,set_list,selected_list)
+    temp_ret_dat <- callModule(createSimulation,
+                               module_namespace,type = "new")
+  })
+  observeEvent(input$btn_edit_sim,{
+    simid <- as.integer(input$sel_sim)
+    query <- sprintf("Select * from SimulationsSet where simid = %i",simid)
+    sim_details <- projectDbSelect(query)
+    # List of names for set dropdowns in the create/edit UI module
+    set_names <-c("expo","physio","chem","adme",
+                  "expovar","physiovar","chemvar","admevar",
+                  "biomonitering","extrapolate")
+    # Get the choice of adme ids for the given simulation
+    query <- sprintf("Select name,admeid from AdmeSet where chemid = %d AND physioid = %d AND expoid = %d;",
+                     sim_details$chemid,
+                     sim_details$physioid, 
+                     sim_details$expoid)
+    res <- projectDbSelect(query)
+    adme_set <- as.list(res[["admeid"]])
+    names(adme_set)<- res$name
+    #create list for set selection dropdown
+    set_list <- lapply(set_names, function(x,adme_set){
+      if(x == "adme"){
+        return(adme_set)
+      }else if(x == "admevar" || x =="biomonitering" || x=="extrapolate"){
+        return(NULL)
+      }else{
+        return(parameterSets[[x]]())
+      }
+      
+    },adme_set)
+    set_list <- setNames(set_list,set_names)
+    
+    # create list for selected options from the dropdowns
+    selected_list <- lapply(set_names,function(x){
+      var_id <- paste0(x,"id")
+      return(sim_details[[var_id]])
+      
+    })
+    selected_list<- setNames(selected_list,set_names)
+    
+    # Update simulation settings based on simulation type
+    simulation_settings <- list()
+    simulation_settings$simid <- simid
+    simulation_settings$name <- sim_details$name
+    simulation_settings$descrp <- sim_details$descrp
+    simulation_settings$sim_type <- sim_details$sim_type
+    simulation_settings$tstart <- sim_details$tstart
+    simulation_settings$sim_dur <- sim_details$sim_dur
+    simulation_settings$dur_units <- sim_details$dur_units
+    
+    sim_type <- sim_details$sim_type
+    if(sim_details$sim_type %in% c("rd","r2r")){
+      simulation_settings$expo_range <- c(sim_details$low_dose_estimate,
+                                          sim_details$high_dose_estimate)
+      simulation_settings$num_expos <- sim_details$num_expos
+      
+    }
+    if(sim_details$sim_type != "fd"){
+      simulation_settings$mcruns <- sim_details$mcruns
+    }
+    module_namespace <- paste0("newSim",input$btn_new_sim)
+    createSimulationUI(module_namespace,set_list,selected_list)
+    temp_ret_dat <- callModule(createSimulation,
+                               module_namespace,type = "edit",simulation_settings)
+    
+  })
 
   # Save a new simulation
   observeEvent(input$save_sim,{
