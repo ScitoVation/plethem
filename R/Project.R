@@ -184,23 +184,34 @@ clearProjectDb <- function(){
 #' Show dialogs to select files or folders
 #' @description The function shows the dialog to select files or folders. The functions change depending on the OS in which 
 #' RStudio is running. It is only called internally
+#' @importFrom tcltk tk_choose.dir tk_choose.files
 #' 
 getFileFolderPath <- function(type ="dir",caption,extension){
   os <- .Platform$OS.type
-  if (os == "windows"){
-    if(type == "dir"){
-      returned_path <- utils::choose.dir(caption)
+  gui <- .Platform$GUI
+  if (gui == "RStudio"){
+    if (type == "dir"){
+      returned_path <- rstudioapi::selectDirectory(caption)
     }else{
-      returned_path <- utils::choose.files(caption = caption, multi = F,
-                                           filters = matrix(c(extension),1,2,byrow=TRUE))
+      returned_path <- rstudioapi::selectFile(caption,filter = matrix(c(extension),1,2,byrow = T))
     }
   }else{
-    if(type == "dir"){
-      returned_path <-  tcltk::tk_choose.dir(caption =caption)#sprintf("Select folder where %s will be saved",name))
+    if (os == "windows"){
+      if(type == "dir"){
+        returned_path <- utils::choose.dir(caption)
+      }else{
+        returned_path <- utils::choose.files(caption = caption, multi = F,
+                                             filters = matrix(c(extension),1,2,byrow=TRUE))
+      }
     }else{
-      returned_path <- tcltk::tk_choose.files(caption = caption,#"Select PLETHEM Project",
-                                              filter= matrix(c(extenion),4,2,byrow=TRUE))
+      if(type == "dir"){
+        returned_path <-  tcltk::tk_choose.dir(caption =caption)#sprintf("Select folder where %s will be saved",name))
+      }else{
+        returned_path <- tcltk::tk_choose.files(caption = caption,#"Select PLETHEM Project",
+                                                filter= matrix(c(extenion),4,2,byrow=TRUE))
+      }
     }
   }
+  
   return(returned_path)
 }

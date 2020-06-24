@@ -40,7 +40,11 @@ Imports:
   V8,
   httk,
   NonCompart,
-  stringr
+  stringr,
+  doSNOW,
+  foreach, 
+  pracma,
+  shinybusy
 Suggests: testthat,
     rmarkdown,
     knitr

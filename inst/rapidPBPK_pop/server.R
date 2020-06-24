@@ -2211,6 +2211,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
   observeEvent(input$close_dialog,{
     if (input$close_dialog){
+      clearProjectDb()
       stopApp()
     }
   })
@@ -2328,7 +2329,10 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
 
     tstop <- tstart+sim_dur
 
-    cinh <- (inhdose/24.45)#*1000/mw # converting from  ppm to mg/L(/24.45) and then to umoles/L for the model
+    cinh <- (inhdose/24.45) # converting from  ppm to umoles/L
+    # ppm * mw /24.45 => mg/m^3 => 1000 *mg/L
+    # mg/L => mw/1000 umoles/L => ppm/24.45
+    
     qalv <- (tv-ds)*respr
     pair <- ifelse(pair >0,pair,1E-10)
     # scaled urinary flow rate per day
@@ -2973,8 +2977,8 @@ runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,
                          event_times <- event_times_list[[idx]]
                          output_var <- output_list[[idx]]
                          # for development, load the dll directly
-                         #dyn.load("../../src/plethem.dll")
-                         dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+                         dyn.load("../../src/plethem.dll")
+                         #dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
                          modelOutput<- deSolve::ode(y = state, times = times,
                                                     method = "lsodes",func = "derivs",
                                                     dllname = "plethem",
@@ -2984,8 +2988,8 @@ runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,
                                                                 time=event_times),
                                                     nout = length(output_var),
                                                     outnames = output_var)
-                         #dyn.unload("../../src/plethem.dll")
-                         dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+                         dyn.unload("../../src/plethem.dll")
+                         #dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
                          modelOutput <- as.data.frame(modelOutput)
                          max_vals <- sapply(modelOutput,max,na.rm = T)
                          return(max_vals)
