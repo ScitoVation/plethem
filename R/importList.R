@@ -5,6 +5,8 @@
 #' @import httk
 #' @import miniUI
 #' @import shinydashboard
+#' @import foreach
+#' @import doSNOW
 #' @importFrom stats approx setNames
 #' @importFrom utils installed.packages read.csv write.csv
 #' @importFrom magrittr %>%

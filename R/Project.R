@@ -1,5 +1,15 @@
-
-interactivePBPK <- function(name = ""){
+#' Launch the interactive PBPK workflow for the given model
+#' @description Used to launch the PBPK workflow for the given model. This interface can be used to launch either the rapidPBPK model, The HTTK model or the fishPBPK model.
+#' @param name Name of the model. "rapidPBPK","httk", or "fishPBPK". Defaults to rapidPBPK.
+#' @examples
+#' \dontrun{
+#' interactivePBPK("rapidPBPK)
+#' }
+#' @export
+interactivePBPK <- function(name = "rapidPBPK"){
+  if(name == "rapidPBPK"){
+    name = "rapidPBPK_pop"
+  }
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
 }
 #' Launch Reverse Dosimetry Interface
@@ -74,7 +84,7 @@ saveProject <- function(){
 #' newProject(name = "TestPBPK",type = "PBPK",mode = "httk_pbpk",mode = "MC")
 #' }
 #' @export
-newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC"){
+newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC",runUI = F){
   temp_path <- getFileFolderPath("dir",
                                  caption =sprintf("Select folder where %s will be saved",name))
   
@@ -85,23 +95,25 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
   query <- sprintf("INSERT INTO Project (name, path, type, model, mode) Values ('%s','%s','%s','%s','%s');",
                    name,save_path,type,model,mode)
   projectDbUpdate(query)
-  # run the appropriate UI
-  if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
-    shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
+  if(runUI){
+    # run the appropriate UI
+    if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
+      shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
+    }
+    if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
+      shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
+    }
+    if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
+      shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = T)
+    }
+    if (type == "PBPK" && model == "fishPBPK" && mode == "MC"){
+      shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = T)
+    }
   }
-  if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
-    shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
-  }
-  if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
-    shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = T)
-  }
-  if (type == "PBPK" && model == "fishPBPK" && mode == "MC"){
-    shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = T)
-  }
-  #interactivePBPK(model)
-  return(NULL)
+  saveProject()
+  # #interactivePBPK(model)
+  # return(NULL)
 }
-
 
 #' Load the project from the project file located at the given path
 #' @description Loads the project data from the project file and then launches the shiny UI that corresponds to the analysis type that the project belongs to.
@@ -111,7 +123,6 @@ newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", m
 #' loadProject(file_path = "C:/Project/TestPBPK.Rdata")
 #' loadProject()
 #' }
-
 #' @export
 loadProject <- function(file_path = "",runUI = T){
   if(file_path == ""){

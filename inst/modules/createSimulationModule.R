@@ -105,7 +105,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                                          options= list(placeholder = "No Variability Set Found"))
                                                    ),
                                                    column(6,
-                                                          selectizeInput(ns("sel_sim_adme"),
+                                                          selectizeInput(ns("sel_sim_admevar"),
                                                                          "ADME",
                                                                          choices =  set_list$admevar,
                                                                          selected = selected_list$admevar,
@@ -126,8 +126,8 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                      column(6,offset = 3,
                                                             selectizeInput(ns("sel_biomdata"),
                                                                            NULL,
-                                                                           choices =  set_list$biomonitering,
-                                                                           selected = selected_list$biomonitering,
+                                                                           choices =  set_list$biom,
+                                                                           selected = selected_list$biom,
                                                                            width = validateCssUnit("100%"),
                                                                            options = list(placeholder = "Biomonitoring dataset")
                                                             )
@@ -210,6 +210,8 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                         fade = T))
 }
 createSimulation <- function(input,output,session,type="new",sim_settings){
+  returnValues <- reactiveValues()
+  returnValues$savedat <- c("No","",0)
   ns <- session$ns
   
   # if a new simulation needs to be created
@@ -282,14 +284,14 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
     updateSelectizeInput(session,"sel_r2rExpo",choices = remaining_list)
   })
   
-  observeEvent(input$btn_create_sim,{
+  returnValues$savedat <- eventReactive(input$btn_create_sim,{
     #simid <- getNextId("SimulationSet")
     
    
     # if a new simulation needs to be created, create an blank simulation set to update the data into
     if(type == "new"){
       query <- sprintf("INSERT INTO SimulationsSet (simid) VALUES (%i);",simid)
-      #projectDbUpdate(query)
+      projectDbUpdate(query)
     }
     #update the simulation set with inputs common to all workflow types
     sim_type <- input$sel_sim_type
@@ -310,9 +312,9 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                     chemid = %i, 
                                     physioid = %i,
                                     admeid = %i,
-                                    tsart = %f,
+                                    tstart = %f,
                                     sim_dur = %f,
-                                    dur_units = '%s';",
+                                    dur_units = '%s' where simid = %i;",
                                 sim_name,
                                 sim_descrp,
                                 sim_type,
@@ -322,11 +324,11 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                 admeid,
                                 tstart,
                                 sim_dur,
-                                dur_units),
+                                dur_units,
+                                simid),
                            simplify = T),
                    sep = " ",collapse = "")
-    print(query)
-    #projectDbUpdate(query)
+    projectDbUpdate(query)
     # update the simulation with inputs needed by montecarlo workflow
     if(sim_type == 'mc'){
       expovarid <- as.integer(input$sel_sim_expovar)
@@ -339,16 +341,16 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                      chemvarid = %i,
                                      physiovarid = %i,
                                      admevarid = %i,
-                                     mcruns = %i;",
-                                     expovarid,
-                                     #ifelse(is.null(expovarid),0,expovarid),
-                                     ifelse(is.null(chemvarid),0,chemvarid),
-                                     ifelse(is.null(physiovarid),0,physiovarid),
-                                     ifelse(is.null(admevarid),0,admevarid),
-                                     mcruns),
+                                     mcruns = %i where simid = %i;",
+                                     ifelse(is.na(expovarid),0,expovarid),
+                                     ifelse(is.na(chemvarid),0,chemvarid),
+                                     ifelse(is.na(physiovarid),0,physiovarid),
+                                     ifelse(is.na(admevarid),0,admevarid),
+                                     mcruns,
+                                     simid),
                              simplify = T),
                      sep=" ",collapse = "")
-      print(query)
+      projectDbUpdate(query)
       
     }
     # update the simulation with inputs needed by the reverse dosimetry
@@ -356,31 +358,22 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       chemvarid <- as.integer(input$sel_sim_chemvar)
       physiovarid <- as.integer(input$sel_sim_physiovar)
       admevarid <- as.integer(input$sel_sim_admevar)
-      mcruns <- input$num_mcruns
-      biomoniteringid <- as.integer(input$sel_biomdata)
+      mcruns <- as.integer(input$num_mcruns)
+      biomid <- as.integer(input$sel_biomdata)
       num_expos <- as.integer(input$num_numexpos)
-      low_dose_estimate <- input$numrange_exp0[[1]]
-      high_dose_estimate <- input$numrange_expo[[2]]
-      query <- paste(strwrap(sprintf("Update SimulationsSet SET
-                                     chemvarid = %i,
-                                     physiovarid = %i,
-                                     admevarid = %i,
-                                     biomoniteringid = %i,
-                                     mcruns = %i,
-                                     num_expos = %i,
-                                     low_dose_estimate = %f,
-                                     high_dose_estimate = %f;",
-                                     ifelse(is.null(chemvarid),0,chemvarid),
-                                     ifelse(is.null(physiovarid),0,physiovarid),
-                                     ifelse(is.null(admevarid),0,admevarid),
-                                     1,# change to biomoniternig ID once implemented
-                                     mcruns,
-                                     num_expos,
-                                     low_dose_estimate,
-                                     high_dose_estimate),
-                             simplify = T),
-                     sep=" ",collapse = "") 
-      print(query)
+      low_dose_estimate <- input$numrange_expo[1]
+      high_dose_estimate <- input$numrange_expo[2]
+      query <-sprintf("Update SimulationsSet SET chemvarid = %i,physiovarid = %i,admevarid = %i,biomid = %i,mcruns = %i,num_expos = %i, low_dose_estimate = %f, high_dose_estimate = %f, expovarid = 0 where simid = %i;",
+                      ifelse(is.na(chemvarid),0,chemvarid),
+                      ifelse(is.na(physiovarid),0,physiovarid),
+                      ifelse(is.na(admevarid),0,admevarid),
+                      biomid,# change to biomoniternig ID once implemented
+                      mcruns,
+                      num_expos,
+                      low_dose_estimate,
+                      high_dose_estimate,
+                      simid)
+      projectDbUpdate(query)
     }
     # update the simulation with inputs needed by route to route dosimetry
     else if(sim_type == "r2r"){
@@ -390,30 +383,23 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       mcruns <- input$num_mcruns
       extrapolateid <- as.integer(input$sel_r2rExpo)
       num_expos <- as.integer(input$num_numexpos)
-      low_dose_estimate <- input$numrange_exp0[[1]]
-      high_dose_estimate <- input$numrange_expo[[2]]
-      query <- strwrap(sprintf(
-      "Update SimulationsSet SET
-      chemvarid = %i,
-      physiovarid = %i,
-      admevarid = %i,
-      extrapolateid = %i,
-      mcruns = %i,
-      num_expos = %i,
-      low_dose_estimate = %f,
-      high_dose_estimate = %f;",
-      ifelse(is.null(chemvarid),0,chemvarid),
-      ifelse(is.null(physiovarid),0,physiovarid),
-      ifelse(is.null(admevarid),0,admevarid),
-      extrapolateid,
-      mcruns,
-      num_expos,
-      low_dose_estimate,
-      high_dose_estimate),
-      simplify = T,width = 1000)
-      print(query)
+      low_dose_estimate <- input$numrange_expo[1]
+      high_dose_estimate <- input$numrange_expo[2]
+      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i,expovarid = 0, extrapolateid = %i, mcruns = %i, num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f where simid = %i;",
+                       ifelse(is.na(chemvarid),0,chemvarid),
+                       ifelse(is.na(physiovarid),0,physiovarid),#,
+                       ifelse(is.na(admevarid),0,admevarid),
+                       extrapolateid,
+                       mcruns,
+                       num_expos,
+                       low_dose_estimate,
+                       high_dose_estimate,
+                       simid)
+      projectDbUpdate(query)
+      
     }
-    
+    removeModal()
+    return(c("Yes","sim",simid))
   })
-  return(simid)
+  return(returnValues$savedat)
 }

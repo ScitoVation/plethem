@@ -37,8 +37,8 @@ preprocessUIData<- function(val){
   if (pod_unit=="um"){
     pod <- pod*mw/1000
   }
-  org <- "human"#ifelse(val$sel_org=="ha","human","rat")
-  age <- 25#ifelse(val$sel_org=="ha",25,52)
+  org <- ifelse(val$sel_org=="ha","human","rat")
+  age <- ifelse(val$sel_org=="ha",25,52)
  
   liver_wt <- val$num_lw
   bw <- val$num_bw

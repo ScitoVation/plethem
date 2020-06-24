@@ -94,8 +94,8 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
       name <- var_data$Name[x]
       cv <-var_data$CV[x]
       type <- type_name2var[[var_data$Type[x]]]
-      ubound <- var_data$LowerBound[x] # change this to reflect data saved in table
-      lbound <- var_data$UpperBound[x] # change this to reflect data saved in table
+      ubound <- var_data$UpperBound[x] # change this to reflect data saved in table
+      lbound <- var_data$LowerBound[x] # change this to reflect data saved in table
       bflag <- var_data$BFlag[x]
       insertUI(selector = div_id,
                ui = tagList(

@@ -9,8 +9,10 @@
 #' Val - The value to be update with. If the type is numeric, the value is coerced to be a number.
 #' @export
 updateUIInputs <- function(session, param_df){
-  by(param_df, 1:nrow(param_df),function(df_row){
+  for(row_idx in 1:nrow(param_df)){
+    df_row <- param_df[row_idx,]
     type <- df_row$ParamType
+    
     varname <- df_row$Var
     val <- df_row$Val
     if (type == "Numeric"){
@@ -37,6 +39,6 @@ updateUIInputs <- function(session, param_df){
       updateRadioGroupButtons(session,var,selected =val)
     }
     
-  })
+  }
 
 }

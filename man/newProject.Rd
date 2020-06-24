@@ -8,7 +8,8 @@ newProject(
   name = "new_project",
   type = "PBPK",
   model = "rapidPBPK",
-  mode = "MC"
+  mode = "MC",
+  runUI = F
 )
 }
 \arguments{

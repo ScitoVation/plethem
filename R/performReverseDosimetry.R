@@ -96,11 +96,10 @@ cdf <- function(probabilityTable){
 # @description Calulates the percentile value for a specific percentile when provided with the CDF and list of exposures for the CDF.
 calcPercentileValue <- function(whichPercentile = 25,cdf,exposure_list){
   #x=cdf[,2]
-  x <- cdf
   your.number = as.double(whichPercentile/100)
   if(your.number != 1){
-    xIndex <- which(abs(x-your.number)==min(abs(x-your.number)))
-    closestNum <- x[xIndex]
+    xIndex <- which(abs(cdf-your.number)==min(abs(cdf-your.number)))
+    closestNum <- cdf[xIndex]
     if(closestNum > your.number) { # xIndex is higher than the percentile we're looking for
       lowerIndex <- xIndex - 1
       upperIndex <- xIndex
@@ -109,10 +108,10 @@ calcPercentileValue <- function(whichPercentile = 25,cdf,exposure_list){
       upperIndex <- xIndex + 1
     }
   } else{
-    upperIndex <- min(which(x == max(x))) -1 # This is -1 and lower is -2 in sample file.
+    upperIndex <- min(which(cdf == max(cdf))) -1 # This is -1 and lower is -2 in sample file.
     lowerIndex <- upperIndex - 2
   }
-  rate <- (your.number-x[lowerIndex])/(x[upperIndex]-x[lowerIndex])
+  rate <- (your.number-cdf[lowerIndex])/(cdf[upperIndex]-cdf[lowerIndex])
   # exposure_list <- as.numeric(lapply(as.character(exposure_list),function(x){
   #   gsub("[A-z]","",x)}))
   # print(coNames)
@@ -169,12 +168,18 @@ runReverseDosimetry <- function(mcData,biomData,percentiles=c(5,50,95,99),dose_l
   # CDF and PDF are only calculated at doses at which they were measured
   # interpolate using splines to so that there are a total of 1000 doses
   # use this to get a more accurate exposure estimate
-  extended_dose_list <- logseq(exposureBounds[[1]],exposureBounds[[2]],1000)
-  interpCDF <- akimaInterp(dose_list,cdf_vector,extended_dose_list)
-  interpPDF <- akimaInterp(dose_list,probability_vector,extended_dose_list)
+  extended_dose_list <- pracma::logseq(exposureBounds[[1]],exposureBounds[[2]],1000)
+  interpCDF <- pracma::akimaInterp(dose_list,cdf_vector,extended_dose_list)
+  interpPDF <- pracma::akimaInterp(dose_list,probability_vector,extended_dose_list)
   #estimate exposures at given percentile values
-  exposures <- sapply(percentiles,calcPercentileValue,
-                      interpCDF,extended_dose_list)
+  exposures <- tryCatch({
+    sapply(percentiles,calcPercentileValue,
+           cdf_vector,dose_list)
+  },
+  error = function(e){
+    message("Issues with Calculating percentiles. Returning null exposure values instead")
+    return(replicate(length(percentiles),0,simplify = T))
+  })
   exposureDF <- data.frame("Percentile"=percentiles,"Exposure"=exposures)
   cdf <- data.frame("dose_list"=extended_dose_list,"cdf"=interpCDF)
   pdf <- data.frame("dose_list"=extended_dose_list,"pdf"=interpPDF)

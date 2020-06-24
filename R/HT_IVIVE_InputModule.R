@@ -26,11 +26,11 @@ HT_IVIVEUI <- function(namespace=""){
                              fluidRow(
                                column(4,
                                       tags$h5("Oragnism"),
-                                      tags$h4("Standard Human")
-                                      # selectInput(ns("sel_org"),label = "Select Organism",
-                                      #             choices = list("Standard Human"="ha",
-                                      #                            "Adult Rat"="ra"),
-                                      #             selected = "ha")
+                                      #$h4("Standard Human")
+                                      selectInput(ns("sel_org"),label = "Select Organism",
+                                                  choices = list("Standard Human"="ha",
+                                                                 "Adult Rat"="ra"),
+                                                  selected = "ha")
                                       ),
                                column(4,
                                       selectInput(ns("sel_chem"),
@@ -545,7 +545,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   observeEvent(input$sel_org,{
     if(input$sel_org == "ha"){
       # default is to assume adult human age of 25 years
-      age = 25
+      age <- 25
       bw <- 81.2079
       qcc <- 421.96
       liv_wt <- 1.58

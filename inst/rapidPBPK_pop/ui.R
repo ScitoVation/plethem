@@ -1,11 +1,3 @@
-library(shiny)
-library(shinyBS)
-library(shinydashboard)
-library(shinyWidgets)
-library(V8)
-library(ggplot2)
-library(shinyjs)
-
 jscode <- "
 shinyjs.disableTab = function(name) {
   var tab = $('#'+name);
@@ -22,6 +14,8 @@ shinyjs.enableTab = function(name) {
   tab.unbind('click.tab');
   tab.removeClass('disabled-comp');
 }
+
+shinyjs.reset = function(){history.go(0)}
 "
 css <- "div .disabled-comp {
   color: #aaa !important;
@@ -218,58 +212,66 @@ plot_body <- fluidPage(
                                                               downloadButton("expodwnld",label = "Get Data")))
                                        )),
                        bsCollapsePanel(title = "Concentration Plots", style = "primary",
-                                       column(3,
-                                              tabsetPanel(
-                                                tabPanel("Model",value  = "model",
-                                                         shinyWidgets::multiInput("cplt_comp",label = tags$h4("Select Compartment"),
-                                                                                  choices = list("Arterial Plasma"="art_bld","Venous Plasma"="ven_bld",
-                                                                                                 "Fat Total"="to_fat","Fat Tissue"="ti_fat","Fat Exchange"="bl_fat",
-                                                                                                 "Skin Total"="to_skn","Skin Tissue"="ti_skn","Skin Exchange"="bl_skn",
-                                                                                                 "Bone Total"="to_bne","Bone Tissue"="ti_bne","Bone Exchange"="bl_bne",
-                                                                                                 "Muscle Total"="to_musc","Muscle Tissue"="ti_musc","Muscle Exchange"="bl_musc",
-                                                                                                 "Brain Total"="to_brn","Brain Tissue"="ti_brn","Brain Exchange"="bl_brn",
-                                                                                                 "Lungs Total"="to_lng","Lungs Tissue"="ti_lng","Lungs Exchange"="bl_lng",
-                                                                                                 "Heart Total"="to_hrt","Heart Tissue"="ti_hrt","Heart Exchange"="bl_hrt",
-                                                                                                 "GI Total"="to_gi","GI Tissue"="ti_gi","GI Exchange"="bl_gi",
-                                                                                                 "Liver Total"="to_liv","Liver Tissue"="ti_liv","Liver Exchange"="bl_liv",
-                                                                                                 "Kidney Total"="to_kdn","Kidney Tissue"="ti_kdn","Kidney Exchange"="bl_kdn",
-                                                                                                 "Rapidly Perused Total"="to_rpf",
-                                                                                                 "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf",
-                                                                                                 "Slowly Perused Total"="to_spf",
-                                                                                                 "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf",
-                                                                                                 "Parent urine concentration"="urine","Metabolite Urine Concentration"="meturine"
-                                                                                  )
-                                                         )
-                                                ),
-                                                tabPanel("Dataset",value = "dataset",
-                                                         shinyWidgets::pickerInput("cplt_data",multiple = F,
-                                                                                   label = tags$h4("Select Datasets"),
-                                                                                   choices = c("No Dataset"="none"),#,
-                                                                                   selected = "none")
-                                                )
-                                                
-                                                
-                                                
-                                              )
+                                       fluidRow(
+                                         column(2,
+                                                bsButton("btnAddData","Add Dataset",block = TRUE,style = "primary")
+                                         )  
                                        ),
-                                       column(9,
-                                              tabBox(width = 12,height = validateCssUnit("100%"),
-                                                     tabPanel("Plot",
-                                                              fluidRow(
-                                                                tags$h5(class="text-center",
-                                                                        radioButtons("r_cplt_type",label = "Concentration Units",inline = TRUE,
-                                                                                     choices = c("mg/L"="mgl","\u00B5Molar"="um"),
-                                                                                     selected = "um")
+                                       fluidRow(
+                                         column(3,
+                                                tabsetPanel(
+                                                  tabPanel("Model",value  = "model",
+                                                           shinyWidgets::multiInput("cplt_comp",label = tags$h4("Select Compartment"),
+                                                                                    choices = list("Arterial Plasma"="art_bld","Venous Plasma"="ven_bld",
+                                                                                                   "Fat Total"="to_fat","Fat Tissue"="ti_fat","Fat Exchange"="bl_fat",
+                                                                                                   "Skin Total"="to_skn","Skin Tissue"="ti_skn","Skin Exchange"="bl_skn",
+                                                                                                   "Bone Total"="to_bne","Bone Tissue"="ti_bne","Bone Exchange"="bl_bne",
+                                                                                                   "Muscle Total"="to_musc","Muscle Tissue"="ti_musc","Muscle Exchange"="bl_musc",
+                                                                                                   "Brain Total"="to_brn","Brain Tissue"="ti_brn","Brain Exchange"="bl_brn",
+                                                                                                   "Lungs Total"="to_lng","Lungs Tissue"="ti_lng","Lungs Exchange"="bl_lng",
+                                                                                                   "Heart Total"="to_hrt","Heart Tissue"="ti_hrt","Heart Exchange"="bl_hrt",
+                                                                                                   "GI Total"="to_gi","GI Tissue"="ti_gi","GI Exchange"="bl_gi",
+                                                                                                   "Liver Total"="to_liv","Liver Tissue"="ti_liv","Liver Exchange"="bl_liv",
+                                                                                                   "Kidney Total"="to_kdn","Kidney Tissue"="ti_kdn","Kidney Exchange"="bl_kdn",
+                                                                                                   "Rapidly Perused Total"="to_rpf",
+                                                                                                   "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf",
+                                                                                                   "Slowly Perused Total"="to_spf",
+                                                                                                   "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf",
+                                                                                                   "Parent urine concentration"="urine","Metabolite Urine Concentration"="meturine"
+                                                                                    )
+                                                           )
+                                                  ),
+                                                  tabPanel("Dataset",value = "dataset",
+                                                           shinyWidgets::pickerInput("cplt_data",multiple = F,
+                                                                                     label = tags$h4("Select Datasets"),
+                                                                                     choices = c("No Dataset"="none"),#,
+                                                                                     selected = "none")
+                                                  )
+                                                  
+                                                  
+                                                  
+                                                )
+                                         ),
+                                         column(9,
+                                                tabBox(width = 12,height = validateCssUnit("100%"),
+                                                       tabPanel("Plot",
+                                                                fluidRow(
+                                                                  tags$h5(class="text-center",
+                                                                          radioButtons("r_cplt_type",label = "Concentration Units",inline = TRUE,
+                                                                                       choices = c("mg/L"="mgl","\u00B5Molar"="um"),
+                                                                                       selected = "um")
+                                                                  )
+                                                                ),
+                                                                fluidRow(
+                                                                  plotly::plotlyOutput("concplt")
                                                                 )
-                                                              ),
-                                                              fluidRow(
-                                                                plotly::plotlyOutput("concplt")
-                                                              )
-                                                     ),
-                                                     tabPanel("Table",
-                                                              DT::DTOutput("conctble"),
-                                                              downloadButton("cdwnld",label ="Get Data"))
-                                              ))),
+                                                       ),
+                                                       tabPanel("Table",
+                                                                DT::DTOutput("conctble"),
+                                                                downloadButton("cdwnld",label ="Get Data"))
+                                                ))
+                                       )
+                                       ),
                        bsCollapsePanel(title = "Amount Plots", style = "primary",
                                        column(3,
                                               wellPanel(
@@ -729,6 +731,7 @@ shinyUI(fluidPage(
   shinyjs::useShinyjs(),
   shinyWidgets::useSweetAlert(),
   theme = shinythemes::shinytheme("spacelab"),
+  #shinythemes::themeSelector(),
   includeCSS("www/styles.css"),
   shinyjs::extendShinyjs(text = jscode),
   shinyjs::inlineCSS(css),
@@ -1244,7 +1247,7 @@ shinyUI(fluidPage(
                                            )
                                            
                                   ),
-                                  tabPanel("Uncertanity and Variability", value = "variability",
+                                  tabPanel("Uncertainty and Variability", value = "variability",
                                            dashboardPage(
                                              dashboardHeader(disable = T),
                                              dashboardSidebar(
@@ -1352,83 +1355,55 @@ shinyUI(fluidPage(
                                              )
                                            )
                                   ),
+                                  tabPanel("Biomonitoring Data",value ="biomdata",
+                                           fluidPage(
+                                             fluidRow(
+                                               column(12,
+                                                      div(style = "height:10px")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(width = 8, offset = 0,
+                                                      selectizeInput("sel_biom",NULL,
+                                                                     choices = NULL,
+                                                                     options= list(placeholder = "Biomonitering Data",
+                                                                                   openOnFocus = T))),
+                                               column(width = 4, offset = 0,
+                                                      shinyWidgets::actionGroupButtons(
+                                                        c("btn_edit_biom","btn_new_biom"),
+                                                        c("Edit","New"),
+                                                        direction = "horizontal",
+                                                        status = "info",
+                                                        fullwidth = T
+                                                        
+                                                      ))
+                                             ),
+                                             fluidRow(
+                                               column(12,
+                                                      div(style = "height:10px")
+                                               )
+                                             ),
+                                             # fluidRow(
+                                             #   column(4, offset = 1,
+                                             #          tags$h4("Tissue"),
+                                             #          textOutput("biom_tissue")
+                                             #          ),
+                                             #   column(4, offet = 2,
+                                             #          tags$h4("Chemical"),
+                                             #          textOutput("biom_chem")
+                                             #          )
+                                             #   ),
+                                             fluidRow(
+                                               plotly::plotlyOutput("biom_hist")
+                                             )
+                                           )
+                                           ),
                                   tabPanel("Simulations",
                                            fluidPage(
                                              fluidRow(
                                                tags$br()
                                              ),
-                                             # fluidRow(
-                                             #   actionButton("btn_new_sim","New Simulation")
-                                             # ),
-                                             # fluidRow(tags$h4("")),
-                                             # fluidRow(
-                                             #   column(5,
-                                             #          shinyWidgets::dropdownButton(
-                                             #            tagList(
-                                             #              textInput("sim_name","Name"),
-                                             #              textAreaInput("sim_descrp","Description",rows = 2,resize = "none"),
-                                             #              fluidRow(
-                                             #                column(6,
-                                             #                       selectizeInput("sel_set_chem","Select Chemical",choices = NULL)
-                                             #                ),
-                                             #                column(6,
-                                             #                       selectizeInput("sel_set_chemvar","Select Variability",choices = NULL)
-                                             #                )
-                                             #              ),
-                                             #              fluidRow(
-                                             #                column(6,
-                                             #                       selectizeInput("sel_set_expo","Select Exposure",choices = NULL)
-                                             #                ),
-                                             #                column(6,
-                                             #                       selectizeInput("sel_set_expovar","Select Variability",choices = NULL)
-                                             #                )
-                                             #              ),
-                                             #              fluidRow(
-                                             #                column(6,
-                                             #                       selectizeInput("sel_set_physio","Select Compartment",choices = NULL)
-                                             #                ),
-                                             #                column(6,
-                                             #                       selectizeInput("sel_set_physiovar","Select Variability",choices = NULL)
-                                             #                )
-                                             #              ),
-                                             #              fluidRow(
-                                             #                column(6,
-                                             #                       selectizeInput("sel_set_adme","Select ADME",choices = NULL)
-                                             #                ),
-                                             #                column(6,
-                                             #                       selectizeInput("sel_set_admevar","Select Variability",choices = NULL)
-                                             #                )
-                                             #              ),
-                                             #              
-                                             #              fluidRow(
-                                             #                column(4,
-                                             #                       numericInput("sim_start","Simulation Start Time (h)",0)
-                                             #                ),
-                                             #                column(4,
-                                             #                       numericInput("sim_dur","Simulation Duration (h)",0)
-                                             #                ),
-                                             #                column(4,
-                                             #                       numericInput("mc_num","Number of Montecarlo Runs",0)
-                                             #                )
-                                             #              ),
-                                             #              checkboxInput("mc_mode","Run Monte Carlo Simulation",F),
-                                             #              shinyWidgets::actionBttn("save_sim",NULL,
-                                             #                                       icon = icon("floppy-save",lib = "glyphicon"),
-                                             #                                       style = "material-circle")
-                                             #            ),
-                                             #            icon = icon("plus"),circle = F, 
-                                             #            tooltip = F,size = "default",right = F,
-                                             #            width = validateCssUnit("100%"),
-                                             #            label = "Create new simulation",
-                                             #            status = "default" )),
-                                             #   column(3,
-                                             #          shinyBS::bsButton("run_sim","Run Simulation",
-                                             #                            style = "primary",block = TRUE)
-                                             #   ),
-                                             #   column(3,
-                                             #          shinyBS::bsButton("extrapolate_route","Extrapolate to a new route of exposure",
-                                             #                            style = "primary",block = TRUE))
-                                             # ),
+                                             
                                              fluidRow(
                                                br(),
                                                column(8,
@@ -1436,30 +1411,38 @@ shinyUI(fluidPage(
                                                                      width = validateCssUnit("99%"))
                                                       ),
                                                column(4,
-                                                      actionGroupButtons(c("btn_edit_sim","btn_new_sim"),status = "info",
-                                                                         labels = c("Edit","New"),fullwidth = T)
+                                                      actionGroupButtons(c("btn_edit_sim","btn_new_sim","btn_run_sim"),status = "info",
+                                                                         labels = c("Edit","New","Run"),fullwidth = T)
                                                )
                                                
                                                
                                              ),
                                              fluidRow(
-                                               wellPanel(id= "Simulationdetails1",
+                                               wellPanel(id= "Simulationdetails",
                                                          fluidRow(
                                                            column(8,offset =2,
+                                                                  
                                                                   tags$h4("Simulation Description"),
                                                                   textOutput("sim_descrp")
                                                            )
                                                            
                                                          ),
                                                          fluidRow(
-                                                           column(6,
+                                                           column(3,
+                                                                  tags$h4("Simulation Type"),
+                                                                  textOutput("sim_type")
+                                                                  ),
+                                                           column(3,
                                                                   tags$h4("Simulation Start (h)"),
                                                                   textOutput("sim_start")
                                                            ),
-                                                           column(6,
+                                                           column(3,
                                                                   tags$h4("Simulation Duration (h)"),
                                                                   textOutput("sim_dur")
-                                                           )
+                                                           ),
+                                                           column(3,
+                                                                  tags$h4("Duration Units"),
+                                                                  textOutput("dur_units"))
                                                          ),
                                                          fluidRow(
                                                            column(6,
@@ -1505,20 +1488,18 @@ shinyUI(fluidPage(
                       )),
              tabPanel("Model Output",icon = icon("line-chart"),value = "output",
                       fluidRow(
-                        column(2,
-                               bsButton("btnAddData","Add Dataset",block = TRUE,style = "primary")
-                        ),
+                        
                         column(3, offset= 6,
                                downloadButton("downloadModel", "Download Model",class = "btn btn-primary btn-block")
                         ),
-                        column(1,
+                        column(2,
                                shinyBS::bsButton("btnOutputIntro", "Need help?",block = TRUE,style = "info"))
                       ),
                       tabsetPanel(id = "Modeloutput", type = "tabs",
-                                  tabPanel("Plots",
+                                  tabPanel("Plots",value = "plots",
                                            plot_body
                                   ),
-                                  tabPanel("Parameters",
+                                  tabPanel("Parameters",value = "params",
                                            fluidPage(
                                              fluidRow(
                                                box(title = "Exposure Parameters",width = 4,
@@ -1534,10 +1515,31 @@ shinyUI(fluidPage(
                                                               label = "Download All Paramters")
                                              ))
                                   ),
-                                  tabPanel("NCA values",
+                                  tabPanel("NCA values", value = "nca",
                                            fluidPage(
                                              fluidRow(
                                                DT::DTOutput("tble_ncavals")
+                                             )
+                                           )),
+                                  tabPanel("Distribution Plots",value = "cdfpdf",
+                                           fluidPage(
+                                             bsCollapse(id = "revdos_plts",multiple = TRUE,
+                                                        open = "cdfplt",
+                                                        bsCollapsePanel("Cumulative Distribution Function",value = "cdfplt",
+                                                                        plotlyOutput("CDF")
+                                                        ),
+                                                        bsCollapsePanel("Probability Distribution Function", value = "pdfplt",
+                                                                        plotlyOutput("PDF")
+                                                        ),
+                                                        bsCollapsePanel("Monte Carlo Simulation",value="mcplt",
+                                                                        plotlyOutput("RDMCPlt"))
+                                             )
+                                           )
+                                  ),
+                                  tabPanel("Exposure Estimates",value = "percentile",
+                                           fluidPage(
+                                             fluidRow(
+                                               dataTableOutput("expo_estimate" )
                                              )
                                            ))
                                   

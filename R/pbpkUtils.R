@@ -72,7 +72,7 @@ getAllParamValuesForModel <- function(simid,model){
 
 
   # get the physiological values for the simulation
-  query <- sprintf("Select admeid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
+  query <- sprintf("Select * FROM SimulationsSet Where simid = %i;",
                    simid)
   result <- projectDbSelect(query)
   admeid <- as.integer(result[["admeid"]])
@@ -80,7 +80,12 @@ getAllParamValuesForModel <- function(simid,model){
   expoid <- as.integer(result[["expoid"]])
   physioid <- as.integer(result[["physioid"]])
   tstart <- result[["tstart"]]
-  sim_dur <-result[["sim_dur"]]
+  time_multiplier <- switch(result$dur_units,
+                            "h"=1,
+                            "d"=24,
+                            "w"=168)
+  sim_dur <-result[["sim_dur"]]*time_multiplier
+  
 
   # get all the physiology parameters
   query <- sprintf("SELECT param,value FROM Physiological WHERE physioid = %i;",
@@ -151,15 +156,19 @@ getAllParamValuesForModel <- function(simid,model){
 #' 
 #' @export
 getAllVariabilityValuesForModel<- function(simid, params,mc_num){
+  # set the seed
+  set.seed(as.numeric(Sys.time()))
+  
   params <- lapply(params,function(x){as.numeric(x)})
   # get the ids for variability sets
-  query <- sprintf("Select expovarid,physiovarid,chemvarid FROM SimulationsSet Where simid = %i;",
+  query <- sprintf("Select expovarid,physiovarid,chemvarid,admevarid FROM SimulationsSet Where simid = %i;",
                    simid)
   result <- projectDbSelect(query)
   chemvarid <- as.integer(result[["chemvarid"]])
   expovarid <- as.integer(result[["expovarid"]])
   physiovarid <- as.integer(result[["physiovarid"]])
-  varid_list <- c(chemvarid,expovarid,physiovarid)
+  admevarid <- as.integer(result[["admevarid"]])
+  varid_list <- c(chemvarid,expovarid,physiovarid,admevarid)
   type_name2var <- list("Normal" = "norm","Log-normal"="lnorm","Uniform"="uform")
   mc_param_names <- list()
   cvs <- list()
@@ -176,15 +185,14 @@ getAllVariabilityValuesForModel<- function(simid, params,mc_num){
       mc_param_names <- c(mc_param_names,var_tble$Parameter)
       cvs <- c(cvs,stats::setNames(as.numeric(var_tble$CV),var_tble$Parameter))
       types <- c(types,setNames(type_name2var[unlist(var_tble$Type)],var_tble$Parameter))
-      bound_flag <- c(bound_flag,setNames(sample(c(TRUE,FALSE),length(var_tble$CV),replace = T),var_tble$Parameter))
-      lbound <- c(lbound,setNames(rep(1e-10,length(var_tble$CV)),var_tble$Parameter))
-      ubound <- c(ubound,setNames(rep(10,length(var_tble$CV)),var_tble$Parameter))
+      bound_flag <- c(bound_flag,setNames(as.logical(unlist(var_tble$BFlag)),var_tble$Parameter))
+      lbound <- c(lbound,setNames(as.numeric(var_tble$LowerBound),var_tble$Parameter))
+      ubound <- c(ubound,setNames(as.numeric(var_tble$UpperBound),var_tble$Parameter))
     }
   }
   # set up mc matrix
   MC.matrix <- matrix(NA, nrow = mc_num, ncol = (length(cvs) ))
   colnames(MC.matrix) <- mc_param_names
-  sample.vec <- rep(NA, mc_num)
   for (this.param in mc_param_names){
     if (!(this.param %in% names(params)))
       stop(paste("Cannot find cv.params parameter", this.param,
@@ -278,6 +286,7 @@ getAllSetChoices <- function(set_type = "physio"){
                        "expo" = "Exposure",
                        "metab"="Metabolism",
                        "adme"="Adme",
+                       "biom"="Biomonitering",
                        "sim" = "Simulations")
     id_name <- paste0(set_type,"id")
     set_table_name <- paste0(set_name,"Set")
@@ -331,9 +340,9 @@ getVariabilitySetChoices <- function(var_type="physio"){
 #' @description Reshapes plot data in long form to wide form. The plot data has time as the id
 #' @param plotData Plot Data in long form
 #' @export
-reshapePlotData<- function(plotData,type = "FD"){
+reshapePlotData<- function(plotData,type = "fd"){
   
-  if (type == "FD"){
+  if (type == "fd"){
     data <- unique.data.frame(plotData)
     return(reshape2::dcast(data,time~variable))
   }else{

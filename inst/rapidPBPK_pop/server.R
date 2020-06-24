@@ -1,12 +1,5 @@
-library(shiny)
-library(shinyBS)
-library(shinydashboard)
-library(shinyWidgets)
-library(V8)
-library(ggplot2)
-library(shinyjs)
-library(magrittr)
-source("scripts/createSimulationModule.R")
+
+
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
   # define the model name once here. It will be used throughout this server file
@@ -34,6 +27,7 @@ shinyServer(function(input, output, session) {
   physio_set <- getAllSetChoices("physio")
   chem_set <- getAllSetChoices("chem")
   adme_set <- getAllSetChoices("adme")
+  biom_set <- getAllSetChoices("biom")
   #metab_set <- getAllSetChoices("metab")
   sim_set <- getAllSetChoices("sim")
   physiovar <-getVariabilitySetChoices("physio")
@@ -44,6 +38,7 @@ shinyServer(function(input, output, session) {
   parameterSets$physio <- reactiveVal(physio_set)
   parameterSets$chem <- reactiveVal(chem_set)
   parameterSets$sim <- reactiveVal(sim_set)
+  parameterSets$biom <- reactiveVal(biom_set)
   parameterSets$physiovar <- reactiveVal(physiovar)
   parameterSets$chemvar <- reactiveVal(chemvar)
   parameterSets$expovar <- reactiveVal(expovar)
@@ -170,6 +165,9 @@ shinyServer(function(input, output, session) {
   if (length(set_choices)>0){
     updateSelectizeInput(session,"sel_adme_var",
                          choices = set_choices)
+  }
+  if(length(biom_set)>0){
+    updateSelectizeInput(session,"sel_biom",choices = biom_set)
   }
   
 
@@ -354,6 +352,110 @@ shinyServer(function(input, output, session) {
     }
     
   })
+  
+  ## CODE CHUNK FOR HANDLING BIOMONITERING DATA UPLOAD
+  observeEvent(input$btn_new_biom,{
+    namespace <- paste0("biom",input$btn_new_biom)
+    newEditBiomoniteringDataUI(namespace)
+    parameterSets$savedat <- callModule(newEditBiomoniteringData,namespace,
+                                        type= "new")
+  })
+  
+  observeEvent(input$btn_edit_biom,{
+    biomid <- as.integer(input$sel_biom)
+    namespace <- paste0("biom",input$btn_edit_biom)
+    newEditBiomoniteringDataUI(namespace,biomid)
+    parameterSets$savedat <- callModule(newEditBiomoniteringData,namespace,
+                                        type = "edit",biomid)
+  })
+  
+  
+  ### CODE CHUNK FOR HANDLING SIMULATIONS TAB
+  
+  #New Create simulation dialog
+  observeEvent(input$btn_new_sim,{
+    set_names <-c("expo","physio","chem","adme",
+                  "expovar","physiovar","chemvar","admevar",
+                  "biom","extrapolate") 
+    selected_list <- list()
+    selected_list[set_names]<- list(NULL)
+    set_list <- lapply(set_names,function(x){
+      if(x == "adme" || x=="extrapolate"){
+        return(NULL)
+      }else{
+        return(parameterSets[[x]]())
+      }
+    })
+    set_list <-setNames(set_list,set_names)
+    module_namespace <- paste0("newSim",input$btn_new_sim)
+    createSimulationUI(module_namespace,set_list,selected_list)
+    parameterSets$savedat <- callModule(createSimulation,
+                               module_namespace,type = "new")
+  })
+  
+  observeEvent(input$btn_edit_sim,{
+    simid <- as.integer(input$sel_sim)
+    query <- sprintf("Select * from SimulationsSet where simid = %i",simid)
+    sim_details <- projectDbSelect(query)
+    # List of names for set dropdowns in the create/edit UI module
+    set_names <-c("expo","physio","chem","adme",
+                  "expovar","physiovar","chemvar","admevar",
+                  "biom","extrapolate")
+    # Get the choice of adme ids for the given simulation
+    query <- sprintf("Select name,admeid from AdmeSet where chemid = %d AND physioid = %d AND expoid = %d;",
+                     sim_details$chemid,
+                     sim_details$physioid, 
+                     sim_details$expoid)
+    res <- projectDbSelect(query)
+    adme_set <- as.list(res[["admeid"]])
+    names(adme_set)<- res$name
+    #create list for set selection dropdown
+    set_list <- lapply(set_names, function(x,adme_set){
+      if(x == "adme"){
+        return(adme_set)
+      }else if(x=="extrapolate"){
+        return(NULL)
+      }else{
+        return(parameterSets[[x]]())
+      }
+      
+    },adme_set)
+    set_list <- setNames(set_list,set_names)
+    
+    # create list for selected options from the dropdowns
+    selected_list <- lapply(set_names,function(x){
+      var_id <- paste0(x,"id")
+      return(sim_details[[var_id]])
+      
+    })
+    selected_list<- setNames(selected_list,set_names)
+    
+    # Update simulation settings based on simulation type
+    simulation_settings <- list()
+    simulation_settings$simid <- simid
+    simulation_settings$name <- sim_details$name
+    simulation_settings$descrp <- sim_details$descrp
+    simulation_settings$sim_type <- sim_details$sim_type
+    simulation_settings$tstart <- sim_details$tstart
+    simulation_settings$sim_dur <- sim_details$sim_dur
+    simulation_settings$dur_units <- sim_details$dur_units
+    
+    sim_type <- sim_details$sim_type
+    if(sim_details$sim_type %in% c("rd","r2r")){
+      simulation_settings$expo_range <- c(sim_details$low_dose_estimate,
+                                          sim_details$high_dose_estimate)
+      simulation_settings$num_expos <- sim_details$num_expos
+      
+    }
+    if(sim_details$sim_type != "fd"){
+      simulation_settings$mcruns <- sim_details$mcruns
+    }
+    module_namespace <- paste0("newSim",input$btn_edit_sim)
+    createSimulationUI(module_namespace,set_list,selected_list)
+    parameterSets$savedat <- callModule(createSimulation,
+                               module_namespace,type = "edit",simulation_settings)
+    
+  })
 
 
   # update the paramter set dropdown if it is changed
@@ -372,8 +474,6 @@ shinyServer(function(input, output, session) {
         updateSelectizeInput(session,"sel_physio4adme",choices = set_list)
       }else if(set_type == "expo"){
         updateSelectizeInput(session,"sel_expo4adme",choices = set_list)
-      }else if(set_type == "adme"){
-        updateSelectizeInput(session,"sel_")
       }
       parameterSets$savedat <- reactiveVal(c("No","",0))
       # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
@@ -651,7 +751,8 @@ shinyServer(function(input, output, session) {
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
   
   
-
+## CODE CHUNK TO UPDATE UI BASED ON SELECTED SET FROM THE DROPDOWN
+  
   #update the inputs for the parameter set selected
   observeEvent(input$sel_physio,{
     physioid <- input$sel_physio
@@ -664,8 +765,8 @@ shinyServer(function(input, output, session) {
     shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
     shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "primary")
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-
-
+  
+  #update the inputs for the exposure set selected
   observeEvent(input$sel_expo,{
     expoid <- input$sel_expo
     #get the values for inputs
@@ -675,7 +776,8 @@ shinyServer(function(input, output, session) {
     updateUIInputs(session,params_df)
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
-
+  
+  #update the inputs for the chemical set selected
   observeEvent(input$sel_chem,{
     chemid <- input$sel_chem
     #get the values for inputs
@@ -686,6 +788,7 @@ shinyServer(function(input, output, session) {
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
   
+  #update the inputs for the adme set selected
   observeEvent(input$sel_adme,{
     admeid <- input$sel_adme
     #get the values for inputs
@@ -695,6 +798,56 @@ shinyServer(function(input, output, session) {
     updateUIInputs(session,params_df)
     
   },ignoreInit = TRUE, ignoreNULL = TRUE)
+  
+  #update the inputs for the biomonitering set selected
+  observeEvent(input$sel_biom,{
+    
+    biomid  <- as.integer(input$sel_biom)
+    query <- sprintf("Select chem,tissue,units,data from Biomonitering where biomid = %i;",
+                    biomid)
+
+    biom_db_data <- projectDbSelect(query)
+    chem <- biom_db_data$chem
+    tissue <- biom_db_data$tissue
+    units <- switch(biom_db_data$units,
+                    "uml"="\u00B5moles/L",
+                    "ngl"="ng/L",
+                    "mgl"="mg/L",
+                    "ugd"="\u00B5g/day")
+    data <- unserialize(charToRaw(biom_db_data$data))
+
+    if(tissue=="pls"){
+      if(chem=="prnt"){
+        x_label <- paste0("Parent Chemical Plasma Concentration (",units,")")
+      }else{
+        x_label <- paste0("Metabolite Concentration (",units,")")
+      }
+    }else{
+      if(chem == "prnt"){
+        if(biom_db_data$units == "ugd"){
+          x_label <- paste0("Amount of Parent Chemical Excreted in Urine (\u00B5g/day)")
+        }else{
+          x_label <- paste0("Urinary Concentration of Parent Chemical (",units,")")
+        }
+      }else{
+        if(biom_db_data$units == "ugd"){
+          x_label <- paste0("Amount of Metabolite Excreted in Urine (\u00B5g/day)")
+        }else{
+          x_label <- paste0("Urinary Concentration of the Metabolite(",units,")")
+        }
+      }
+    }
+    output$biom_hist <- plotly::renderPlotly({
+      p <- plot_ly(x = data[,1],type = "histogram")%>%
+        layout(
+          title = "Biomonitering Data",
+          yaxis = list(title = "Count",
+                       type = 'log'),
+          xaxis = list(title = x_label)
+        )
+    })
+  },ignoreInit = T,ignoreNULL = T)
+  
 
   ### This code chunk deals with updating pair using qsar models
   observeEvent(input$qsar4chem_props,{
@@ -1040,161 +1193,42 @@ shinyServer(function(input, output, session) {
   })
 
   ## END METABOLISM TAB UNDER ADME
-  ### CODE CHUNK FOR HANDLING SIMULATIONS TAB
-  
-  #New Create simulation dialog
-  observeEvent(input$btn_new_sim,{
-    set_names <-c("expo","physio","chem","adme",
-                  "expovar","physiovar","chemvar","admevar",
-                  "biomonitering","extrapolate") 
-    selected_list <- list()
-    selected_list[set_names]<- list(NULL)
-    set_list <- lapply(set_names,function(x){
-      if(x == "adme" || x == "admevar" || x =="biomonitering" || x=="extrapolate"){
-        return(NULL)
-      }else{
-        return(parameterSets[[x]]())
-      }
-    })
-    set_list <-setNames(set_list,set_names)
-    module_namespace <- paste0("newSim",input$btn_new_sim)
-    createSimulationUI(module_namespace,set_list,selected_list)
-    temp_ret_dat <- callModule(createSimulation,
-                               module_namespace,type = "new")
-  })
-  observeEvent(input$btn_edit_sim,{
-    simid <- as.integer(input$sel_sim)
-    query <- sprintf("Select * from SimulationsSet where simid = %i",simid)
-    sim_details <- projectDbSelect(query)
-    # List of names for set dropdowns in the create/edit UI module
-    set_names <-c("expo","physio","chem","adme",
-                  "expovar","physiovar","chemvar","admevar",
-                  "biomonitering","extrapolate")
-    # Get the choice of adme ids for the given simulation
-    query <- sprintf("Select name,admeid from AdmeSet where chemid = %d AND physioid = %d AND expoid = %d;",
-                     sim_details$chemid,
-                     sim_details$physioid, 
-                     sim_details$expoid)
-    res <- projectDbSelect(query)
-    adme_set <- as.list(res[["admeid"]])
-    names(adme_set)<- res$name
-    #create list for set selection dropdown
-    set_list <- lapply(set_names, function(x,adme_set){
-      if(x == "adme"){
-        return(adme_set)
-      }else if(x == "admevar" || x =="biomonitering" || x=="extrapolate"){
-        return(NULL)
-      }else{
-        return(parameterSets[[x]]())
-      }
-      
-    },adme_set)
-    set_list <- setNames(set_list,set_names)
-    
-    # create list for selected options from the dropdowns
-    selected_list <- lapply(set_names,function(x){
-      var_id <- paste0(x,"id")
-      return(sim_details[[var_id]])
-      
-    })
-    selected_list<- setNames(selected_list,set_names)
-    
-    # Update simulation settings based on simulation type
-    simulation_settings <- list()
-    simulation_settings$simid <- simid
-    simulation_settings$name <- sim_details$name
-    simulation_settings$descrp <- sim_details$descrp
-    simulation_settings$sim_type <- sim_details$sim_type
-    simulation_settings$tstart <- sim_details$tstart
-    simulation_settings$sim_dur <- sim_details$sim_dur
-    simulation_settings$dur_units <- sim_details$dur_units
-    
-    sim_type <- sim_details$sim_type
-    if(sim_details$sim_type %in% c("rd","r2r")){
-      simulation_settings$expo_range <- c(sim_details$low_dose_estimate,
-                                          sim_details$high_dose_estimate)
-      simulation_settings$num_expos <- sim_details$num_expos
-      
-    }
-    if(sim_details$sim_type != "fd"){
-      simulation_settings$mcruns <- sim_details$mcruns
-    }
-    module_namespace <- paste0("newSim",input$btn_new_sim)
-    createSimulationUI(module_namespace,set_list,selected_list)
-    temp_ret_dat <- callModule(createSimulation,
-                               module_namespace,type = "edit",simulation_settings)
-    
-  })
 
-  # Save a new simulation
-  observeEvent(input$save_sim,{
-    if (any(c(input$sim_name,input$sim_descrp)=="")){
-      sendSweetAlert(session,"Error",
-                     "Need to provide Name and Decription for the simulation",
-                     type = "error")
-
-    }else{
-      simid <- getNextID("SimulationsSet")
-      sim_name <- input$sim_name
-      sim_descrp <- input$sim_descrp
-      sim_start <- input$sim_start
-      sim_dur <- input$sim_dur
-      mc_num <- ifelse(input$mc_mode,input$mc_num,0)
-      chemid <- as.integer(input$sel_set_chem)
-      physioid <- as.integer(input$sel_set_physio)
-      expoid <- as.integer(input$sel_set_expo)
-      admeid <- as.integer(input$sel_set_adme)
-      physiovarid <- as.integer(input$sel_set_physiovar)
-      chemvarid <- as.integer(input$sel_set_chemvar)
-      expovarid <- as.integer(input$sel_set_expovar)
-      admevarid <- as.integer(input$sel_set_admevar)
-      query <- paste(strwrap(sprintf("INSERT INTO SimulationsSet (simid,name,descrp,expoid,physioid,
-                                     chemid,admeid,physiovarid, chemvarid,expovarid,admevarid,tstart,sim_dur,mc_num) Values
-                                     (%d,'%s','%s',%i,%i,%i,%i,%i,%i,%i,%i,%f,%f,%i) ;",
-                                     simid,sim_name,sim_descrp,
-                                     expoid,physioid,
-                                     chemid,admeid,
-                                     physiovarid,chemvarid,
-                                     expovarid,admevarid,
-                                     sim_start,sim_dur,mc_num),
-                             simplify = T),
-                     sep = " ",collapse = "")
-      print(query)
-      projectDbUpdate(query)
-      sim_sets <- getAllSetChoices("sim")
-      updateSelectizeInput(session,"sel_sim",choices = sim_sets)
-
-      updateTextInput(session,"sim_name",value = "")
-      updateTextAreaInput(session,"sim_descrp",value = "")
-      sendSweetAlert(session,"Success",
-                     sprintf("Simulation saved as %s",sim_name),
-                     type = "success")
-      updateSelectizeInput(session,"sel_sim",selected = simid)
-      
-    }
-    
-  })
 
   observeEvent(input$sel_sim,{
     simid <- as.integer(input$sel_sim)
     # get pertinent data from the database
     # get All values from the simulations database
-    query <- sprintf("Select name,descrp,admeid,expoid,physioid,chemid,tstart,sim_dur FROM SimulationsSet Where simid = %i;",
+    query <- sprintf("Select * FROM SimulationsSet Where simid = %i;",
                      simid)
 
     result <- projectDbSelect(query)
+    # Simulation metadata
+    sim_descrp <- result[["descrp"]]
+    sim_type <- result$sim_type
+    tstart <- round(result[["tstart"]],2)
+    sim_dur <- round(result[["sim_dur"]],2)
+    dur_units <- result$dur_units
+    output$sim_descrp <- renderText(sim_descrp)
+    output$sim_type <- renderText(switch(sim_type,
+                                         "fd"="Forward Dosimetry",
+                                         "rd"="Reverse Dosimetry",
+                                         "mc"="Forward Dosimetry with Monte Carlo",
+                                         "r2r"="Route to Route Extrapolation"))
+    output$sim_start <- renderText(as.character(tstart))
+    output$sim_dur <- renderText(as.character(sim_dur))
+    output$dur_units <- renderText(switch(dur_units,
+                                          "h"="Hours",
+                                          "d"="Days",
+                                          "w"="Weeks"))
+    
     admeid <- as.integer(result[["admeid"]])
     chemid <- as.integer(result[["chemid"]])
     expoid <- as.integer(result[["expoid"]])
     physioid <- as.integer(result[["physioid"]])
-    sim_name <- result[["name"]]
-    sim_descrp <- result[["descrp"]]
-    tstart <- round(result[["tstart"]],2)
-    sim_dur <- round(result[["sim_dur"]],2)
-    output$sim_name <- renderText(sim_name)
-    output$sim_descrp <- renderText(sim_descrp)
-    output$sim_start <- renderText(as.character(tstart))
-    output$sim_dur <- renderText(as.character(sim_dur))
+    
+
+    
 
     # get chemical name from chem table
     query <- sprintf("SELECT name from ChemicalSet WHERE chemid = %i ;",
@@ -1222,81 +1256,264 @@ shinyServer(function(input, output, session) {
 
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
   
-  #Code Chunk to perform route to route extrapolation
-  observeEvent(input$extrapolate_route,{
-    simid <- input$run_sim
-    runRoute2RouteUI(paste0("r2r",input$extrapolate_route),simid,model)
-    module_return <- callModule(runRoute2Route,paste0("r2r",input$extrapolate_route),simid,model)
-  })
-
-  # Code chunk to run the simulation.
-  results <- reactiveValues(pbpk=NULL,simid = NULL,mode = NULL)
-  observeEvent(input$run_sim,{
+  ### CODE CHUNK TO RUN THE SIMULATION
+  results <- reactiveValues(pbpk=NULL,expo = NULL,simid = NULL,sim_type = NULL)
+  observeEvent(input$btn_run_sim,{
+    
+    
+    
+    # Get the simulation details
     simid <- as.integer(input$sel_sim)
-    results$simid <- simid
-    # get the parameters needed to run the model
+    sim_details <- projectDbSelect(sprintf("Select * From SimulationsSet where simid = %i",simid))
+    results$sim_type <- sim_details$sim_type
+    results$simid <- sim_details$simid
+    # Get expo, chem, physio and simulation parameters for the model
     model_params <- getAllParamValuesForModel(simid,model)
-    #get total volume
-    active_comp <- input$ms_cmplist
-    vol_comps <- c(active_comp,"blood")
-    total_vol <- sum(unlist(lapply(vol_comps,
-                                   function(x){
-                                     input[[vol_ids[x]]]
-                                     })
-                            )
-                     )
-    query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
-    mc_num <- as.integer(projectDbSelect(query)$mc_num)
-    model_params$vals[["total_vol"]]<- total_vol
-    if (mc_num > 1){
-      MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
-      query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
-                       model)
-      mc_vars<- mainDbSelect(query)$model_var
-      mc_results <- lapply(mc_vars,function(x,n){
-        return(x = rep(NA,n))
-        },mc_num)
-      names(mc_results)<- mc_vars
-      for (i in 1:mc_num){
-        model_params$vals[colnames(MC.matrix)]<- MC.matrix[i,]
-        initial_values <- calculateInitialValues(model_params)
-        tempDF <- runFDPBPK(initial_values,model)
-        max_list <- unlist(lapply(mc_vars,function(x,data){
-          var_name <- gsub("_max","",x)
- 
-          return(max(data[var_name]))
-        },tempDF$pbpk))
-        names(max_list)<- mc_vars
-        for (x in mc_vars){
-          mc_results[[x]][[i]]<- max_list[[x]]
-        }
-        updateProgressBar(session,"pb",value = i, total = mc_num)
-      }
-      results$pbpk <- as.data.frame(mc_results)
-      results$mode <- "MC"
-      updateNavbarPage(session,"menu","output")
-    }else{
-      #rep_flag <- all_params["rep_flag"]
-      #model_params <- all_params["model_params"]
-      initial_values <- calculateInitialValues(model_params)
-
-      updateProgressBar(session,"pb",value = 100, total = 100,
-                        status = "info")
-      tempDF <- runFDPBPK(initial_values,model)
-      
-      results$pbpk<- tempDF$pbpk
-      
-      
-      results$mode <- "FD"
-      updateNavbarPage(session,"menu","output")
+    # get initial values for parmeters, states and event times needed by all workflows
+    
+    initial_values <- calculateInitialValues(model_params)
+    
+    event_times <- unique(initial_values[['evnt_data']][["time"]])
+    times <- initial_values[['times']]
+    tstop <- initial_values[['tstop']]
+    state <- initial_values[['state']]
+    times <- sort(c(deSolve::cleanEventTimes(times,event_times),
+                    event_times))
+    state <- rapidPBPK_initStates(initial_values$initial_params,state)
+    
+    output <- rapidPBPK_Outputs
+    # if the worfklow requires monte carlo analysis, set up the parameter matrices
+    if(sim_details$sim_type %in% c("mc","rd","r2r")){
+      mcruns <- sim_details$mcruns 
+      MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mcruns) 
     }
     
+    
+    # Workflow specific scripts
+    # Forward Dosimetry
+    if(sim_details$sim_type == 'fd'){
+      initial_params <- rapidPBPK_initParms(initial_values$initial_params)
+      pb <- Progress$new(session, min = 0, max = 100)
+      pb$set(value = 99)
+      dyn.load("../../src/plethem.dll")
+      #dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+      
+      modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
+                                 func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
+                                 events=list(func="event", time=event_times),nout = length(output),
+                                 outnames = output)
+      dyn.unload("../../src/plethem.dll")
+      
+      dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
+      
+      #tempDF <- runFDPBPK(initial_values,model)
+      results$pbpk<- dfModelOutput
+      pb$close()
+      updateNavbarPage(session,"menu","output")
+    }#MonteCarlo Mode
+    else if(sim_details$sim_type == 'mc'){
+      mcruns <- sim_details$mcruns
+      pb <- Progress$new(session,min = 0 , max = mcruns)
+      updatePB <- function(value = NULL){
+        pb$set(value = value,message = sprintf("Simulating Model %i",value))
+      }
+      pb$set(value = 0,message = "Calculating Parameter Values")
+      params_list <- lapply(1:mcruns,c)
 
+       for(each_run in 1:mcruns){
+         model_params$vals[colnames(MC.matrix)]<- MC.matrix[each_run,]
+         params <- calculateInitialValues(model_params)$initial_params
+         params <- rapidPBPK_initParms(params)
+         params_list[[each_run]]<- params
+       }
+      # params <- rapidPBPK_initParms(initial_values$initial_params)
+      # params_list <- replicate(mcruns,params,F)
+      states_list <- replicate(mcruns,state,F)
+      times_list <- replicate(mcruns,times,F)
+      event_times_list <- replicate(mcruns,event_times,F)
+      output_list <- replicate(mcruns,output,F)
+      cmax_list <- runMCParallel(mcruns,params_list,states_list,output_list,
+                                 times_list,event_times_list,updatePB)
+      results$pbpk <- cmax_list
+      pb$close()
+      
+    }# Reverse Dosimetry
+    else{ #if(sim_details$sim_type == 'rd'){
+      # reverse dosimetry specific Calculations
+      if (sim_details$sim_type == 'rd'){
+        shinybusy::show_modal_progress_circle(value = 0,"Getting Biomonitering Details")
+        # get biomonietring details
+        biomid <- sim_details$biomid
+        biom_details <- projectDbSelect(sprintf("Select * from Biomonitering where biomid = %i",biomid))
+        biom_data <- unserialize(charToRaw(biom_details$data))
+        chem <- biom_details$chem
+        tissue <- biom_details$tissue
+        units <- biom_details$units
+        # create the list of lists for identifying the correct model variable 
+        # that corresponds to the biomonitering data
+        model_var_dict <- list(
+          "pls"=list("prnt"=list("mgl"="cpls","uml"="cpls"),
+                     "met"=list("mgl"="cmet","uml"="cmet")),
+          "urine"=list("prnt"=list("mgl"="curine","ugd"="aurine"),
+                       "met"=list("mgl"="cmet_urine","ugd"="amet_urine"))
+        )
+        if(chem == "prnt" && units == "mgl"){
+          mw <- projectDbSelect(sprintf("Select value from Chemical where param = 'mw' and chemid = %i",
+                                        sim_details$chemid))$value
+          multiplier <- as.numeric(mw)/1000 
+        }else if (chem == "met" && units == "mgl"){
+          # THIS IS INCORRECT NEED TO FIX
+          mw <- projectDbSelect(sprintf("Select value from Chemical where param = 'mw' and chemid = %i",
+                                        sim_details$chemid))$value
+          multiplier <- as.numeric(mw)/1000
+        }else{
+          multiplier <- 1
+        }
+        
+        model_var<- model_var_dict[[tissue]][[chem]][[units]]
+        # get the route for which exposure is to be estimated
+        expo_route <- projectDbSelect(sprintf(
+          "Select value from Exposure where param == 'expo_sidebar' AND expoid = %i;",
+          sim_details$expoid
+        ))$value
+        
+        #Get all exposure variables that are needed by the model
+        expo_vars_list <- mainDbSelect("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Exposure' AND Model = 'rapidPBPK';")$Var
+        
+        # get all dataframe of values and params for the selected exposure set
+        new_expo_data <- projectDbSelect(paste0(
+          sprintf("Select param,value from Exposure where expoid = %i AND param in ",sim_details$expoid),
+          "(",
+          paste(lapply(expo_vars_list,function(x){
+            paste0("'",x,"'")
+          }),sep = "",collapse = ","),
+          ")")
+        )
+        
+        
+      }else{
+        shinybusy::show_modal_progress_circle(value = 0,"Running simulation for current route of exposure")
+        # Run the original model to generate a biomonitering equivalent
+        pb <- Progress$new(session,min = 0 , max = mcruns)
+        updatePB <- function(value = NULL){
+          pb$set(value = value,message = sprintf("Simulating Model %i",value))
+        }
+        pb$set(value = 0,message = "Calculating Parameter Values")
+        params_list <- lapply(1:mcruns,c)
+        for(each_run in 1:mcruns){
+          model_params$vals[colnames(MC.matrix)]<- MC.matrix[each_run,]
+          params <- calculateInitialValues(model_params)$initial_params
+          params <- rapidPBPK_initParms(params)
+          params_list[[each_run]]<- params
+        }
+        states_list <- replicate(mcruns,state,F)
+        times_list <- replicate(mcruns,times,F)
+        event_times_list <- replicate(mcruns,event_times,F)
+        output_list <- replicate(mcruns,output,F)
+        cmax_list <- runMCParallel(mcruns,params_list,states_list,
+                                   output_list,times_list,event_times_list,updatePB)
+        biom_data<- as.data.frame(cmax_list[,"cpls"])
+        pb$close()
+        # create the list of lists for identifying the correct model variable
+        # that corresponds to the biomonitering data
+        
+        multiplier <- 1
+        model_var<- "cpls"
+       # get the route for which exposure is to be estimated
+        expo_route <- projectDbSelect(sprintf(
+          "Select value from Exposure where param == 'expo_sidebar' AND expoid = %i;",
+            sim_details$extrapolateid
+          ))$value
 
+          #Get all exposure variables that are needed by the model
+        expo_vars_list <- mainDbSelect("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Exposure' AND Model = 'rapidPBPK';")$Var
+
+          # get all dataframe of values and params for the selected exposure set
+        new_expo_data <- projectDbSelect(paste0(
+            sprintf("Select param,value from Exposure where expoid = %i AND param in ",sim_details$extrapolateid),
+            "(",
+            paste(lapply(expo_vars_list,function(x){
+              paste0("'",x,"'")
+            }),sep = "",collapse = ","),
+            ")")
+          )
+      }
+      
+      update_modal_progress(0,text = "Setting up multiple MC simulations")
+      # details for generating MC simulation for reverse dosimetry
+      low_expo <-sim_details$low_dose_estimate
+      high_expo <- sim_details$high_dose_estimate
+      num_expos <- sim_details$num_expos
+      modelMCdata <- as.data.frame(matrix(NA,nrow = mcruns,ncol = num_expos))
+      dose_list <- pracma::logseq(low_expo,high_expo,num_expos)
+      # run a monte carlo simulation for each dose
+      for (idx in seq_along(dose_list)){
+        update_modal_progress(idx/num_expos,sprintf("Running dose %d of %d",idx,num_expos))
+        each_dose <- dose_list[[idx]]
+        pb <- Progress$new(session,min = 0 , max = mcruns)
+        updatePB <- function(value = NULL){
+          pb$set(value = value,message = sprintf("Simulating Model %i",value))
+        }
+        pb$set(value = 0,message = "Calculating Parameter Values")
+        # Set up MC matrices
+        params_list <- lapply(1:mcruns,c)#replicate(mcruns,initial_params,F)
+        for(each_run in 1:mcruns){
+          model_params$vals[colnames(MC.matrix)]<- MC.matrix[each_run,]
+          #updated_initial_params <- replaceDose(initial_params,each_dose,expo_route)
+          
+          params <- rapidPBPK_initParms(calculateInitialValues(model_params,expo_route,
+                                                               each_dose,new_expo_data)$initial_params)
+          #params <- replaceDose(params,each_dose,expo_route)
+          params_list[[each_run]]<- params
+        }
+        
+        states_list <- replicate(mcruns,state,F)
+        times_list <- replicate(mcruns,times,F)
+        event_times_list <- replicate(mcruns,event_times,F)
+        output_list <- replicate(mcruns,output,F)
+        # Run MC simulation in parallel
+        cmax_list <- runMCParallel(mcruns,params_list,states_list,output_list,
+                                   times_list,event_times_list,updatePB)
+        modelMCdata[idx]<- cmax_list[,model_var]*multiplier
+        params_list <- NULL
+        pb$close()
+        }
+      update_modal_progress(1,text = "Estimating exposure")
+      # perform reverse dosimetry 
+      reverse_dosimetry_values <- runReverseDosimetry(modelMCdata,biom_data,dose_list = dose_list)
+      
+      reverse_dosimetry_values$dose_list <- dose_list
+      expo_units <- switch(expo_route,
+                           "inh"="ppm",
+                           "iv"="mg/h",
+                           "dw"="mg/L",
+                           "dermal"="\U00B5g/cm2/h",
+                           "mg/kg/day"
+      )
+      reverse_dosimetry_values$expo_units <- expo_units
+      results$expo <- reverse_dosimetry_values
+      reverse_dosimetry_values
+      results$pbpk <- modelMCdata
+      shinybusy::remove_modal_progress()
+    }
+    # Depending on the type of the workflow selected hide appropriate output tabs before shifting focus
+    if(sim_details$sim_type %in% c("fd","mc")){
+      hideTab("Modeloutput","cdfpdf")
+      hideTab("Modeloutput","percentile")
+      showTab("Modeloutput","plots")
+      showTab("Modeloutput","params")
+      showTab("Modeloutput","nca")
+    }else{
+      showTab("Modeloutput","cdfpdf")
+      showTab("Modeloutput","percentile")
+      hideTab("Modeloutput","plots")
+      hideTab("Modeloutput","params")
+      hideTab("Modeloutput","nca")
+    }
+    
+    updateNavbarPage(session,"menu","output")
   })
 
-
-  
 # Life course equation
   tissue_volumes<- reactive({
     tissues <- c(input$ms_cmplist,"blood")
@@ -1413,67 +1630,6 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                                          rownames = F,
                                                         colnames=c("Variable names", "Value")))
 
-  observeEvent(input$run,{
-    active_comp <- input$ms_cmplist
-    compartment_list <-c("skin","fat","muscle","bone","brain","lung","heart","gi","liver","kidney","rpf","spf")
-    inactive_comp <- setdiff(compartment_list,active_comp)
-    vol_comps <- c(active_comp,"blood")
-    perfc <- input$ms_perfc
-    total_vol <- sum(unlist(lapply(vol_comps,function(x){input[[vol_ids[x]]]})))
-    #exposure
-    if ("gi" %in% active_comp && !("liver" %in% active_comp)){
-      showModal(
-        modalDialog(
-          tags$h4("Invalid Compartment Configuration"),
-          tags$h5("Liver compartment needs to be active if GI compartment is active"),
-          title = "Error"
-        )
-      )
-    }else if (length(active_comp) == 0){
-      showModal(
-        modalDialog(
-          tags$h4("Invalid Compartment Configuration"),
-          tags$h5("At least one compartment needs to be active for the model to run."),
-          title = "Error"
-        )
-      )
-    }else if(abs(total_vol-perfc)>0.03){
-      showModal(
-        modalDialog(
-          tags$h4("Invalid Compartment Configuration"),
-          tags$h5("The total volume of all compartments does not add up to 85%"),
-          title = "Error"
-        )
-      )
-    }else if((input$ms_bdose>0 || input$ms_drdose>0) && !("gi" %in% active_comp)){
-      showModal(
-        modalDialog(
-          tags$h4("Invalid Compartment Configuration"),
-          tags$h5("GI compartment must be active for Oral and Drinking water routes of exposure"),
-          title = "Error"
-        )
-      )
-    }else{
-      # set volumes of inactive compartments to 1e-8 ( very low)
-      sapply(inactive_comp,function(x){updateNumericInput(session,vol_ids[x],value = 1e-8)})
-      # set blood flow of inactive compartments to 0 ( very low)
-      sapply(inactive_comp,function(x){updateNumericInput(session,flow_ids[x],value = 0)})
-      withProgress({
-        tempDF <- runPBPKmodel(input, total_vol,perfc)
-        results$pbpk<- tempDF$pbpk
-      },
-      message = "Running Simulation",
-      value = 0.75
-      )
-
-    }
-
-
-
-  }
-
-
-  )
 
   observeEvent(input$btnAddData,{
     addDataSetUI(input$btnAddData,"Generic PBPK")
@@ -1640,7 +1796,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     query <- sprintf("Select model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",model,mode)
     var_names<- mainDbSelect(query)$model_var
     print(var_names)
-    validate(need(mode == "FD",message = "MC mode not implemented"))
+    validate(need(mode == "fd",message = "MC mode not implemented"))
     result <- results$pbpk
     return(performPlethemNCA(result,var_names,mode))
   })
@@ -1652,16 +1808,15 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     result <- results$pbpk
     units <- input$r_cplt_type
     simid <- results$simid
-    mode <- results$mode
+    mode <- results$sim_type
  
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
 
     }else{
-      query <- sprintf("SELECT mc_num,chemid FROM SimulationsSet Where simid = %i ;",
+      query <- sprintf("SELECT chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
       chemid <- projectDbSelect(query)$chemid
-      mc_num <- projectDbSelect(query)$mc_num
       query <- sprintf("Select value FROM Chemical WHERE chemid = %i AND param = 'mw';",
                        chemid)
       mw <- projectDbSelect(query)$value
@@ -1693,7 +1848,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if (dim(result)[1]==0){
       plot_frame<- 1:10
     }else{
-      if(mode == "FD"){
+      if(mode == "fd"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
                                  stringsAsFactors = F)
@@ -1716,7 +1871,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }else{
       plot_frame["No Data Selected"]<-rep(0,length(x))
     }
-    if (mode == "FD"){
+    if (mode == "fd"){
       plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
     }else{
       plot_frame <- reshape2::melt(plot_frame,id.vars = "sample")
@@ -1726,7 +1881,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     })
   #Concentration table data
   conc_tble_data <- reactive({
-    mode <- results$mode
+    mode <- results$sim_type
     plt_data<- concData()
     return(reshapePlotData(plt_data,mode))
   })
@@ -1773,7 +1928,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if (dim(result)[1]==0){
       plot_frame<- 1:10
     }else{
-      if(mode == "FD"){
+      if(mode == "fd"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
                                  stringsAsFactors = F)
@@ -1796,7 +1951,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }else{
       plot_frame["No Data Selected"]<-rep(0,length(x))
     }
-    if (mode == "FD"){
+    if (mode == "fd"){
       plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
     }else{
       plot_frame <- reshape2::melt(plot_frame,id.vars = "sample")
@@ -1836,7 +1991,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
   
   concplt <- reactive({
-    if (results$mode == "FD"){
+    if (results$sim_type == "fd"){
       plotly::plot_ly()%>%
         plotly::add_trace(data = concData(),x = ~time,
                           y = ~value,color = ~variable,
@@ -1866,7 +2021,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
   
   amtplt <- reactive({
-    if (results$mode == "FD"){
+    if (results$mode == "fd"){
       plotly::plot_ly() %>%
         plotly::add_trace(data = amtData(),x =~time,
                           y= ~value,color = ~variable,
@@ -1932,7 +2087,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     },
     contentType = "text/csv",
     content = function(file) {
-      write.csv(reshapePlotData(concData()), file)
+      write.csv(conc_tble_data(), file)
     }
   )
 
@@ -1965,35 +2120,122 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       write.csv(reshapePlotData(results()), file)
     }
   )
+  ## CODE CHUCK TO HANDLE OUTPUTS GENERATED BY REVERSE DOSIMETRY AND ROUTE TO ROUTE EXTRAPOLATION
+  pdf_data <- reactive({
+    return(results$expo$pdf)
+  })
+  
+  
+  output$PDF <- renderPlotly({
+    p <- plot_ly(
+      pdf_data(),
+      x = ~dose_list,
+      y = ~pdf,
+      name = 'PDF',
+      type = 'scatter',
+      mode = 'lines'#'lines+markers'
+    ) %>%
+      layout(
+        title = 'PDF',
+        xaxis = list(
+          title = paste0('Exposure (',results$expo$expo_units,")"),
+          type = 'log'
+        ),
+        yaxis = list(
+          title = 'Probability'
+        )
+      )
+  })
+  
+  output$CDF <- renderPlotly({
+    p <- plot_ly(
+      results$expo$cdf,
+      x = ~dose_list,
+      y = ~cdf,
+      name = 'CDF',
+      type = 'scatter',
+      mode = 'lines'#'lines+markers'
+    ) %>%
+      layout(
+        title = 'CDF',
+        xaxis = list(
+          title = paste0('Exposure (',results$expo$expo_units,")"),
+          type = 'log'
+        ),
+        yaxis = list(
+          title = 'Cumulative'
+        )
+      )
+  })
+  
+  output$RDMCPlt <- renderPlotly({
+    p <- plot_ly(
+      stack(results$pbpk),
+      x = ~ind,
+      y = ~values,
+      type = "box"
+    ) %>%
+      layout(
+        title = paste('Monte Carlo Simulation'),
+        yaxis = list(
+          title = paste0('Concentrations (mg/L)', sep = '')
+        ),
+        xaxis = list(
+          title = paste0('Exposure (',results$expo$expo_units,")")
+        )
+      )
+  })
+  
+  output$expo_estimate<- renderDataTable(results$expo$expoEstimates)
+  
   # power button to shut down the app
   observeEvent(input$menu,{
     if(input$menu=="stop"){
       shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close Application",
-                                   "Any changes will not be saved. Proceed?",type = "info",danger_mode = T)
+                                   "Any changes will not be saved. Proceed?",type = "question",danger_mode = T)
 
     }else if(input$menu == "save"){
       shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
-                                      "Unsaved changes will be lost. Proceed?",type = "info",danger_mode = T)
+                                      "Unsaved changes will be lost. Proceed?",type = "question",danger_mode = T)
+    }else if(input$menu == "load"){
+      shinyWidgets::confirmSweetAlert(session,"load_dialog","Load New Project",
+                                      "Load existing project? Unsaved changed will be lost",
+                                      type = "question",danger_mode = T)
+    }else if(input$menu == "new"){
+      shinyWidgets::inputSweetAlert(session,"new_dialog","New Project",
+                                    "Create a new project? Unsaved changes will be lost",
+                                    type= "question",input = "text",inputOptions = list(inputId = "proj_name"),
+                                    inputPlaceholder = "Project Name",btn_labels = c("OK","Cancel"))
     }
     
   })
   observeEvent(input$close_dialog,{
     if (input$close_dialog){
       stopApp()
-    }else{
-      updateNavbarPage(session,"menu","setup")
     }
   })
   observeEvent(input$save_dialog,{
     if(input$save_dialog){
       saveProject()
-    }else{
-      updateNavbarPage(session,"menu","setup")
     }
   })
+  observeEvent(input$load_dialog,{
+    if(input$load_dialog){
+      loadProject(runUI = F)
+      js$reset()
+    }
+  })
+  observeEvent(input$new_dialog,{
+    clearProjectDb()
+    newProject(input$new_dialog)
+    js$reset()
+  })
+  
+  
+  
 })
 
-calculateInitialValues <- function(params_list){
+calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_data=NULL){
   params <- params_list$vals
   brep_flag <- as.logical(params[["brep_flag"]])
   brepv_flag <- as.logical(params[["brepv_flag"]])
@@ -2001,9 +2243,36 @@ calculateInitialValues <- function(params_list){
   derm_flag <- as.logical(params[["dermrep_flag"]])
   params <- params[which(grepl("[-]?[0-9]+[.]?[0-9]*|[-]?[0-9]+[L]?|[-]?[0-9]+[.]?[0-9]*[eE][0-9]+",params))]
   params <- lapply(params,function(x){as.numeric(x)})
+  
+  # check if dose needs to be replaced. it would need to be replaced if route is given
+  if(!(is.null(route))){
+    if(!(is.null(new_expo_data))){
+      var_names <- new_expo_data$param
+      
+      var_values <- unlist(lapply(new_expo_data$value,as.numeric))
+      params[var_names]<- var_values
+    }
+    
+    #params[new_expo_data$param]<- new_expo_data$value
+    # get the appropriate dos variable based on the route
+    dose_var <- switch(route,
+                       "oral"="bdose",
+                       "oralv"="bdosev",
+                       "dw"="drdose",
+                       "inh"="inhdose",
+                       "iv"="ivdose",
+                       "dermal"="dermrate"
+    )
+    #Replace the correct dose value based on the dosing route current active
+    params[[dose_var]]<- dose
+  }
 
   initial_params <- within(as.list(params),{
-
+    #total fractional volume
+    # this is used to correctly scale the volume if 
+    # since the distributions from the MC analysis can cause 
+    # fractional volume to go above 1
+    total_vol <- vfatc+vskinc+vmuscc+vbonec+vbrnc+vlngc+vhrtc+vgic+vlivc+vkdnc+vrpfc+vspfc+vbldc
     #Scaled Tissue Volumes
     vbld <- vbldc*(perfc/total_vol)*bw     #L;Blood
     vpls <- vbld*(1-hct)
@@ -2065,6 +2334,8 @@ calculateInitialValues <- function(params_list){
     # scaled urinary flow rate per day
     uflw <- uflwc*bw/24.0
   })
+  
+  
 
   #function for dosing
 
@@ -2305,8 +2576,7 @@ calculateInitialValues <- function(params_list){
     #   # times of event
     #   event_days<- unlist(lapply(X=1:totdays,function(x){lapply(1:2,function(y){(x-1)*7+y})}))
     # }
-    print(dermlen)
-    print(event_days)
+
     event_times1 <- unlist(lapply(event_days,function(x){0+24*(x-1)}))
     event_times1 <- event_times1[event_times1 < tstop]
     event_times2 <- unlist(lapply(event_days,function(x){dermlen+24*(x-1)}))
@@ -2324,7 +2594,252 @@ calculateInitialValues <- function(params_list){
   times <- seq(tstart,tstop,by=0.1)
   eventDat <- eventDat[order(eventDat$time),]
 
-  state <- c(
+  state <- c(inhswch = 0.0,ainh = 0.0,aexh = 0.0,totodose = 0.0,
+             odose = 0.0,totddose = 0.0,ddose = 0.0,odosev = 0.0,
+             totodosev = 0.0,alas = 0.0,akent = 0.0,afec = 0.0,
+             aabsgut = 0.0,ivswch = 0.0,aiv = 0.0,dermswch = 0.0,
+             aderm = 0.0,adermabs = 0.0,adermevap = 0.0,abld = 0.0,
+             abfat = 0.0,atfat = 0.0, abskin = 0.0,asc = 0.0,
+             ascMgcm2 = 0.0,atskin = 0.0,abmusc = 0.0,atmusc = 0.0,
+             abbone = 0.0,atbone = 0.0,abbrn = 0.0,atbrn = 0.0,
+             ablng = 0.0,atlng = 0.0,abhrt = 0.0,athrt = 0.0,
+             abgi = 0.0,atgi = 0.0,abliv = 0.0,atliv = 0.0,
+             abkdn = 0.0,atkdn = 0.0,abrpf = 0.0,atrpf = 0.0,
+             abspf = 0.0,atspf = 0.0,ametliv1 = 0.0,
+             ametliv2 = 0.0,aclbld = 0.0,auexc = 0.0,
+             anabsgut = 0.0,auexcmet = 0.0,
+             amet = 0.0,vurine = 1e-10)
+
+  initial_values <- list("evnt_data"= eventDat,
+                         "initial_params"= initial_params[params_list$names],
+                         "times"=times,
+                         "tstop"=tstop,"tstart"=tstart,
+                         "state"= state)
+
+  return(initial_values)
+}
+
+rapidPBPK_initParms <- function(newParms = NULL) {
+  parms <- c(
+    mw = 0,
+    bdose = 0,
+    blen = 0,
+    breps = 0,
+    totbreps = 0,
+    drdose = 0,
+    vdw = 0,
+    dreps = 0,
+    inhdose = 0,
+    inhtlen = 0,
+    inhdays = 0,
+    ivdose = 0,
+    ivlen = 0,
+    dermrate = 0,
+    KPtot = 0,
+    Kevap = 0,
+    maxcap = 0,
+    wsol = 0,
+    skarea = 0,
+    bdosev = 0,
+    blenv = 0,
+    brepsv = 0,
+    totbrepsv = 0,
+    kfec = 0,
+    kVtoL = 0,
+    kent = 0,
+    bw = 0,
+    qcc = 0,
+    hct = 0,
+    vbldc = 0,
+    perfc = 0,
+    kbld = 0,
+    respr = 0,
+    tv = 0,
+    ds = 0,
+    uflw = 0,
+    gfr = 0,
+    frwsol = 0,
+    fatvtbc = 0,
+    vfatc = 0,
+    qfatc = 0,
+    pfat = 0,
+    skinvtbc = 0,
+    vskinc = 0,
+    qskinc = 0,
+    pskin = 0,
+    muscvtbc = 0,
+    vmuscc = 0,
+    qmuscc = 0,
+    pmusc = 0,
+    bonevtbc = 0,
+    vbonec = 0,
+    qbonec = 0,
+    pbone = 0,
+    brnvtbc = 0,
+    vbrnc = 0,
+    qbrnc = 0,
+    pbrn = 0,
+    lngvtbc = 0,
+    vlngc = 0,
+    qlngc = 0,
+    plng = 0,
+    hrtvtbc = 0,
+    vhrtc = 0,
+    qhrtc = 0,
+    phrt = 0,
+    givtbc = 0,
+    vgic = 0,
+    qgic = 0,
+    pgi = 0,
+    fa = 0,
+    ka = 0,
+    livvtbc = 0,
+    vlivc = 0,
+    qalivc = 0,
+    qvlivc = 0,
+    pliv = 0,
+    kdnvtbc = 0,
+    vkdnc = 0,
+    qkdnc = 0,
+    pkdn = 0,
+    rpfvtbc = 0,
+    vrpfc = 0,
+    qrpfc = 0,
+    prpf = 0,
+    spfvtbc = 0,
+    vspfc = 0,
+    qspfc = 0,
+    pspf = 0,
+    res = 0,
+    fupls = 0,
+    vbld = 0,
+    vpls = 0,
+    vfat = 0,
+    vskin = 0,
+    vmusc = 0,
+    vbone = 0,
+    vbrn = 0,
+    vlng = 0,
+    vhrt = 0,
+    vkdn = 0,
+    vgi = 0,
+    vliv = 0,
+    vrpf = 0,
+    vspf = 0,
+    total_perf = 0,
+    qcp = 0,
+    qfat = 0,
+    qskin = 0,
+    qmusc = 0,
+    qbone = 0,
+    qbrn = 0,
+    qlng = 0,
+    qhrt = 0,
+    qkdn = 0,
+    qvliv = 0,
+    qgi = 0,
+    qaliv = 0,
+    qrpf = 0,
+    qspf = 0,
+    pafat = 0,
+    paskin = 0,
+    pamusc = 0,
+    pabone = 0,
+    pabrn = 0,
+    palng = 0,
+    pahrt = 0,
+    pakdn = 0,
+    pagi = 0,
+    paliv = 0,
+    parpf = 0,
+    paspf = 0,
+    vkm1 = 0,
+    vmaxliv = 0,
+    km = 0,
+    cinh = 0,
+    qalv = 0,
+    pair = 1e10,
+    fuplsmet = 1,
+    vdmet = 1e-10
+  )
+  
+  if (!is.null(newParms)) {
+    if (!all(names(newParms) %in% c(names(parms)))) {
+      print(names(newParms)[!(names(newParms))%in% c(names(parms))])
+      stop("illegal parameter name")
+    }
+    parms[names(newParms)] <- newParms
+  }
+  
+  parms <- within(as.list(parms), {
+  })
+  out <- .C("getParms",  as.double(parms),
+            out=double(length(parms)),
+            as.integer(length(parms)))$out
+  names(out) <- names(parms)
+  out
+}
+
+rapidPBPK_Outputs <- c(
+  "abone",
+  "abrn",
+  "alng",
+  "ahrt",
+  "akdn",
+  "agi",
+  "aliv",
+  "arpf",
+  "aspf",
+  "afat",
+  "askin",
+  "amusc",
+  "cpls",
+  "cv",
+  "cfat_um",
+  "ctfat",
+  "cbfat",
+  "cskin_um",
+  "ctskin",
+  "cbskin",
+  "cmusc_um",
+  "ctmusc",
+  "cbmusc",
+  "cbone_um",
+  "ctbone",
+  "cbbone",
+  "cbrn_um",
+  "ctbrn",
+  "cbbrn",
+  "clng_um",
+  "ctlng",
+  "cblng",
+  "chrt_um",
+  "cthrt",
+  "cbhrt",
+  "ckdn_um",
+  "ctkdn",
+  "cbkdn",
+  "cgi_um",
+  "ctgi",
+  "cbgi",
+  "cliv_um",
+  "ctliv",
+  "cbliv",
+  "crpf_um",
+  "ctrpf",
+  "cbrpf",
+  "cspf_um",
+  "ctspf",
+  "cbspf",
+  "InstInhDose",
+  "InstDermDose",
+  "mbal",
+  "curine",
+  "curinemet"
+)
+
+rapidPBPK_initStates <- function(parms, newStates = NULL) {
+  Y <- c(
     inhswch = 0.0,
     ainh = 0.0,
     aexh = 0.0,
@@ -2378,15 +2893,18 @@ calculateInitialValues <- function(params_list){
     anabsgut = 0.0,
     auexcmet = 0.0,
     amet = 0.0,
-    vurine = 1e-10)
-
-  initial_values <- list("evnt_data"= eventDat,
-                         "initial_params"= initial_params[params_list$names],
-                         "times"=times,
-                         "tstop"=tstop,"tstart"=tstart,
-                         "state"= state)
-
-  return(initial_values)
+    vurine = 1e-10
+  )
+  
+  if (!is.null(newStates)) {
+    if (!all(names(newStates) %in% c(names(Y)))) {
+      stop("illegal state variable name in newStates")
+    }
+    Y[names(newStates)] <- newStates
+  }
+  
+  .C("initState", as.double(Y));
+  Y
 }
 
 #Update Volume ratios
@@ -2438,3 +2956,41 @@ updateCoeffs <- function(session, calculatedCoeff){
     updateNumericInput(session, elem, value = calculatedCoeff[[elem]])
   }
 }
+
+runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,event_times_list,progressFunc){
+  c1 <- snow::makeSOCKcluster(6)
+  registerDoSNOW(c1)
+  opts <- list(progress = progressFunc)
+  cmax_list <- foreach(idx=seq_len(mcruns),params_list,
+                       states_list,times_list,
+                       event_times_list,output_list,
+                       .combine = 'rbind',.inorder = F,
+                       .options.snow = opts,
+                       .packages = c("deSolve"))%dopar%{
+                         params <- params_list[[idx]]
+                         state <- states_list[[idx]]
+                         times <- times_list[[idx]]
+                         event_times <- event_times_list[[idx]]
+                         output_var <- output_list[[idx]]
+                         # for development, load the dll directly
+                         #dyn.load("../../src/plethem.dll")
+                         dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+                         modelOutput<- deSolve::ode(y = state, times = times,
+                                                    method = "lsodes",func = "derivs",
+                                                    dllname = "plethem",
+                                                    initfunc= "initmod",
+                                                    parms = params,
+                                                    events=list(func="event",
+                                                                time=event_times),
+                                                    nout = length(output_var),
+                                                    outnames = output_var)
+                         #dyn.unload("../../src/plethem.dll")
+                         dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+                         modelOutput <- as.data.frame(modelOutput)
+                         max_vals <- sapply(modelOutput,max,na.rm = T)
+                         return(max_vals)
+                       }
+  stopCluster(c1)
+  return(as.data.frame(cmax_list))
+}
+
