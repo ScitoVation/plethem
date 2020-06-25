@@ -4,7 +4,7 @@
 \alias{interactiveHT}
 \title{Launch HT-IVIVE interface}
 \usage{
-interactiveHT(name = "")
+interactiveHT(name = "HT-IVIVE")
 }
 \arguments{
 \item{name}{name of the  model. Has to be "HT-IVIVE"}
