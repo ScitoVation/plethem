@@ -53,9 +53,14 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
                              function(x,a=UI_values,b=set_values){
                                a[[x]]==b[x]}))
   param_data<-t(as.data.frame(UI_values[temp_unique_list == FALSE]))
-  
+  #give some time for the UI to Load so it doesnt hiccup
+  Sys.sleep(0.5)
   if (dim(param_data)[1]==0){
     param_data <- data.frame(matrix(ncol = 4, nrow = 0))
+    sendSweetAlert(session,"No changes detected",
+                   "The user interface data mataches the set data. No changes were detected.",closeOnClickOutside = F,
+                   showCloseButton = T)
+    removeModal()
 
   }else{
     # get the variable names that are changed
@@ -110,7 +115,7 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
 
 
     return(return_data)
-  },ignoreInit = TRUE,ignoreNULL = FALSE)
+  },ignoreInit = TRUE,ignoreNULL = T)
 
   return(returnValues$retData)
 

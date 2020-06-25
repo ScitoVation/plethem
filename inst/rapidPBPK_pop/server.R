@@ -484,45 +484,63 @@ shinyServer(function(input, output, session) {
   #Save restore physiologcal set
   observeEvent(input$btn_sverest_physio,{
     physioid <- input$sel_physio
-    set_values <- getParameterSet("physio",physioid)
-    UI_values <- reactiveValuesToList(input)[paste0("ms_",physio_name_df$Var)]
-    names(UI_values) <- gsub("ms_","",names(UI_values))
-    saveRestoreParameterSetUI(input$btn_sverest_physio)
-    parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
-                                           input$btn_sverest_physio,
-                                           UI_values,set_values,
-                                           physio_name_df,"physio")
+    if(physioid == ""){
+      sendSweetAlert(session,title = "No Physiological Set Found",type ="error",
+                     "Please create an physiological set first")
+    }else{
+      set_values <- getParameterSet("physio",physioid)
+      UI_values <- reactiveValuesToList(input)[paste0("ms_",physio_name_df$Var)]
+      names(UI_values) <- gsub("ms_","",names(UI_values))
+      saveRestoreParameterSetUI(input$btn_sverest_physio)
+      parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
+                                             input$btn_sverest_physio,
+                                             UI_values,set_values,
+                                             physio_name_df,"physio")
+    }
+    
 
   })
 
   #Save-restore exposure set
   observeEvent(input$btn_sverest_expo,{
     expoid <- input$sel_expo
-    set_values <- getParameterSet("expo",expoid)
-    UI_values <- reactiveValuesToList(input)[paste0("ms_",expo_name_df$Var)]
-    names(UI_values) <- gsub("ms_","",names(UI_values))
-
-    saveRestoreParameterSetUI(input$btn_sverest_expo)
-    parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
-                                           input$btn_sverest_expo,
-                                           UI_values,set_values,
-                                           expo_name_df,"expo")
+    if(expoid == ""){
+      sendSweetAlert(session,title = "No Exposure Set Found",type ="error",
+                     "Please create an exposure set first")
+    }else{
+      set_values <- getParameterSet("expo",expoid)
+      UI_values <- reactiveValuesToList(input)[paste0("ms_",expo_name_df$Var)]
+      names(UI_values) <- gsub("ms_","",names(UI_values))
+      
+      saveRestoreParameterSetUI(input$btn_sverest_expo)
+      parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
+                                             input$btn_sverest_expo,
+                                             UI_values,set_values,
+                                             expo_name_df,"expo")
+    }
+    
   })
 
   #Save-restore chemical set
   observeEvent(input$btn_sverest_chem,{
     chemid <- input$sel_chem
-    set_values <- getParameterSet("chem",chemid)
-
-    #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
-    UI_values <- reactiveValuesToList(input)[paste0("ms_",chem_name_df$Var)]
-    names(UI_values) <- gsub("ms_","",names(UI_values))
-
-    saveRestoreParameterSetUI(input$btn_sverest_chem)
-    parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
-                                           input$btn_sverest_chem,
-                                           UI_values,set_values,
-                                           chem_name_df,"chem")
+    if(chemid == ""){
+      sendSweetAlert(session,title = "No Chemical Set Found",type ="error",
+                     "Please create an chemical set first")
+    }else{
+      set_values <- getParameterSet("chem",chemid)
+      
+      #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
+      UI_values <- reactiveValuesToList(input)[paste0("ms_",chem_name_df$Var)]
+      names(UI_values) <- gsub("ms_","",names(UI_values))
+      
+      saveRestoreParameterSetUI(input$btn_sverest_chem)
+      parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
+                                             input$btn_sverest_chem,
+                                             UI_values,set_values,
+                                             chem_name_df,"chem")
+    }
+    
   })
   
   #Save/Restore Button function
@@ -1504,12 +1522,18 @@ shinyServer(function(input, output, session) {
     }
     # Depending on the type of the workflow selected hide appropriate output tabs before shifting focus
     if(sim_details$sim_type %in% c("fd","mc")){
+      if(sim_details$sim_type == "fd"){
+        showTab("Modeloutput","nca")
+      }else{
+        hideTab("Modeloutput","nca")
+      }
       hideTab("Modeloutput","cdfpdf")
       hideTab("Modeloutput","percentile")
       showTab("Modeloutput","plots")
       showTab("Modeloutput","params")
       showTab("Modeloutput","nca")
     }else{
+      
       showTab("Modeloutput","cdfpdf")
       showTab("Modeloutput","percentile")
       hideTab("Modeloutput","plots")
@@ -2208,10 +2232,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                       "Load existing project? Unsaved changed will be lost",
                                       type = "question",danger_mode = T)
     }else if(input$menu == "new"){
-      shinyWidgets::inputSweetAlert(session,"new_dialog","New Project",
-                                    "Create a new project? Unsaved changes will be lost",
-                                    type= "question",input = "text",inputOptions = list(inputId = "proj_name"),
-                                    inputPlaceholder = "Project Name",btn_labels = c("OK","Cancel"))
+      shinyWidgets::inputSweetAlert(session,"new_dialog","Close current project and create a new one?",
+                                    "Any changes made to the project since it was last saved will be lost.",
+                                    type= "question",input = "text",
+                                    inputPlaceholder = "Project File Name",btn_labels = c("OK","Cancel"))
     }
     
   })

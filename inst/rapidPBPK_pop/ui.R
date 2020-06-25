@@ -602,7 +602,7 @@ chem_body <- dashboardBody(
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_vpa","Vapor Pressure (Pa)",1,0,250,0.01)),
+                     numericInput("ms_vpa","Vapor Pressure at 25 \U00B0 C (Pa)",1,0,250,0.01)),
               column(6,
                      numericInput("ms_dkow","logKow in skin at pH5.5",1,0,250,0.01))
             ),
@@ -616,7 +616,7 @@ chem_body <- dashboardBody(
               column(6,
                      numericInput("ms_res","Fraction Resorped in Kidney",1,0,0,0.01)),
               column(6,
-                     numericInput("ms_fupls", label = "Fraction Unbound in Palsma", value = 1, 0, 1, 0.001))
+                     numericInput("ms_fupls", label = "Fraction Unbound in Plasma", value = 1, 0, 1, 0.001))
             ),
             fluidRow(
               column(6,
@@ -683,11 +683,11 @@ expo_body <- dashboardBody(
       tabName = "inh",
       fluidRow(
         column(4,
-               numericInput("ms_inhdose",label="Inhalation Dose (ppm)", value =0, step= 0.01)),
+               numericInput("ms_inhdose",label="Inhalation Expousre (ppm)", value =0, step= 0.01)),
         column(4,
-               numericInput("ms_inhtlen",label = "Length of Inhalation Dose (h)",0)),
+               numericInput("ms_inhtlen",label = "Length of Inhalation Exposure (h/day)",0)),
         column(4,
-               numericInput("ms_inhdays",label = "Days of dosing in a week",7))
+               numericInput("ms_inhdays",label = "Exposure days in a week",7))
       )
     ),
     tabItem(
@@ -1515,7 +1515,7 @@ shinyUI(fluidPage(
                                                               label = "Download All Paramters")
                                              ))
                                   ),
-                                  tabPanel("NCA values", value = "nca",
+                                  tabPanel("Non-compartmental Analysis", value = "nca",
                                            fluidPage(
                                              fluidRow(
                                                DT::DTOutput("tble_ncavals")

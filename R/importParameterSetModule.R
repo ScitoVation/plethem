@@ -104,16 +104,16 @@ importParameterSet <- function(input,output,session,set_type){
     names(user_chem_list)<-user_vals$name
     updatePickerInput(session,"sel_user", choices = user_chem_list)
   }
-  fpath_userDb<- reactive({
-    fpath <- tcltk::tk_choose.files(multi = F,
-                                    filters = matrix(c("SQLite Db",".sqlite"),1,2,byrow = T)
-                                    )
+  fpath_userDb<- eventReactive(input$btn_userDb_file,{
+    fpath <- getFileFolderPath(type = "file","Select User Database","*.sqlite")
     return(fpath)
-  })
-  observeEvent(input$btn_userDb_file, ignoreInit = TRUE, {
-    
+  },ignoreInit = T)
+  observe({
     fpath <- fpath_userDb()
-    if (!(length(fpath)==0)){
+    if (length(fpath)==0){
+      sendSweetAlert(session,"No File Selected",type = "error",closeOnClickOutside = T)
+    }else{
+      sendSweetAlert("session","File Selected")
       query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",fpath)
       mainDbUpdate(query)
       user_vals <- userDbSelect(all_sets_query)
@@ -121,8 +121,10 @@ importParameterSet <- function(input,output,session,set_type){
       names(user_chem_list)<-user_vals$name
       updatePickerInput(session,"sel_user", choices = user_chem_list)
     }
+      
     
   })
+
   
   batch_data <- reactive({
     req(input$btn_batch_upload)
@@ -227,6 +229,7 @@ importParameterSet <- function(input,output,session,set_type){
       id_num <- id_num + 1
 
     }
+    sendSweetAlert(session,NULL,"Chemicals imported to the HT-IVIVE Project")
 
     removeModal()
   })
