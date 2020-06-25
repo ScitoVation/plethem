@@ -2977,8 +2977,8 @@ runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,
                          event_times <- event_times_list[[idx]]
                          output_var <- output_list[[idx]]
                          # for development, load the dll directly
-                         dyn.load("../../src/plethem.dll")
-                         #dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+                         #dyn.load("../../src/plethem.dll")
+                         dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
                          modelOutput<- deSolve::ode(y = state, times = times,
                                                     method = "lsodes",func = "derivs",
                                                     dllname = "plethem",
@@ -2988,8 +2988,8 @@ runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,
                                                                 time=event_times),
                                                     nout = length(output_var),
                                                     outnames = output_var)
-                         dyn.unload("../../src/plethem.dll")
-                         #dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+                         #dyn.unload("../../src/plethem.dll")
+                         dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
                          modelOutput <- as.data.frame(modelOutput)
                          max_vals <- sapply(modelOutput,max,na.rm = T)
                          return(max_vals)
