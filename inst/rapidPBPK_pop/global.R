@@ -38,14 +38,14 @@ newEditBiomoniteringDataUI <- function(namespace,biomid=NULL){
     }
   }
   ns <- NS(namespace)
-  modalType  <- "Import New Biomonitering Data"
+  modalType  <- "Import New Biomonitoring Data"
   showModal(modalDialog(title = modalType,
                         useSweetAlert(),
                         fluidPage(
                           fluidRow(
                             column(6,
                                    fileInput(ns("btn_import_file"),
-                                             "Upload Biomonitering Data",
+                                             "Upload Biomonitoring Data",
                                              accept = c(
                                                "text/csv",
                                                "text/comma-separated-values,text/plain",

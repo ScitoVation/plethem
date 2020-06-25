@@ -16,14 +16,14 @@ newEditBiomoniteringDataUI <- function(namespace,biomid=NULL){
     }
   }
   ns <- NS(namespace)
-  modalType  <- "Import New Biomonitering Data"
+  modalType  <- "Import New Biomonitoring Data"
   showModal(modalDialog(title = modalType,
                         useSweetAlert(),
                         fluidPage(
                           fluidRow(
                             column(6,
                                    fileInput(ns("btn_import_file"),
-                                             "Upload Biomonitering Data",
+                                             "Upload Biomonitoring Data",
                                              accept = c(
                                                "text/csv",
                                                "text/comma-separated-values,text/plain",
@@ -127,7 +127,7 @@ newEditBiomoniteringData <- function(input,output,session,type = "new",biomid = 
     units <- input$sel_biomdata_units
     if(type == "new" && is.null(input$btn_import_file)){
       sendSweetAlert(session,"Error",
-                     "No Biomonitering Data Uploaded",
+                     "No Biomonitoring Data Uploaded",
                      type = "error")
       return(c("No","",0))
       

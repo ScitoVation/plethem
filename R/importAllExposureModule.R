@@ -302,82 +302,87 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     
     
   })
-
-  ## Import SEEMS Data ##
-  observeEvent(input$btn_SEEM_data_file, ignoreInit = TRUE, {
-    #showModal(modalDialog(title = "Button Works!"))
+  
+  fpath_seem <- eventReactive(input$btn_SEEM_data_file,ignoreInit = T,{
+    fpath <- getFileFolderPath(type = "file","Select SEEM Database","*.sqlite")
+    return(fpath)
+  })
+  observe({
     fpath <- fpath_seem()
     file_paths$seem <- fpath
     id_name <- "expoid"
     set_table_name <- "ExposureSet"
     vals_table_name <- "Exposure"
     id_num <- getNextID(set_table_name)
-    
-    query <- "SELECT Category,catid from ChemData;"
-    ret_data <- externDbSelect(query,fpath)
-    #print(ret_data)
-    radio_choices <- setNames(unique(ret_data$catid),
-                              unique(ret_data$Category))
-    output$fltr_ui <- renderUI({
-      radioButtons(ns("seem_filter"),"Select Category",
-                   choices = radio_choices)
-    }) 
-    #updateRadioButtons(session,"seem_filter",choices =choices)
-    observeEvent(input$get_list,{
-      query <- sprintf("Select CAS,preferred_name from ChemData where catid == '%s';",
-                       input$seem_filter)
-      path <- fpath
-      result <- externDbSelect(query,path)
-      result2display <- setNames(result$CAS,result$preferred_name)
-      updatePickerInput(session,"chems",choices = result2display)
-      # if(!(is.null(input$seem_db))){
-      #   print(input$seem_db$datapath)
-      # }
-    })
-    seems_values$set_table_name <- set_table_name
-    seems_values$id_name <- id_name
-    seems_values$id_num <- id_num
-    seems_values$vals_table_name <- vals_table_name
-    })
-  
-  fpath_seem <- reactive({
-    fpath <- tcltk::tk_choose.files(multi = F)
+    if(length(fpath)==0){
+      sendSweetAlert(session,"No File Selected",type = "error",closeOnClickOutside = T)
+      
+    }else{
+      query <- "SELECT Category,catid from ChemData;"
+      ret_data <- externDbSelect(query,fpath)
+      #print(ret_data)
+      radio_choices <- setNames(unique(ret_data$catid),
+                                unique(ret_data$Category))
+      output$fltr_ui <- renderUI({
+        radioButtons(ns("seem_filter"),"Select Category",
+                     choices = radio_choices)
+      }) 
+      #updateRadioButtons(session,"seem_filter",choices =choices)
+      observeEvent(input$get_list,{
+        query <- sprintf("Select CAS,preferred_name from ChemData where catid == '%s';",
+                         input$seem_filter)
+        path <- fpath
+        result <- externDbSelect(query,path)
+        result2display <- setNames(result$CAS,result$preferred_name)
+        updatePickerInput(session,"chems",choices = result2display)
+        # if(!(is.null(input$seem_db))){
+        #   print(input$seem_db$datapath)
+        # }
+      })
+      seems_values$set_table_name <- set_table_name
+      seems_values$id_name <- id_name
+      seems_values$id_num <- id_num
+      seems_values$vals_table_name <- vals_table_name
+    }
+  })
+  fpath_sheds <- eventReactive(input$btn_SHEDS_data_file,ignoreInit = TRUE,{
+    fpath <- getFileFolderPath("dir","Select SHEDS Directory")
     return(fpath)
   })
 
   ## Import SHEDS-HT Data ##
-  observeEvent(input$btn_SHEDS_data_file,ignoreInit = TRUE,{
-               path <- fpath_sheds() 
-               print(path)
-                ns <- session$ns
-                returnValues <- reactiveValues()
-                returnValues$retdata <- c("No")
-                id_name <- "expoid"
-                set_table_name <- "ExposureSet"
-                vals_table_name <- "Exposure"
-                expo_id_num <- getNextID(set_table_name)
-                var_id_num <- getNextID("Variability")
-                # get all the scenarios run from the output folder
-                #Path to output folder
-                path2output <- file.path(path,"Output")
-                scenario_dirs <- list.dirs(path2output,full.names = F)
-                scenario_dirs <- scenario_dirs[scenario_dirs!= ""]
-                updateSelectInput(session,"sel_scene",choices = scenario_dirs)
-                file_paths$sheds <- path2output
-                observeEvent(input$sel_scene,{
-                  scenario <- input$sel_scene
-                  chem_list <-list.files(file.path(path2output,scenario))
-                  chem_options <- gsub(".csv","",gsub("CAS_","",chem_list))
-                  updatePickerInput(session,"sel_chem",choices = chem_options)
-                },
-                ignoreInit = T,ignoreNULL = T)
-                
-                })
-  
-  fpath_sheds <- reactive({
-    fpath <- rstudioapi::selectDirectory("Select SHEDS-HT Folder")
-    return(fpath)
+  observe({
+    path <- fpath_sheds() 
+    if(length(path)==0){
+      sendSweetAlert(session,"No Folder Selected",type = "error",closeOnClickOutside = T)
+    }else{
+      ns <- session$ns
+      returnValues <- reactiveValues()
+      returnValues$retdata <- c("No")
+      id_name <- "expoid"
+      set_table_name <- "ExposureSet"
+      vals_table_name <- "Exposure"
+      expo_id_num <- getNextID(set_table_name)
+      var_id_num <- getNextID("Variability")
+      # get all the scenarios run from the output folder
+      #Path to output folder
+      path2output <- file.path(path,"Output")
+      scenario_dirs <- list.dirs(path2output,full.names = F)
+      scenario_dirs <- scenario_dirs[scenario_dirs!= ""]
+      updateSelectInput(session,"sel_scene",choices = scenario_dirs)
+      file_paths$sheds <- path2output
+      observeEvent(input$sel_scene,{
+        scenario <- input$sel_scene
+        chem_list <-list.files(file.path(path2output,scenario))
+        chem_options <- gsub(".csv","",gsub("CAS_","",chem_list))
+        updatePickerInput(session,"sel_chem",choices = chem_options)
+      })
+    }
+    
+    
   })
+  
+  
   
   
   ## Import All Button

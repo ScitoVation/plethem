@@ -1366,7 +1366,7 @@ shinyUI(fluidPage(
                                                column(width = 8, offset = 0,
                                                       selectizeInput("sel_biom",NULL,
                                                                      choices = NULL,
-                                                                     options= list(placeholder = "Biomonitering Data",
+                                                                     options= list(placeholder = "Biomonitoring Data",
                                                                                    openOnFocus = T))),
                                                column(width = 4, offset = 0,
                                                       shinyWidgets::actionGroupButtons(

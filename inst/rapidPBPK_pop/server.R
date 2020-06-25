@@ -353,7 +353,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  ## CODE CHUNK FOR HANDLING BIOMONITERING DATA UPLOAD
+  ## CODE CHUNK FOR HANDLING BIOMONITORING DATA UPLOAD
   observeEvent(input$btn_new_biom,{
     namespace <- paste0("biom",input$btn_new_biom)
     newEditBiomoniteringDataUI(namespace)
@@ -815,6 +815,8 @@ shinyServer(function(input, output, session) {
                     "mgl"="mg/L",
                     "ugd"="\u00B5g/day")
     data <- unserialize(charToRaw(biom_db_data$data))
+    density_fit <- density(data[,1],kernel = "gaussian") 
+    density_fit$y <- density_fit$y/max(density_fit$y)
 
     if(tissue=="pls"){
       if(chem=="prnt"){
@@ -838,11 +840,15 @@ shinyServer(function(input, output, session) {
       }
     }
     output$biom_hist <- plotly::renderPlotly({
-      p <- plot_ly(x = data[,1],type = "histogram")%>%
+      p <- plot_ly(x = data[,1],type = "histogram", name = "Data")%>%
+        add_trace(x = density_fit$x, y = density_fit$y,
+                  type = "scatter",fill = "tozeroy",mode = "lines",
+                  name = "density",yaxis = "y2")%>%
         layout(
-          title = "Biomonitering Data",
-          yaxis = list(title = "Count",
-                       type = 'log'),
+          title = "Biomonitoring Data",
+          yaxis = list(title = "Count"),
+                       
+          yaxis2 = list(overlaying = "y",title ="Density",side = "right"),
           xaxis = list(title = x_label)
         )
     })
