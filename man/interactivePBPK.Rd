@@ -12,3 +12,8 @@ interactivePBPK(name = "rapidPBPK")
 \description{
 Used to launch the PBPK workflow for the given model. This interface can be used to launch either the rapidPBPK model, The HTTK model or the fishPBPK model.
 }
+\examples{
+\dontrun{
+interactivePBPK("rapidPBPK")
+}
+}

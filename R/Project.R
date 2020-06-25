@@ -3,7 +3,7 @@
 #' @param name Name of the model. "rapidPBPK","httk", or "fishPBPK". Defaults to rapidPBPK.
 #' @examples
 #' \dontrun{
-#' interactivePBPK("rapidPBPK)
+#' interactivePBPK("rapidPBPK")
 #' }
 #' @export
 interactivePBPK <- function(name = "rapidPBPK"){
@@ -170,7 +170,7 @@ loadProject <- function(file_path = "",runUI = T){
 #' Clear Project Db
 #' @description This function clears the project Db. It is called internally when a new project is created. 
 #' It is also used by developers to make a clean project db
-#' 
+#' @export
 clearProjectDb <- function(){
   query <- "SELECT name FROM sqlite_master WHERE type = 'table';"
   table_names_list <- projectDbSelect(query)$name
