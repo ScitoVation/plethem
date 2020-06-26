@@ -385,7 +385,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       num_expos <- as.integer(input$num_numexpos)
       low_dose_estimate <- input$numrange_expo[1]
       high_dose_estimate <- input$numrange_expo[2]
-      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i,expovarid = 0, extrapolateid = %i, mcruns = %i, num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f where simid = %i;",
+      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i, extrapolateid = %i, mcruns = %i, num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f, expovarid = 0 where simid = %i;",
                        ifelse(is.na(chemvarid),0,chemvarid),
                        ifelse(is.na(physiovarid),0,physiovarid),#,
                        ifelse(is.na(admevarid),0,admevarid),

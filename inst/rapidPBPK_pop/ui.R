@@ -642,7 +642,7 @@ expo_body <- dashboardBody(
       ),
       fluidRow(
         column(6,
-               numericInput("ms_breps","Number of Bolus Doses",0,0,100, 1)),
+               numericInput("ms_breps","Number of Bolus Doses",1,0,100, 1)),
         column(6,
                awesomeCheckbox("ms_brep_flag","Repeat Dose Daily?",value = F))
       )
@@ -672,7 +672,7 @@ expo_body <- dashboardBody(
       ),
       fluidRow(
         column(6,
-               numericInput("ms_brepsv","Number of Bolus Doses",0,0,100, 1)),
+               numericInput("ms_brepsv","Number of Bolus Doses",1,0,100, 1)),
         column(6,
                awesomeCheckbox("ms_brepv_flag","Repeat Dose Daily?",value = F))
       )
@@ -685,7 +685,7 @@ expo_body <- dashboardBody(
         column(4,
                numericInput("ms_inhdose",label="Inhalation Expousre (ppm)", value =0, step= 0.01)),
         column(4,
-               numericInput("ms_inhtlen",label = "Length of Inhalation Exposure (h/day)",0)),
+               numericInput("ms_inhtlen",label = "Length of Inhalation Exposure (h/day)",8)),
         column(4,
                numericInput("ms_inhdays",label = "Exposure days in a week",7))
       )

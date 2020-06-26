@@ -305,6 +305,9 @@ shinyServer(function(input, output, session) {
 
   #Save a new exposure parameter set
   observeEvent(input$btn_saveas_expo,{
+    expos_list <- c(input$ms_bdose,input$ms_drdose,input$ms_bdosev,
+                    input$ms_inhdose,input$ms_ivdose,input$ms_dermrate)
+    
     # make sure atleast one route of exposure is active before saving the data
     if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && (input$ms_bdosev==0 || input$ms_brepsv == 0)&& input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
       shinyWidgets::sendSweetAlert(session,
@@ -312,6 +315,12 @@ shinyServer(function(input, output, session) {
                                    text = "Atleast one route of exposure should be active",
                                    type = "error")
 
+    }else if(length(expos_list[expos_list>0])>1){
+      shinyWidgets::sendSweetAlert(session,
+                                   title = "Invalid Exposure Parameters",
+                                   text = "More than one route of exposure is active",
+                                   type = "error")
+      
     }else{
       ns <- paste0("expo",input$btn_saveas_expo)
       saveAsParameterSetUI(ns,"expo")
