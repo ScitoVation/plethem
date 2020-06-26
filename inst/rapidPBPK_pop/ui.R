@@ -233,10 +233,10 @@ plot_body <- fluidPage(
                                                                                                    "GI Total"="to_gi","GI Tissue"="ti_gi","GI Exchange"="bl_gi",
                                                                                                    "Liver Total"="to_liv","Liver Tissue"="ti_liv","Liver Exchange"="bl_liv",
                                                                                                    "Kidney Total"="to_kdn","Kidney Tissue"="ti_kdn","Kidney Exchange"="bl_kdn",
-                                                                                                   "Rapidly Perused Total"="to_rpf",
-                                                                                                   "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf",
-                                                                                                   "Slowly Perused Total"="to_spf",
-                                                                                                   "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf",
+                                                                                                   "Rapidly Perfused Total"="to_rpf",
+                                                                                                   "Rapidly Perfused Tissue"="ti_rpf","Rapidly Perfused Exchange"="bl_rpf",
+                                                                                                   "Slowly Perfused Total"="to_spf",
+                                                                                                   "Slowly Perfused Tissue"="ti_spf","Slowly Perfused Exchange"="bl_spf",
                                                                                                    "Parent urine concentration"="urine","Metabolite Urine Concentration"="meturine"
                                                                                     )
                                                            )
