@@ -8,7 +8,7 @@ shinyServer(function(input,output,session){
 
   observeEvent(input$btn_import_chem,{
     importParameterSetUI(input$btn_import_chem,"chem")
-    parameterSets$importdat <- callModule(importParameterSet,input$btn_import_chem,"chem")
+    parameterSets$importdat <- callModule(importParameterSet,input$btn_import_chem,"chem",module_source = "HT-IVIVE")
 
   })
 

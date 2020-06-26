@@ -62,7 +62,7 @@ importParameterSetUI <- function(namespace,set_type){
 #'@param session session object for the server
 #'@param set_type type of data to be imported
 #'@export
-importParameterSet <- function(input,output,session,set_type){
+importParameterSet <- function(input,output,session,set_type,module_source = "PBPK"){
   if(set_type == "chem"){
     shinyjs::show("cas")
   }
@@ -113,7 +113,7 @@ importParameterSet <- function(input,output,session,set_type){
     if (length(fpath)==0){
       sendSweetAlert(session,"No File Selected",type = "error",closeOnClickOutside = T)
     }else{
-      sendSweetAlert("session","File Selected")
+      sendSweetAlert(session,"File Selected")
       query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",fpath)
       mainDbUpdate(query)
       user_vals <- userDbSelect(all_sets_query)
@@ -229,7 +229,12 @@ importParameterSet <- function(input,output,session,set_type){
       id_num <- id_num + 1
 
     }
-    sendSweetAlert(session,NULL,"Chemicals imported to the HT-IVIVE Project")
+    if(module_source == "HT-IVIVE"){
+      sendSweetAlert(session,NULL,"Chemicals imported to the HT-IVIVE Project")
+    }else{
+      sendSweetAlert(session,NULL,"Chemicals imported to the PBPK Project")
+    }
+    
 
     removeModal()
   })

@@ -197,7 +197,7 @@ getFileFolderPath <- function(type ="dir",caption="",extension=""){
                                            filters = matrix(c(extension),1,2,byrow=TRUE))
     }
   }else{
-    returned_path <- tryCatch({file.choose()},error = function(e){return(NA)})
+    returned_path <- tryCatch({file.choose(new = T)},error = function(e){return(NA)})
   }
   
   return(returned_path)
