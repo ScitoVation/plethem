@@ -2288,6 +2288,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         Sys.sleep(1)
         sendSweetAlert(session,NULL,
                        sprintf("PLETHEM Project %s succesfully loaded",basename(fpath)))
+        updateTabsetPanel(session,"menu","setup")
       }
       
     }
@@ -2302,7 +2303,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       }else{
         path <- getFileFolderPath("dir",
                                   caption =sprintf("Select folder where %s will be saved",name),
-                                  new_flag = T)
+                                  )
         if(is.na(path)){
           sendSweetAlert(session,NULL,"No folder selected",
                          type = "error")
@@ -2315,7 +2316,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       
     }else{
       if(input$new_dialog){
-        path <- getFileFolderPath()
+        path <- getFileFolderPath(new_flag = T)
         if(is.na(path)){
           sendSweetAlert(session,NULL,"No folder selected",
                          type = "error")

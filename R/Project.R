@@ -188,7 +188,8 @@ clearProjectDb <- function(){
 #' getFileFolderPath("file","Select )
 #' }
 #' @export
-getFileFolderPath <- function(type ="dir",caption="",extension="",new_flag = F){
+getFileFolderPath <- function(type ="dir",caption="",
+                              extension="",new_flag = F){
   os <- .Platform$OS.type
   if (os == "windows"){
     if(type == "dir"){
