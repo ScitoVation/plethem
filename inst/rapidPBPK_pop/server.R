@@ -1807,7 +1807,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     plot_frame <- data.frame(time = x)
     #select appropriate variables to plot
     if (dim(result)[1]==0){
-      plot_frame["Model not yet run"]<-rep(0,length(x))
+      plot_frame["Model Not Yet Run"]<-rep(0,length(x))
     }
     else if(length(values) >0 ){
       for (plt_name in values){
@@ -1923,7 +1923,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
    
     # select appropriate variables to plot
     if (dim(result)[1]==0){
-      plot_frame["Model not yet run"]<-rep(0,length(x))
+      plot_frame["Model Not Yet Run"]<-rep(0,length(x))
     }
     else if(length(values) >0 ){
       for (plt_name in values){
@@ -2003,7 +2003,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     
     # select appropriate variables to plot
     if (dim(result)[1]==0){
-      plot_frame["Model not yet run"]<-rep(0,length(x))
+      plot_frame["Model Not Yet Run"]<-rep(0,length(x))
     }
     else if(length(values) >0 ){
       for (plt_name in values){
@@ -2043,7 +2043,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     plot_frame<-data.frame(time = x)
     # select appropriate variables to plot
     if (dim(result)[1]==0){
-      plot_frame["Model not yet run"]<-rep(0,length(x))
+      plot_frame["Model Not Yet Run"]<-rep(0,length(x))
     }else{
       plot_frame["Mass Balance"]<- result$mbal
     }
@@ -2066,8 +2066,12 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                          color = '#000')
         )%>%
         plotly::layout(xaxis = list(title = ('Time(h)')),
-                       yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
-                                                    'Concentration (mg/L)'))))
+                       yaxis = list(title = (ifelse(input$r_cplt_type=="um",
+                                                    'Concentration (\u00B5M)',
+                                                    'Concentration (mg/L)')),
+                                    exponentformat = 'e'
+                                    )
+                       )
       
     }else{
       plotly::plot_ly()%>%
@@ -2076,7 +2080,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                           type = "box")%>%
         plotly::layout(yaxis = list(title = (ifelse(input$r_cplt_type=="um",
                                                     'Concentration (\U00B5M)',
-                                                    'Concentration (mg/L)'))
+                                                    'Concentration (mg/L)')),
+                                    exponentformat = 'e'
                                     )
                        )
     }
@@ -2338,7 +2343,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       
     }else{
       if(input$new_dialog){
-        path <- getFileFolderPath(new_flag = T)
+        path <- getFileFolderPath("file",new_flag = T)
         if(is.na(path)){
           sendSweetAlert(session,NULL,"No folder selected",
                          type = "error")
@@ -3120,4 +3125,5 @@ runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,
   stopCluster(c1)
   return(as.data.frame(cmax_list))
 }
+
 
