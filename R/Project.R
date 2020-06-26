@@ -73,12 +73,16 @@ saveProject <- function(){
 #' newProject(name = "TestPBPK",type = "PBPK",mode = "httk_pbpk",mode = "MC")
 #' }
 #' @export
-newProject <- function(name="new_project", type = "PBPK", model = "rapidPBPK", mode = "MC",runUI = F){
-  temp_path <- getFileFolderPath("dir",
-                                 caption =sprintf("Select folder where %s will be saved",name))
+newProject <- function(name="new_project", save_path= "",type = "PBPK", model = "rapidPBPK", mode = "MC",runUI = F){
+  if(save_path == ""){
+    temp_path <- getFileFolderPath("dir",
+                                   caption =sprintf("Select folder where %s will be saved",name))
+    
+    
+    save_path <- gsub("\\\\","/",temp_path)
+  }
   
   
-  save_path <- gsub("\\\\","/",temp_path)
   clearProjectDb()
   # write new project details to the project table
   query <- sprintf("INSERT INTO Project (name, path, type, model, mode) Values ('%s','%s','%s','%s','%s');",
@@ -173,9 +177,17 @@ clearProjectDb <- function(){
 #' Show dialogs to select files or folders
 #' @description The function shows the dialog to select files or folders. The functions change depending on the OS in which 
 #' RStudio is running. It is only called internally
-#' @importFrom tcltk tk_choose.dir tk_choose.files
-#' 
-getFileFolderPath <- function(type ="dir",caption,extension){
+#' @param type Type of document to get a path for. dir for directory or file for file
+#' @param caption Caption to display for choose file/directory modal
+#' @param extension extensions to display for selecting file type
+#' @return path to the selected file or directory
+#' @examples
+#' \dontrun{
+#' getFileFolderPath("dir","Select PLETHEM Project Directory)
+#' getFileFolderPath("file","Select )
+#' }
+#' @export
+getFileFolderPath <- function(type ="dir",caption="",extension=""){
   os <- .Platform$OS.type
   if (os == "windows"){
     if(type == "dir"){
@@ -185,9 +197,8 @@ getFileFolderPath <- function(type ="dir",caption,extension){
                                            filters = matrix(c(extension),1,2,byrow=TRUE))
     }
   }else{
-    returned_path <- choose.files()
+    returned_path <- tryCatch({file.choose()},error = function(e){return(NA)})
   }
-  
   
   return(returned_path)
 }

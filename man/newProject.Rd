@@ -6,6 +6,7 @@
 \usage{
 newProject(
   name = "new_project",
+  save_path = "",
   type = "PBPK",
   model = "rapidPBPK",
   mode = "MC",

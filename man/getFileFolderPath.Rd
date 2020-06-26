@@ -4,9 +4,25 @@
 \alias{getFileFolderPath}
 \title{Show dialogs to select files or folders}
 \usage{
-getFileFolderPath(type = "dir", caption, extension)
+getFileFolderPath(type = "dir", caption = "", extension = "")
+}
+\arguments{
+\item{type}{Type of document to get a path for. dir for directory or file for file}
+
+\item{caption}{Caption to display for choose file/directory modal}
+
+\item{extension}{extensions to display for selecting file type}
+}
+\value{
+path to the selected file or directory
 }
 \description{
 The function shows the dialog to select files or folders. The functions change depending on the OS in which 
 RStudio is running. It is only called internally
+}
+\examples{
+\dontrun{
+getFileFolderPath("dir","Select PLETHEM Project Directory)
+getFileFolderPath("file","Select )
+}
 }

@@ -2223,19 +2223,31 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if(input$menu=="stop"){
       shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close Application",
                                    "Any changes will not be saved. Proceed?",type = "question",danger_mode = T)
+      updateTabsetPanel(session,"menu","home")
 
     }else if(input$menu == "save"){
       shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
                                       "Unsaved changes will be lost. Proceed?",type = "question",danger_mode = T)
+      updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "load"){
       shinyWidgets::confirmSweetAlert(session,"load_dialog","Load New Project",
                                       "Load existing project? Unsaved changed will be lost",
                                       type = "question",danger_mode = T)
+      updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "new"){
-      shinyWidgets::inputSweetAlert(session,"new_dialog","Close current project and create a new one?",
-                                    "Any changes made to the project since it was last saved will be lost.",
-                                    type= "question",input = "text",
-                                    inputPlaceholder = "Project File Name",btn_labels = c("OK","Cancel"))
+      if(.Platform$OS.type == "windows"){
+        shinyWidgets::inputSweetAlert(session,"new_dialog","Close current project and create a new one?",
+                                      "Any changes made to the project since it was last saved will be lost.",
+                                      type= "question",input = "text",
+                                      inputPlaceholder = "Project File Name",
+                                      btn_labels = c("OK","Cancel"))
+      }else{
+        shinyWidgets::confirmSweetAlert(session,"new_dialog","Close current project and create a new one?",
+                                        "Any changes made to the project since it was last saved will be lost.",
+                                        type = "question")
+      }
+      
+      updateTabsetPanel(session,"menu","home")
     }
     
   })
@@ -2252,14 +2264,59 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
   observeEvent(input$load_dialog,{
     if(input$load_dialog){
-      loadProject(runUI = F)
-      js$reset()
+      fpath <- getFileFolderPath(type = "file",
+                        caption = "Select PLETHEM Project",
+                        extension = "*.Rdata")
+      if (length(fpath)==0 || is.na(fpath)){
+        sendSweetAlert(session,NULL,"No File Selected",
+                       type = "error")
+        updateTabsetPanel(session,"menu","home")
+      }else{
+        loadProject(fpath,runUI = F)
+        js$reset()
+        Sys.sleep(1)
+        sendSweetAlert(session,NULL,
+                       sprintf("PLETHEM Project %s succesfully loaded",basename(fpath)))
+      }
+      
     }
   })
   observeEvent(input$new_dialog,{
-    clearProjectDb()
-    newProject(input$new_dialog)
-    js$reset()
+    if(.Platform$OS.type == "windows"){
+      name <- input$new_dialog
+      if(name == ""){
+        sendSweetAlert(session,NULL,"No file name given",
+                       type = "error")
+        updateTabsetPanel(session,"menu","home")
+      }else{
+        path <- getFileFolderPath("dir",caption =sprintf("Select folder where %s will be saved",name))
+        if(is.na(path)){
+          sendSweetAlert(session,NULL,"No folder selected",
+                         type = "error")
+          updateTabsetPanel(session,"menu","home")
+        }else{
+          newProject(name,path)
+          js$reset() 
+        }
+      }
+      
+    }else{
+      if(input$new_dialog){
+        path <- getFileFolderPath()
+        if(is.na(path)){
+          sendSweetAlert(session,NULL,"No folder selected",
+                         type = "error")
+          updateTabsetPanel(session,"menu","home")
+        }else{
+          name <- basename(path)
+          path <- dirname(path)
+          newProject(name,path)
+          js$reset() 
+        }
+      }
+      
+    }
+    
   })
   
   
@@ -2992,7 +3049,7 @@ updateCoeffs <- function(session, calculatedCoeff){
 }
 
 runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,event_times_list,progressFunc){
-  c1 <- snow::makeSOCKcluster(6)
+  c1 <- snow::makeSOCKcluster(parallel::detectCores()-1)
   registerDoSNOW(c1)
   opts <- list(progress = progressFunc)
   cmax_list <- foreach(idx=seq_len(mcruns),params_list,

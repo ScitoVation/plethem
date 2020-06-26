@@ -10,10 +10,10 @@ newEditVariabilityUI <- function(namespace){
     tagList(
       fluidRow(
         column(4,
-               textInput(ns("name"),"Parameter Name")
+               textInput(ns("name"),NULL,placeholder = "Name")
                ),
         column(8,
-               textInput(ns("descrp"),"Description"))
+               textInput(ns("descrp"),NULL,placeholder = "Description"))
         ),
       fluidRow(
         column(8,
