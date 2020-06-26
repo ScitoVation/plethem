@@ -633,13 +633,19 @@ shinyServer(function(input, output, session) {
   },ignoreInit = T, ignoreNULL = T)
   
   observeEvent(input$btn_edit_varphys,{
-    param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
-    param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
-    names(param_vars) <- param_names
-    ns <- paste0("vpe_",input$btn_edit_varphys)
-    newEditVariabilityUI(ns)
-    parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
-                                       param_vars,input$sel_physio_var)
+    if(input$sel_physio_var == ""){
+      sendSweetAlert(session,"No Set Found","No Variability set is created",
+                     type = "error")
+    }else{
+      param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
+      param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
+      names(param_vars) <- param_names
+      ns <- paste0("vpe_",input$btn_edit_varphys)
+      newEditVariabilityUI(ns)
+      parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
+                                         param_vars,input$sel_physio_var)
+    }
+    
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
@@ -654,27 +660,37 @@ shinyServer(function(input, output, session) {
   },ignoreInit = T, ignoreNULL = T)
   
   observeEvent(input$btn_edit_varchem,{
-    param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
-    param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
-    names(param_vars) <- param_names
-    ns <- paste0("vce_",input$btn_edit_varchem)
-    newEditVariabilityUI(ns)
-    parameterSets$vardat <- callModule(newEditVariability,ns,"chem","edit",
-                                       param_vars,input$sel_chem_var)
+    if(input$sel_chem_var == ""){
+      sendSweetAlert(session,"No Set Found","No Variability set is created",
+                     type = "error")
+    }else{
+      param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
+      param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
+      names(param_vars) <- param_names
+      ns <- paste0("vce_",input$btn_edit_varchem)
+      newEditVariabilityUI(ns)
+      parameterSets$vardat <- callModule(newEditVariability,ns,"chem","edit",
+                                         param_vars,input$sel_chem_var)
+    }
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
   observeEvent(input$btn_new_varexpo,{
-    param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
-    param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
-    names(param_vars) <- param_names
-    ns <- paste0("ven_",input$btn_new_varexpo)
-    newEditVariabilityUI(ns)
-    parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
+      param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
+      param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
+      names(param_vars) <- param_names
+      ns <- paste0("ven_",input$btn_new_varexpo)
+      newEditVariabilityUI(ns)
+      parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
+    
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
   observeEvent(input$btn_edit_varexpo,{
+    if(input$sel_expo_var == ""){
+      sendSweetAlert(session,"No Set Found","No Variability set is created",
+                     type = "error")
+    }else{
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
     param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
     names(param_vars) <- param_names
@@ -682,6 +698,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
                                        param_vars,input$sel_expo_var)
+    }
   },ignoreInit = T, ignoreNULL = T)
     
     observeEvent(input$btn_new_varadme,{
@@ -695,13 +712,18 @@ shinyServer(function(input, output, session) {
     },ignoreInit = T, ignoreNULL = T)
     
     observeEvent(input$btn_edit_varadme,{
-      param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
-      param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
-      names(param_vars) <- param_names
-      ns <- paste0("vee_",input$btn_edit_varadme)
-      newEditVariabilityUI(ns)
-      parameterSets$vardat <- callModule(newEditVariability,ns,"adme","edit",
-                                         param_vars,input$sel_adme_var)
+      if(input$sel_adme_var == ""){
+        sendSweetAlert(session,"No Set Found","No Variability set is created",
+                       type = "error")
+      }else{
+        param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
+        param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
+        names(param_vars) <- param_names
+        ns <- paste0("vee_",input$btn_edit_varadme)
+        newEditVariabilityUI(ns)
+        parameterSets$vardat <- callModule(newEditVariability,ns,"adme","edit",
+                                           param_vars,input$sel_adme_var)
+      }
     },ignoreInit = T, ignoreNULL = T)
     ### Variability Tab
   
