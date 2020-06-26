@@ -31,7 +31,7 @@ expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   tags$div(actionButton("clear_expo","Reset exposures")),
   menuItem("Oral", tabName = "oral", selected = TRUE),
   menuItem("Drinking Water", tabName = "dw"),
-  menuItem("Oral exposure with vehicle",tabName = "oralv"),
+  menuItem("Oral Exposure with Vehicle",tabName = "oralv"),
   menuItem("Inhalation", tabName = "inh"),
   menuItem("Intravenous", tabName = "iv"),
   menuItem("Dermal",tabName = "dermal")

@@ -2230,29 +2230,30 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   # power button to shut down the app
   observeEvent(input$menu,{
     if(input$menu=="stop"){
-      shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close Application",
-                                   "Any changes will not be saved. Proceed?",type = "question",danger_mode = T)
+      shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close PBPK Application?",
+                                   "Any changes made to the project since the last save will be lost. Consider saving the project before closing the application.",
+                                   type = "question",danger_mode = T)
       updateTabsetPanel(session,"menu","home")
 
     }else if(input$menu == "save"){
       shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
-                                      "Unsaved changes will be lost. Proceed?",type = "question",danger_mode = T)
+                                      "Save project in its current state?",type = "question",danger_mode = T)
       updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "load"){
       shinyWidgets::confirmSweetAlert(session,"load_dialog","Load New Project",
-                                      "Load existing project? Unsaved changed will be lost",
+                                      "Load existing project? Unsaved changes to the current project will be lost",
                                       type = "question",danger_mode = T)
       updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "new"){
       if(.Platform$OS.type == "windows"){
         shinyWidgets::inputSweetAlert(session,"new_dialog","Close current project and create a new one?",
-                                      "Any changes made to the project since it was last saved will be lost.",
+                                      "Any changes made to the current project since it was last saved will be lost.",
                                       type= "question",input = "text",
                                       inputPlaceholder = "Project File Name",
                                       btn_labels = c("OK","Cancel"))
       }else{
         shinyWidgets::confirmSweetAlert(session,"new_dialog","Close current project and create a new one?",
-                                        "Any changes made to the project since it was last saved will be lost.",
+                                        "Any changes made to the current project since it was last saved will be lost.",
                                         type = "question")
       }
       

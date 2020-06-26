@@ -34,7 +34,7 @@ getProjectChemicalList <- function(){
 #' This defaults to database/project.sqlite and is not expected to change
 #' @return int Integer ID of the next row in the table.
 #' @export
-getNextID <- function(tble_name, db_path ="database/project.sqlite"){
+getNextID <- function(tble_name, db_path =""){
   id_name <- switch(tble_name,
                     "ExposureSet" = "expoid",
                     "ChemicalSet" = "chemid",
@@ -61,7 +61,10 @@ getNextID <- function(tble_name, db_path ="database/project.sqlite"){
 #' @param tble_name Name of the table to save. NOTE SQLITE table names are not case sensitive
 #' @param db_path The location of the project database. This defaults to database/project.sqlite and is not expected to change
 #' @return table as a dataframe
-projectReadTable <- function(tble_name, db_path ="database/project.sqlite"){
+projectReadTable <- function(tble_name, db_path =""){
+  if (db_path == ""){
+    db_path <- system.file("database","project.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
+  }
   conn <- getDbConn(db_path)
   ret_data <- RSQLite::dbReadTable(conn,tble_name)
   return(ret_data)
@@ -76,7 +79,7 @@ projectReadTable <- function(tble_name, db_path ="database/project.sqlite"){
 #' @return None
 projectWriteTable <- function(data, tble_name, db_path =""){
   if (db_path == ""){
-    db_path <- system.file("database","project.sqlite",package = "plethem")
+    db_path <- system.file("database","project.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
   }
   conn <- getDbConn(db_path)
   ret_data <- RSQLite::dbWriteTable(conn,tble_name,data, overwrite = T)
@@ -91,7 +94,7 @@ projectWriteTable <- function(data, tble_name, db_path =""){
 #' @export
 projectDbSelect <- function(query, db_path =""){
   if (db_path == ""){
-    db_path <- system.file("database","project.sqlite",package = "plethem")
+    db_path <- system.file("database","project.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
   }
   conn <- getDbConn(db_path)
   res <- RSQLite::dbSendQuery(conn,query)
@@ -109,7 +112,7 @@ projectDbSelect <- function(query, db_path =""){
 #' @export
 projectDbUpdate <- function(query, db_path =""){
   if (db_path == ""){
-    db_path <- system.file("database","project.sqlite",package = "plethem")
+    db_path <- system.file("database","project.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
   }
   conn <- getDbConn(db_path)
   RSQLite::dbExecute(conn,query)
@@ -124,7 +127,7 @@ projectDbUpdate <- function(query, db_path =""){
 #' @export
 mainDbUpdate <- function(query, db_path =""){
   if (db_path == ""){
-    db_path <- system.file("database","plethemdb.sqlite",package = "plethem")
+    db_path <- system.file("database","plethemdb.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
   }
   conn <- getDbConn(db_path)
   RSQLite::dbExecute(conn,query)
@@ -139,7 +142,7 @@ mainDbUpdate <- function(query, db_path =""){
 #' @export
 mainDbSelect <- function(query, db_path =""){
   if (db_path == ""){
-    db_path <- system.file("database","plethemdb.sqlite",package = "plethem")
+    db_path <- system.file("database","plethemdb.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
   }
   conn <- getDbConn(db_path)
   res <- RSQLite::dbSendQuery(conn,query)
