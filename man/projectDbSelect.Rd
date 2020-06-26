@@ -4,7 +4,7 @@
 \alias{projectDbSelect}
 \title{Runs all select queries to the project database.}
 \usage{
-projectDbSelect(query, db_path = "database/project.sqlite")
+projectDbSelect(query, db_path = "")
 }
 \arguments{
 \item{query}{A valid SQL Query}

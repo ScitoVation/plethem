@@ -2,6 +2,7 @@
 
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
+  hideTab("menu","output")
   # define the model name once here. It will be used throughout this server file
   # this will make it easier to create new model UI/SERVERS
   model <- "rapidPBPK"
@@ -1292,7 +1293,7 @@ shinyServer(function(input, output, session) {
   ### CODE CHUNK TO RUN THE SIMULATION
   results <- reactiveValues(pbpk=NULL,expo = NULL,simid = NULL,sim_type = NULL)
   observeEvent(input$btn_run_sim,{
-    
+    showTab("menu","output")
     
     
     # Get the simulation details
@@ -1328,14 +1329,15 @@ shinyServer(function(input, output, session) {
       initial_params <- rapidPBPK_initParms(initial_values$initial_params)
       pb <- Progress$new(session, min = 0, max = 100)
       pb$set(value = 99)
-      dyn.load("../../src/plethem.dll")
-      #dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+      #dyn.load("../../src/plethem.dll")
+      dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
       
       modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
                                  func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
                                  events=list(func="event", time=event_times),nout = length(output),
                                  outnames = output)
-      dyn.unload("../../src/plethem.dll")
+      dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+      #dyn.unload("../../src/plethem.dll")
       
       dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
       
@@ -1540,7 +1542,6 @@ shinyServer(function(input, output, session) {
       hideTab("Modeloutput","percentile")
       showTab("Modeloutput","plots")
       showTab("Modeloutput","params")
-      showTab("Modeloutput","nca")
     }else{
       
       showTab("Modeloutput","cdfpdf")
@@ -2299,7 +2300,9 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                        type = "error")
         updateTabsetPanel(session,"menu","home")
       }else{
-        path <- getFileFolderPath("dir",caption =sprintf("Select folder where %s will be saved",name))
+        path <- getFileFolderPath("dir",
+                                  caption =sprintf("Select folder where %s will be saved",name),
+                                  new_flag = T)
         if(is.na(path)){
           sendSweetAlert(session,NULL,"No folder selected",
                          type = "error")

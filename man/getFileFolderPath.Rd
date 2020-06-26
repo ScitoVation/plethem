@@ -4,7 +4,7 @@
 \alias{getFileFolderPath}
 \title{Show dialogs to select files or folders}
 \usage{
-getFileFolderPath(type = "dir", caption = "", extension = "")
+getFileFolderPath(type = "dir", caption = "", extension = "", new_flag = F)
 }
 \arguments{
 \item{type}{Type of document to get a path for. dir for directory or file for file}
@@ -12,6 +12,8 @@ getFileFolderPath(type = "dir", caption = "", extension = "")
 \item{caption}{Caption to display for choose file/directory modal}
 
 \item{extension}{extensions to display for selecting file type}
+
+\item{new_flag}{Logical value for the "new" parameter in file.choose. Only used on MacOS}
 }
 \value{
 path to the selected file or directory

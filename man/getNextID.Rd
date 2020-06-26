@@ -4,7 +4,7 @@
 \alias{getNextID}
 \title{Get the next Id for the table entry}
 \usage{
-getNextID(tble_name, db_path = "database/project.sqlite")
+getNextID(tble_name, db_path = "")
 }
 \arguments{
 \item{tble_name}{Name of the table for which the ID is required}

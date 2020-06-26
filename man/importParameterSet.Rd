@@ -4,7 +4,7 @@
 \alias{importParameterSet}
 \title{Server for import parameter module}
 \usage{
-importParameterSet(input, output, session, set_type)
+importParameterSet(input, output, session, set_type, module_source = "PBPK")
 }
 \arguments{
 \item{input}{input object from the UI}

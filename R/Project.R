@@ -180,6 +180,7 @@ clearProjectDb <- function(){
 #' @param type Type of document to get a path for. dir for directory or file for file
 #' @param caption Caption to display for choose file/directory modal
 #' @param extension extensions to display for selecting file type
+#' @param new_flag Logical value for the "new" parameter in file.choose. Only used on MacOS
 #' @return path to the selected file or directory
 #' @examples
 #' \dontrun{
@@ -187,7 +188,7 @@ clearProjectDb <- function(){
 #' getFileFolderPath("file","Select )
 #' }
 #' @export
-getFileFolderPath <- function(type ="dir",caption="",extension=""){
+getFileFolderPath <- function(type ="dir",caption="",extension="",new_flag = F){
   os <- .Platform$OS.type
   if (os == "windows"){
     if(type == "dir"){
@@ -197,7 +198,7 @@ getFileFolderPath <- function(type ="dir",caption="",extension=""){
                                            filters = matrix(c(extension),1,2,byrow=TRUE))
     }
   }else{
-    returned_path <- tryCatch({file.choose(new = T)},error = function(e){return(NA)})
+    returned_path <- tryCatch({file.choose(new = new_flag)},error = function(e){return(NA)})
   }
   
   return(returned_path)
