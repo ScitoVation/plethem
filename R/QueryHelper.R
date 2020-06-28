@@ -143,7 +143,7 @@ userDbSelect <- function(query){
   # get user dbPath
   
   db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
-  conn <- getDbConn(db_path,internal = F)
+  conn <- getDbConn(db_path,internal = T)
   res <- RSQLite::dbSendQuery(conn,query)
   res_df <- RSQLite::dbFetch(res)
   RSQLite::dbClearResult(res)
