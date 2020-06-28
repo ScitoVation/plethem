@@ -20,5 +20,5 @@ test_that("Tissue volumes are less than 85% of body weight",{
                                                         "bone","brain",
                                                         "lung","heart","gi","kidney",
                                                         "liver","rpf","spf"))
-  expect_lte(sum(tissue_vols),68)
+  expect_lte(sum(unlist(tissue_vols)),68)
 })

@@ -4,7 +4,7 @@
 \alias{mainDbUpdate}
 \title{Runs all update queries to the main database.}
 \usage{
-mainDbUpdate(query, db_path = "database/plethemdb.sqlite")
+mainDbUpdate(query, db_path = "")
 }
 \arguments{
 \item{query}{A valid SQL Query}

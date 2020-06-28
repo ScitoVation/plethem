@@ -4,7 +4,7 @@
 \alias{projectWriteTable}
 \title{Write the dataframe to the table}
 \usage{
-projectWriteTable(data, tble_name, db_path = "database/project.sqlite")
+projectWriteTable(data, tble_name, db_path = "")
 }
 \arguments{
 \item{data}{Data frame containing the data to save to the table. This will overwrite any existing data}

@@ -4,7 +4,7 @@
 \alias{projectReadTable}
 \title{Read all the contents of a table}
 \usage{
-projectReadTable(tble_name, db_path = "database/project.sqlite")
+projectReadTable(tble_name, db_path = "")
 }
 \arguments{
 \item{tble_name}{Name of the table to save. NOTE SQLITE table names are not case sensitive}

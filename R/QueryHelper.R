@@ -34,7 +34,7 @@ getProjectChemicalList <- function(){
 #' This defaults to database/project.sqlite and is not expected to change
 #' @return int Integer ID of the next row in the table.
 #' @export
-getNextID <- function(tble_name, db_path ="database/project.sqlite"){
+getNextID <- function(tble_name, db_path =""){
   id_name <- switch(tble_name,
                     "ExposureSet" = "expoid",
                     "ChemicalSet" = "chemid",
@@ -61,7 +61,10 @@ getNextID <- function(tble_name, db_path ="database/project.sqlite"){
 #' @param tble_name Name of the table to save. NOTE SQLITE table names are not case sensitive
 #' @param db_path The location of the project database. This defaults to database/project.sqlite and is not expected to change
 #' @return table as a dataframe
-projectReadTable <- function(tble_name, db_path ="database/project.sqlite"){
+projectReadTable <- function(tble_name, db_path =""){
+  if (db_path == ""){
+    db_path <- system.file("database","project.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
+  }
   conn <- getDbConn(db_path)
   ret_data <- RSQLite::dbReadTable(conn,tble_name)
   return(ret_data)
@@ -74,7 +77,10 @@ projectReadTable <- function(tble_name, db_path ="database/project.sqlite"){
 #' @param tble_name Name of the table to write the data to. NOTE SQLITE table names are not case sensitive
 #' @param db_path The location of the project database. This defaults to database/project.sqlite and is not expected to change
 #' @return None
-projectWriteTable <- function(data, tble_name, db_path ="database/project.sqlite"){
+projectWriteTable <- function(data, tble_name, db_path =""){
+  if (db_path == ""){
+    db_path <- system.file("database","project.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
+  }
   conn <- getDbConn(db_path)
   ret_data <- RSQLite::dbWriteTable(conn,tble_name,data, overwrite = T)
   RSQLite::dbDisconnect(conn)
@@ -86,7 +92,10 @@ projectWriteTable <- function(data, tble_name, db_path ="database/project.sqlite
 #' @param db_path The location of the project database. This defaults to database/project.sqlite and is not expected to change
 #' This function will not be called by the user directly
 #' @export
-projectDbSelect <- function(query, db_path ="database/project.sqlite"){
+projectDbSelect <- function(query, db_path =""){
+  if (db_path == ""){
+    db_path <- system.file("database","project.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
+  }
   conn <- getDbConn(db_path)
   res <- RSQLite::dbSendQuery(conn,query)
   res_df <- RSQLite::dbFetch(res)
@@ -101,7 +110,10 @@ projectDbSelect <- function(query, db_path ="database/project.sqlite"){
 #' @param db_path The location of the project database. This defaults to database/project.sqlite and is not expected to change
 #' This function will not be called by the user directly
 #' @export
-projectDbUpdate <- function(query, db_path ="database/project.sqlite"){
+projectDbUpdate <- function(query, db_path =""){
+  if (db_path == ""){
+    db_path <- system.file("database","project.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
+  }
   conn <- getDbConn(db_path)
   RSQLite::dbExecute(conn,query)
   RSQLite::dbDisconnect(conn)
@@ -113,7 +125,10 @@ projectDbUpdate <- function(query, db_path ="database/project.sqlite"){
 #' @param db_path The location of the main database. This defaults to database/plethemdb.sqlite and is not expected to change
 #' This function will not be called by the user directly
 #' @export
-mainDbUpdate <- function(query, db_path ="database/plethemdb.sqlite"){
+mainDbUpdate <- function(query, db_path =""){
+  if (db_path == ""){
+    db_path <- system.file("database","plethemdb.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
+  }
   conn <- getDbConn(db_path)
   RSQLite::dbExecute(conn,query)
   RSQLite::dbDisconnect(conn)
@@ -125,7 +140,10 @@ mainDbUpdate <- function(query, db_path ="database/plethemdb.sqlite"){
 #' @param db_path The location of the project database. This defaults to database/plethemdb.sqlite and is not expected to change
 #' This function will not be called by the user directly
 #' @export
-mainDbSelect <- function(query, db_path ="database/plethemdb.sqlite"){
+mainDbSelect <- function(query, db_path =""){
+  if (db_path == ""){
+    db_path <- system.file("database","plethemdb.sqlite",package = "plethem",lib.loc = .libPaths()[[1]])
+  }
   conn <- getDbConn(db_path)
   res <- RSQLite::dbSendQuery(conn,query)
   res_df <- RSQLite::dbFetch(res)
@@ -141,7 +159,7 @@ mainDbSelect <- function(query, db_path ="database/plethemdb.sqlite"){
 #' @export
 userDbSelect <- function(query){
   # get user dbPath
-  
+
   db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
   conn <- getDbConn(db_path,internal = T)
   res <- RSQLite::dbSendQuery(conn,query)
@@ -156,7 +174,7 @@ userDbSelect <- function(query){
 #' @export
 userDbUpdate <- function(query){
   db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
-  conn <- getDbConn(db_path,internal = F)
+  conn <- getDbConn(db_path)
   RSQLite::dbExecute(conn,query)
   RSQLite::dbDisconnect(conn)
 }
@@ -169,14 +187,12 @@ userDbUpdate <- function(query){
 #' @export
 externDbSelect <- function(query,db_path){
   # get user dbPath
-  
-  
-  conn <- getDbConn(db_path,internal = F)
+  conn <- getDbConn(db_path)
   res <- RSQLite::dbSendQuery(conn,query)
   res_df <- RSQLite::dbFetch(res)
   RSQLite::dbClearResult(res)
   return(res_df)
-  
+
 }
 
 #' Gets the connection to the Db to run all the queries against
@@ -185,15 +201,7 @@ externDbSelect <- function(query,db_path){
 #' @param internal Boolean. Is the database internal
 #' This function will not be called by the user directly
 #'
-getDbConn<- function(db_path,internal = T){
-  if (internal){
-    db_path <- system.file(db_path,package = "plethem")
-  }
+getDbConn<- function(db_path){
   conn <- RSQLite::dbConnect(RSQLite::SQLite(),db_path)
   return(conn)
 }
-
-
-
-
-

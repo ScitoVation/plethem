@@ -28,10 +28,10 @@ css <- "div .disabled-comp {
 ################################exposure sidebar
 expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="ms_expo_sidebar",
-  tags$div(actionButton("clear_expo","Reset exposures")),
+  tags$div(actionButton("clear_expo","Reset Exposures")),
   menuItem("Oral", tabName = "oral", selected = TRUE),
   menuItem("Drinking Water", tabName = "dw"),
-  menuItem("Oral exposure with vehicle",tabName = "oralv"),
+  menuItem("Oral Exposure with Vehicle",tabName = "oralv"),
   menuItem("Inhalation", tabName = "inh"),
   menuItem("Intravenous", tabName = "iv"),
   menuItem("Dermal",tabName = "dermal")
@@ -174,9 +174,7 @@ chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary")
   
 )
-#actionButton("newChem", "Modify Chemical DB"),
-#selectizeInput("selectedChem", "Select a chemical", choices = getAllMainChemicals(), width = validateCssUnit("99%")),
-#awesomeCheckbox("useQSar", "Use QSAR Model", value = FALSE),
+
 
 
 )
@@ -233,10 +231,10 @@ plot_body <- fluidPage(
                                                                                                    "GI Total"="to_gi","GI Tissue"="ti_gi","GI Exchange"="bl_gi",
                                                                                                    "Liver Total"="to_liv","Liver Tissue"="ti_liv","Liver Exchange"="bl_liv",
                                                                                                    "Kidney Total"="to_kdn","Kidney Tissue"="ti_kdn","Kidney Exchange"="bl_kdn",
-                                                                                                   "Rapidly Perused Total"="to_rpf",
-                                                                                                   "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf",
-                                                                                                   "Slowly Perused Total"="to_spf",
-                                                                                                   "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf",
+                                                                                                   "Rapidly Perfused Total"="to_rpf",
+                                                                                                   "Rapidly Perfused Tissue"="ti_rpf","Rapidly Perfused Exchange"="bl_rpf",
+                                                                                                   "Slowly Perfused Total"="to_spf",
+                                                                                                   "Slowly Perfused Tissue"="ti_spf","Slowly Perfused Exchange"="bl_spf",
                                                                                                    "Parent urine concentration"="urine","Metabolite Urine Concentration"="meturine"
                                                                                     )
                                                            )
@@ -604,7 +602,7 @@ chem_body <- dashboardBody(
               column(6,
                      numericInput("ms_vpa","Vapor Pressure at 25 \U00B0 C (Pa)",1,0,250,0.01)),
               column(6,
-                     numericInput("ms_dkow","logKow in skin at pH5.5",1,0,250,0.01))
+                     numericInput("ms_dkow","logKow in Skin at pH5.5",1,0,250,0.01))
             ),
             fluidRow(
               column(6,
@@ -620,7 +618,7 @@ chem_body <- dashboardBody(
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_frwsol", label = "Fraction dissolved in water", value = 1,
+                     numericInput("ms_frwsol", label = "Fraction Dissolved in Liquid Phase of Plasma", value = 1,
                                   min=0,max = 1,step = 0.01)
               )
             )
@@ -638,13 +636,13 @@ expo_body <- dashboardBody(
         column(6,
                numericInput("ms_bdose",label="Daily Oral Dose (mg/kg BW)", value =0, step= 0.01)),
         column(6,
-               numericInput("ms_blen",label = "Total length of dosing (h/day)", value = 1, step = 0.1))
+               numericInput("ms_blen",label = "Length of Exposure per Day (h/day)", value = 1, step = 0.1))
       ),
       fluidRow(
         column(6,
-               numericInput("ms_breps","Number of Bolus Doses",1,0,100, 1)),
+               numericInput("ms_breps","Number of Boluses per Day",1,0,100, 1)),
         column(6,
-               awesomeCheckbox("ms_brep_flag","Repeat Dose Daily?",value = F))
+               awesomeCheckbox("ms_brep_flag","Repeat Exposure Daily?",value = F))
       )
       
       
@@ -658,7 +656,7 @@ expo_body <- dashboardBody(
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_dreps", "Number of drinking water doses per day", value = 1, step = 0.1 )
+                     numericInput("ms_dreps", "Number of Drinking Water Boluses per Day", value = 1, step = 0.1 )
               )
             )
     ),
@@ -668,13 +666,13 @@ expo_body <- dashboardBody(
         column(6,
                numericInput("ms_bdosev",label="Daily Oral Dose (mg/kg BW)", value =0, step= 0.01)),
         column(6,
-               numericInput("ms_blenv",label = "Total length of dosing (h/day)", value = 1, step = 0.1))
+               numericInput("ms_blenv",label = "Length of Exposure per Day (h/day)", value = 1, step = 0.1))
       ),
       fluidRow(
         column(6,
-               numericInput("ms_brepsv","Number of Bolus Doses",1,0,100, 1)),
+               numericInput("ms_brepsv","Number of Boluses per Day",1,0,100, 1)),
         column(6,
-               awesomeCheckbox("ms_brepv_flag","Repeat Dose Daily?",value = F))
+               awesomeCheckbox("ms_brepv_flag","Repeat Exposure Daily?",value = F))
       )
       
       
@@ -687,36 +685,36 @@ expo_body <- dashboardBody(
         column(4,
                numericInput("ms_inhtlen",label = "Length of Inhalation Exposure (h/day)",8)),
         column(4,
-               numericInput("ms_inhdays",label = "Exposure days in a week",7))
+               numericInput("ms_inhdays",label = "Exposure Days in a Week",7))
       )
     ),
     tabItem(
       tabName = "iv",
       fluidRow(
         column(6,
-               numericInput("ms_ivdose",label = "IV Dose (mg/h)",value = 0,step = 0.01)
+               numericInput("ms_ivdose",label = "IV Infusion (mg/h)",value = 0,step = 0.01)
         ),
         column(6,
-               numericInput("ms_ivlen",label="Length of IV Dose (h)",0))
+               numericInput("ms_ivlen",label="Duration of IV Infusion (h)",0))
       ),
       fluidRow(
         column(6,
-               awesomeCheckbox("ms_ivrep_flag","Repeat Dose Daily?",value = F))
+               awesomeCheckbox("ms_ivrep_flag","Repeat Exposure Daily?",value = F))
       )
     ),
     tabItem(
       tabName = "dermal",
       fluidRow(
         column(6,
-               numericInput("ms_dermrate","Dermal deposition rate (mg/cm2/h)",0,step = 0.1)),
+               numericInput("ms_dermrate","Dermal Deposition Rate (mg/cm\U00B2/h)",0,step = 0.1)),
         column(6,
-               numericInput("ms_skarea","Skin Area (cm2)",0,step = 0.1))
+               numericInput("ms_skarea","Exposed Surface Area (cm\U00B2)",0,step = 0.1))
       ),
       fluidRow(
         column(6, 
-               numericInput("ms_dermlen","Length of dermal dosing (h)",0.1,step=0.01)),
+               numericInput("ms_dermlen","Length of Dermal Exposure per Day (h/day)",0.1,step=0.01)),
         column(6,
-               awesomeCheckbox("ms_dermrep_flag","Repeat Dose Daily?",value = F))
+               awesomeCheckbox("ms_dermrep_flag","Repeat Exposure Daily?",value = F))
       )
       
     )
@@ -971,23 +969,23 @@ shinyUI(fluidPage(
                                                                       ),
                                                                       fluidRow(
                                                                         column(4,
-                                                                               numericInput("ms_fa","Fraction absorbed in Gut Lumen",
+                                                                               numericInput("ms_fa","Fraction Absorbed in Gut Lumen",
                                                                                             value = 1, min = 0, max = 1)
                                                                         ),
                                                                         column(4,
-                                                                               numericInput("ms_ka","Rate of Absorption in Gut Lumen(per h)",
+                                                                               numericInput("ms_ka","Rate of Absorption in Gut Lumen(/h)",
                                                                                             value = 5,min = 0)),
                                                                         column(4,
-                                                                               numericInput("ms_kVtoL","Tranfer Rate from vehicle to gut lumen (per h)",
+                                                                               numericInput("ms_kVtoL","Tranfer Rate from vehicle to Gut Lumen (/h)",
                                                                                             value = 1, min = 0)
                                                                         )
                                                                       ),
                                                                       fluidRow(
                                                                         column(4,
-                                                                               numericInput("ms_KPtot","Total Stratum Corneum permeation coefficient (cm^2\\h)",
+                                                                               numericInput("ms_KPtot","Total Stratum Corneum Permeation Coefficient (cm\U00B2/h)",
                                                                                             value = 1000,min = 0)),
                                                                         column(4,
-                                                                               numericInput("ms_maxcap","Maximum capacity of the startum corneum (mg\\cm^2)",
+                                                                               numericInput("ms_maxcap","Maximum Capacity of the Startum Corneum (mg/cm\U00B2)",
                                                                                             value = 1000, min =0)),
                                                                         column(4,
                                                                                numericInput("ms_Kevap","Evaporation Rate from Stratum Corneum",

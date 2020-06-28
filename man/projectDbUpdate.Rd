@@ -4,7 +4,7 @@
 \alias{projectDbUpdate}
 \title{Runs all update queries to the project database.}
 \usage{
-projectDbUpdate(query, db_path = "database/project.sqlite")
+projectDbUpdate(query, db_path = "")
 }
 \arguments{
 \item{query}{A valid SQL Query}

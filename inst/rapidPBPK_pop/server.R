@@ -2,6 +2,7 @@
 
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
+  hideTab("menu","output")
   # define the model name once here. It will be used throughout this server file
   # this will make it easier to create new model UI/SERVERS
   model <- "rapidPBPK"
@@ -632,13 +633,19 @@ shinyServer(function(input, output, session) {
   },ignoreInit = T, ignoreNULL = T)
   
   observeEvent(input$btn_edit_varphys,{
-    param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
-    param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
-    names(param_vars) <- param_names
-    ns <- paste0("vpe_",input$btn_edit_varphys)
-    newEditVariabilityUI(ns)
-    parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
-                                       param_vars,input$sel_physio_var)
+    if(input$sel_physio_var == ""){
+      sendSweetAlert(session,"No Set Found","No Variability set is created",
+                     type = "error")
+    }else{
+      param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
+      param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
+      names(param_vars) <- param_names
+      ns <- paste0("vpe_",input$btn_edit_varphys)
+      newEditVariabilityUI(ns)
+      parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
+                                         param_vars,input$sel_physio_var)
+    }
+    
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
@@ -653,27 +660,37 @@ shinyServer(function(input, output, session) {
   },ignoreInit = T, ignoreNULL = T)
   
   observeEvent(input$btn_edit_varchem,{
-    param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
-    param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
-    names(param_vars) <- param_names
-    ns <- paste0("vce_",input$btn_edit_varchem)
-    newEditVariabilityUI(ns)
-    parameterSets$vardat <- callModule(newEditVariability,ns,"chem","edit",
-                                       param_vars,input$sel_chem_var)
+    if(input$sel_chem_var == ""){
+      sendSweetAlert(session,"No Set Found","No Variability set is created",
+                     type = "error")
+    }else{
+      param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
+      param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
+      names(param_vars) <- param_names
+      ns <- paste0("vce_",input$btn_edit_varchem)
+      newEditVariabilityUI(ns)
+      parameterSets$vardat <- callModule(newEditVariability,ns,"chem","edit",
+                                         param_vars,input$sel_chem_var)
+    }
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
   observeEvent(input$btn_new_varexpo,{
-    param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
-    param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
-    names(param_vars) <- param_names
-    ns <- paste0("ven_",input$btn_new_varexpo)
-    newEditVariabilityUI(ns)
-    parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
+      param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
+      param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
+      names(param_vars) <- param_names
+      ns <- paste0("ven_",input$btn_new_varexpo)
+      newEditVariabilityUI(ns)
+      parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
+    
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
   
   observeEvent(input$btn_edit_varexpo,{
+    if(input$sel_expo_var == ""){
+      sendSweetAlert(session,"No Set Found","No Variability set is created",
+                     type = "error")
+    }else{
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
     param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
     names(param_vars) <- param_names
@@ -681,6 +698,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
                                        param_vars,input$sel_expo_var)
+    }
   },ignoreInit = T, ignoreNULL = T)
     
     observeEvent(input$btn_new_varadme,{
@@ -694,13 +712,18 @@ shinyServer(function(input, output, session) {
     },ignoreInit = T, ignoreNULL = T)
     
     observeEvent(input$btn_edit_varadme,{
-      param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
-      param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
-      names(param_vars) <- param_names
-      ns <- paste0("vee_",input$btn_edit_varadme)
-      newEditVariabilityUI(ns)
-      parameterSets$vardat <- callModule(newEditVariability,ns,"adme","edit",
-                                         param_vars,input$sel_adme_var)
+      if(input$sel_adme_var == ""){
+        sendSweetAlert(session,"No Set Found","No Variability set is created",
+                       type = "error")
+      }else{
+        param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
+        param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
+        names(param_vars) <- param_names
+        ns <- paste0("vee_",input$btn_edit_varadme)
+        newEditVariabilityUI(ns)
+        parameterSets$vardat <- callModule(newEditVariability,ns,"adme","edit",
+                                           param_vars,input$sel_adme_var)
+      }
     },ignoreInit = T, ignoreNULL = T)
     ### Variability Tab
   
@@ -1292,7 +1315,7 @@ shinyServer(function(input, output, session) {
   ### CODE CHUNK TO RUN THE SIMULATION
   results <- reactiveValues(pbpk=NULL,expo = NULL,simid = NULL,sim_type = NULL)
   observeEvent(input$btn_run_sim,{
-    
+    showTab("menu","output")
     
     
     # Get the simulation details
@@ -1328,14 +1351,15 @@ shinyServer(function(input, output, session) {
       initial_params <- rapidPBPK_initParms(initial_values$initial_params)
       pb <- Progress$new(session, min = 0, max = 100)
       pb$set(value = 99)
-      dyn.load("../../src/plethem.dll")
-      #dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+      #dyn.load("../../src/plethem.dll")
+      dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
       
       modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
                                  func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
                                  events=list(func="event", time=event_times),nout = length(output),
                                  outnames = output)
-      dyn.unload("../../src/plethem.dll")
+      dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+      #dyn.unload("../../src/plethem.dll")
       
       dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
       
@@ -1540,7 +1564,6 @@ shinyServer(function(input, output, session) {
       hideTab("Modeloutput","percentile")
       showTab("Modeloutput","plots")
       showTab("Modeloutput","params")
-      showTab("Modeloutput","nca")
     }else{
       
       showTab("Modeloutput","cdfpdf")
@@ -1784,7 +1807,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     plot_frame <- data.frame(time = x)
     #select appropriate variables to plot
     if (dim(result)[1]==0){
-      plot_frame["Model not yet run"]<-rep(0,length(x))
+      plot_frame["Model Not Yet Run"]<-rep(0,length(x))
     }
     else if(length(values) >0 ){
       for (plt_name in values){
@@ -1900,7 +1923,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
    
     # select appropriate variables to plot
     if (dim(result)[1]==0){
-      plot_frame["Model not yet run"]<-rep(0,length(x))
+      plot_frame["Model Not Yet Run"]<-rep(0,length(x))
     }
     else if(length(values) >0 ){
       for (plt_name in values){
@@ -1980,7 +2003,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     
     # select appropriate variables to plot
     if (dim(result)[1]==0){
-      plot_frame["Model not yet run"]<-rep(0,length(x))
+      plot_frame["Model Not Yet Run"]<-rep(0,length(x))
     }
     else if(length(values) >0 ){
       for (plt_name in values){
@@ -2020,7 +2043,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     plot_frame<-data.frame(time = x)
     # select appropriate variables to plot
     if (dim(result)[1]==0){
-      plot_frame["Model not yet run"]<-rep(0,length(x))
+      plot_frame["Model Not Yet Run"]<-rep(0,length(x))
     }else{
       plot_frame["Mass Balance"]<- result$mbal
     }
@@ -2043,8 +2066,12 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                          color = '#000')
         )%>%
         plotly::layout(xaxis = list(title = ('Time(h)')),
-                       yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
-                                                    'Concentration (mg/L)'))))
+                       yaxis = list(title = (ifelse(input$r_cplt_type=="um",
+                                                    'Concentration (\u00B5M)',
+                                                    'Concentration (mg/L)')),
+                                    exponentformat = 'e'
+                                    )
+                       )
       
     }else{
       plotly::plot_ly()%>%
@@ -2053,7 +2080,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                           type = "box")%>%
         plotly::layout(yaxis = list(title = (ifelse(input$r_cplt_type=="um",
                                                     'Concentration (\U00B5M)',
-                                                    'Concentration (mg/L)'))
+                                                    'Concentration (mg/L)')),
+                                    exponentformat = 'e'
                                     )
                        )
     }
@@ -2230,29 +2258,30 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   # power button to shut down the app
   observeEvent(input$menu,{
     if(input$menu=="stop"){
-      shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close Application",
-                                   "Any changes will not be saved. Proceed?",type = "question",danger_mode = T)
+      shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close PBPK Application?",
+                                   "Any changes made to the project since the last save will be lost. Consider saving the project before closing the application.",
+                                   type = "question",danger_mode = T)
       updateTabsetPanel(session,"menu","home")
 
     }else if(input$menu == "save"){
       shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
-                                      "Unsaved changes will be lost. Proceed?",type = "question",danger_mode = T)
+                                      "Save project in its current state?",type = "question",danger_mode = T)
       updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "load"){
       shinyWidgets::confirmSweetAlert(session,"load_dialog","Load New Project",
-                                      "Load existing project? Unsaved changed will be lost",
+                                      "Load existing project? Unsaved changes to the current project will be lost",
                                       type = "question",danger_mode = T)
       updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "new"){
       if(.Platform$OS.type == "windows"){
         shinyWidgets::inputSweetAlert(session,"new_dialog","Close current project and create a new one?",
-                                      "Any changes made to the project since it was last saved will be lost.",
+                                      "Any changes made to the current project since it was last saved will be lost.",
                                       type= "question",input = "text",
                                       inputPlaceholder = "Project File Name",
                                       btn_labels = c("OK","Cancel"))
       }else{
         shinyWidgets::confirmSweetAlert(session,"new_dialog","Close current project and create a new one?",
-                                        "Any changes made to the project since it was last saved will be lost.",
+                                        "Any changes made to the current project since it was last saved will be lost.",
                                         type = "question")
       }
       
@@ -2286,6 +2315,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         Sys.sleep(1)
         sendSweetAlert(session,NULL,
                        sprintf("PLETHEM Project %s succesfully loaded",basename(fpath)))
+        updateTabsetPanel(session,"menu","setup")
       }
       
     }
@@ -2298,7 +2328,9 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                        type = "error")
         updateTabsetPanel(session,"menu","home")
       }else{
-        path <- getFileFolderPath("dir",caption =sprintf("Select folder where %s will be saved",name))
+        path <- getFileFolderPath("dir",
+                                  caption =sprintf("Select folder where %s will be saved",name),
+                                  )
         if(is.na(path)){
           sendSweetAlert(session,NULL,"No folder selected",
                          type = "error")
@@ -2311,7 +2343,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       
     }else{
       if(input$new_dialog){
-        path <- getFileFolderPath()
+        path <- getFileFolderPath("file",new_flag = T)
         if(is.na(path)){
           sendSweetAlert(session,NULL,"No folder selected",
                          type = "error")
@@ -3093,4 +3125,5 @@ runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,
   stopCluster(c1)
   return(as.data.frame(cmax_list))
 }
+
 

@@ -4,7 +4,7 @@
 \alias{mainDbSelect}
 \title{Runs all select queries to the main database.}
 \usage{
-mainDbSelect(query, db_path = "database/plethemdb.sqlite")
+mainDbSelect(query, db_path = "")
 }
 \arguments{
 \item{query}{A valid SQL Query}
