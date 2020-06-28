@@ -159,9 +159,9 @@ mainDbSelect <- function(query, db_path =""){
 #' @export
 userDbSelect <- function(query){
   # get user dbPath
-  
+
   db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
-  conn <- getDbConn(db_path)
+  conn <- getDbConn(db_path,internal = T)
   res <- RSQLite::dbSendQuery(conn,query)
   res_df <- RSQLite::dbFetch(res)
   RSQLite::dbClearResult(res)
@@ -192,7 +192,7 @@ externDbSelect <- function(query,db_path){
   res_df <- RSQLite::dbFetch(res)
   RSQLite::dbClearResult(res)
   return(res_df)
-  
+
 }
 
 #' Gets the connection to the Db to run all the queries against
@@ -201,12 +201,10 @@ externDbSelect <- function(query,db_path){
 #' @param internal Boolean. Is the database internal
 #' This function will not be called by the user directly
 #'
-getDbConn<- function(db_path){
+getDbConn<- function(db_path,internal=F){
+  if (internal){
+    db_path <- system.file(db_path,package = "plethem")
+  }
   conn <- RSQLite::dbConnect(RSQLite::SQLite(),db_path)
   return(conn)
 }
-
-
-
-
-
