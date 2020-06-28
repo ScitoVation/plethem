@@ -35,12 +35,25 @@ importParameterSetUI <- function(namespace,set_type){
                                                              "OPERA Predictions"="opera_predictions"))
                                  ),
                         tabPanel("User Database",value = "user",
-                                 bsButton(ns("btn_userDb_file"),
-                                          "Select User Database",
-                                          block = T),
-                                 pickerInput(ns("sel_user"),
-                                                label = "Select Chemical",
-                                                choices = NULL,multiple = T)
+                                 fluidRow(
+                                   column(8,offset = 2,
+                                          bsButton(ns("btn_userDb_file"),
+                                                   "Select User Database",
+                                                   block = T)
+                                          )
+                                   
+                                 ),
+                                 fluidRow(
+                                   column(4, offset = 2,
+                                          textOutput(ns("txt_path2userDb")))
+                                 ),
+                                 fluidRow(
+                                   pickerInput(ns("sel_user"),
+                                               label = "Select Chemical",
+                                               choices = NULL,multiple = T)
+                                 )
+                                 
+                                 
                                  )
                                # DTOutput(ns("main_tble")))
 
@@ -98,11 +111,22 @@ importParameterSet <- function(input,output,session,set_type,module_source = "PB
 
   #Server operations for user table
   db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
+  
   if (!(is.na(db_path))){
-    user_vals <- userDbSelect(all_sets_query)
-    user_chem_list <- as.list(user_vals[[id_name]])
-    names(user_chem_list)<-user_vals$name
-    updatePickerInput(session,"sel_user", choices = user_chem_list)
+    output$txt_path2userDb <- renderText({db_path})
+    tryCatch({
+      user_vals <- userDbSelect(all_sets_query)
+      user_chem_list <- as.list(user_vals[[id_name]])
+      names(user_chem_list)<-user_vals$name
+      updatePickerInput(session,"sel_user", choices = user_chem_list)
+    },
+    error = function(e){
+      sendSweetAlert(session,NULL,"Invalid user database selected",
+                     type = "error")
+    })
+    
+  }else{
+    output$txt_path2userDb <- renderText({"Select a user database"})
   }
   fpath_userDb<- eventReactive(input$btn_userDb_file,{
     fpath <- getFileFolderPath(type = "file","Select User Database","*.sqlite")
@@ -113,13 +137,20 @@ importParameterSet <- function(input,output,session,set_type,module_source = "PB
     if (length(fpath)==0){
       sendSweetAlert(session,"No File Selected",type = "error",closeOnClickOutside = T)
     }else{
-      sendSweetAlert(session,"File Selected")
+      output$txt_path2userDb <- renderText({fpath})
       query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",fpath)
       mainDbUpdate(query)
-      user_vals <- userDbSelect(all_sets_query)
-      user_chem_list <- as.list(user_vals[[id_name]])
-      names(user_chem_list)<-user_vals$name
-      updatePickerInput(session,"sel_user", choices = user_chem_list)
+      tryCatch({
+        user_vals <- userDbSelect(all_sets_query)
+        user_chem_list <- as.list(user_vals[[id_name]])
+        names(user_chem_list)<-user_vals$name
+        updatePickerInput(session,"sel_user", choices = user_chem_list)
+      },
+      error = function(e){
+        sendSweetAlert(session,NULL,"Invalid user database selected",
+                       type = "error")
+      })
+      
     }
       
     
@@ -234,8 +265,6 @@ importParameterSet <- function(input,output,session,set_type,module_source = "PB
     }else{
       sendSweetAlert(session,NULL,"Chemicals imported to the PBPK Project")
     }
-    
-
     removeModal()
   })
 

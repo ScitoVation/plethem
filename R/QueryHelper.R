@@ -161,7 +161,7 @@ userDbSelect <- function(query){
   # get user dbPath
 
   db_path <- mainDbSelect("Select value FROM Utils where variable = 'UserDbPath'")$value
-  conn <- getDbConn(db_path,internal = T)
+  conn <- getDbConn(db_path)
   res <- RSQLite::dbSendQuery(conn,query)
   res_df <- RSQLite::dbFetch(res)
   RSQLite::dbClearResult(res)
@@ -198,13 +198,10 @@ externDbSelect <- function(query,db_path){
 #' Gets the connection to the Db to run all the queries against
 #' @description The function returns the connection object to the database passed in DbPath
 #' @param db_path The location of the project database.
-#' @param internal Boolean. Is the database internal
 #' This function will not be called by the user directly
 #'
-getDbConn<- function(db_path,internal=F){
-  if (internal){
-    db_path <- system.file(db_path,package = "plethem")
-  }
+getDbConn<- function(db_path){
+
   conn <- RSQLite::dbConnect(RSQLite::SQLite(),db_path)
   return(conn)
 }

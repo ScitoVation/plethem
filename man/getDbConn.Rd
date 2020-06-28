@@ -7,9 +7,7 @@
 getDbConn(db_path)
 }
 \arguments{
-\item{db_path}{The location of the project database.}
-
-\item{internal}{Boolean. Is the database internal
+\item{db_path}{The location of the project database.
 This function will not be called by the user directly}
 }
 \description{
