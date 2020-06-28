@@ -744,7 +744,7 @@ shinyUI(fluidPage(
              navbarMenu("File",
                         tabPanel(title= "New",value = "new",icon = icon("plus")),
                         tabPanel(title = "Load",value = "load",icon = icon("floppy-open",lib = "glyphicon" )),
-                        tabPanel(title = "Save",value = "save",icon = icon("floppy-save",lib = "glyphicon")),
+                        hidden(tabPanel(title = "Save",value = "save",icon = icon("floppy-save",lib = "glyphicon"))),
                         #tabPanel( id = "help" , title= "help", value = "Help", icon = icon("info")),
                         tabPanel(title = "Quit",value = "stop",icon=icon("power-off")),
                         "----",
