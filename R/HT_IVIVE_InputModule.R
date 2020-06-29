@@ -8,7 +8,6 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
   width:1000px
 
   }"
-  reactlog()
 
   ns <- NS(namespace)
   showModal(modalDialog(
@@ -26,17 +25,12 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                              
                              fluidRow(
                                column(4,
-                                      tags$h5("Oragnism"),
+                                      uiOutput(ns("org_output"))
                                       #$h4("Standard Human")
-                                      selectInput(ns("sel_org"),label = "Select Organism",
-                                                  choices = list("Standard Human"="ha",
-                                                                 "Adult Rat"="ra"),
-                                                  selected = "ha")
+                                      
                                       ),
                                column(4,
-                                      selectInput(ns("sel_chem"),
-                                                  label = "Select Chemical",
-                                                  choices = list())
+                                      uiOutput(ns("chem_output"))
                                       ),
                                column(4,
                                       numericInput(ns("num_expo"),
@@ -358,6 +352,115 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                        "hep_recomb"="Recombinant Enzymes")
   chem_list <- getProjectChemicalList()
   chem_set_choices <- getAllSetChoices("chem")
+  if (type == "add"){
+    
+    output$chem_output <- renderUI({
+      
+      selectInput(ns("sel_chem"),
+                  label = "Select Chemical",
+                  choices = chem_set_choices)
+    })
+    
+    output$org_output <- renderUI({
+      selectInput(ns("sel_org"),label = "Select Organism",
+                  choices = list("Human"="ha",
+                                 "Rat"="ra"),
+                  selected = "ha")
+    })
+    
+   
+    
+    observeEvent(input$sel_chem,{
+      chid <- input$sel_chem
+      if(!is.null(chid)){
+        fupls <- chem_list[[as.integer(chid)]]["fupls"]
+        km <- chem_list[[as.integer(chid)]]["km"]
+        updateNumericInput(session,"num_fupls",value = as.numeric(fupls))
+        updateNumericInput(session,"num_km",value = as.numeric(km))
+      }
+    },ignoreInit = T,ignoreNULL = T,priority = 10)
+    
+    
+    # On Organism Change
+    observeEvent(input$sel_org,{
+      if(input$sel_org == "ha"){
+        # default is to assume adult human age of 25 years
+        age <- 25
+        bw <- 81.2079
+        qcc <- 421.96
+        liv_wt <- 1.58
+        liv_flw <- 99.5
+        gfr <- 8.85
+        updateNumericInput(session,"num_bw",value = bw)
+        updateNumericInput(session,"num_lw",value = liv_wt)
+        updateNumericInput(session,"num_qc",value = qcc)
+        updateNumericInput(session,"num_ql",value =liv_flw)
+        updateNumericInput(session,"num_gfr",value =gfr)
+        
+      }else{
+        updateNumericInput(session,"num_bw",value = 0.3518)
+        updateNumericInput(session,"num_lw",value = 0.0136)
+        updateNumericInput(session,"num_qc",value = 3.11)
+        updateNumericInput(session,"num_ql",value =0.5709)
+        updateNumericInput(session,"num_gfr",value =0.228)
+      }
+    },ignoreInit = T,priority = 10)
+    
+    
+  }else{
+    # all the updates in this section come from existing data from vals
+    # get the row to be edited
+    row_data <- vals$m_table[row_selected,]
+    
+    # get the row key for the vals object. The row key is stored in a hidden rn column
+    
+    row_number <- vals$m_table[row_selected,]["rn"]
+    row_key <- paste0("row_",row_number)
+    row_values <- vals[[row_key]]
+    chem_name <- names(chem_set_choices)[chem_set_choices == as.integer(row_values$sel_chem)]
+
+    output$chem_output <- renderUI({
+      tags$h4(chem_name)
+    })
+    organism <- switch(row_values$sel_org,
+                       "ha"="Human",
+                       "ra"="Rat")
+    output$org_output <- renderUI({
+      tags$h4(organism)
+    })
+    
+    
+    
+    #update select inputs
+    values <- row_values[grep("sel_",names(row_values),value = TRUE)]
+    
+    lapply(names(values),function(x){
+      if (!(x %in% c("chem","org"))){
+        updateSelectInput(session,x,selected = values[[x]])
+      }
+      })
+    #update radio buttons
+    values <- row_values[grep("rdo_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateRadioButtons(session,x,selected = values[[x]])})
+    #update tabitems
+    values <- row_values[grep("tab_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateTabsetPanel(session,x,selected = values[[x]])})
+    #update checkbox inputs
+    values <- row_values[grep("ch_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateCheckboxInput(session,x,value = values[[x]])})
+    #update text inputs
+    values <- row_values[grep("txt_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateTextInput(session,x,value = values[[x]])})
+    #update numeric Values
+    
+    values <- row_values[grep("num_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateNumericInput(session,x,value = values[[x]])})
+
+    
+  }
+  
+  
+  
   #chem_names <- chem_list$chem_names
   output$org_name <- renderText({return("Standard Human")})
   observe({
@@ -417,86 +520,21 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                                server = T
   )
 
-  # update the chem choices as they might have changed.
-  updateSelectInput(session,"sel_chem",choices = chem_set_choices)
+  
   # On Chemical Change
   
-  observeEvent(input$sel_chem,{
-    chid <- input$sel_chem
-    if(!is.null(chid)){
-      fupls <- chem_list[[as.integer(chid)]]["fupls"]
-      km <- chem_list[[as.integer(chid)]]["km"]
-      updateNumericInput(session,"num_fupls",value = as.numeric(fupls))
-      updateNumericInput(session,"num_km",value = as.numeric(km))
-      }
-    },ignoreInit = T,ignoreNULL = T,priority = 10)
   
   
-  # On Organism Change
-  observeEvent(input$sel_org,{
-    if(input$sel_org == "ha"){
-      # default is to assume adult human age of 25 years
-      age <- 25
-      bw <- 81.2079
-      qcc <- 421.96
-      liv_wt <- 1.58
-      liv_flw <- 99.5
-      gfr <- 8.85
-      updateNumericInput(session,"num_bw",value = bw)
-      updateNumericInput(session,"num_lw",value = liv_wt)
-      updateNumericInput(session,"num_qc",value = qcc)
-      updateNumericInput(session,"num_ql",value =liv_flw)
-      updateNumericInput(session,"num_gfr",value =gfr)
-      
-    }else{
-      updateNumericInput(session,"num_bw",value = 0.3518)
-      updateNumericInput(session,"num_lw",value = 0.0136)
-      updateNumericInput(session,"num_qc",value = 3.11)
-      updateNumericInput(session,"num_ql",value =0.5709)
-      updateNumericInput(session,"num_gfr",value =0.228)
-    }
-  },ignoreInit = T,priority = 10)
-
+  
+ 
   if (type == "edit"){
 
-    # all the updates in this section come from existing data from vals
-    # get the row to be edited
-    row_data <- vals$m_table[row_selected,]
-
-    # get the row key for the vals object. The row key is stored in a hidden rn column
-
-    row_number <- vals$m_table[row_selected,]["rn"]
-    row_key <- paste0("row_",row_number)
-    row_values <- vals[[row_key]]
     
-    #update select inputs
-    values <- row_values[grep("sel_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){maskReactiveContext(
-      updateSelectInput(session,x,selected = values[[x]]))})
-    #update radio buttons
-    values <- row_values[grep("rdo_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateRadioButtons(session,x,selected = values[[x]])})
-    #update tabitems
-    values <- row_values[grep("tab_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateTabsetPanel(session,x,selected = values[[x]])})
-    #update checkbox inputs
-    values <- row_values[grep("ch_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateCheckboxInput(session,x,value = values[[x]])})
-    #update text inputs
-    values <- row_values[grep("txt_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateTextInput(session,x,value = values[[x]])})
-    #update numeric Values
-    
-    values <- row_values[grep("num_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateNumericInput(session,x,value = values[[x]])})
   }
 
   observeEvent(input$ok,{
     # chemical Data
-    chem <- input$sel_chem
-    # Organism data
-    org <- input$sel_org
-    org_type_name <- "Standard Human"
+   
     name <- input$txt_IVIVE_name
     # Type of reverse dosimetry
     rd_type  <- input$rdo_rdtype
@@ -555,6 +593,23 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                    input_list[radio_param_names_list],input_list[tab_param_names_list],
                    input_list[chkbox_param_names_list],input_list[txt_param_names_list],
                    cypCl())
+    if (type == "add"){
+      chem <- input$sel_chem
+      org <- input$sel_org
+    }else{
+      
+      # get the row key for the vals object. The row key is stored in a hidden rn column
+      
+      row_number <- vals$m_table[row_selected,]["rn"]
+      row_key <- paste0("row_",row_number)
+      chem <- vals[[row_key]]$sel_chem
+      org <- vals[[row_key]]$sel_org
+      row_values$sel_chem <- chem
+      row_values$sel_org <- org
+    }
+    org_type_name <- switch(org,
+                            "ha"="Human",
+                            "ra"="Rat")
 
     # create the row that will either be added or replace existing row
     data_added<- data.table::data.table("rn"=0,
