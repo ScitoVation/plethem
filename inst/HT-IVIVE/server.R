@@ -135,6 +135,8 @@ shinyServer(function(input,output,session){
   )
   observeEvent(input$navMenu,{
     if (input$navMenu == "stop"){
+      query <- "Update Utils Set Value=NULL;"
+      mainDbUpdate(query)
       stopApp()
     }
   })

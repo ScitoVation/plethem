@@ -2292,6 +2292,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   observeEvent(input$close_dialog,{
     if (input$close_dialog){
       clearProjectDb()
+      query <- "Update Utils Set Value=NULL;"
+      mainDbUpdate(query)
       stopApp()
     }
   })

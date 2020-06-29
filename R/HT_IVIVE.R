@@ -76,7 +76,7 @@ preprocessUIData<- function(val){
   #print(scaled_hepcl)
   #scaled_hepcl_bw <- signif(scaled_hepcl*km/(bw^0.75),4)
   # calculate renal clearance
-  scaled_rencl <- ifelse(val$ch_rencl,val$num_gfr*val$num_fup,0)
+  scaled_rencl <- ifelse(val$ch_rencl,val$num_gfr*val$num_fupls,0)
 
   #calculate scaled Plasma clearance
   scaled_plcl <- 0 # set it to zero till I have more clarification on units and their relation
