@@ -110,7 +110,7 @@ preprocessUIData<- function(val){
                                "ren"=signif(scaled_rencl,4),
                                "pls"=signif(scaled_plcl,4),
                                "css"=signif(ss_concentration,4),
-                               "eqdose"= signif(equivalent_dose,4),
+                               "eqdose"= paste(signif(equivalent_dose,4),"mg/kg/day",collapse = "",sep = " "),
                                "moe"=signif(moe,4))
 
   existing_vals_list <- list()#getValsMetadata(vals)

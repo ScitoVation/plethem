@@ -31,11 +31,7 @@ shinyServer(function(input,output,session){
   vals$result_table <- data.table::data.table(
     "Name"=character(),
 
-    "Chemical"=numeric(),#c("Chemical A",
-                 # "Chemical B",
-                 # "Chemical C",
-                 # "Chemical D"),
-  #"100-53-23",#numeric(),
+    "Chemical"=numeric(),
     "Organism"=numeric(),#c("Human Adult","Human Adult",
                  #"Rat Adult","Human Adult"),
     "Type" = numeric(),#c("Oral Non Volatile","Oral Non Volatile",
@@ -135,6 +131,7 @@ shinyServer(function(input,output,session){
   )
   observeEvent(input$navMenu,{
     if (input$navMenu == "stop"){
+      clearProjectDb()
       query <- "Update Utils Set Value=NULL;"
       mainDbUpdate(query)
       stopApp()

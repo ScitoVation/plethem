@@ -3,18 +3,19 @@
 #' It is called by the HT-IVIVE server script when a new row is added or existing row is edited. It is never called directly by the user.
 #' @param namespace namespace for the module. This is unique and decided by the project server function
 #' @export
-HT_IVIVEUI <- function(namespace=""){
+HT_IVIVEUI <- function(namespace="",set_list = NULL){
   css <- "div .modal-lg {
   width:1000px
 
   }"
+  reactlog()
 
   ns <- NS(namespace)
   showModal(modalDialog(
     shinyjs::useShinyjs(),
     shinyjs::inlineCSS(css),
       tabsetPanel(id = "setupTabs",
-                  tabPanel("Physiologcal and Chemical Parameters",
+                  tabPanel("Physiological and Chemical Parameters",
                            fluidPage(
                              fluidRow(
                                column(8, offset = 2,
@@ -39,19 +40,19 @@ HT_IVIVEUI <- function(namespace=""){
                                       ),
                                column(4,
                                       numericInput(ns("num_expo"),
-                                                   label = "Exposure in mg/kg/day for margin of exposure",
+                                                   label = "Environmental Exposure (mg/kg/day)",
                                                    value = 0,width = validateCssUnit("100%"))
                                       )
                              ),
                              fluidRow(
                                column(4,
                                       numericInput(ns("num_fupls"),
-                                                   label = "Fraction unbound in Plasma",
+                                                   label = "Fraction Unbound in Plasma",
                                                    value = 1,width = validateCssUnit("100%"))
                                ),
                                column(4,
                                       numericInput(ns("num_km"),
-                                                   "Michelis Menten Constant",
+                                                   "Michaelis Menten Constant",
                                                    1)
                                ),
                                
@@ -171,7 +172,7 @@ HT_IVIVEUI <- function(namespace=""){
                                           fluidRow(
                                             column(4,offset = 2,
                                                    numericInput(ns("num_mppgl"),
-                                                                "Micoromal Protein /gm Liver",
+                                                                "Microsomal Protein /gm Liver",
                                                                 40)
                                             ),
                                             column(4,
@@ -256,7 +257,7 @@ HT_IVIVEUI <- function(namespace=""){
                                           fluidRow(
 
                                             column(4,
-                                                   fileInput(ns("cypCl_upload"),"Upload Cyp Clearence",
+                                                   fileInput(ns("cypCl_upload"),"Upload CYP Clearance",
                                                              multiple = F,placeholder = "Select CSV File",
                                                              buttonLabel = icon("search"),
                                                              accept = c("text/csv")
@@ -264,56 +265,13 @@ HT_IVIVEUI <- function(namespace=""){
 
                                                   ),
                                             column(2,
-                                                   downloadLink(ns("cypCl_temp"),"Template for the CSV file")
+                                                   downloadLink(ns("cypCl_temp"),"Template for CYP Clearance Data")
                                                    ),
                                             column(6,
                                                    DT::DTOutput(ns("cypCl"))
                                                    )
                                             )
-                                         # fluidRow(
-                                         #   column(6,offset = 4,
-                                         #          tags$h4("Clerance in \u03BCL/min/pmol"))
-                                         # ),
-                                         # fluidRow(
-                                         #   column(6,
-                                         #          numericInput(ns("num_cyp1a2cl"),label="Measured CYP1A2 Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%"))),
-                                         #   column(6,
-                                         #          numericInput(ns("num_cyp2b6cl"),label="Measured CYP2B6 Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%")))
-                                         # ),
-                                         # fluidRow(
-                                         #   column(6,
-                                         #          numericInput(ns("num_cyp3a4cl"),label="Measured CYP3A4 Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%"))),
-                                         #   column(6,
-                                         #          numericInput(ns("num_cyp2c19cl"),label="Measured CYP2C19 Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%")))
-                                         # ),
-                                         # fluidRow(
-                                         #   column(6,
-                                         #          numericInput(ns("num_cyp2c9cl"),label="Measured CYP2C9 Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%"))),
-                                         #   column(6,
-                                         #          numericInput(ns("num_cyp3a5cl"),label="Measured CYP3A5 Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%")))
-                                         # ),
-                                         # fluidRow(
-                                         #   column(6,
-                                         #          numericInput(ns("num_ces1mcl"),label="Measured CES1M Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%"))),
-                                         #   column(6,
-                                         #          numericInput(ns("num_ces1ccl"),label="Measured CES1C Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%")))
-                                         # ),
-                                         # fluidRow(
-                                         #   column(6,
-                                         #          numericInput(ns("num_ces2mcl"),label="Measured CES2M Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%"))),
-                                         #   column(6,
-                                         #          numericInput(ns("num_ces2ccl"),label="Measured CES2C Clearance",
-                                         #                       value = 0,width = validateCssUnit("100%")))
-                                         # )
+                                    
                                          )
                                )),
                            fluidRow(column(12,
@@ -323,17 +281,6 @@ HT_IVIVEUI <- function(namespace=""){
                                                                     "Non-restrictive Clearance"="cl_eq3"))
                                            )
                                     )
-                           # dashboardPage(
-                           #   dashboardHeader(disable = TRUE),
-                           #   dashboardSidebar(sidebarMenu(id = ns("heptype"),
-                           #                                menuItem("Sub cellular Fraction",tabName = "hep_sc"),
-                           #                                menuItem("S9 Fraction",tabName = "hep_s9"),
-                           #                                menuItem("Whole Hepatocytes",tabName = "hep_whole"),
-                           #                                menuItem("Recombinant Enzymes",tabName = "hep_recomb"))),
-                           #   dashboardBody(
-
-                             # )
-                             # )
                   ),
                   tabPanel("Renal Clearance",
                            fluidRow(
@@ -473,74 +420,18 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   # update the chem choices as they might have changed.
   updateSelectInput(session,"sel_chem",choices = chem_set_choices)
   # On Chemical Change
+  
   observeEvent(input$sel_chem,{
     chid <- input$sel_chem
     if(!is.null(chid)){
-      #print(chem_list)
       fupls <- chem_list[[as.integer(chid)]]["fupls"]
       km <- chem_list[[as.integer(chid)]]["km"]
       updateNumericInput(session,"num_fupls",value = as.numeric(fupls))
       updateNumericInput(session,"num_km",value = as.numeric(km))
       }
-    })
-
-
-
-
-  # # Get global table values
-  # mgpglTble <- reactive({
-  #   if (input$sel_org == "ha"){
-  #     MPCPPGL <- calcMPCPPGL(25)
-  #     #MPCPPGL <- as.vector(MPCPPGL)
-  #     MPPGL <- signif(MPCPPGL$MPPGL,4)
-  #     CPPGL <- signif(MPCPPGL$CPPGL,4)
-  #   }else{
-  #     MPPGL <- 0.0
-  #     CPPGL <- 0.0
-  #   }
-  #   return(data.frame("Fraction"=c("Microsomal","Cytosolic"),
-  #                     "Values"=c(MPPGL,CPPGL)))
-  # })
-  # output$mgpglTble <- DT::renderDT(DT::datatable(mgpglTble(),
-  #                                             caption = "Proteins/gm Liver Values",
-  #                                             rownames = NULL,
-  #                                             editable = T,
-  #                                             autoHideNavigation = T,
-  #                                             options= list(dom = "t")),server = T)
-
-
-  #
-  if (type == "edit"){
-
-    # all the updates in this section come from existing data from vals
-    # get the row to be edited
-    row_data <- vals$m_table[row_selected,]
-
-    # get the row key for the vals object. The row key is stored in a hidden rn column
-
-    row_number <- vals$m_table[row_selected,]["rn"]
-    row_key <- paste0("row_",row_number)
-    row_values <- vals[[row_key]]
-    #update numeric Values
-    values <- row_values[grep("num_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateNumericInput(session,x,value = values[[x]])})
-    #update select inputs
-    values <- row_values[grep("sel_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateSelectInput(session,x,selected = values[[x]])})
-    #update radio buttons
-    values <- row_values[grep("rdo_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateRadioButtons(session,x,selected = values[[x]])})
-    #update tabitems
-    values <- row_values[grep("tab_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateTabsetPanel(session,x,selected = values[[x]])})
-    #update checkbox inputs
-    values <- row_values[grep("ch_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateCheckboxInput(session,x,value = values[[x]])})
-    #update text inputs
-    values <- row_values[grep("txt_",names(row_values),value = TRUE)]
-    lapply(names(values),function(x){updateTextInput(session,x,value = values[[x]])})
-  }
-
+    },ignoreInit = T,ignoreNULL = T,priority = 10)
+  
+  
   # On Organism Change
   observeEvent(input$sel_org,{
     if(input$sel_org == "ha"){
@@ -556,7 +447,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
       updateNumericInput(session,"num_qc",value = qcc)
       updateNumericInput(session,"num_ql",value =liv_flw)
       updateNumericInput(session,"num_gfr",value =gfr)
-
+      
     }else{
       updateNumericInput(session,"num_bw",value = 0.3518)
       updateNumericInput(session,"num_lw",value = 0.0136)
@@ -564,7 +455,42 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
       updateNumericInput(session,"num_ql",value =0.5709)
       updateNumericInput(session,"num_gfr",value =0.228)
     }
-  })
+  },ignoreInit = T,priority = 10)
+
+  if (type == "edit"){
+
+    # all the updates in this section come from existing data from vals
+    # get the row to be edited
+    row_data <- vals$m_table[row_selected,]
+
+    # get the row key for the vals object. The row key is stored in a hidden rn column
+
+    row_number <- vals$m_table[row_selected,]["rn"]
+    row_key <- paste0("row_",row_number)
+    row_values <- vals[[row_key]]
+    
+    #update select inputs
+    values <- row_values[grep("sel_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){maskReactiveContext(
+      updateSelectInput(session,x,selected = values[[x]]))})
+    #update radio buttons
+    values <- row_values[grep("rdo_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateRadioButtons(session,x,selected = values[[x]])})
+    #update tabitems
+    values <- row_values[grep("tab_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateTabsetPanel(session,x,selected = values[[x]])})
+    #update checkbox inputs
+    values <- row_values[grep("ch_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateCheckboxInput(session,x,value = values[[x]])})
+    #update text inputs
+    values <- row_values[grep("txt_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateTextInput(session,x,value = values[[x]])})
+    #update numeric Values
+    
+    values <- row_values[grep("num_",names(row_values),value = TRUE)]
+    lapply(names(values),function(x){updateNumericInput(session,x,value = values[[x]])})
+  }
+
   observeEvent(input$ok,{
     # chemical Data
     chem <- input$sel_chem
