@@ -645,7 +645,7 @@ expo_body <- dashboardBody(
         column(6,
                numericInput("ms_bdose",label="Daily Oral Dose (mg/kg BW)", value =0, step= 0.01)),
         column(6,
-               numericInput("ms_blen",label = "Length of Exposure per Day (h/day)", value = 1, step = 0.1))
+               numericInput("ms_blen",label = "Duration of Exposure per Day (h/day)", value = 1, step = 0.1))
       ),
       fluidRow(
         column(6,
@@ -675,7 +675,7 @@ expo_body <- dashboardBody(
         column(6,
                numericInput("ms_bdosev",label="Daily Oral Dose (mg/kg BW)", value =0, step= 0.01)),
         column(6,
-               numericInput("ms_blenv",label = "Length of Exposure per Day (h/day)", value = 1, step = 0.1))
+               numericInput("ms_blenv",label = "Duration of Exposure per Day (h/day)", value = 1, step = 0.1))
       ),
       fluidRow(
         column(6,
@@ -692,7 +692,7 @@ expo_body <- dashboardBody(
         column(4,
                numericInput("ms_inhdose",label="Inhalation Expousre (ppm)", value =0, step= 0.01)),
         column(4,
-               numericInput("ms_inhtlen",label = "Length of Inhalation Exposure (h/day)",8)),
+               numericInput("ms_inhtlen",label = "Duration of Inhalation Exposure (h/day)",8)),
         column(4,
                numericInput("ms_inhdays",label = "Exposure Days in a Week",7))
       )
@@ -721,7 +721,7 @@ expo_body <- dashboardBody(
       ),
       fluidRow(
         column(6, 
-               numericInput("ms_dermlen","Length of Dermal Exposure per Day (h/day)",0.1,step=0.01)),
+               numericInput("ms_dermlen","Duration of Dermal Exposure per Day (h/day)",0.1,step=0.01)),
         column(6,
                awesomeCheckbox("ms_dermrep_flag","Repeat Exposure Daily?",value = F))
       )
