@@ -84,43 +84,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                            )
                   ),
 
-                           # sidebarLayout(
-                           #   sidebarPanel(
-                           #    fluidRow(
-                           #      ,
-                           #     # selectInput(ns("sel_chem"),label = "Select Chemical",choices = list())
-                           #    )
-                           #   ),
-                           #   mainPanel(
-                           #     fluidRow(
-                           #       column(6,
-                           #              numericInput(ns("num_pbld"),label = "Blood Plasma Partition Coefficient",value = 1,width = validateCssUnit("100%"))
-                           #       ),
-                           #       column(6,
-                           #              numericInput(ns("num_pair"),label = "Blood Air Partition Coefficient",value = 1,
-                           #                           width = validateCssUnit("100%")))
-                           #     ),
-                           #     fluidRow(
-                           #       column(6,
-                           #              numericInput(ns("num_fup"),label = "Fraction unbound in Plasma",value = 1,width = validateCssUnit("100%"))),
-                           #       column(6,
-                           #              numericInput(ns("num_gfr"),label = "Glomerular Filteration Rate",value = 10,width = validateCssUnit("100%")))
-                           #     ),
-                           #     fluidRow(
-                           #       column(6,
-                           #              numericInput(ns("num_bw"),label = "Body Weight(kg)",value = 10,width = validateCssUnit("100%"))),
-                           #       column(6,
-                           #              numericInput(ns("num_qc"),label = "Cardiac Output(L/h)",value = 10,width = validateCssUnit("100%")))
-                           #     ),
-                           #     fluidRow(
-                           #       column(6,
-                           #              numericInput(ns("num_lw"),label = "Liver Weight(kg)",value = 10,width = validateCssUnit("100%"))),
-                           #       column(6,
-                           #              numericInput(ns("num_ql"),label = "Blood Flow To Liver(L/h)",value = 10,width = validateCssUnit("100%")))
-                           #     )
-                           #   )
-                           # )),
-
+                    
                   tabPanel("Invitro POD",
                            fluidRow(
                              column(8,offset = 2,

@@ -1,6 +1,8 @@
 
 
 shinyServer(function(input, output, session) {
+  # Type of environment in which the shiny app is called
+  run_type <- "dev"
   show_modal_spinner("orbit")
   shinyjs::useShinyjs()
   hideTab("menu","output")
@@ -355,7 +357,8 @@ shinyServer(function(input, output, session) {
     chemid <- as.integer(input$sel_chem4adme)
     physioid <- as.integer(input$sel_physio4adme)
     expoid <- as.integer(input$sel_expo4adme)
-    id_list <- c(expoid,chemid,physioid)
+    metabid <- as.integer(input$sel_metabolite4adme)
+    id_list <- c(expoid,chemid,physioid,metabid)
     # select chemical, exposure and physiology that the given adme set relates to
     if (any(is.na(id_list))){
       sendSweetAlert(session,"Configuration Error",
@@ -848,12 +851,19 @@ shinyServer(function(input, output, session) {
   
   #update the inputs for the adme set selected
   observeEvent(input$sel_adme,{
-    admeid <- input$sel_adme
+    admeid <- as.integer(input$sel_adme)
     #get the values for inputs
     adme_values <- getParameterSet("adme",admeid)
     params_df <- adme_name_df
     params_df$Val <- adme_values[adme_name_df$Var]
     updateUIInputs(session,params_df)
+    # ADME Set is special and also has other updates
+    adme_details <- projectDbSelect(sprintf("Select chemid, physioid, expoid, metabid from AdmeSet where admeid = %i",
+                                    admeid))
+    updateSelectizeInput(session,"sel_expo4adme",selected = adme_details$expoid)
+    updateSelectizeInput(session,"sel_chem4adme",selected = adme_details$physio)
+    updateSelectizeInput(session,"sel_physio4adme",selected = adme_details$physio)
+    updateSelectizeInput(session,"sel_metabolite4adme",select = adme_details$metabid)
     
   },ignoreInit = TRUE, ignoreNULL = TRUE)
   
@@ -1359,15 +1369,29 @@ shinyServer(function(input, output, session) {
       initial_params <- rapidPBPK_initParms(initial_values$initial_params)
       pb <- Progress$new(session, min = 0, max = 100)
       pb$set(value = 99)
-      #dyn.load("../../src/plethem.dll")
-      dyn.load(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+      if(run_type== "dev"){
+        dyn.load("../../src/plethem.dll")
+      }else if(run_type == "prod"){
+        dyn.load(system.file("libs",
+                             .Platform$r_arch,
+                             paste0("plethem",.Platform$dynlib.ext),
+                             package = "plethem")
+                 )
+      }
+      
+      
       
       modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
                                  func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
                                  events=list(func="event", time=event_times),nout = length(output),
                                  outnames = output)
-      dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
-      #dyn.unload("../../src/plethem.dll")
+      if(run_type == "dev"){
+        dyn.unload("../../src/plethem.dll")
+      }else if(run_type == "prod"){
+        dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
+      }
+      
+      
       
       dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
       
@@ -1414,6 +1438,10 @@ shinyServer(function(input, output, session) {
         chem <- biom_details$chem
         tissue <- biom_details$tissue
         units <- biom_details$units
+        #ADME DETAILS:
+        metabid <- projectDbSelect(sprintf("Select metabid from AdmeSet where admeid = %i",
+                                           sim_details$admeid)
+                                   )$metabid
         # create the list of lists for identifying the correct model variable 
         # that corresponds to the biomonitering data
         model_var_dict <- list(
@@ -1427,9 +1455,8 @@ shinyServer(function(input, output, session) {
                                         sim_details$chemid))$value
           multiplier <- as.numeric(mw)/1000 
         }else if (chem == "met" && units == "mgl"){
-          # THIS IS INCORRECT NEED TO FIX
           mw <- projectDbSelect(sprintf("Select value from Chemical where param = 'mw' and chemid = %i",
-                                        sim_details$chemid))$value
+                                        sim_details$metabid))$value
           multiplier <- as.numeric(mw)/1000
         }else{
           multiplier <- 1
@@ -1862,16 +1889,36 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   
   #NCA data processing
   ncaData <- reactive({
-    mode <- results$mode
-    query <- sprintf("Select model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",model,mode)
-    var_names<- mainDbSelect(query)$model_var
-    print(var_names)
+    mode <- results$sim_type
+    query <- sprintf("Select name,model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",
+                     model,
+                     mode)
+    name_df<- mainDbSelect(query)
+    var_names <- name_df$model_var
+    param_names <- name_df$name
     validate(need(mode == "fd",message = "MC mode not implemented"))
     result <- results$pbpk
-    return(performPlethemNCA(result,var_names,mode))
+    nca_data<- performPlethemNCA(result,var_names,mode)
+    colnames(nca_data)<- paste(param_names,"Concentration",sep = " ")
+    return(nca_data)
   })
   
-  output$tble_ncavals <- DT::renderDT(ncaData())
+  output$tble_ncavals <- DT::renderDT(DT::datatable(ncaData(),
+                                                    rownames = c("Total AUC (\U00B5M.h)",
+                                                                 "AUC at infinity (\U00B5M.h)",
+                                                                 "AUC in the last 24h (\U00B5M.h)",
+                                                                 "Cmax (\U00B5M)",
+                                                                 "Time at cmax (h)",
+                                                                 "Terminal Half-life (h)",
+                                                                 "Terminal Slope"),
+                                                    extensions = "Buttons",
+                                                    options = list(dom= 'Blfrtip',
+                                                                   buttons = c('copy','csv','colvis'),
+                                                                   scrollX = TRUE
+                                                                   )
+                                                    )
+                                      )
+  
 
   #  Concentration plot Data
   concData <- reactive({
@@ -1960,16 +2007,15 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     result <- results$pbpk
     units <- input$r_aplt_type
     simid <- results$simid
-    mode <- results$mode
+    mode <- results$sim_type
     
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
       
     }else{
-      query <- sprintf("SELECT mc_num,chemid FROM SimulationsSet Where simid = %i ;",
+      query <- sprintf("SELECT chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
       chemid <- projectDbSelect(query)$chemid
-      mc_num <- projectDbSelect(query)$mc_num
       query <- sprintf("Select value FROM Chemical WHERE chemid = %i AND param = 'mw';",
                        chemid)
       mw <- projectDbSelect(query)$value
@@ -2031,7 +2077,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   
   #Concentration table data
   amt_tble_data <- reactive({
-    mode <- results$mode
+    mode <- results$sim_type
     plt_data<- amtData()
     return(reshapePlotData(plt_data,mode))
   })
@@ -2096,7 +2142,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
   
   amtplt <- reactive({
-    if (results$mode == "fd"){
+    if (results$sim_type == "fd"){
       plotly::plot_ly() %>%
         plotly::add_trace(data = amtData(),x =~time,
                           y= ~value,color = ~variable,
@@ -2193,6 +2239,16 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     contentType = "text/csv",
     content = function(file) {
       write.csv(reshapePlotData(results()), file)
+    }
+  )
+  
+  output$downloadModel <- downloadHandler(
+    filename = function(){
+      return("rapidPBPK.model.txt")
+    },
+    contentType = "text",
+    content = function(file){
+      file.copy(system.file("rapidPBPK.model",package = "plethem"),file)
     }
   )
   ## CODE CHUCK TO HANDLE OUTPUTS GENERATED BY REVERSE DOSIMETRY AND ROUTE TO ROUTE EXTRAPOLATION
@@ -2315,9 +2371,6 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         query <- "Update Utils Set Value=NULL;"
         mainDbUpdate(query)
         js$reset()
-        sendSweetAlert(session,NULL,
-                       sprintf("PLETHEM Project %s succesfully loaded",basename(fpath)))
-        updateTabsetPanel(session,"menu","setup")
       }
       
     }
@@ -2367,7 +2420,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
     
   })
-  Sys.sleep(2)
+  Sys.sleep(1)
   remove_modal_spinner(session)
   
 })

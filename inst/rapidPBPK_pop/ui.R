@@ -1499,9 +1499,7 @@ shinyUI(fluidPage(
                         
                         column(3, offset= 6,
                                downloadButton("downloadModel", "Download Model",class = "btn btn-primary btn-block")
-                        ),
-                        column(2,
-                               shinyBS::bsButton("btnOutputIntro", "Need help?",block = TRUE,style = "info"))
+                        )
                       ),
                       tabsetPanel(id = "Modeloutput", type = "tabs",
                                   tabPanel("Plots",value = "plots",

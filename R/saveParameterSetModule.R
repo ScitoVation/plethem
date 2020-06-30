@@ -96,7 +96,8 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df,
       expoid <- other[[1]]
       chemid <- other[[2]]
       physioid <- other[[3]]
-      query <- sprintf("INSERT INTO %s (%s,name,descrp,expoid,chemid,physioid) VALUES (%d,'%s','%s', %d, %d, %d );",
+      metabid <- other[[4]]
+      query <- sprintf("INSERT INTO %s (%s,name,descrp,expoid,chemid,physioid,metabid) VALUES (%d,'%s','%s', %d, %d, %d );",
                        set_table_name,id_name,id_num,input$name,input$descrp,
                        expoid,
                        chemid,
