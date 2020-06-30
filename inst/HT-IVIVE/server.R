@@ -47,7 +47,8 @@ shinyServer(function(input,output,session){
     "Scaled Blood Clearance (L/h)"=numeric(),#10,#numeric(),
     "Css (mg/L)"=numeric(),#10,#numeric(),
     #"Equivalent Dose Type"=numeric(),#10,#numeric(),
-    "Equivalent dose (Exposure Units)"=character(),#15#numeric()
+    "Equivalent dose (Exposure Units)"=character(),
+    "Exposure" = character(),#15#numeric()
     "Margin of exposure"=numeric()
   )
   output$master_table <- DT::renderDataTable(
@@ -81,14 +82,11 @@ shinyServer(function(input,output,session){
 
   #mster_tble_proxy <- DT::dataTableProxy("master_table",session,deferUntilFlush = F)
   observeEvent(input$run,{
-    #print(names(vals))
     non_reactive_vals <- reactiveValuesToList(vals)
 
     valid_row_names <- names(which(!(sapply(non_reactive_vals[grep("row_*",names(non_reactive_vals))],is.null))))
     data_list <- non_reactive_vals[valid_row_names]
-    #print(data_list)
     result <- runPlthemHTIVIVE(data_list)
-    #print(result)
     vals$result_table <- makeResultTable(isolate(vals$m_table),result)
     updateTabsetPanel(session,"navMenu","Results")
 
@@ -137,31 +135,6 @@ shinyServer(function(input,output,session){
       stopApp()
     }
   })
-  # observeEvent(input$ok,{
-  #   num_add <- isolate(as.numeric(input$add_row))
-  #   chem <- input$sel_chem2add
-  #   removeModal()
-  #   data2add <- data.table::data.table("Chemical"=chem,
-  #                                      "CAS"=num_add,
-  #                                      "Organism"=num_add,#('<input type="button" class="btn btn-default action-button" id="physio%s" value="Human_%s"/>',as.character(num_add),as.character(num_add)),
-  #                                      "Hepatic_Clearance"=num_add,
-  #                                      "Renal_Clearance"=num_add,#sprintf('<input type="checkbox" id="renal%s" />',as.character(num_add)),
-  #                                      "Plasma_Clearance"=num_add,
-  #                                      "Invitro_Concentration"=num_add)
-  #
-  #
-  # })
-  # observe({
-  #   data2add <- return_val$data_added
-  #   if (!(is.null(data2add))){
-  #     vals$m_table <- rbind(vals$m_table,data2add)
-  #   }
-  #
-  # })
-  # observeEvent(input$edit_row,{
-  #   selected_row <- input$master_table_rows_selected
-  #   print(vals$m_table[selected_row,])
-  # })
   observeEvent(input$remove_row,{
     selected_row <- input$master_table_rows_selected
     if (is.null(selected_row)){
@@ -177,59 +150,6 @@ shinyServer(function(input,output,session){
     }
 
   })
-  # test<-list()
-  # test$renal <- reactive({
-  #   input_names <-names(reactiveValuesToList(isolate(input)))
-  #   renal_names <- grep("renal_*",input_names,value = TRUE)
-  #   return(renal_names)
-  #   })
-  #
-  # test$physio <- reactive({
-  #   input_names <-names(reactiveValuesToList(isolate(input)))
-  #   physio_names <- grep("physio_*",input_names,value = TRUE)
-  #   return(physio_names)
-  # })
-  # observeEvent(input,{
-  #   input_names<- names(reactiveValuesToList(input))
-  #   return(input_names)
-  #   #tbl_names <- apply(input_names,function(x){x.startsWith("physio")})
-  #   #print(tbl_names)
-  #   # if (length(tbl_names==0)){
-  #   #   return(list())
-  #   # }else{
-  #   #   return(lapply(tbl_names,function(x){input[[x]]}))
-  #   # }
-  #
-  #   })
-  # observeEvent(tbl_physio(),{
-  #   print(tbl_physio)
-  # })
- # observeEvent(unlist(lapply(test$renal(),function(x){input[[x]]})),{
- #   print(grep("renal_*",names(reactiveValuesToList(input)),value = TRUE))
- #   print(sapply(test$renal(),function(x){input[[x]]}))
- # },ignoreInit = TRUE,ignoreNULL = TRUE)
- #
- # observeEvent(unlist(lapply(test$physio(),function(x){input[[x]]})),{
- #   print(test$physio())
- # },ignoreInit = TRUE)
-
-  #Set standard exposure for the type of reverse dosimetry
-  # observeEvent(input$rd_type,{
-  #   rd_type <- input$rd_type
-  #   if (rd_type == "oralnonvol"){
-  #     output$stdExp <- renderUI({
-  #       withMathJax("$$1 \\frac{mg}{kg*day}$$")
-  #     })
-  #   }else if(rd_type == "oralvol"){
-  #     output$stdExp <- renderUI({
-  #       withMathJax("$$1 \\frac{mg}{kg*day}$$")
-  #     })
-  #   }else{
-  #     output$stdExp <- renderUI({
-  #       tags$h5(withMathJax("$$1 \\frac{mg}{L}$$"))
-  #     })
-  #   }
-  # })
 
 })
 
@@ -248,6 +168,7 @@ makeResultTable <- function(input_table,result){
     "Css (mg/L)"=paste0(lapply(result,"[[","css")),
     #"Equivalent Dose Type"=numeric(),
     "Equivalent dose"=paste0(lapply(result,"[[","eqdose")),
+    "Exposure" = paste0(lapply(result,"[[","expo")),
     "Margin of exposure"=paste0(lapply(result,"[[","moe"))
   )
 

@@ -242,11 +242,12 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                   ),
                   tabPanel("Renal Clearance",
                            fluidRow(
-                             column(8, offset = 2,
+                             column(4, offset = 2,
                                       numericInput(ns("num_gfr"),
-                                                   label = "Glomerular Filteration Rate",
-                                                   value = 6.7,
-                                                   width = validateCssUnit("100%")),
+                                                       label = "Glomerular Filteration Rate (L/h)",
+                                                       value = 6.7,
+                                                       width = validateCssUnit("100%")
+                                                       ),
 
                                       checkboxInput(ns("ch_rencl"),label = "Include Renal Clearance",width = validateCssUnit("100%")),
                                       tags$h4("Renal Clearence is calculated as a product of Glomerular Filteration Rate measured in L/h
@@ -257,13 +258,13 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                            ),
                   tabPanel("Clearance in Blood",
                            fluidRow(
-                             column(8, offset = 2,
+                             column(4, offset = 2,
                                     numericInput(ns("num_pbld"),
                                                  label = "Blood Plasma Partition Coefficient",
                                                  value = 1,width = validateCssUnit("100%")),
 
                                     numericInput(ns("num_plcl"),
-                                                 label = "Measured Plasma Clearance",
+                                                 label = "Measured Plasma Clearance (L/h)",
                                                  value = 0,width = validateCssUnit("100%")))
                            ))
 
@@ -302,10 +303,10 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                        "oralnonvol"="Oral Exposure Non Volatile Chemical",
                        "oralvol"="Oral Exposure Volatile Chemical",
                        "inhvol"="Inhalation Exposure Volatile Chemical",
-                       "um"="\u03BCm",
+                       "um"="\U00B5M",
                        "mgL"="mg/L",
-                       "ulmmP"="\u03BCL/min/mg Protein",
-                       "ulhmP"="\u03BCL/h/mg Protein",
+                       "ulmmP"="\U00B5L/min/mg Protein",
+                       "ulhmP"="\U00B5L/h/mg Protein",
                        "mlmmP"="mL/min/mg Protein",
                        "mlhmP"="mL/h/mg Protein",
                        "Lh"="L/h",
@@ -355,18 +356,26 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
         liv_wt <- 1.58
         liv_flw <- 99.5
         gfr <- 8.85
+        updateNumericInput(session,"num_mppgl",value = 40)
+        updateNumericInput(session,"num_cppgl",value = 80.7)
+        updateNumericInput(session,"num_hpgl",value = 137)
+        updateNumericInput(session,"num_s9ppgl",value = 120.7)
         updateNumericInput(session,"num_bw",value = bw)
         updateNumericInput(session,"num_lw",value = liv_wt)
         updateNumericInput(session,"num_qc",value = qcc)
         updateNumericInput(session,"num_ql",value =liv_flw)
-        updateNumericInput(session,"num_gfr",value =gfr)
+        updateNumericInputIcon(session,"num_gfr",value =gfr)
         
       }else{
+        updateNumericInput(session,"num_mppgl",value = 45)
+        updateNumericInput(session,"num_cppgl",value = 91)
+        updateNumericInput(session,"num_s9ppgl",value = 136)
+        updateNumericInput(session,"num_hpgl",value = 110)
         updateNumericInput(session,"num_bw",value = 0.3518)
         updateNumericInput(session,"num_lw",value = 0.0136)
         updateNumericInput(session,"num_qc",value = 3.11)
         updateNumericInput(session,"num_ql",value =0.5709)
-        updateNumericInput(session,"num_gfr",value =0.228)
+        updateNumericInputIcon(session,"num_gfr",value =0.228)
       }
     },ignoreInit = T,priority = 10)
     

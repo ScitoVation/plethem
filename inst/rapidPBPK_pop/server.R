@@ -1577,7 +1577,7 @@ shinyServer(function(input, output, session) {
         }
       update_modal_progress(1,text = "Estimating exposure")
       # perform reverse dosimetry 
-      reverse_dosimetry_values <- runReverseDosimetry(modelMCdata,biom_data,dose_list = dose_list)
+      reverse_dosimetry_values <- runReverseDosimetry(modelMCdata,biom_data,percentiles=c(5,10,25,50,75,95,99,100),dose_list = dose_list)
       
       reverse_dosimetry_values$dose_list <- dose_list
       expo_units <- switch(expo_route,
@@ -1589,7 +1589,6 @@ shinyServer(function(input, output, session) {
       )
       reverse_dosimetry_values$expo_units <- expo_units
       results$expo <- reverse_dosimetry_values
-      reverse_dosimetry_values
       results$pbpk <- modelMCdata
       shinybusy::remove_modal_progress()
     }
@@ -2304,7 +2303,16 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       )
   })
 
-  output$expo_estimate<- renderDataTable(results$expo$expoEstimates)
+  output$expo_estimate<- DT::renderDT({DT::datatable(results$expo$expoEstimates,
+                                                     rownames = F,
+                                                     colname = c("Percentiles",paste("Exposure (",results$expo$expo_units,")")),
+                                                     extensions = "Buttons",
+                                                     options = list(dom= 'Blfrtip',
+                                                                    buttons = c('copy','csv'),
+                                                                    scrollX = TRUE
+                                                                    )
+                                                     )
+    })
   
   # power button to shut down the app
   observeEvent(input$menu,{

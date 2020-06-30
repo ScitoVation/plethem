@@ -1543,7 +1543,7 @@ shinyUI(fluidPage(
                                   tabPanel("Exposure Estimates",value = "percentile",
                                            fluidPage(
                                              fluidRow(
-                                               dataTableOutput("expo_estimate" )
+                                               DT::DTOutput("expo_estimate" )
                                              )
                                            ))
                                   
