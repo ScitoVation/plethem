@@ -84,15 +84,19 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
     # Name, Variable, Original Value, New Value
     param_data <- param_data[c(2,1,4,3)]
 
-  }
+  
   colnames(param_data) <- col_names
   output$param_table<- DT::renderDataTable(DT::datatable(param_data),server = TRUE)
-
+  
+  
+  
+  
   returnValues$retData <- eventReactive({
-    input$savesel
     input$saveall
+    input$savesel
     input$restoresel
     input$restoreall
+    1
     },{
       rows_selected <- input$param_table_rows_selected
       selected_data <- param_data[rows_selected,c(2,3,4)]
@@ -116,6 +120,7 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
 
     return(return_data)
   },ignoreInit = TRUE,ignoreNULL = T)
+  }
 
   return(returnValues$retData)
 

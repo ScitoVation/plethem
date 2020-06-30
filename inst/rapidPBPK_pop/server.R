@@ -497,6 +497,7 @@ shinyServer(function(input, output, session) {
         updateSelectizeInput(session,"sel_expo4adme",choices = set_list)
       }
       parameterSets$savedat <- reactiveVal(c("No","",0))
+      saveProject()
       # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
     }
   })
@@ -512,6 +513,7 @@ shinyServer(function(input, output, session) {
       set_values <- getParameterSet("physio",physioid)
       UI_values <- reactiveValuesToList(input)[paste0("ms_",physio_name_df$Var)]
       names(UI_values) <- gsub("ms_","",names(UI_values))
+      module_ns <- paste0("physiorest",input$btn_sverest_physio)
       saveRestoreParameterSetUI(input$btn_sverest_physio)
       parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
                                              input$btn_sverest_physio,
@@ -532,10 +534,10 @@ shinyServer(function(input, output, session) {
       set_values <- getParameterSet("expo",expoid)
       UI_values <- reactiveValuesToList(input)[paste0("ms_",expo_name_df$Var)]
       names(UI_values) <- gsub("ms_","",names(UI_values))
-      
-      saveRestoreParameterSetUI(input$btn_sverest_expo)
+      module_ns <- paste0("exporest",input$sverest_expo)
+      saveRestoreParameterSetUI(module_ns)
       parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
-                                             input$btn_sverest_expo,
+                                             module_ns,
                                              UI_values,set_values,
                                              expo_name_df,"expo")
     }
@@ -554,10 +556,10 @@ shinyServer(function(input, output, session) {
       #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
       UI_values <- reactiveValuesToList(input)[paste0("ms_",chem_name_df$Var)]
       names(UI_values) <- gsub("ms_","",names(UI_values))
-      
-      saveRestoreParameterSetUI(input$btn_sverest_chem)
+      module_ns <- paste0("chemrest",input$btn_sverest_chem)
+      saveRestoreParameterSetUI(module_ns)
       parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
-                                             input$btn_sverest_chem,
+                                             module_ns,
                                              UI_values,set_values,
                                              chem_name_df,"chem")
     }
@@ -571,9 +573,10 @@ shinyServer(function(input, output, session) {
     #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
     UI_values <- reactiveValuesToList(input)[paste0("ms_",adme_name_df$Var)]
     names(UI_values) <- gsub("ms_","",names(UI_values))
-    saveRestoreParameterSetUI(input$btn_sverest_adme)
+    module_ns <- paste0("admerest",input$btn_sverest_adme)
+    saveRestoreParameterSetUI(module_ns)
     parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
-                                           input$btn_sverest_adme,
+                                           module_ns,
                                            UI_values,set_values,
                                            adme_name_df,"adme")
   })
@@ -607,6 +610,7 @@ shinyServer(function(input, output, session) {
       },
       val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = T)
       lapply(query_list,projectDbUpdate)
+      saveProject()
 
     }else if (ops_type == "restore"){
       type <- result_vector[5]
@@ -751,6 +755,7 @@ shinyServer(function(input, output, session) {
                            paste0("sel_",set_type,"_var"),
                            choices = set_list,
                            selected = as.integer(varid))
+      saveProject()
     }
   })
   
