@@ -31,7 +31,7 @@ library(plethem)
 ```
 to start using PLETHEM
 ## Running rapidPBPK models
-The rapidPBPK model withih PLETHEM can be used to run forward dosimetry, monte carlo analysis, reverse dosimetry, and route to route extrapolation workflows. 
+The rapidPBPK model within PLETHEM can be used to run forward dosimetry, monte carlo analysis, reverse dosimetry, and route to route extrapolation workflows. 
 To start the rapidPBPK application
 ```{r eval = F}
 interactivePBPK()

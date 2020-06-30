@@ -123,14 +123,14 @@ calcPercentileValue <- function(whichPercentile = 25,cdf,exposure_list){
 #' @description The function estimates exposures for the observed biomonitoring data using montecarlo simulation results over a large range of exposures.
 #' The montecarlo results are obtained from a PBPK model. The biomonitoring results are obtained from a population level study.
 #' The montecarlo results and biomonitoring data should have the same units and should be for the same physiological data source (eg: metabolite concentration in the urine).
-#' @param mcData M by N data frame where M is the the individual exposures at which the PBPK model is run and N is the number of monte carlo runs at each exposure. It is recmmonded that M is between 25 and 40 and N is greater than 1000.
-#' @param biomData List consisting of biomonitering data. It is recommeded that atleast 1000 biomonitering values be provided to ensure accuracy for results.
+#' @param mcData M by N data frame where M is the the individual exposures at which the PBPK model is run and N is the number of monte carlo runs at each exposure. It is recommended that M is between 25 and 40 and N is greater than 1000.
+#' @param biomData List consisting of biomonitoring data. It is recommended that atleast 1000 biomonitering values be provided to ensure accuracy for results.
 #' @param percentiles Vector of percentiles for which exposure needs to be estimated. By default returns the 5th, 50th, 95th and 99th exposure estimate.
 #' @param dose_list A list of M elements that contain exposures at which monte carlo simulations were run. If no list is provided, the first column names of the mcData input are assumed to contain exposure values.
 #' @return List of values related to reverse dosimetry
 #' \describe{
 #' \item{cdf}{Cumulative Distribution function of the exposure estimate}
-#' \item{pdf}{Probility distribution function of the exposure estimate}
+#' \item{pdf}{Probability distribution function of the exposure estimate}
 #' \item{percentiles}{Data frame of percentiles and exposure estimates for the percentile}
 #' 
 #' }
