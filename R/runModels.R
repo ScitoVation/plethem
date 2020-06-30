@@ -2,40 +2,6 @@
 
 # This script runs all the models
 
-#' Simulate the rapidPBPK model
-#' @description Simulates the rapidPBPK model within PLETHEM and returns the timecourse for all state variables.
-#' This function can be called from the console if all inputs are provided
-#' @param parameters Parameter values for static parameters in the model.
-#' @param init_states Initial values for all state variables in the model.
-#' @param event_times Times for all events in the model.
-#' @param times Times at which values need to be output.
-#' @param outputs A list of of variables which are output by model.
-#' @return modelOutput DataFrame containing timecourse for all the state variables and outputs from the model
-#' @useDynLib plethem ,.registration = TRUE
-#' @import deSolve
-#' @export
-simulateRapidPBPKModel <- function(parameters,initial_states){
-  times <- sort(c(deSolve::cleanEventTimes(times,event_data[["time"]]),
-                  event_data[["time"]]))
-  modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
-                             func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
-                             events=list(func="event", time=event_times),nout = length(rapidPBPK_Outputs),
-                             outnames = rapidPBPK_Outputs)
-}
-
-#' Run PBPK workflows
-#' @description Run all PBPK worfklows from the plethem package.
-#' This function is called by the User interface to run the selected simulation.
-#' See\code{\link{runFDPBPK}} for running forward dosimetry models from the console.
-#' @param model The name of the PBPK model to simulate. Defaults to 'rapidPBPK'.
-#' @param simid Simulation ID for the simulation to run from the project database in PLETHEM.
-#' This function should not be called by the user from the console
-#' Defaults to 'fd'.
-#' @useDynLib plethem ,.registration = TRUE
-#' @export
-executeInteractivePBPKWorkflows <- function(model = 'rapidPBPK',simid=NULL,progressFunc=NULL){
-  NULL
-}
 
 #' Run the PBPK models in forward dosimetry mode
 #' @description Run the pbpk model in forward dosimetry mode.

@@ -131,7 +131,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                       ),
                                       column(6,
                                              selectInput(ns("sel_ivunit"),tags$h4("Unit"),
-                                                         list("	\u03BCm"="um",
+                                                         list("	\u03BCM"="um",
                                                               "mg/L"="mgL"),
                                                          width = validateCssUnit("100%"))
                                       )

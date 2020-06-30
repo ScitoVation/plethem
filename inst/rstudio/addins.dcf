@@ -1,41 +1,11 @@
-Name: Parse TRA Exposure
-Description: Parse TRA exposures to load into PBPK models
-Binding: loadTRA
-Interactive: TRUE
-
-Name: Perform IVIVE
-Description: Performs IVIVE to get scaled clearance for use in PBPK models
-Binding: doIVIVE
-Interactive: TRUE
+Name: PBPK Modeling using PLETHEM
+Description: Use PLETHEM's rapidPBPK model to perform the forward dosimetry, reverse dosimetry, Monte Carlo analysis, and route to route extrapolation workflows in PLETHEM
+Binding: interactivePBPK()
+Interactive: FALSE
 
 Name: Add/Edit HTTK Chemicals
 Description: Adds chemicals to HTTK database so they can be used with HTTK models
 Binding:addChemsToHTTK
-Interactive:TRUE
-
-Name:Select an existing database as the user database
-Description: Sets and existing database as the user database to use for PLETHEM
-Binding:setUserDb
-Interactive:FALSE
-
-Name:Create a new empty user database
-Description: creates a new empty user database. Will need to run "Populate user database" for it to be useful.
-Binding:createEmptyUserDb
-Interactive:FALSE
-
-Name:Add data to user database
-Description: Adds data to an existing or new user database.
-Binding:editUserDb
-Interactive:FALSE
-
-Name:Load PLETHEM Project
-Description:Load an existing project in the database and launch the appropriate UI
-Binding:loadProject
-Interactive:FALSE
-
-Name:Create PLETHEM Project
-Description:Create a new PLETHEM project
-Binding:newProjectGadget
 Interactive:TRUE
 
 Name:HT-IVIVE using HTTK

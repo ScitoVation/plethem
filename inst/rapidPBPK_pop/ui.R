@@ -28,7 +28,12 @@ css <- "div .disabled-comp {
 ################################exposure sidebar
 expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="ms_expo_sidebar",
-  tags$div(actionButton("clear_expo","Reset Exposures")),
+  tags$div(
+    tipify(
+      actionButton("clear_expo","Reset Exposures"),
+      "Reset all exposure values to zero. This is needed before a new set can be created",
+      placement = "right")
+    ),
   menuItem("Oral", tabName = "oral", selected = TRUE),
   menuItem("Drinking Water", tabName = "dw"),
   menuItem("Oral Exposure with Vehicle",tabName = "oralv"),
@@ -171,7 +176,11 @@ chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
               choices = c("QSAR model one" = 'one'),
               #"Unified QSAR model" = 'two'),
               width = "99%"),
-  shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary")
+  tipify(shinyBS::bsButton("qsar4chem_props",
+                           "Estimate Fraction Dissolved",
+                           style = "primary"),
+         "Estimate fraction dissoved in liquid phase of plasma using QSAR Models."
+  )
   
 )
 
@@ -880,11 +889,12 @@ shinyUI(fluidPage(
                                                       ))
                                              ),
                                              fluidRow(
-                                               column(2,
-                                                      shinyBS::tipify(shinyBS::bsButton("btn_use_lifecourse",
-                                                                                        "Calculate Parameters",
+                                               column(4,
+                                                      shinyBS::popify(shinyBS::bsButton("btn_use_lifecourse",
+                                                                                        "Calculate Physiological Parameters",
                                                                                         style = "primary",block = TRUE),
-                                                                      "Use Lifecourse Equation to calcualte parameters")
+                                                                      "Lifecourse Equations",
+                                                                      "Lifecourse equations within PLETHEM are used to calculate blood flows, tissue volumes, respiration parameters and body weight for a given age and gender. Only works for Humans")
                                                )
                                              ),
                                              fluidRow(
@@ -1528,9 +1538,7 @@ shinyUI(fluidPage(
                                                         ),
                                                         bsCollapsePanel("Probability Distribution Function", value = "pdfplt",
                                                                         plotlyOutput("PDF")
-                                                        ),
-                                                        bsCollapsePanel("Monte Carlo Simulation",value="mcplt",
-                                                                        plotlyOutput("RDMCPlt"))
+                                                        )
                                              )
                                            )
                                   ),

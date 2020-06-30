@@ -4,7 +4,7 @@
 \alias{HT_IVIVEUI}
 \title{Module for editing high throughput reverse dosimetry functions}
 \usage{
-HT_IVIVEUI(namespace = "")
+HT_IVIVEUI(namespace = "", set_list = NULL)
 }
 \arguments{
 \item{namespace}{namespace for the module. This is unique and decided by the project server function}

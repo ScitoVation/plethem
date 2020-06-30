@@ -1,8 +1,16 @@
 
 
 shinyServer(function(input, output, session) {
+  show_modal_spinner("orbit")
   shinyjs::useShinyjs()
   hideTab("menu","output")
+  #check if a project is loaded
+  name <- projectDbSelect("Select name from Project")$name
+  if (length(name)>0){
+    showTab("menu","setup")
+  }else{
+    hideTab("menu","setup")
+  }
   # define the model name once here. It will be used throughout this server file
   # this will make it easier to create new model UI/SERVERS
   model <- "rapidPBPK"
@@ -2234,25 +2242,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         )
       )
   })
-  
-  output$RDMCPlt <- renderPlotly({
-    p <- plot_ly(
-      stack(results$pbpk),
-      x = ~ind,
-      y = ~values,
-      type = "box"
-    ) %>%
-      layout(
-        title = paste('Monte Carlo Simulation'),
-        yaxis = list(
-          title = paste0('Concentrations (mg/L)', sep = '')
-        ),
-        xaxis = list(
-          title = paste0('Exposure (',results$expo$expo_units,")")
-        )
-      )
-  })
-  
+
   output$expo_estimate<- renderDataTable(results$expo$expoEstimates)
   
   # power button to shut down the app
@@ -2264,8 +2254,17 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       updateTabsetPanel(session,"menu","home")
 
     }else if(input$menu == "save"){
-      shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
-                                      "Save project in its current state?",type = "question",danger_mode = T)
+      name <- projectDbSelect(sprintf("Select Name from Project;"))$name
+      if(length(name)>0){
+        shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
+                                        "Save project in its current state?",type = "question",danger_mode = T)
+      }else{
+        shinyWidgets::sendSweetAlert(session,"Nothing to save",
+                                     text = "No project is currently open",
+                                     type = "error")
+      }
+      
+      
       updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "load"){
       shinyWidgets::confirmSweetAlert(session,"load_dialog","Load New Project",
@@ -2368,8 +2367,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
     
   })
-  
-  
+  Sys.sleep(2)
+  remove_modal_spinner(session)
   
 })
 
@@ -3704,7 +3703,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       num_expos <- as.integer(input$num_numexpos)
       low_dose_estimate <- input$numrange_expo[1]
       high_dose_estimate <- input$numrange_expo[2]
-      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i, extrapolateid = %i, mcruns = %i, num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f where simid = %i;",
+      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i, extrapolateid = %i, mcruns = %i, num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f,expovarid = 0 where simid = %i;",
                        ifelse(is.na(chemvarid),0,chemvarid),
                        ifelse(is.na(physiovarid),0,physiovarid),#,
                        ifelse(is.na(admevarid),0,admevarid),
