@@ -64,9 +64,11 @@ saveProject <- function(){
 #' Start a new PLETHEM project.
 #' @description A project consists of chemicals, organisms and datasets. The function asks the user for a location to save the project files on exit. It then launches the shiny user interface used to parameterize and run the model.
 #' @param name The name for the project
+#' @param save_path The path at which the new project will be saved
 #' @param type The type of the model that the project is tied to
 #' @param model The model to be used for the project
 #' @param mode Either Forward Dosimetry(FD) or Monte Carlo(MC) mode. Only valid for PBPK type models
+#' @param runUI trigger the appropriate interface after data is loaded into the database
 #' @examples
 #' \dontrun{
 #' newProject(name = "TestPBPK",type = "PBPK",model = "rapidPBPK",mode = "MC")
@@ -111,6 +113,7 @@ newProject <- function(name="new_project", save_path= "",type = "PBPK", model = 
 #' Load the project from the project file located at the given path
 #' @description Loads the project data from the project file and then launches the shiny UI that corresponds to the analysis type that the project belongs to.
 #' @param file_path path to the project file. If no path is provided, launches a select file dialog box for the user to select the path
+#' @param runUI trigger the appropriate interface after data is loaded into the database
 #' @examples 
 #' \dontrun{
 #' loadProject(file_path = "C:/Project/TestPBPK.Rdata")

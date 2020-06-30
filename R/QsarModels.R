@@ -14,7 +14,7 @@ calculatePartitionCoefficients<- function(selected_qsar = "one",chem_params = NU
   if(selected_qsar == "one"){
     partCoefficients <- qsarModelone(chem_params,selected_org,tissue_list)
   }else if(selected_qsar == "two"){
-    partCoefficients <- qsarModeltwo(chemical_params)
+    partCoefficients <- qsarModeltwo(chem_params)
   }
 
   return(partCoefficients)
@@ -27,9 +27,6 @@ calculatePartitionCoefficients<- function(selected_qsar = "one",chem_params = NU
 #' @param tissue_list List of tissues for which partition coefficients have to be calculated
 #' @return Named list of partition coefficients, one for each tissue in the tissue list
 qsarModelone <- function(chem_params,selected_org,tissue_list){
-
-  # chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw, "vpa"=input$ms_vpa, "dkow"=input$ms_dkow, "lkow"=input$ms_lkow, "wsol"=input$ms_wsol, "res"=input$ms_res,
-  #                         "fhprt"=input$ms_fhprt, "vmaxc"=input$ms_vmaxc, "km"=input$ms_km)
 
   lkow <- chem_params[["lkow"]]
   dkow <- chem_params[["dkow"]]
@@ -157,5 +154,5 @@ qsarModelone <- function(chem_params,selected_org,tissue_list){
 #' @param tissue_list List of tissues for which partition coefficients have to be calculated
 #' @return Named list of partition coefficients, one for each tissue in the tissue list
 qsarModeltwo <- function(chem_params,selected_org,tissue_list){
-  
+  NULL
 }

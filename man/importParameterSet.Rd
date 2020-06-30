@@ -14,6 +14,8 @@ importParameterSet(input, output, session, set_type, module_source = "PBPK")
 \item{session}{session object for the server}
 
 \item{set_type}{type of data to be imported}
+
+\item{module_source}{workflow from which the module is called}
 }
 \description{
 server function for importing parameter sets from user databases. This function should never be called by the user

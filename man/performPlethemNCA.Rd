@@ -9,6 +9,8 @@ performPlethemNCA(result, var_names, mode = "FD")
 \arguments{
 \item{result}{Result from the forward dosimetry or individual montecarlo run}
 
+\item{var_names}{Variable names from the model for which NCA should be performed}
+
 \item{mode}{Forward Dosimetry or Montecarlo}
 }
 \description{

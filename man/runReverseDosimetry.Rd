@@ -7,7 +7,7 @@
 runReverseDosimetry(
   mcData,
   biomData,
-  percentiles = c(5, 50, 95, 99),
+  percentiles = c(5, 10, 25, 50, 75, 95, 99, 100),
   dose_list = NULL
 )
 }

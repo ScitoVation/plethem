@@ -2,6 +2,7 @@
 #' @description The UI for defining HT-IVIVE parameters in the HT-IVIVE project. 
 #' It is called by the HT-IVIVE server script when a new row is added or existing row is edited. It is never called directly by the user.
 #' @param namespace namespace for the module. This is unique and decided by the project server function
+#' @param set_list A list of inputs for the dropdown menus.
 #' @export
 HT_IVIVEUI <- function(namespace="",set_list = NULL){
   css <- "div .modal-lg {
@@ -95,7 +96,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                       ),
                                       column(6,
                                              selectInput(ns("sel_ivunit"),tags$h4("Unit"),
-                                                         list("	\u03BCM"="um",
+                                                         list("\ub5M"="um",
                                                               "mg/L"="mgL"),
                                                          width = validateCssUnit("100%"))
                                       )
@@ -130,12 +131,12 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                           fluidRow(
                                             column(4,offset = 2,
                                                    numericInput(ns("num_mppgl"),
-                                                                "Microsomal Protein /gm Liver",
+                                                                "Microsomal Protein /g Liver",
                                                                 40)
                                             ),
                                             column(4,
                                                    numericInput(ns("num_cppgl"),
-                                                                "Cytosolic Protein /gm Liver",
+                                                                "Cytosolic Protein /g Liver",
                                                                 80.7))
                                           ),
                                           fluidRow(
@@ -146,9 +147,9 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                                                width = validateCssUnit("100%"))),
                                            column(6,
                                                   selectInput(ns("sel_msunit"),label = "Units",
-                                                              choices = list("\u03BCmol/min/mg Protein"="ummmP",
-                                                                             "\u03BCL/min/mg Protein"="ulmmP",
-                                                                             "\u03BCL/h/mg Protein"="ulhmP",
+                                                              choices = list("\ub5mol/min/mg Protein"="ummmP",
+                                                                             "\ub5L/min/mg Protein"="ulmmP",
+                                                                             "\ub5L/h/mg Protein"="ulhmP",
                                                                              "mL/min/mg Protein"="mlmmP",
                                                                              "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -160,8 +161,8 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                                                step = 0.001,value = 0.0,
                                                                width = validateCssUnit("100%"))),
                                            column(6,
-                                                  selectInput(ns("sel_cyunit"),label = "Units",choices = list("\u03BCL/min/mg Protein"="ulmmP",
-                                                                                                          "\u03BCL/h/mg Protein"="ulhmP",
+                                                  selectInput(ns("sel_cyunit"),label = "Units",choices = list("\ub5L/min/mg Protein"="ulmmP",
+                                                                                                          "\ub5L/h/mg Protein"="ulhmP",
                                                                                                           "mL/min/mg Protein"="mlmmP",
                                                                                                           "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -171,7 +172,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                           fluidRow(
                                             column(6,
                                                    numericInput(ns("num_s9ppgl"),
-                                                                "S9 Fraction/ gm Liver",
+                                                                "S9 Fraction/ g Liver",
                                                                 value = 120.7))
                                           ),
                                          fluidRow(
@@ -182,8 +183,8 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                            column(6,
                                                   selectInput(ns("sel_s9unit"),
                                                               label = "Units",
-                                                              choices = list("\u03BCL/min/mg Protein"="ulmmP",
-                                                                             "\u03BCL/h/mg Protein"="ulhmP",
+                                                              choices = list("\ub5L/min/mg Protein"="ulmmP",
+                                                                             "\ub5L/h/mg Protein"="ulhmP",
                                                                              "mL/min/mg Protein"="mlmmP",
                                                                              "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -192,7 +193,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                           fluidRow(
                                             column(4,
                                                    numericInput(ns("num_hpgl"),
-                                                                "10^6 Hepatocytes/gm Liver",
+                                                                "10^6 Hepatocytes/g Liver",
                                                                 137)
                                             )
                                           ),
@@ -303,10 +304,10 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                        "oralnonvol"="Oral Exposure Non Volatile Chemical",
                        "oralvol"="Oral Exposure Volatile Chemical",
                        "inhvol"="Inhalation Exposure Volatile Chemical",
-                       "um"="\U00B5M",
+                       "um"="\ub5M",
                        "mgL"="mg/L",
-                       "ulmmP"="\U00B5L/min/mg Protein",
-                       "ulhmP"="\U00B5L/h/mg Protein",
+                       "ulmmP"="\ub5L/min/mg Protein",
+                       "ulhmP"="\ub5L/h/mg Protein",
                        "mlmmP"="mL/min/mg Protein",
                        "mlhmP"="mL/h/mg Protein",
                        "Lh"="L/h",

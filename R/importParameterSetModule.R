@@ -4,7 +4,6 @@
 #' @description UI for importing parameters from user or main databases
 #' @param namespace namespace for this module
 #' @param set_type type of data to be imported; physiological, chemical or exposure
-#'
 #'@export
 importParameterSetUI <- function(namespace,set_type){
   shinyjs::useShinyjs()
@@ -74,6 +73,7 @@ importParameterSetUI <- function(namespace,set_type){
 #'@param output output object for the UI
 #'@param session session object for the server
 #'@param set_type type of data to be imported
+#'@param module_source workflow from which the module is called
 #'@export
 importParameterSet <- function(input,output,session,set_type,module_source = "PBPK"){
   if(set_type == "chem"){

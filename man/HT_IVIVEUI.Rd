@@ -8,6 +8,8 @@ HT_IVIVEUI(namespace = "", set_list = NULL)
 }
 \arguments{
 \item{namespace}{namespace for the module. This is unique and decided by the project server function}
+
+\item{set_list}{A list of inputs for the dropdown menus.}
 }
 \description{
 The UI for defining HT-IVIVE parameters in the HT-IVIVE project. 

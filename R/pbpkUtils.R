@@ -4,9 +4,7 @@
 #' Gets the metabolism data. Should not be used by directly by the user
 #' @description The function returns the relavent metabolism data if the simulation contains
 #' data from the metabolism set
-#' @param metabid The meabolism id to get information from the metabolism tables
-#' @param physioid Physiological id to get the age from the physiological table
-#' @param chemid internal chemical ID
+#' @param admeid The id for ADME set. The admeid is used to obtain information about the other sets.
 #' @param model Model name
 #' @return List containing the metabolism values needed to run PBPK model or
 #' display simulation information
@@ -339,6 +337,7 @@ getVariabilitySetChoices <- function(var_type="physio"){
 #' reshape plotted data to create wide form
 #' @description Reshapes plot data in long form to wide form. The plot data has time as the id
 #' @param plotData Plot Data in long form
+#' @param type Workflow type - either fd (Forward Dosimetry) or mc (Monte Carlo Analysis)
 #' @export
 reshapePlotData<- function(plotData,type = "fd"){
   

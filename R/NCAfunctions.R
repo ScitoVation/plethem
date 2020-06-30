@@ -4,6 +4,7 @@
 #' Calculate AUC, Cmax and Time to Cmax from the results of PBPK model run
 #' @description Calculates  the The user will never need to call this function
 #' @param result Result from the forward dosimetry or individual montecarlo run
+#' @param var_names Variable names from the model for which NCA should be performed
 #' @param mode Forward Dosimetry or Montecarlo
 #' @importFrom NonCompart sNCA IntAUC AUC
 #' @export
@@ -26,7 +27,7 @@ performPlethemNCA <- function(result,var_names,mode = "FD"){
     return(c("AUCall"=aucall,"AUCinf"=aucinf,"AUC24"=auc24,
              "Cmax"=cmax,"T_cmax"=tmax,
              "half_life"=hlfe,"slope"=termslope))
-  s},conc_data, result$time)
+  },conc_data, result$time)
   
   ncadf <- as.data.frame(nca_conc_list)
   

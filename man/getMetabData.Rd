@@ -7,13 +7,9 @@
 getMetabData(admeid, model = "rapidPBPK")
 }
 \arguments{
+\item{admeid}{The id for ADME set. The admeid is used to obtain information about the other sets.}
+
 \item{model}{Model name}
-
-\item{metabid}{The meabolism id to get information from the metabolism tables}
-
-\item{physioid}{Physiological id to get the age from the physiological table}
-
-\item{chemid}{internal chemical ID}
 }
 \value{
 List containing the metabolism values needed to run PBPK model or

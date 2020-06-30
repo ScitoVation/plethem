@@ -44,8 +44,7 @@ Imports:
   doSNOW,
   foreach, 
   pracma,
-  shinybusy,
-  rstudioapi
+  shinybusy
 Suggests: testthat,
     rmarkdown,
     knitr

@@ -8,6 +8,8 @@ reshapePlotData(plotData, type = "fd")
 }
 \arguments{
 \item{plotData}{Plot Data in long form}
+
+\item{type}{Workflow type - either fd (Forward Dosimetry) or mc (Monte Carlo Analysis)}
 }
 \description{
 Reshapes plot data in long form to wide form. The plot data has time as the id

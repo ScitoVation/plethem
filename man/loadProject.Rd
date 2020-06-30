@@ -8,6 +8,8 @@ loadProject(file_path = "", runUI = T)
 }
 \arguments{
 \item{file_path}{path to the project file. If no path is provided, launches a select file dialog box for the user to select the path}
+
+\item{runUI}{trigger the appropriate interface after data is loaded into the database}
 }
 \description{
 Loads the project data from the project file and then launches the shiny UI that corresponds to the analysis type that the project belongs to.
