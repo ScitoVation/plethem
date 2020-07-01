@@ -23,7 +23,8 @@ Description: Functions, data and user interfaces for performing Physiologically
 Depends:
   R (>= 3.6.0)
 License: MIT + file LICENSE
-BugReport: https://github.com/ScitoVation/plethem/issues
+URL: https://github.com/ScitoVation/plethem
+BugReports: https://github.com/ScitoVation/plethem/issues
 Encoding: UTF-8
 LazyData: true
 Imports:

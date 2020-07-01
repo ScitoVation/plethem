@@ -1,4 +1,9 @@
 ## Resubmission
+This is a resubmission
+*Fixed typo in BugReports in description
+*Added URL field to description
+*Removed incorrect URL from manual entry in a function
+## Resubmission
 This is a resubmission. Fixed 1 warning and 2 notes.
 * Warning related to incorrect C code in the package is fixed
 * Note related to no visible global function definition fixed

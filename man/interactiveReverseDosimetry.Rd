@@ -7,10 +7,13 @@
 interactiveReverseDosimetry()
 }
 \description{
-Used to launch the reverse dosimetry UI. The UI is identical to the one found on \href{https://scitovation.shinyapps.io/ReverseDosimetry/}{ShinyApps Reverse Dosimetry App}
+Used to launch the reverse dosimetry UI. This UI allows the user to perform reverse dosimetry if they have already run Monte Carlo Anlaysis outside of PLETHEM.
 }
 \examples{
 \dontrun{
 interactiveReverseDosimetry()
 } 
+}
+\seealso{
+\code{\link{interactivePBPK}} for running reverse dosimetry using the rapidPBPK model in PLETHEM.
 }
