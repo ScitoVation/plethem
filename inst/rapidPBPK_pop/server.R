@@ -2,7 +2,7 @@
 
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
-  run_type <- "prod"
+  run_type <- "prod" #"prod" for production, "dev" for development
   show_modal_spinner("orbit")
   shinyjs::useShinyjs()
   hideTab("menu","output")
@@ -1364,10 +1364,10 @@ shinyServer(function(input, output, session) {
     # if the worfklow requires monte carlo analysis, set up the parameter matrices
     if(sim_details$sim_type %in% c("mc","rd","r2r")){
       mcruns <- sim_details$mcruns 
-      MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mcruns) 
+      MC.matrix <- suppressWarnings(
+        getAllVariabilityValuesForModel(simid,model_params$vals,mcruns)
+      )
     }
-    
-    
     # Workflow specific scripts
     # Forward Dosimetry
     if(sim_details$sim_type == 'fd'){
@@ -1395,12 +1395,7 @@ shinyServer(function(input, output, session) {
       }else if(run_type == "prod"){
         dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
       }
-      
-      
-      
       dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
-      
-      #tempDF <- runFDPBPK(initial_values,model)
       results$pbpk<- dfModelOutput
       pb$close()
       updateNavbarPage(session,"menu","output")
@@ -1420,8 +1415,6 @@ shinyServer(function(input, output, session) {
          params <- rapidPBPK_initParms(params)
          params_list[[each_run]]<- params
        }
-      # params <- rapidPBPK_initParms(initial_values$initial_params)
-      # params_list <- replicate(mcruns,params,F)
       states_list <- replicate(mcruns,state,F)
       times_list <- replicate(mcruns,times,F)
       event_times_list <- replicate(mcruns,event_times,F)

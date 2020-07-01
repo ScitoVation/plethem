@@ -126,7 +126,7 @@ static double parms[34];
 #define gul parms[33]
 
 /* Forcing (Input) functions */
-static double forc[0];
+static double forc[1];
 
 
 /* Function definitions for delay differential equations */
@@ -141,7 +141,7 @@ void lagvaluefishPBPK(double T, int *nrfishPBPK, int N, double *ytaufishPBPK) {
   static void(*fun)(double, int*, int, double*) = NULL;
   if (fun == NULL)
     fun = (void(*)(double, int*, int, double*))R_GetCCallable("deSolve", "lagvaluefishPBPK");
-  return fun(T, nrfishPBPK, N, ytaufishPBPK);
+  return;
 }
 
 double CalcDelayfishPBPK(int hvar, double dTime, double delay) {

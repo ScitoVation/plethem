@@ -7,10 +7,23 @@ Authors@R: c(person("Salil", "Pendse", email = "spendse@scitovation.com", role =
   person("Patrick","McMullen",email = "pmcmullen@scitovation.com",role="ctb"),
   person("ScitoVation, LLC",role ="cph")
   )
-Description: Functions, data and user interfaces for performing Physiologically Based Pharmacokinetic('PBPK') Modeling, In-vitro to In-vivo Extrapolation ('IVIVE') and exposure estimation. Also contains user interfaces to run models from the 'httk' package. Taken together these provide an easy to use and powerful modeling tool that can be used for all steps along the source-to-outcome continuum.All the analysis tools in the package can only be run as shiny apps. Check vignettes and package help for more information. More information on PBPK modeling can be found in the book 'Physiologically Based Pharmacokinetic Modeling: Science and Applications' by Reddy et al <doi:10.1002/0471478768>.
+Description: Functions, data and user interfaces for performing Physiologically
+    Based Pharmacokinetic('PBPK') Modeling, In-vitro to In-vivo Extrapolation 
+    ('IVIVE') and exposure estimation. Also contains user interfaces to run 
+    models from the 'httk' package. Taken together these provide an easy to use
+    and powerful modeling tool that can be used for all steps along 
+    the source-to-outcome continuum.All the analysis tools in the pacakge are
+    run as interactive applications. Check vignettes and package help for more
+    information. Refer to the manuscript 'Population Life-course exposure to 
+    health effects model (PLETHEM): An R package for PBPK modeling' 
+    <doi: 10.1016/j.comtox.2019.100115> for more information on the models and
+    algorithms used in the package. More information on PBPK modeling itself 
+    can be found in the book 'Physiologically Based Pharmacokinetic Modeling: 
+    Science and Applications' by Reddy et al <doi:10.1002/0471478768>.
 Depends:
   R (>= 3.6.0)
 License: MIT + file LICENSE
+BugReport: https://github.com/ScitoVation/plethem/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -22,7 +35,6 @@ Imports:
   shinydashboard,
   rstudioapi,
   shinythemes,
-  data.table,
   rhandsontable,
 	deSolve,
 	truncdist,
@@ -39,7 +51,6 @@ Imports:
   utils,
   stats,
   DT,
-  data.table,
   shinyjs,
   V8,
   httk,
@@ -48,7 +59,8 @@ Imports:
   doSNOW,
   foreach, 
   pracma,
-  shinybusy
+  shinybusy,
+  data.table
 Suggests: testthat,
     rmarkdown,
     knitr

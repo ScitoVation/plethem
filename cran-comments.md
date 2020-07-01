@@ -1,3 +1,10 @@
+## Resubmission
+This is a resubmission. Fixed 1 warning and 2 notes.
+* Warning related to incorrect C code in the package is fixed
+* Note related to no visible global function definition fixed
+* Note related to 'data.table' appearing two times in Description fixed
+* Also fixed minor issue with description definition that were not flagged yet
+
 ## Test environments
 * local OS X install, R 4.0.0
 * local windows 10 install, R 4.0.0
