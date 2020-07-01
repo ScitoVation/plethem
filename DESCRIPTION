@@ -12,7 +12,7 @@ Description: Functions, data and user interfaces for performing Physiologically
     ('IVIVE') and exposure estimation. Also contains user interfaces to run 
     models from the 'httk' package. Taken together these provide an easy to use
     and powerful modeling tool that can be used for all steps along 
-    the source-to-outcome continuum.All the analysis tools in the pacakge are
+    the source-to-outcome continuum.All the analysis tools in the package are
     run as interactive applications. Check vignettes and package help for more
     information. Refer to the manuscript 'Population Life-course exposure to 
     health effects model (PLETHEM): An R package for PBPK modeling' 

@@ -1,7 +1,7 @@
 # the file contains all the functions required for IVIVE Scaling.
 
 
-#' Scale clearance by age when both cellular and enzymatic clearance are known at referance age.
+#' Scale clearance by age when both cellular and enzymatic clearance are known at reference age.
 #' @description This function is used internally to calculate age specific metabolism using the IVIVE gadget.
 #' It needs both cellular and enzymatic clearance at atleast one age, the reference age, to extrapolate to values at other ages.
 #' @param out_ages Ages for which the clearance needs to be calculated including reference age
@@ -25,7 +25,7 @@ scale_cellular_enzymatic<- function(out_ages,tot_scaled_hepcl,tot_scaled_recomcl
   if (is.null(dim(agewise_enzyme_cl))){
     agewise_enzyme_cl <- array(agewise_enzyme_cl,dim = c(10,1))
   }
-  # get the final age based clearance by scaling the enzymatic clearance with cellular and enzymatic clearance at referance age
+  # get the final age based clearance by scaling the enzymatic clearance with cellular and enzymatic clearance at reference age
   tot_agewise_scaled_cl <- tot_scaled_hepcl/(tot_scaled_recomcl/tot_agewise_enzyme_cl)
   # get fractional contribution of each enzyme
   fraction_contrib<- sweep(agewise_enzyme_cl,2,unlist(tot_agewise_enzyme_cl),"/")
@@ -36,7 +36,7 @@ scale_cellular_enzymatic<- function(out_ages,tot_scaled_hepcl,tot_scaled_recomcl
 }
 
 
-#' Scale clearance by age for when enzymatic clearance is known at referance age.
+#' Scale clearance by age for when enzymatic clearance is known at reference age.
 #' @param out_ages out_ages Ages for which the clearance needs to be calculated including reference age
 #' @param tot_scaled_recomcl Total Recombinant enzyme clearance at reference age in L/h/kg Liver
 #' @param cypDb Dataframe containing cyp datasets to scale measured clearance values from in-vitro to in-vivo
