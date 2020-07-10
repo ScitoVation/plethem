@@ -2,7 +2,7 @@
 % Please edit documentation in R/IVIVEScaling.R
 \name{scale_cellular_enzymatic}
 \alias{scale_cellular_enzymatic}
-\title{Scale clearance by age when both cellular and enzymatic clearance are known at referance age.}
+\title{Scale clearance by age when both cellular and enzymatic clearance are known at reference age.}
 \usage{
 scale_cellular_enzymatic(
   out_ages,

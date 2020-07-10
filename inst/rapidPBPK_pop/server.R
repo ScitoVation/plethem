@@ -2,7 +2,7 @@
 
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
-  run_type <- "prod" #"prod" for production, "dev" for development
+  run_type <- "dev" #"prod" for production, "dev" for development
   show_modal_spinner("orbit")
   shinyjs::useShinyjs()
   hideTab("menu","output")
@@ -3157,8 +3157,8 @@ updateCoeffs <- function(session, calculatedCoeff){
 }
 
 runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,event_times_list,progressFunc){
-  c1 <- snow::makeSOCKcluster(parallel::detectCores()-1)
-  registerDoSNOW(c1)
+  c1 <- makeCluster(parallel::detectCores()-2)
+  registerDoParallel(c1)
   opts <- list(progress = progressFunc)
   cmax_list <- foreach(idx=seq_len(mcruns),params_list,
                        states_list,times_list,
