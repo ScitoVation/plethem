@@ -2,7 +2,7 @@
 
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
-  run_type <- "dev" #"prod" for production, "dev" for development
+  run_type <- "prod" #"prod" for production, "dev" for development
   show_modal_spinner("orbit")
   shinyjs::useShinyjs()
   hideTab("menu","output")

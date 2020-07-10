@@ -6,7 +6,7 @@
 #' @import miniUI
 #' @import shinydashboard
 #' @import foreach
-#' @import doSNOW
+#' @import doParallel
 #' @importFrom stats approx setNames
 #' @importFrom utils installed.packages read.csv write.csv
 #' @importFrom magrittr %>%

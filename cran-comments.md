@@ -1,4 +1,8 @@
 ## Resubmission
+Removed dependence on superseeded package doSnow
+
+
+## Resubmission
 This is a resubmission
 *Fixed typo in BugReports in description
 *Added URL field to description

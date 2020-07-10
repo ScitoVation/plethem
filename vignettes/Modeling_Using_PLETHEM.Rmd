@@ -1,10 +1,10 @@
 ---
-title: "Getting Started with PBPK modeling"
+title: "Modeling Using PLETHEM"
 author: "Salil N. Pendse"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Modeling Using PLETHEM}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
