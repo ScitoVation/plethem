@@ -947,6 +947,16 @@ shinyServer(function(input, output, session) {
    
     updateNumericInput(session,"ms_frwsol",value = frwsol)
   })
+  observeEvent(input$btn_predict_clint,{
+    fpath <- getFileFolderPath(type = "file",new_flag = F)
+    if(is.na(fpath)){
+      sendSweetAlert(session,"No File selected")
+    }else{
+      # CALL THE CLEARANCE TOOL ONCE AVAILABLE
+      
+      sendSweetAlert(session,"Clearance value updated")
+    }
+  })
   
   ## This code chunk deals with performing IVIVE for the chemical
   observeEvent(input$btn_ivive_chem,{
@@ -1383,8 +1393,7 @@ shinyServer(function(input, output, session) {
                              package = "plethem")
                  )
       }
-      
-      
+
       
       modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
                                  func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
@@ -1700,18 +1709,48 @@ shinyServer(function(input, output, session) {
 
 #Current Parameters table under Model output
 current_params <-  reactive({
-    temp <- getAllParamValuesForModel(input$sel_sim,model = model)
+    temp <- getAllParamValuesForModel(results$simid,model = model)
     # get exposure paramteres
 
     
     expo_params <- data.frame("var" = expo_name_df$Name, "val" = temp$vals[expo_name_df$Var],
                               stringsAsFactors = F)
+    route_index <- which(expo_params$var == "Exposure route",arr.ind = T)
+    route <- expo_params$val[route_index]
+    route <- switch(route,
+                    "oral"="Bolus Oral Exposure",
+                    "oralv"="Bolus Oral Exposure with Vehicle",
+                    "inh"="Inhalation Exposure",
+                    "iv"="Intravenous Exposure",
+                    "derm"="Dermal Exposure",
+                    "dw"="Drinking Water Exposure")
+    expo_params$val[route_index]<- route
+    
     physio_params <- data.frame("var" = physio_name_df$Name, "val" = temp$vals[physio_name_df$Var],
                               stringsAsFactors = F)
+    
+    organism_idx <- which(physio_params$var == "Organism",arr.ind = T)
+    org <- physio_params$val[organism_idx]
+    org <- switch(org,
+                  "ha"="Human",
+                  "ra"="Rat",
+                  "dg"="Dog")
+    physio_params$val[organism_idx]<- org
+    
     current_params <- data.frame("var" = chem_name_df$Name,"val" = temp$vals[chem_name_df$Var],stringsAsFactors = F)
+    
+    adme_params <- data.frame("var" = adme_name_df$Name,"val" = temp$vals[adme_name_df$Var],stringsAsFactors = F)
+    
+    
+    
     #current_params <- temp$a
     #current_params <- cbind(gsub("ms_", "",temp$b),current_params)
-    return(list("cur" = current_params,"expo" = expo_params,"physio" = physio_params))
+    return(list("cur" = current_params,
+                "expo" = expo_params,
+                "physio" = physio_params,
+                "adme"=adme_params
+                )
+           )
   })
 output$chem_params_tble <- DT::renderDT(DT::datatable(current_params()$cur,
                                                   rownames = F),
@@ -1723,6 +1762,7 @@ output$expo_params_tble <- DT::renderDT(DT::datatable(current_params()$expo,
 output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                                          rownames = F,
                                                         colnames=c("Variable names", "Value")))
+
 
 
   observeEvent(input$btnAddData,{
@@ -2426,6 +2466,160 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
     
   })
+
+  ## Simulation Report
+  output$report_download <- downloadHandler(
+    filename="Simulation Report.html",
+    contentType = "text/html",
+    content = function(download_file){
+      show_modal_spinner("hollow-dots")
+      # Create a temporary directory to store the report
+      tempReport <- file.path(tempdir(), "report.rmd")
+      #copy the report file to the temporary directory so it can be compiled there
+      file.copy(system.file("report.rmd",package = "plethem"),
+                tempReport,
+                overwrite = TRUE)
+      
+      # get the current simulation ID
+      results <- isolate(reactiveValuesToList(results))
+      simid <- as.integer(results$simid)
+      # get Simulation details:
+      query <- sprintf("Select * from SimulationsSet where simid = %i;",simid)
+      sim_details <- projectDbSelect(query)
+      expoid <- as.integer(sim_details$expoid)
+      physioid <- as.integer(sim_details$physioid)
+      chemid <- as.integer(sim_details$chemid)
+      admeid <- as.integer(sim_details$admeid)
+      
+      sim_type_data <- switch(sim_details$sim_type,
+                              "fd"="Forward Dosimetry",
+                              "rd"="Reverse Dosimetry",
+                              "mc"="Monte Carlo Analysis",
+                              "r2r"="Route to Route Extrapolation")
+      dur_units <- switch(sim_details$dur_units,
+                          "d"="Day/s",
+                          "h"="Hour/s",
+                          "w"="Week/s")
+      
+      
+      
+      # get details forexposure set
+      expo_details <- projectDbSelect(
+        sprintf("Select name,descrp from ExposureSet where expoid = %i",expoid)
+      )
+      expo_params <- isolate(current_params()$expo)
+      route_index <- which(expo_params$var == "Exposure route",arr.ind = T)
+      route <- expo_params$val[route_index]
+      
+      # get details for chemical set
+      chem_details <- projectDbSelect(
+        sprintf("Select name,descrp,cas from ChemicalSet where chemid = %i",chemid)
+      )
+      chem_params <- isolate(current_params()$cur)
+      
+      #Get details for physiology set
+      physio_details <- projectDbSelect(
+        sprintf("Select name,descrp from PhysiologicalSet where physioid = %i",physioid)
+      )
+      physio_details$descrp <- ifelse(physio_details$descrp == "Description",
+                                      "No Description Provided",
+                                      physio_details$descrp)
+      physio_params <- isolate(current_params()$physio)
+      organism_idx <- which(physio_params$var == "Organism",arr.ind = T)
+      org <- physio_params$val[organism_idx]
+      
+      #Get details for adme set
+      adme_details <- projectDbSelect(
+        sprintf("Select name,descrp from AdmeSet where admeid = %i",admeid)
+      )
+      adme_details$descrp <- ifelse(adme_details$descrp == "Description",
+                                      "No Description Provided",
+                                      adme_details$descrp)
+      metab_data <- getMetabData(admeid,"rapidPBPK")
+      adme_params <- isolate(current_params()$adme)
+      
+      # Get all Concentration Data
+      result <- results$pbpk
+      query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'conc' AND model='rapidPBPK' AND mode = '%s';",
+                       sim_details$sim_type)
+      legend_df <- mainDbSelect(query)
+      legend_names <- setNames(legend_df$name,legend_df$model_var)
+      values <- setNames(legend_df$model_var,legend_df$plot_var)
+      names(values)<- NULL
+      values <- values[!(values %in% c("curine","curinemet"))]
+      query <- sprintf("Select value FROM Chemical WHERE chemid = %i AND param = 'mw';",
+                       chemid)
+      mw <- projectDbSelect(query)$value
+      multiplier <- mw/1000
+      if(sim_details$sim_type == "fd"){
+        x<- result$time
+        plot_frame <- data.frame("time" = result$time,
+                                 stringsAsFactors = F)
+      }else{
+        x <- 1:nrow(result)
+        plot_frame <- data.frame("sample" = 1:nrow(result),
+                                 stringsAsFactors = F)
+      }
+      for (plt_name in values){
+        y<- result[[plt_name]] * multiplier
+        plot_frame[[legend_names[plt_name]]] <-y
+        }
+      if (sim_details$sim_type == "fd"){
+        conc_data <- reshape2::melt(plot_frame,id.vars = "time")
+      }else{
+        conc_data <- reshape2::melt(plot_frame,id.vars = "sample")
+      }
+     
+      render_params <- list(sim_details = list(name = sim_details$name,
+                                               descrp = sim_details$descrp,
+                                               type = sim_details$sim_type,
+                                               type_text = sim_type_data,
+                                               dur = paste(as.character(sim_details$sim_dur),
+                                                           dur_units,sep = " ",collapse = "")
+                                               ),
+                            expo_details = list(descrp = expo_details$descrp,
+                                                name = expo_details$name,
+                                                route= route, 
+                                                param_tble = expo_params),
+                            chem_details = list(name = chem_details$name,
+                                                descrp = chem_details$descrp,
+                                                cas = ifelse(is.null(chem_details$cas),
+                                                             "No CAS number provided",
+                                                             chem_details$cas),
+                                                param_tble = chem_params
+                                                ),
+                            physio_details = list(name = physio_details$name,
+                                                  descrp = physio_details$descrp,
+                                                  org = org,
+                                                  param_tble = physio_params
+                                                  ),
+                            adme_details = list(name = adme_details$name,
+                                                descrp = adme_details$descrp,
+                                                hep_met_type = metab_data$Type,
+                                                param_tble = adme_params
+                                                ),
+                            conc_data = list(data = isolate(conc_data),
+                                             units = 'Concentration (mg/L)'
+                                             )
+                            )
+      rmarkdown::render(tempReport,
+                        output_file = basename(download_file),
+                        output_dir = dirname(download_file),
+                        params = render_params,
+                        intermediates_dir = tempdir(),
+                        clean = T,
+                        envir = new.env(parent = globalenv()))
+      remove_modal_spinner()
+      
+    }
+  ) 
+  
+  
+  # reportDat <- reactive(c("No"))
+  # observeEvent(input$btn_dwnload_dialog,{
+  #   module_ns <- paste0("report",input$btn_dwnload_dialog)
+  #   generateReportModuleUI(module_ns)
+  # })
   Sys.sleep(1)
   remove_modal_spinner(session)
   

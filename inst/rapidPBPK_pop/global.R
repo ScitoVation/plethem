@@ -10,6 +10,7 @@ library(magrittr)
 library(plotly)
 library(doParallel)
 library(foreach)
+library(rmarkdown)
 #source(system.file("rapidPBPK_pop","rapidPBPK_inits.R",package = "plethem"))
 #source(system.file("modules","createSimulationModule.R",package = "plethem"))
 #source(system.file("modules","newEditBiomoniteringDataModule.R",package = "plethem"))
@@ -19,7 +20,3 @@ library(foreach)
 # Module for uploading biomonitering data
 # This module is only called by the rapidPBPK_pop UI and hence is not a part 
 # of the main R/ folder of the package
-
-
-
-
