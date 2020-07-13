@@ -1201,6 +1201,16 @@ shinyUI(fluidPage(
                                                                       fluidRow(
                                                                         tags$hr(style = "border: 1px dashed black;")
                                                                       ),
+                                                                      fluidRow(
+                                                                        column(6,
+                                                                               shinyBS::bsButton("btn_predict_clint",
+                                                                                                 "Predict Clearance")
+                                                                               ),
+                                                                        column(6,
+                                                                               shinyBS::bsButton("btn_ivive_chem",
+                                                                                                 "Perform IVIVE",block = F)
+                                                                        )
+                                                                      ),
                                                                       
                                                                       fluidRow(
                                                                         
@@ -1208,14 +1218,12 @@ shinyUI(fluidPage(
                                                                                numericInput("ms_km","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01)
                                                                         ),
                                                                         column(6,
-                                                                               shinyBS::bsButton("btn_ivive_chem",
-                                                                                                 "Perform IVIVE",block = F)
+                                                                               numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
                                                                         )
+                                                                        
                                                                       ),
                                                                       fluidRow(
-                                                                        column(6,
-                                                                               numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
-                                                                        ),
+                                                                        
                                                                         column(6,
                                                                                numericInput("ms_vkm1c", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
                                                                         )
@@ -1496,8 +1504,11 @@ shinyUI(fluidPage(
                       )),
              tabPanel("Model Output",icon = icon("line-chart"),value = "output",
                       fluidRow(
-                        
-                        column(3, offset= 6,
+                        column(3,offset = 3,
+                               downloadButton("report_download",
+                                            "Generate Simulation Report")
+                               ),
+                        column(3,
                                downloadButton("downloadModel", "Download Model",class = "btn btn-primary btn-block")
                         )
                       ),

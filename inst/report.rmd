@@ -1,0 +1,294 @@
+---
+title: "PLETHEM Simulation Report"
+output: 
+  html_document:
+    toc: true
+always_allow_html: true
+    
+
+params:
+  sim_details: NA
+  expo_details: NA
+  chem_details: NA
+  physio_details: NA
+  adme_details: NA
+  conc_data: NA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(plotly)
+library(shiny)
+library(DT)
+library(magrittr)
+```
+# Introduction
+This is a PBPK model run using PLETHEM `r packageVersion("plethem")`. The simulation details are as follows
+
+```{r sim_details, echo = F}
+fluidPage(
+  fluidRow(
+    column(4,
+           tags$h4(tags$b("Simulation Name"))
+           ),
+    column(8,
+           tags$h5(params$sim_details$name))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Description")))
+           ),
+    column(8,
+           tags$h5(params$sim_details$descrp))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Duration")))
+           ),
+    column(8,
+           tags$h5(params$sim_details$dur))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Simulation Type")))
+           ),
+    column(8,
+           tags$h5(params$sim_details$type_text))
+  )
+)
+```
+
+# Exposure
+
+## Details
+
+```{r expo_details, echo = F}
+fluidPage(
+  fluidRow(
+    column(4,
+           tags$h4(tags$b("Exposure Name"))
+           ),
+    column(8,
+           tags$h5(params$expo_details$name))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Description")))
+           ),
+    column(8,
+           tags$h5(params$expo_details$descrp))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Route of exposure")))
+           ),
+    column(8,
+           tags$h5(params$expo_details$route))
+  )
+)
+```
+
+## Parameters
+
+```{r expo_params, echo = F}
+fluidPage(
+  fluidRow(
+    column(6,
+           DT::datatable(params$expo_details$param_tble,
+              rownames = F,
+              colnames=c("Variable names", "Value"),
+              extensions = "Buttons",
+              options = list(dom= 'Blfrtip',
+                             buttons = c('copy','excel','pdf'))
+              )
+           )
+    )
+)
+
+```
+
+# Chemical
+
+## Details
+
+```{r chem_details, echo= F, warning=FALSE}
+fluidPage(
+  fluidRow(
+    column(4,
+           tags$h4(tags$b("Chemical Name"))
+           ),
+    column(8,
+           tags$h5(params$chem_details$name))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Description")))
+           ),
+    column(8,
+           tags$h5(params$chem_details$descrp))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("CAS#")))
+           ),
+    column(8,
+           tags$h5(params$chem_details$cas))
+  )
+  )
+```
+
+## Parameters
+
+```{r chem_params, echo = F}
+fluidPage(
+  fluidRow(
+    column(6,
+           DT::datatable(params$chem_details$param_tble,
+              rownames = F,
+              colnames=c("Variable names", "Value"),
+              extensions = "Buttons",
+              options = list(dom= 'Blfrtip',
+                             buttons = c('copy','excel','pdf'))
+              )
+           )
+    )
+)
+
+```
+
+# Physiology
+
+## Details
+
+```{r physio_details, echo= F, warning=FALSE}
+fluidPage(
+  fluidRow(
+    column(4,
+           tags$h4(tags$b("Name"))
+           ),
+    column(8,
+           tags$h5(params$physio_details$name))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Description")))
+           ),
+    column(8,
+           tags$h5(params$physio_details$descrp))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Model Organism")))
+           ),
+    column(8,
+           tags$h5(params$physio_details$org))
+  )
+)
+```
+
+## Parameters
+
+```{r physio_params, echo =F}
+fluidPage(
+  fluidRow(
+    column(6,
+           DT::datatable(params$physio_details$param_tble,
+              rownames = F,
+              colnames=c("Variable names", "Value"),
+              extensions = "Buttons",
+              options = list(dom= 'Blfrtip',
+                             buttons = c('copy','excel','pdf'))
+              )
+           )
+    )
+)
+
+```
+
+# ADME Parameters
+
+## Details
+
+```{r adme_details, echo= F, warning=FALSE}
+fluidPage(
+  fluidRow(
+    column(4,
+           tags$h4(tags$b("Name"))
+           ),
+    column(8,
+           tags$h5(params$adme_details$name))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Description")))
+           ),
+    column(8,
+           tags$h5(params$adme_details$descrp))
+  ),
+  fluidRow(
+    column(4,
+           tags$h4(tags$h4(strong("Hepatic Metabolism Type")))
+           ),
+    column(8,
+           tags$h5(params$adme_details$hep_met_type))
+  )
+)
+```
+
+## Parameters
+
+```{r adme_params, echo =F}
+fluidPage(
+  fluidRow(
+    column(6,
+           DT::datatable(params$adme_details$param_tble,
+              rownames = F,
+              colnames=c("Variable names", "Value"),
+              extensions = "Buttons",
+              options = list(dom= 'Blfrtip',
+                             buttons = c('copy','excel','pdf'))
+              )
+           )
+    )
+)
+
+```
+
+# Concentration Plots
+
+```{r conc_plts, echo=F, warning=F, error=F}
+fluidPage(
+  fluidRow(
+    column(12,
+           if (params$sim_details$type == "fd"){
+             plotly::plot_ly()%>%
+               plotly::add_trace(data = params$conc_data$data,
+                                 x = ~time,
+                                 y = ~value,
+                                 color = ~variable,
+                                 type = "scatter",
+                                 mode = "lines")%>%
+               plotly::layout(xaxis = list(title = ('Time(h)')),
+                              yaxis = list(title =params$conc_data$units,
+                                           exponentformat = 'e'
+                                           )
+                              )
+             }else{
+               plotly::plot_ly()%>%
+                 plotly::add_trace(data = params$conc_data$data,
+                                   y = ~value,
+                                   color = ~variable,
+                                   type = "box")%>%
+                 plotly::layout(yaxis = list(
+                   title =params$conc_data$units,
+                   exponentformat = 'e'
+                   )
+                 )
+               }
+           )
+    )
+  )
+
+
+
+```
