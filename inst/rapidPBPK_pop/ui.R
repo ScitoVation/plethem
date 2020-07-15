@@ -365,16 +365,64 @@ comp_body <- dashboardBody(
       
       fluidRow(
         column(4,
-               numericInput("ms_bw","Body Weight (kg)",70,0.1,90,0.1)),
+               numericInputIcon("ms_bw","Body Weight (kg)",value = 70,min = 0.1,step = 0.1,
+                                icon =list(NULL,tagList(actionBttn("note_bw",
+                                                          NULL,size ="xs", style = "fill",
+                                                          color = "primary",block = T,
+                                                          icon = icon("bookmark")
+                                                          )
+                                               )
+                                           )
+                                )
+               ),
         column(4,
-               numericInput("ms_qcc","Cardiac Output (L/h)",420,1,50,0.1)),
+               numericInputIcon("ms_qcc","Cardiac Output (L/h)",value = 420,
+                                min =1,step = 0.1,
+                                icon = list(NULL,dropdown(
+                                  tags$hr(),
+                                  textInput(
+                                    "txt_note_qcc",
+                                    "Source",
+                                    "PLETHEM LifeCourse Equations",
+                                    width = "100%"),
+                                  tags$hr(),
+                                  size = "xs",
+                                  animate = T,
+                                  label = NULL,
+                                  icon = icon("sticky-note"),
+                                  width = "300px",
+                                  status = "info")
+                                  )
+                                )
+               ),
         column(4,
-               numericInput("ms_hct","Hematocrit Factor",0.441,0,1,0.001))
+               numericInputIcon("ms_hct","Hematocrit Factor",value = 0.441,
+                                min =0.001,max = 1,step = 0.001,
+                                help_text = "Value should be greater than 0 and less than 1",
+                                icon =list(NULL,tagList(actionBttn("note_hct",
+                                                                   NULL,size ="xs", style = "fill",
+                                                                   color = "primary",block = T,
+                                                                   icon = icon("bookmark")
+                                                                   )
+                                                        )
+                                           )
+                                )
+               )
         
       ),
       fluidRow(
         column(6,
-               numericInput("ms_vbldc","Fractional Blood Compartment Volume",0.0832,0.01,1,0.01)),
+               numericInputIcon("ms_vbldc","Fractional Blood Compartment Volume",
+                                value = 0.0832,min = 0.01,max = 1,step =0.01,
+                                help_text ="Value should be greater then 0 and less than 1",
+                                icon =list(NULL,tagList(actionBttn("note_vbldc",
+                                                                   NULL,size ="xs", style = "fill",
+                                                                   color = "primary",block = T,
+                                                                   icon = icon("bookmark")
+                                )
+                                )
+                                )
+                                )),
         column(6,
                numericInput("ms_perfc","Total Fractional Perfused Tissue",1,0.75,0.95,0.01)
         )

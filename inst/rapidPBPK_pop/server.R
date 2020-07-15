@@ -2,7 +2,7 @@
 
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
-  run_type <- "prod" #"prod" for production, "dev" for development
+  run_type <- "dev" #"prod" for production, "dev" for development
   show_modal_spinner("orbit")
   shinyjs::useShinyjs()
   hideTab("menu","output")
@@ -1344,6 +1344,13 @@ shinyServer(function(input, output, session) {
 
 
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
+  
+  
+  ### CODE CHUNK FOR SAVING DATA SOURCE
+  observeEvent({
+    which(grepnames(input))
+  })
+  
   
   ### CODE CHUNK TO RUN THE SIMULATION
   results <- reactiveValues(pbpk=NULL,expo = NULL,simid = NULL,sim_type = NULL)
