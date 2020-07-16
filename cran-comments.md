@@ -1,5 +1,5 @@
 ## Resubmission
-I sincerely apologise for resubmitting the package so soon. There was a show stopping bug in one of the primary workflow loops in the package. The bug has now been fixed in this version of the package. The package version is now updated to 1.0.1 from 1.0.0
+I sincerely apologise for resubmitting the package so soon. There was a show stopping bug in one of the primary workflow loops in the package. The bug has now been fixed in this version of the package. The package version is now updated to 1.0.1 from 1.0.0. NEWS.md added to note changes. Unicode encoding 
 
 #R CMD CHECK results on windows
 
