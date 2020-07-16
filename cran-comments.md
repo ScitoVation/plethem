@@ -1,4 +1,38 @@
 ## Resubmission
+I sincerely apologise for resubmitting the package so soon. There was a show stopping bug in one of the primary workflow loops in the package. The bug has now been fixed in this version of the package. The package version is now updated to 1.0.1 from 1.0.0
+
+#R CMD CHECK results on windows
+
+*checking R files for syntax errors ... WARNING
+  Warnings in file 'R/HT_IVIVE_InputModule.R':
+    unable to translate '<U+00B5>M' to native encoding
+    unable to translate '<U+00B5>mol/min/mg Protein' to native encoding
+    unable to translate '<U+00B5>L/min/mg Protein' to native encoding
+    unable to translate '<U+00B5>L/h/mg Protein' to native encoding
+    unable to translate '<U+00B5>L/min/mg Protein' to native encoding
+    unable to translate '<U+00B5>L/h/mg Protein' to native encoding
+    unable to translate '<U+00B5>L/min/mg Protein' to native encoding
+    unable to translate '<U+00B5>L/h/mg Protein' to native encoding
+  
+  Warnings in file 'R/performIVIVEModule.R':
+    unable to translate '<U+00B5>  mol/min/10^6 hepatocytes' to native encoding
+    unable to translate '<U+00B5>  mol/min/mg Protein' to native encoding
+    unable to translate '<U+00B5>  L/min/mg Protein' to native encoding
+    unable to translate '<U+00B5>  L/h/mg Protein' to native encoding
+    unable to translate '<U+00B5>  L/min/mg Protein' to native encoding
+    unable to translate '<U+00B5>  L/h/mg Protein' to native encoding
+    unable to translate '<U+00B5>  L/min/mg Protein' to native encoding
+    unable to translate '<U+00B5>  L/h/mg Protein' to native encoding
+
+* checking package dependencies ... NOTE
+  Imports includes 32 non-default packages.
+  Importing from so many packages makes the package vulnerable to any of
+  them becoming unavailable.  Move as many as possible to Suggests and
+  use conditionally.
+
+0 errors| 1 warning | 1 note 
+
+## Resubmission
 Removed dependence on superseeded package doSnow
 
 
