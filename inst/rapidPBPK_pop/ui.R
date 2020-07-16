@@ -173,7 +173,7 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
 chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="chem_sidebar",
   pickerInput("qsarModelChem", "Select A QSAR Model",
-              choices = c("QSAR model one" = 'one'),
+              choices = c("QSAR Model One" = 'one'),
               #"Unified QSAR model" = 'two'),
               width = "99%"),
   tipify(shinyBS::bsButton("qsar4chem_props",
@@ -615,7 +615,7 @@ chem_body <- dashboardBody(
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_lkow","logKow (Octanol:Water Coefficient)",1,0,250,0.01)),
+                     numericInput("ms_lkow","logKow (Octanol: Water Coefficient)",1,0,250,0.01)),
               column(6,
                      numericInput("ms_wsol","Water Solubility (mg/L)",1,0,250,0.01))
             ),
@@ -690,7 +690,7 @@ expo_body <- dashboardBody(
       tabName = "inh",
       fluidRow(
         column(4,
-               numericInput("ms_inhdose",label="Inhalation Expousre (ppm)", value =0, step= 0.01)),
+               numericInput("ms_inhdose",label="Inhalation Exposure (ppm)", value =0, step= 0.01)),
         column(4,
                numericInput("ms_inhtlen",label = "Duration of Inhalation Exposure (h/day)",8)),
         column(4,
@@ -1018,7 +1018,7 @@ shinyUI(fluidPage(
                                                                         column(4,
                                                                                shinyBS::tipify(
                                                                                  pickerInput("sel_qsar4Partition", NULL,
-                                                                                             choices = c("QSAR model one" = 'one',
+                                                                                             choices = c("QSAR Model One" = 'one',
                                                                                                          "Unified QSAR model" = 'two')
                                                                                  ),
                                                                                  "Select QSAR model for partition coefficients")
@@ -1189,14 +1189,14 @@ shinyUI(fluidPage(
                                                                       fluidRow(
                                                                         column(4,
                                                                                bsButton("btn_metab_upload",
-                                                                                        "Upload age-based metabolism data",
+                                                                                        "Upload Age-based Metabolism Data",
                                                                                         block = T)
                                                                         ),
                                                                         column(6,
                                                                                selectizeInput("sel_metabfiles",choices = NULL,label = NULL)
                                                                         ),
                                                                         column(2,
-                                                                               actionBttn("btn_use_age","Apply data"))
+                                                                               actionBttn("btn_use_age","Apply Data"))
                                                                       ),
                                                                       fluidRow(
                                                                         tags$hr(style = "border: 1px dashed black;")

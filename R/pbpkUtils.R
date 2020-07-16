@@ -18,12 +18,12 @@ getMetabData <- function(admeid,model="rapidPBPK"){
   # unserialize the table to get it back
   if (result[["vmaxc"]] == 0){
     metab_units <- "L/h/kg Liver"
-    metab_type <- "First Order Metabolism"
+    metab_type <- "First-Order Metabolism"
     variable <- "vkm1c"
     value <- result[["vkm1c"]]
   }else{
     metab_units <- "\u00B5M/h/kg BW^0.75"
-    metab_type <- "Michaelis Menten Kinetics"
+    metab_type <- "Michaelis-Menten Kinetics"
     variable <- "vmaxc"
     value <- result[["vmaxc"]]
   }

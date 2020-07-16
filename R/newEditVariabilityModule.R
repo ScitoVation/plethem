@@ -5,7 +5,7 @@
 newEditVariabilityUI <- function(namespace){
   ns <- NS(namespace)
   showModal(modalDialog(
-    title = "Variablility",
+    title = "Variability",
     size = "l",
     tagList(
       fluidRow(
@@ -18,7 +18,7 @@ newEditVariabilityUI <- function(namespace){
       fluidRow(
         column(8,
                pickerInput(ns("param_names"),
-                           label = "Select Parameters to assign variability",
+                           label = "Select Parameters to Assign Variability",
                            choices = NULL,multiple = T,
                            options = list('selected-text-format' = "count > 3",
                                           'live-search'=TRUE,
@@ -27,7 +27,7 @@ newEditVariabilityUI <- function(namespace){
                ),
         column(4,
                actionButton(ns("update"),
-                            "Update list",color = "default")
+                            "Update List",color = "default")
                )
       ),
       tags$div(id = ns("added_ui"),

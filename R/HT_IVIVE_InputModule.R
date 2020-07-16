@@ -41,47 +41,63 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                              ),
                              fluidRow(
                                column(4,
-                                      numericInput(ns("num_fupls"),
-                                                   label = "Fraction Unbound in Plasma",
-                                                   value = 1,width = validateCssUnit("100%"))
+                                      numericInputIcon(ns("num_fupls"),
+                                                       label = "Fraction Unbound in Plasma",
+                                                       value = 1,min = 0 , max = 1, 
+                                                       icon = list("fraction"),
+                                                       width = validateCssUnit("100%"))
                                ),
                                column(4,
-                                      numericInput(ns("num_km"),
-                                                   "Michaelis Menten Constant",
-                                                   1)
+                                      numericInputIcon(ns("num_km"),
+                                                   label = "Michaelis Menten Constant",
+                                                   value = 1, min = 0.1,icon = list("\U00B5M"),
+                                                   width = validateCssUnit("100%"))
                                ),
+                               column(4,
+                                      numericInputIcon(ns("num_mw"),"Molecular Weight",value = 1,
+                                                       min = 0,
+                                                       width = validateCssUnit("100%"),
+                                                       icon = list("g/mol"))
+                               ),
+                             ),
+                             fluidRow(
                                
                                
 
-                               column(4,
-                                      numericInput(ns("num_bw"),
-                                                   label = "Body Weight(kg)",
-                                                   value = 70,
-                                                   width = validateCssUnit("100%"))
+                               column(3,
+                                      numericInputIcon(ns("num_bw"),
+                                                       label = "Body Weight",
+                                                       value = 70,min = 0,
+                                                       width = validateCssUnit("100%"),
+                                                       icon = list("kg"))
+                               ),
+                               column(3,
+                                      numericInputIcon(ns("num_qc"),
+                                                       label = "Cardiac Output",
+                                                       value = 421.96,
+                                                       icon = list("L/h"),
+                                                       width = validateCssUnit("100%"))
+                               ),
+                               
+                               column(3,
+                                      numericInputIcon(ns("num_lw"),
+                                                       label = "Liver Weight",
+                                                       value = 1.820,
+                                                       icon = list("kg"),
+                                                       width = validateCssUnit("100%"))
+                               ),
+                               column(3,
+                                      numericInputIcon(ns("num_ql"),
+                                                       label = "Blood Flow To Liver",
+                                                       value = 90,
+                                                       icon = list("L/h"),
+                                                       width = validateCssUnit("100%"))
                                )
                                ),
-                             fluidRow(
-                               column(4,
-                                      numericInput(ns("num_qc"),
-                                                   label = "Cardiac Output(L/h)",
-                                                   value = 421.96,
-                                                   width = validateCssUnit("100%"))
-                               ),
+                             
+                               
 
-                               column(4,
-                                      numericInput(ns("num_lw"),
-                                                   label = "Liver Weight(kg)",
-                                                   value = 1.820,
-                                                   width = validateCssUnit("100%"))
-                                      ),
-                               column(4,
-                                      numericInput(ns("num_ql"),
-                                                   label = "Blood Flow To Liver(L/h)",
-                                                   value = 90,
-                                                   width = validateCssUnit("100%"))
-                                      )
-
-                             )
+                             
                            )
                   ),
 
@@ -318,7 +334,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                        "hep_whole"="Whole Hepatocyte",
                        "hep_recomb"="Recombinant Enzymes")
   project_chems <- getProjectChemicalList()
-  chem_set_choices <-c("Generic Chemical"=0,getAllSetChoices("chem"))
+  chem_set_choices <-c(getAllSetChoices("chem"),"Generic Chemical"=0)
   if (type == "add"){
     
     output$chem_output <- renderUI({
@@ -386,13 +402,16 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
         if(chid == 0){
           fupls <- 1
           km <- 1
+          mw <- 1
         }else{
           fupls <- project_chems[[as.integer(chid)]]["fupls"]
           km <- project_chems[[as.integer(chid)]]["km"]
+          mw <- project_chems[[as.integer(chid)]]["mw"]
         }
         
         updateNumericInput(session,"num_fupls",value = as.numeric(fupls))
         updateNumericInput(session,"num_km",value = as.numeric(km))
+        updateNumericInputIcon(session,"num_mw",value = as.numeric(mw))
       }
     },ignoreInit = T,ignoreNULL = T,priority = 10)
     
@@ -558,7 +577,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
 
   observeEvent(input$ok,{
     # chemical Data
-   
+    mw <- input$num_mw
     name <- input$txt_IVIVE_name
     chem_name <- names(chem_set_choices)[which(chem_set_choices==as.integer(input$sel_chem))]
     # Type of reverse dosimetry

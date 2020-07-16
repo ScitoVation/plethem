@@ -170,9 +170,9 @@ makeResultTable <- function(input_table,result){
     "Actual Plasma Clearance (L/h)"=paste0(lapply(result,"[[","pls")),
     "Css (mg/L)"=paste0(lapply(result,"[[","css")),
     #"Equivalent Dose Type"=numeric(),
-    "Equivalent dose"=paste0(lapply(result,"[[","eqdose")),
+    "Equivalent Dose"=paste0(lapply(result,"[[","eqdose")),
     "Exposure" = paste0(lapply(result,"[[","expo")),
-    "Margin of exposure"=paste0(lapply(result,"[[","moe"))
+    "Margin of Exposure"=paste0(lapply(result,"[[","moe"))
   )
 
 }

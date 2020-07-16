@@ -1,5 +1,3 @@
-
-
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
   run_type <- "dev" #"prod" for production, "dev" for development
@@ -917,7 +915,7 @@ shinyServer(function(input, output, session) {
       p <- plot_ly(x = data[,1],type = "histogram", name = "Data")%>%
         add_trace(x = density_fit$x, y = density_fit$y,
                   type = "scatter",fill = "tozeroy",mode = "lines",
-                  name = "density",yaxis = "y2")%>%
+                  name = "Density",yaxis = "y2")%>%
         layout(
           title = "Biomonitoring Data",
           yaxis = list(title = "Count"),
@@ -2299,7 +2297,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
   output$expo_estimate<- DT::renderDT({DT::datatable(results$expo$expoEstimates,
                                                      rownames = F,
-                                                     colname = c("Percentiles",paste("Exposure (",results$expo$expo_units,")")),
+                                                     colname = c("Percentiles",paste("Exposure (",results$expo$expo_units,")",collapse = "")),
                                                      extensions = "Buttons",
                                                      options = list(dom= 'Blfrtip',
                                                                     buttons = c('copy','csv'),
@@ -3517,7 +3515,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                      condition = "input.sel_sim_type == 'r2r'",
                                                      ns = ns,
                                                      column(6,offset = 3,
-                                                            selectizeInput(ns("sel_r2rExpo"),"Exposure Set to be used as a template",
+                                                            selectizeInput(ns("sel_r2rExpo"),"Template Exposure Set",
                                                                            choices =  set_list$extrapolate,
                                                                            selected = selected_list$extrapolate,
                                                                            width = validateCssUnit("100%")
@@ -3529,7 +3527,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                  fluidRow(
                                                    column(6,offset=1,
                                                           numericRangeInput(ns("numrange_expo"),
-                                                                            "Exposure range",
+                                                                            "Exposure Range",
                                                                             value = c(0.01,1),
                                                                             separator = "to")
                                                    ),

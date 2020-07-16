@@ -27,7 +27,7 @@ preprocessUIData<- function(val){
   chem_data <- getChemDataFromDb(val$sel_chem)
 
   casn <- chem_data$casn
-  mw <- chem_data$mw
+  mw <- val$num_mw
   km <- val$num_km
   expo <- val$num_expo
   # get POD
