@@ -47,11 +47,14 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
 
 
   name_list <- names(UI_values)
+  
 
   name_list <- name_list[!(name_list == "cmplist")]
+  print(setdiff(name_list,names(set_values)))
   temp_unique_list <- unname(lapply(name_list,
                              function(x,a=UI_values,b=set_values){
                                a[[x]]==b[x]}))
+  print(temp_unique_list)
   param_data<-t(as.data.frame(UI_values[temp_unique_list == FALSE]))
   #give some time for the UI to Load so it doesnt hiccup
   Sys.sleep(0.5)
@@ -67,6 +70,7 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
     vars <- rownames(param_data)
     # get the original values for these variables
     org_values <- as.data.frame(set_values[vars],stringsAsFactors = FALSE)
+    print(org_values)
     # convert to data frame
     param_data <- data.frame(param_data,stringsAsFactors = FALSE)
     # Merge the original values to the correct table by using row names

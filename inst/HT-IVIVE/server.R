@@ -93,14 +93,17 @@ shinyServer(function(input,output,session){
   })
   observeEvent(input$add_row,{
     chem_list <- getAllSetChoices("chem")
+    namespace <- paste0("add",as.character(input$add_row))
+    HT_IVIVEUI(namespace)
+    
+    vals<- callModule(id =namespace, module = HT_IVIVE,vals,
+                      type = "add",
+                      chem_list = chem_list,
+                      idx = as.numeric(input$add_row))
+    
+    
     if (length(chem_list)>0){
-      namespace <- paste0("add",as.character(input$add_row))
-      HT_IVIVEUI(namespace)
-
-      vals<- callModule(id =namespace, module = HT_IVIVE,vals,
-                        type = "add",
-                        chem_list = chem_list,
-                        idx = as.numeric(input$add_row))
+     
     }else{
       shinyWidgets::sendSweetAlert(session,"No chemicals found",
                                    "Please import chemicals to the project",

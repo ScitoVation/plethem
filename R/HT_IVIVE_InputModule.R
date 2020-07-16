@@ -297,6 +297,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
 HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),idx = 0,row_selected = 0){
   #Get session ID
   ns <- session$ns
+ 
 
   # Create a dictionary for input ids to their natural language equivalent
   text_ui_dict <- list("ha"="Human Adult",
@@ -316,15 +317,33 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                        "hep_s9"="S9 Fraction",
                        "hep_whole"="Whole Hepatocyte",
                        "hep_recomb"="Recombinant Enzymes")
-  chem_list <- getProjectChemicalList()
-  chem_set_choices <- getAllSetChoices("chem")
+  project_chems <- getProjectChemicalList()
+  chem_set_choices <-c("Generic Chemical"=0,getAllSetChoices("chem"))
   if (type == "add"){
     
     output$chem_output <- renderUI({
+      fluidRow(
+        column(12,
+               selectizeInput(ns("sel_chem"),
+                              label = "Select Chemical",
+                              choices = chem_set_choices,
+                              options =list(create = function(input){return(0)}))
+               )#,
+        # column(2,
+        #        tags$h5("New"),
+        #        dropdownButton(title = "Add Chemical",
+        #          fluidPage(
+        #            fluidRow(
+        #              actionBttn(ns("btn_new_chem"),NULL,icon = icon("plus"),
+        #                         style = "material-flat",size = "xs",block = T)
+        #            )
+        #          )
+        #          
+        #        )
+        #        )
+      )
       
-      selectInput(ns("sel_chem"),
-                  label = "Select Chemical",
-                  choices = chem_set_choices)
+      
     })
     
     output$org_output <- renderUI({
@@ -334,13 +353,44 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                   selected = "ha")
     })
     
+    observeEvent(input$btn_new_chem,{
+      showModal(modalDialog(title = "Add New Chemical",
+        fluidPage(
+          fluidRow(
+            column(6,offset = 3,
+                   textInput(ns("txt_new_chem_name"),NULL,
+                             width = "100%",placeholder = "Chemical Name")
+            )
+          ),
+          fluidRow(
+            column(6,
+                   numericInputIcon(ns("num_new_chem_mw"),"Molecular Weight",value = 0,
+                                    min = 0,icon = list("g/mol"))
+                   ),
+            column(6,
+                   numericInputIcon(ns("num_new_chem_km"),"Michaelis-Menten Constant",
+                                    value = 1, min = 1, icon= list("\U00B5M")))
+          )
+        ),
+        footer = tagList(modalButton("Cancel"),
+                         actionButton(ns("btn_new_chem_ok"),"Add",width = "100%")
+                         )
+        ))
+    })
+    
    
     
     observeEvent(input$sel_chem,{
       chid <- input$sel_chem
       if(!is.null(chid)){
-        fupls <- chem_list[[as.integer(chid)]]["fupls"]
-        km <- chem_list[[as.integer(chid)]]["km"]
+        if(chid == 0){
+          fupls <- 1
+          km <- 1
+        }else{
+          fupls <- project_chems[[as.integer(chid)]]["fupls"]
+          km <- project_chems[[as.integer(chid)]]["km"]
+        }
+        
         updateNumericInput(session,"num_fupls",value = as.numeric(fupls))
         updateNumericInput(session,"num_km",value = as.numeric(km))
       }
@@ -510,6 +560,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     # chemical Data
    
     name <- input$txt_IVIVE_name
+    chem_name <- names(chem_set_choices)[which(chem_set_choices==as.integer(input$sel_chem))]
     # Type of reverse dosimetry
     rd_type  <- input$rdo_rdtype
     rd_type_name <- text_ui_dict[[rd_type]]
@@ -588,7 +639,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     # create the row that will either be added or replace existing row
     data_added<- data.table::data.table("rn"=0,
                                         "Name" = name,
-                                        "Chemical"=chem_list[[as.integer(chem)]]["names"],
+                                        "Chemical"=chem_name,
                                         "Organism"=org_type_name,
                                         "Type" = rd_type_name,
                                         "Standard Exposure"=stdexposure,
@@ -617,3 +668,4 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   })
   return(vals)
 }
+

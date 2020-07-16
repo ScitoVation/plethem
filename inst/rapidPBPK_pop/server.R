@@ -2,7 +2,7 @@
 
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
-  run_type <- "prod" #"prod" for production, "dev" for development
+  run_type <- "dev" #"prod" for production, "dev" for development
   show_modal_spinner("orbit")
   shinyjs::useShinyjs()
   hideTab("menu","output")
@@ -568,17 +568,18 @@ shinyServer(function(input, output, session) {
   
   #Save/Restore Button function
   observeEvent(input$btn_sverest_adme,{
-    admeid <- input$sel_adme
-    set_values <- getParameterSet("adme",admeid)
-    #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
-    UI_values <- reactiveValuesToList(input)[paste0("ms_",adme_name_df$Var)]
-    names(UI_values) <- gsub("ms_","",names(UI_values))
-    module_ns <- paste0("admerest",input$btn_sverest_adme)
-    saveRestoreParameterSetUI(module_ns)
-    parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
-                                           module_ns,
-                                           UI_values,set_values,
-                                           adme_name_df,"adme")
+    sendSweetAlert(session,"Unavailable","Save/Restore Button is unavailable for ADME sets in this version of PLETHEM.")
+    # admeid <- input$sel_adme
+    # set_values <- getParameterSet("adme",admeid)
+    # #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
+    # UI_values <- reactiveValuesToList(input)[paste0("ms_",adme_name_df$Var)]
+    # names(UI_values) <- gsub("ms_","",names(UI_values))
+    # module_ns <- paste0("admerest",input$btn_sverest_adme)
+    # saveRestoreParameterSetUI(module_ns)
+    # parameterSets$sverestdat <- callModule(saveRestoreParameterSet,
+    #                                        module_ns,
+    #                                        UI_values,set_values,
+    #                                        adme_name_df,"adme")
   })
 
   observe({
@@ -601,10 +602,10 @@ shinyServer(function(input, output, session) {
 
       # create a data frame for the mapply below
       val_df <- data.frame("var"=result_vector[2],"val"= result_vector[4],stringsAsFactors = FALSE,row.names = NULL)
-
+      print(val_df)
       # create the query
       query_list <-mapply(function(var,val,tbl_nme,id_nme,id){
-        temp <- sprintf("UPDATE %s SET value = %s WHERE %s = %i AND param = '%s';",
+        temp <- sprintf("UPDATE %s SET value = '%s' WHERE %s = %i AND param = '%s';",
                         tbl_nme,val,id_nme,id,var)
         return(temp)
       },

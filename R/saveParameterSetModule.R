@@ -97,11 +97,12 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df,
       chemid <- other[[2]]
       physioid <- other[[3]]
       metabid <- other[[4]]
-      query <- sprintf("INSERT INTO %s (%s,name,descrp,expoid,chemid,physioid,metabid) VALUES (%d,'%s','%s', %d, %d, %d );",
+      query <- sprintf("INSERT INTO %s (%s,name,descrp,expoid,chemid,physioid,metabid) VALUES (%d,'%s','%s', %d, %d, %d,%d );",
                        set_table_name,id_name,id_num,input$name,input$descrp,
                        expoid,
                        chemid,
-                       physioid)
+                       physioid,
+                       metabid)
       projectDbUpdate(query)
     }else{
       query <- sprintf("INSERT INTO %s (%s, name, descrp) VALUES (%d, '%s' , '%s' );",
