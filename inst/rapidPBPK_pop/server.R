@@ -3703,7 +3703,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                    dur_units,
                                    simid),
                            simplify = T),
-                   sep = " ",collapse = "")
+                   sep = " ",collapse = " ")
     projectDbUpdate(query)
     # update the simulation with inputs needed by montecarlo workflow
     if(sim_type == 'mc'){
@@ -3725,7 +3725,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                      mcruns,
                                      simid),
                              simplify = T),
-                     sep=" ",collapse = "")
+                     sep=" ",collapse = " ")
       projectDbUpdate(query)
       
     }
