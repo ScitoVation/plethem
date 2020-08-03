@@ -4,7 +4,7 @@ A step by step user guide for the current version of PLETHEM can be found under 
 ## PLETHEM INSTALLATION
 
 ### Installing R.
-Installing PLETHEM requires the latest version of 64 bit R-4.0.2 ([link](https://www.r-project.org/)), RStudio ([link](https://www.rstudio.com/)), and Rtools([link](https://cran.r-project.org/bin/windows/Rtools/)).
+Installing PLETHEM requires the latest version of 64 bit R-4.0.2 ([link](https://cran.r-project.org/bin/windows/base/)), RStudio ([link](https://www.rstudio.com/)), and Rtools([link](https://cran.r-project.org/bin/windows/Rtools/)).
 While installing Rtools make sure the box that says "Add Rtools to System Path" is checked.
 
 ### Installing the package
@@ -17,20 +17,21 @@ Then type one of the following commands
 
   >devtools::install_github("ScitoVation/plethem")
   
-to install form Github.
+to install from Github.
 
 Plethem may request to install packages into your R library. Select 1 to install all packages and click no if asked "Do you want to install packages from source...".
 You may need to install the backports package seperately. (If this happens you will need to reinstall plethem from github as well.) To do this run
 
   >install.packages("backports")
   
+ Select yes if prompted to restart R.
  Select no if asked "Do you want to install packages from source...".
  
  Run the PLETHEM install again
  
    >devtools::install_github("ScitoVation/plethem")
    
-  When prompted to install packages, hit enter do not type a number.
+ When prompted to install packages, hit enter, do not type a number.
 
 ## Initial Setup
 
