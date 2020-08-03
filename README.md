@@ -19,6 +19,19 @@ Then type one of the following commands
   
 to install form Github.
 
+Plethem may request to install packages into your R library. Select 1 to install all packages and click no if asked "Do you want to install packages from source...".
+You may need to install the backports package seperately. (If this happens you will need to reinstall plethem from github as well.) To do this run
+
+  >install.packages("backports")
+  
+ Select no if asked "Do you want to install packages from source...".
+ 
+ Run the PLETHEM install again
+ 
+   >devtools::install_github("ScitoVation/plethem")
+   
+  When prompted to install packages, hit enter do not type a number.
+
 ## Initial Setup
 
 PLETHEM pulls data from three databases. The master database is installed with the package and cannot be modified by the user. The User database is a local copy that is a subset of the master database. This table is used to store user specific parameters that may be needed across different projects (Like a set of chemicals that are frequently used by the user but are not a part of the main database). The final database is project database. This is used by PLETHEM internally to keep track of all the data while the used is working on a specific project in PLETHEM. When the project is closed, the database is saved out as an .Rproj file that can be used to recreate the project on any other PLETHEM installation. 
