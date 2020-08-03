@@ -3156,7 +3156,7 @@ updateCoeffs <- function(session, calculatedCoeff){
 }
 
 runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,event_times_list,progressFunc){
-  c1 <- makeCluster(parallel::detectCores()-2)
+  c1 <- makeCluster(parallel::detectCores()-2, setup_timeout = 0.5)
   registerDoParallel(c1)
   opts <- list(progress = progressFunc)
   cmax_list <- foreach(idx=seq_len(mcruns),params_list,
