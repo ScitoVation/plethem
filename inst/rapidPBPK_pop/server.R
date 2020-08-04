@@ -381,11 +381,15 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$btn_edit_biom,{
-    biomid <- as.integer(input$sel_biom)
-    namespace <- paste0("biom",input$btn_edit_biom)
-    newEditBiomoniteringDataUI(namespace,biomid)
-    parameterSets$savedat <- callModule(newEditBiomoniteringData,namespace,
-                                        type = "edit",biomid)
+    if(input$sel_biom == ""){
+      ## Error bubble no data yet loaded.
+    } else {
+      biomid <- as.integer(input$sel_biom)
+      namespace <- paste0("biom",input$btn_edit_biom)
+      newEditBiomoniteringDataUI(namespace,biomid)
+      parameterSets$savedat <- callModule(newEditBiomoniteringData,namespace,
+                                          type = "edit",biomid)
+    }
   })
   
   
@@ -413,6 +417,9 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$btn_edit_sim,{
+    if(input$sel_sim == ""){
+      ## Error bubble no data yet loaded.
+    } else {
     simid <- as.integer(input$sel_sim)
     query <- sprintf("Select * from SimulationsSet where simid = %i",simid)
     sim_details <- projectDbSelect(query)
@@ -474,7 +481,7 @@ shinyServer(function(input, output, session) {
     parameterSets$savedat <- callModule(createSimulation,
                                module_namespace,type = "edit",simulation_settings)
     
-  })
+  }})
 
 
   # update the paramter set dropdown if it is changed
