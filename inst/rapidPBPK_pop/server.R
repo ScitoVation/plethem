@@ -1,3 +1,4 @@
+library(shinyFiles)
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
   run_type <- "prod" #"prod" for production, "dev" for development
@@ -2363,21 +2364,52 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
   })
   observeEvent(input$load_dialog,{
-    if(input$load_dialog){
-      fpath <- getFileFolderPath(type = "file",
-                        caption = "Select PLETHEM Project",
-                        extension = "*.Rdata")
-      if (length(fpath)==0 || is.na(fpath)){
-        sendSweetAlert(session,NULL,"No File Selected",
-                       type = "error")
-        updateTabsetPanel(session,"menu","home")
-      }else{
-        loadProject(fpath,runUI = F)
-        query <- "Update Utils Set Value=NULL;"
-        mainDbUpdate(query)
-        js$reset()
-      }
-      
+    myConfirmation <- input$load_dialog
+    if(myConfirmation){ # if user confirmed to load a new project, pop up new modal
+      showModal(
+        modalDialog(
+          tagList(
+            shinyFilesButton('files', label='File select', title='Please select a file', multiple=FALSE),
+            textOutput("selectedFile",inline = TRUE)
+          ),
+          title="Select PLETHEM Project",
+          footer = tagList(
+            actionButton("loadProjectFile","Load Project"),
+            modalButton("Dismiss")
+          ), size = c("m"), easyClose = F, fade = T))
+    } 
+    # else{
+    #   print('denied')
+    # }
+  })
+  
+  volumes <- c(Home = fs::path_home(), "R Installation" = R.home(), getVolumes()())
+  shinyFileChoose(input, "files", roots = volumes, session = session, filetypes=c('Rdata'))
+  
+  observeEvent(input$loadProjectFile,{
+    if(is.integer(input$files)){
+      sendSweetAlert(session,NULL,"No File Selected",
+                                        type = "error")
+                         updateTabsetPanel(session,"menu","home")
+    } else{
+      fpath <- parseFilePaths(volumes, input$files)$datapath
+      # fpath2 <<- parseFilePaths(volumes, input$files)
+      # output$selectedFile <- renderPrint({fpath})
+      loadProject(fpath,runUI = F)
+          query <- "Update Utils Set Value=NULL;"
+          mainDbUpdate(query)
+          js$reset()
+    }
+    
+    
+  })
+  
+  output$selectedFile <- renderPrint({
+    if(is.integer(input$files)){
+      cat("No file has been selected")
+    } else{
+      cat(parseFilePaths(volumes, input$files)$name)
+      # parseFilePaths(volumes, input$files)$datapath[[1]]
     }
   })
   observeEvent(input$new_dialog,{
