@@ -62,7 +62,8 @@ Imports:
   pracma,
   shinybusy,
   data.table,
-  tidyr
+  tidyr,
+  shinyalert
 Suggests: testthat,
     rmarkdown,
     knitr
