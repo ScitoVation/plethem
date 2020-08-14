@@ -9,6 +9,8 @@
 interactivePBPK <- function(name = "rapidPBPK"){
   if(name == "rapidPBPK"){
     name = "rapidPBPK_pop"
+  } else if (name == "fishPBPK"){
+    name = "fishPBPK_pop"
   }
   clearProjectDb()
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
