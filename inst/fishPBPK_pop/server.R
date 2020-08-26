@@ -43,9 +43,6 @@ shinyServer(function(input, output, session) {
   parameterSets$chemvar <- reactiveVal(chemvar)
   parameterSets$expovar <- reactiveVal(expovar)
 
-  # conc_datasets <- c("none",getDatasetNames("conc"))
-  # updateSelectizeInput(session,"cplt_data",choices = conc_datasets)
-
   observe({
     exposet <- parameterSets$expo()
     updateSelectizeInput(session,"sel_set_expo",choices = exposet)
@@ -65,24 +62,14 @@ shinyServer(function(input, output, session) {
   })
   # get global variables needed to run the model
 
-  # get the connection to the master database
-  #db <- system.file("database/plethemdb.sqlite",package = "plethem.r.package",mustWork = TRUE)
-  #master_conn <- RSQLite::dbConnect(RSQLite::SQLite(),db)
-
   # get the parameter table for physiological and exposure variables.
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';",
                    model)
   physio_name_df <- mainDbSelect(query)
-  # res <- RSQLite::dbSendQuery(master_conn,query)
-  # physio_name_df <- RSQLite::dbFetch(res)
-  # RSQLite::dbClearResult(res)
 
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';",
                    model)
   expo_name_df <- mainDbSelect(query)
-  # res <- RSQLite::dbSendQuery(master_conn,query)
-  # expo_name_df <- RSQLite::dbFetch(res)
-  # RSQLite::dbClearResult(res)
 
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
                    model)
@@ -164,9 +151,6 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  
-  
-  
   ### Import button current for chemicals only
   # Import a new chemical set from user or main database
    #### Chunk for handling chemical tab
@@ -198,10 +182,6 @@ shinyServer(function(input, output, session) {
        # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
      }
    })
-   
-   
-   
-  
 
   #Save a new physiological parameter set
   observeEvent(input$btn_saveas_physio,{
@@ -356,8 +336,6 @@ shinyServer(function(input, output, session) {
                               row.names = NULL,
                               stringsAsFactors = F)
       updateUIInputs(session,change_df)
-     
-
     }
   })
   
