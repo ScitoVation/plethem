@@ -224,7 +224,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_vrpfc","Volume (L)",min =0, max = 1, value =0.063, step = 0.01)),
         column(6,
-               numericInput("ms_qrpfc","Blood Flow Fraction",min =0 , max =1, value =0.23))
+               numericInput("ms_qrpfc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.23))
       ),
       fluidRow(class="",
                column(6,
@@ -236,7 +236,7 @@ comp_body <- dashboardBody(
         column(4,
                numericInput("ms_vspfc","Volume (L)",min =0, max = 1, value =0.818, step = 0.01)),
         column(4,
-               numericInput("ms_qspfc","Blood Flow Fraction",min =0 , max =1, value =0.6))
+               numericInput("ms_qspfc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.6))
       ),
       fluidRow(class="",
                column(6,
