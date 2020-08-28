@@ -30,7 +30,7 @@
 
    0 Inputs:
 
-   34 Parameters:
+   35 Parameters:
      bw = 0,
      qc = 0,
      qg = 0,
@@ -89,7 +89,7 @@
 #define ID_mbal 0x00002
 
 /* Parameters */
-static double parms[34];
+static double parms[35];
 
 #define bw parms[0]
 #define qc parms[1]
@@ -228,7 +228,7 @@ void derivsfishPBPK (int *neq, double *pdTime, double *y, double *ydot, double *
   rcmet = ( vmax * y[ID_cliv] / pliv ) / ( km + y[ID_cliv] / pliv ) / vliv ;
   }
   else{
-    rcmet = intcl;
+  rcmet = intcl / vliv ;
   }
 
   ydot[ID_cmet] = rcmet ;
