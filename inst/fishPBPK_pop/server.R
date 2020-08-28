@@ -470,7 +470,9 @@ shinyServer(function(input, output, session) {
     # get all numeric values in the physio names dataframe
     params_df <- physio_name_df
     params_df$Val <- physio_values[physio_name_df$Var]
+    print(params_df)
     updateUIInputs(session,params_df)
+    print(params_df)
     shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
     shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "primary")
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
@@ -581,7 +583,7 @@ shinyServer(function(input, output, session) {
     output$sim_expo <- renderText(expo_name)
 
     # get metabolism data.
-    metab_data <- getMetabData(metabid,physioid,chemid,model)
+    metab_data <- getMetabData(metabid,physioid) # ,chemid,model
     output$sim_metab_type <- renderText(metab_data$Type)
     output$sim_metab_units <- renderText(metab_data$Units)
     output$sim_metab_val <- renderText(as.character(round(metab_data$Value,2)))
@@ -1340,7 +1342,6 @@ fishPBPK_initParms <- function(newParms = NULL) {
     vspfc = 0,
     qspfc = 0,
     pspf = 0,
-    frspfkdn = 0.4,
     vfat = 0,
     vkdn = 0,
     vliv = 0,

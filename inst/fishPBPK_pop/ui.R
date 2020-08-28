@@ -174,7 +174,7 @@ comp_body <- dashboardBody(
                             min =0 , max =10, value =7.2)),
         column(4,
                numericInput("ms_pbldw", label = "Blood-Water Partition Coefficient", 
-                            value = 1, min = 0)
+                            value = 5.17, min = 0)
         
       ))),
     tabItem(
@@ -252,17 +252,17 @@ chem_body <- dashboardBody(
             fluidRow(
               
               column(6,
-                     numericInput("ms_mw","Molecular Weight (g/mol)",1,0,250,0.01))
+                     numericInput("ms_mw","Molecular Weight (g/mol)",167.8,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_vmax",paste0("Maximum Metabolism Rate (","mg/h)"),1,0,250,0.01)),
+                     numericInput("ms_vmax",paste0("Maximum Metabolism Rate (","mg/h)"),0,0,250,0.01)),
               column(6,
-                     numericInput("ms_km","Michaelis-Menten Constant for Metabolism (mg/L)",1,0,250,0.01))
+                     numericInput("ms_km","Michaelis-Menten Constant for Metabolism (mg/L)",0,0,250,0.01))
             ),
             fluidRow(
               column(6,
-                     numericInput("ms_intrinsicClearance", "Intrinsic Clearance (L/h)", 0))
+                     numericInput("ms_intrinsicClearance", "Intrinsic Clearance (L/h)", 0,250,0.01))
               ),
             fluidRow(
               column(6,
@@ -280,7 +280,7 @@ expo_body <- dashboardBody(
       fluidRow(
         column(4,
                numericInput("ms_cins",label="Concentration in Water (mg/L)", 
-                            value =0,
+                            value =1.062,
                             step= 0.01)
                )
 
