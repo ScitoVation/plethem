@@ -1342,6 +1342,7 @@ fishPBPK_initParms <- function(newParms = NULL) {
     vspfc = 0,
     qspfc = 0,
     pspf = 0,
+    frspfkdn = 0.4,
     vfat = 0,
     vkdn = 0,
     vliv = 0,
@@ -1356,7 +1357,8 @@ fishPBPK_initParms <- function(newParms = NULL) {
     km = 1e-10,
     cins = 0,
     pbldw = 1e10,
-    gul = 1
+    gul = 1,
+    intcl = -1
   )
   
   if (!is.null(newParms)) {
