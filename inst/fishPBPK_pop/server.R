@@ -470,7 +470,7 @@ shinyServer(function(input, output, session) {
     # get all numeric values in the physio names dataframe
     params_df <- physio_name_df
     params_df$Val <- physio_values[physio_name_df$Var]
-    print(params_df)
+    params_df[params_df$Var == "frspfkdn", "Val"] <- 0.6
     updateUIInputs(session,params_df)
     print(params_df)
     shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
@@ -535,7 +535,6 @@ shinyServer(function(input, output, session) {
       projectDbUpdate(query)
       sim_sets <- getAllSetChoices("sim")
       updateSelectizeInput(session,"sel_sim",choices = sim_sets)
-
       updateTextInput(session,"sim_name",value = "")
       updateTextAreaInput(session,"sim_descrp",value = "")
       sendSweetAlert(session,"Success",
@@ -583,7 +582,10 @@ shinyServer(function(input, output, session) {
     output$sim_expo <- renderText(expo_name)
 
     # get metabolism data.
-    metab_data <- getMetabData(metabid,physioid) # ,chemid,model
+    print("## 1 ##")
+    print(paste0("metabid: ", metabid, ", physioid: ", physioid,", chemid:", chemid, ", model: ", model))
+    metab_data <- getMetabData(metabid,physioid,chemid,model)
+    print("## 2 ##")
     output$sim_metab_type <- renderText(metab_data$Type)
     output$sim_metab_units <- renderText(metab_data$Units)
     output$sim_metab_val <- renderText(as.character(round(metab_data$Value,2)))

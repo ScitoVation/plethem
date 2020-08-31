@@ -228,7 +228,7 @@ void derivsfishPBPK (int *neq, double *pdTime, double *y, double *ydot, double *
   rcmet = ( vmax * y[ID_cliv] / pliv ) / ( km + y[ID_cliv] / pliv ) / vliv ;
   }
   else{
-  rcmet = intcl / vliv ;
+  rcmet = (intcl * y[ID_cliv] / pliv) / vliv ;
   }
 
   ydot[ID_cmet] = rcmet ;
@@ -237,7 +237,7 @@ void derivsfishPBPK (int *neq, double *pdTime, double *y, double *ydot, double *
 
   totdose = y[ID_ains] ;
 
-  totbody = y[ID_cfat] * vfat + y[ID_cspf] * vspf + vrpf * vrpf + y[ID_ckdn] * vkdn + y[ID_cliv] * vliv ;
+  totbody = y[ID_cfat] * vfat + y[ID_cspf] * vspf + vrpf * y[ID_crpf] + y[ID_ckdn] * vkdn + y[ID_cliv] * vliv ;
 
   totclear = y[ID_cmet] * vliv ;
 
