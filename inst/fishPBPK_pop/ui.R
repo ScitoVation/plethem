@@ -5,6 +5,7 @@ library(shinyWidgets)
 library(V8)
 library(ggplot2)
 library(shinyjs)
+##
 jscode <- "
 shinyjs.disableTab = function(name) {
   var tab = $('#'+name);
