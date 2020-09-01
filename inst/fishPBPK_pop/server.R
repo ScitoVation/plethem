@@ -6,7 +6,7 @@ library(V8)
 library(ggplot2)
 library(shinyjs)
 library(magrittr)
-##
+
 shinyServer(function(input, output, session) {
   shinyjs::useShinyjs()
   # define the model name once here. It will be used throughout this server file
