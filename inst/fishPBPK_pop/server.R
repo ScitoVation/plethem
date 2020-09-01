@@ -472,7 +472,6 @@ shinyServer(function(input, output, session) {
     params_df$Val <- physio_values[physio_name_df$Var]
     params_df[params_df$Var == "frspfkdn", "Val"] <- 0.6
     updateUIInputs(session,params_df)
-    print(params_df)
     shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
     shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "primary")
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
@@ -580,16 +579,14 @@ shinyServer(function(input, output, session) {
     result <- projectDbSelect(query)
     expo_name <- result$name
     output$sim_expo <- renderText(expo_name)
-
-    # get metabolism data.
-    print("## 1 ##")
-    print(paste0("metabid: ", metabid, ", physioid: ", physioid,", chemid:", chemid, ", model: ", model))
-    metab_data <- getMetabData(metabid,physioid,chemid,model)
-    print("## 2 ##")
-    output$sim_metab_type <- renderText(metab_data$Type)
-    output$sim_metab_units <- renderText(metab_data$Units)
-    output$sim_metab_val <- renderText(as.character(round(metab_data$Value,2)))
-
+    
+    print(output)
+    # # get metabolism data.
+    # print(paste0("metabid: ", metabid, ", physioid: ", physioid,", chemid:", chemid, ", model: ", model))
+    # metab_data <- getMetabData(metabid,physioid,chemid,model)
+    # output$sim_metab_type <- renderText(metab_data$Type)
+    # output$sim_metab_units <- renderText(metab_data$Units)
+    # output$sim_metab_val <- renderText(as.character(round(metab_data$Value,2)))
 
 
   },ignoreInit = TRUE, ignoreNULL =  TRUE)

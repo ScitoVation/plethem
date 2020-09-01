@@ -622,32 +622,32 @@ shinyUI(fluidPage(
                                                                 tags$h4("Exposure Name"),
                                                                 textOutput("sim_expo")
                                                                 )
-                                                         ),
-                                                         fluidRow(
-                                                           column(4,
-                                                                  tags$h4("Age"),
-                                                                  textOutput("sim_age")
-                                                           ),
-                                                           column(4,
-                                                                  tags$h4("Gender"),
-                                                                  textOutput("sim_gender")
-                                                           )
-                                                         ),
-                                                         fluidRow(
-                                                           column(4,
-                                                                  tags$h4("Metabolism Type"),
-                                                                  textOutput("sim_metab_type")
-                                                                  ),
-                                                           column(4,
-                                                                  tags$h4("Value"),
-                                                                  textOutput("sim_metab_val")
-                                                                  ),
-                                                           column(4,
-                                                                  tags$h4("Units"),
-                                                                  textOutput("sim_metab_units")
-                                                                  )
-
-                                                         )
+                                                         )#,
+                                                         # fluidRow(
+                                                         #   column(4,
+                                                         #          tags$h4("Age"),
+                                                         #          textOutput("sim_age")
+                                                         #   ),
+                                                         #   column(4,
+                                                         #          tags$h4("Gender"),
+                                                         #          textOutput("sim_gender")
+                                                         #   )
+                                                         # ),
+                                                         # fluidRow(
+                                                         #   column(4,
+                                                         #          tags$h4("Metabolism Type"),
+                                                         #          textOutput("sim_metab_type")
+                                                         #          ),
+                                                         #   column(4,
+                                                         #          tags$h4("Value"),
+                                                         #          textOutput("sim_metab_val")
+                                                         #          ),
+                                                         #   column(4,
+                                                         #          tags$h4("Units"),
+                                                         #          textOutput("sim_metab_units")
+                                                         #          )
+                                                         # 
+                                                         # )
 
                                              )
                                              )
