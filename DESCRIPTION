@@ -63,7 +63,8 @@ Imports:
   shinybusy,
   data.table,
   tidyr,
-  shinyalert
+  shinyalert,
+  shinyFiles
 Suggests: testthat,
     rmarkdown,
     knitr
