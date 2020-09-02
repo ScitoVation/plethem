@@ -63,8 +63,8 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
 chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="chem_sidebar",
   selectizeInput("qsarModelChem", "Select A QSAR Model",
-                          choices = c("QSAR model one" = 'one',
-                                      "QSAR model two" = 'two'),
+                          choices = c("QSAR Model One" = 'one',
+                                      "QSAR Model Two" = 'two'),
                           width = "99%"),
   shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary"),
   shinyBS::bsButton("btn_ivive_chem","Perform IVIVE",style = "primary")
@@ -657,8 +657,8 @@ shinyUI(fluidPage(
                                                                   choices = list("Human" = "Human","Rat"= "Rat"),
                                                                   selected = "Human")
                                                       # shinyBS::tipify(selectizeInput("sel_qsar4Partition", NULL,
-                                                      #                choices = c("QSAR model one" = 'one',
-                                                      #                            "QSAR model two" = 'two')
+                                                      #                choices = c("QSAR Model One" = 'one',
+                                                      #                            "QSAR Model Two" = 'two')
                                                       #                ),
                                                       #                "Select QSAR model for partition coefficients")
                                                       ),

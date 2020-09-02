@@ -1671,9 +1671,9 @@ shinyServer(function(input, output, session) {
 
  observeEvent(input$ms_org,{
    if (input$ms_org == "ha"){
-     updatePickerInput(session,"sel_qsar4Partition",choices =  c("QSAR model one" = 'one'))
+     updatePickerInput(session,"sel_qsar4Partition",choices =  c("QSAR Model One" = 'one'))
    } else{
-     updatePickerInput(session,"sel_qsar4Partition",choices = c("QSAR model one" = 'one',
+     updatePickerInput(session,"sel_qsar4Partition",choices = c("QSAR Model One" = 'one',
                                                                 "Unified QSAR model" = 'two'))
    } 
  })
