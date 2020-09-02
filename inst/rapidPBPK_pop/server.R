@@ -3437,7 +3437,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                            choices = list("Forward Dosimetry"="fd",
                                                           "Forward Dosimetry with Monte Carlo"="mc",
                                                           "Reverse Dosimetry"="rd",
-                                                          "Route to Route Exptrapolation"="r2r")
+                                                          "Route to Route Extrapolation"="r2r")
                             )
                           ),
                           tabsetPanel(id = ns("tab_sim_sets"),type = "pills",
