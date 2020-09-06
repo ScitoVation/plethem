@@ -73,6 +73,7 @@ shinyServer(function(input,output,session){
     DT::datatable(data = vals$result_table,rownames = F,escape = F,selection = "single",extensions = "Buttons",
                   options = list(
                     dom="Btpl",
+                    charset = "utf-8",
                     buttons = c("copy","csv","colvis"))#,
                     #rowCallback = DT::JS(scientific_notation_js))
                     ),server = T)
