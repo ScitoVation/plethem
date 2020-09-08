@@ -209,9 +209,10 @@ shinyServer(function(input, output, session) {
                                    type = "error")
 
     }else{
-      saveAsParameterSetUI(input$btn_saveas_physio,"physio")
+      ns <- paste0("physio",input$btn_saveas_physio)
+      saveAsParameterSetUI(ns,"physio")
       parameterSets$savedat <- callModule(saveAsParameterSet,
-                                          input$btn_saveas_physio,
+                                          ns,
                                           "physio",isolate(input),
                                           physio_name_df)
     }
@@ -221,20 +222,22 @@ shinyServer(function(input, output, session) {
   #Save a new exposure parameter set
   observeEvent(input$btn_saveas_expo,{
     print("## 8 ##")
-      saveAsParameterSetUI(input$btn_saveas_expo,"expo")
-      parameterSets$savedat <- callModule(saveAsParameterSet,
-                                          input$btn_saveas_expo,
-                                          "expo",isolate(input),
-                                          expo_name_df)
-    
-
+    ns <- paste0("expo",input$btn_saveas_expo)
+    saveAsParameterSetUI(ns,"expo")
+    parameterSets$savedat <- callModule(saveAsParameterSet,
+                                        ns,
+                                        "expo",isolate(input),
+                                        expo_name_df)
   })
 
   #Save a new chemical parameter set
   observeEvent(input$btn_saveas_chem,{
     print("## 9 ##")
-    saveAsParameterSetUI(input$btn_saveas_chem,"chem")
-    parameterSets$savedat <- callModule(saveAsParameterSet,input$btn_saveas_chem,"chem",isolate(input),chem_name_df)
+    ns <- paste0("chem",input$btn_saveas_chem)
+    saveAsParameterSetUI(ns,"chem")
+    parameterSets$savedat <- callModule(saveAsParameterSet,ns,
+                                        "chem",isolate(input),
+                                        chem_name_df)
   })
 
 
