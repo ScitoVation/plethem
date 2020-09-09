@@ -391,7 +391,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_uflwc","Urinary Flow Rate (L/kg/day)",min =0 , max =1, value =0.0214)),
         column(6,
-               numericInput("ms_gfr","Glomerular Filteration (L/h)",min =0 , max =1, value =0.08)
+               numericInput("ms_gfr","Glomerular Filtration (L/h)",min =0 , max =1, value =0.08)
         )
         
       )
@@ -983,10 +983,10 @@ shinyUI(fluidPage(
                                                                                             value = 1, min = 0, max = 1)
                                                                         ),
                                                                         column(4,
-                                                                               numericInput("ms_ka","Rate of Absorption in Gut Lumen(/h)",
+                                                                               numericInput("ms_ka","Rate of Absorption in Gut Lumen (/h)",
                                                                                             value = 5,min = 0)),
                                                                         column(4,
-                                                                               numericInput("ms_kVtoL","Tranfer Rate from vehicle to Gut Lumen (/h)",
+                                                                               numericInput("ms_kVtoL","Tranfer Rate from Vehicle to Gut Lumen (/h)",
                                                                                             value = 1, min = 0)
                                                                         )
                                                                       ),
@@ -1003,7 +1003,7 @@ shinyUI(fluidPage(
                                                                       ),
                                                                       fluidRow(
                                                                         column(4,
-                                                                               numericInput("ms_pair","Plasma-air Partition Coefficient",value = 0,min = 0))
+                                                                               numericInput("ms_pair","Plasma-Air Partition Coefficient",value = 0,min = 0))
                                                                       )
                                                                     )
                                                            ),
@@ -1124,7 +1124,7 @@ shinyUI(fluidPage(
                                                                                                          numericInput("ms_phrt",label = "Heart Partition Coefficient",value = 0.5)
                                                                                                   ),
                                                                                                   column(6,
-                                                                                                         numericInput("ms_pahrt",label = "HeartPermeability Coefficient",value = 1000))
+                                                                                                         numericInput("ms_pahrt",label = "Heart Permeability Coefficient",value = 1000))
                                                                                                 )
                                                                                         ),
                                                                                         tabItem(tabName = "gi",
@@ -1160,7 +1160,7 @@ shinyUI(fluidPage(
                                                                                                          numericInput("ms_prpf",label = "RPF Tissue Partition Coefficient",value = 0.5)
                                                                                                   ),
                                                                                                   column(6,
-                                                                                                         numericInput("ms_parpf",label = "SPF Tissue Permeability Coefficient",value = 1000))
+                                                                                                         numericInput("ms_parpf",label = "RPF Tissue Permeability Coefficient",value = 1000))
                                                                                                 )
                                                                                         ),
                                                                                         tabItem(tabName = "spf",
@@ -1214,10 +1214,10 @@ shinyUI(fluidPage(
                                                                       ),
                                                                       fluidRow(
                                                                         column(6,
-                                                                               numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μm/h/kg BW^0.75)"),1,0,250,0.01)
+                                                                               numericInput("ms_vmaxc",paste0("Maximum Metabolism Rate (","μmol/h/kg BW^0.75)"),1,0,250,0.01)
                                                                         ),
                                                                         column(6,
-                                                                               numericInput("ms_vkm1c", label = "First Order metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
+                                                                               numericInput("ms_vkm1c", label = "First Order Metabolism in Liver (L/h/kg liver)", value = 1, step = 0.01)
                                                                         )
                                                                       ),
                                                                       fluidRow(
@@ -1225,7 +1225,7 @@ shinyUI(fluidPage(
                                                                       ),
                                                                       fluidRow(
                                                                         column(6,
-                                                                               numericInput("ms_kent",label = "Rate of metabolism in the gut lumen", value = 5, step = 0.01)
+                                                                               numericInput("ms_kent",label = "Rate of Metabolism in the Gut lumen", value = 5, step = 0.01)
                                                                         )
                                                                       ),
                                                                       fluidRow(
