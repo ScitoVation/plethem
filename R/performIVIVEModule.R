@@ -14,10 +14,10 @@ performIVIVEUI<- function(namespace){
                                                   choices = c("Human"="ha","Rat"="ra"))
                                    ),
                             column(4,
-                                   numericInput(ns("num_bw"),"Body Weight(kg)",value = 81)
+                                   numericInput(ns("num_bw"),"Body Weight (kg)",value = 81)
                                    ),
                             column(4,
-                                   numericInput(ns("num_livwt"),"Liver Weight(kg)",value = 1.8)
+                                   numericInput(ns("num_livwt"),"Liver Weight (kg)",value = 1.8)
                                    )
                           ),
                           fluidRow(
