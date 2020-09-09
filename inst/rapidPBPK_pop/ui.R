@@ -540,7 +540,7 @@ comp_body <- dashboardBody(
       ),
       fluidRow(
         column(6,
-               numericInput("ms_qalivc","Aretrial Blood Flow ratio to liver",min =0 , max =1, value =0.0381)),
+               numericInput("ms_qalivc","Arterial Blood Flow ratio to liver",min =0 , max =1, value =0.0381)),
         column(6,
                numericInput("ms_qvlivc","Fraction of Venous Liver Flow",min =0 , max =1, value =0.152))
         
