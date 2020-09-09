@@ -408,9 +408,9 @@ comp_body <- dashboardBody(
       tabName = "fat_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vfatc","Volume Ratio",min =0, max = 1, value =0.1841, step = 0.01)),
+               numericInput("ms_vfatc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.1841, step = 0.01)),
         column(6,
-               numericInput("ms_qfatc","Blood Flow Ratio",min =0 , max =1, value =0.08226))
+               numericInput("ms_qfatc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.08226))
       )
     ),
     tabItem(
