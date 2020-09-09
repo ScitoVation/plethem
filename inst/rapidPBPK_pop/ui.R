@@ -424,9 +424,9 @@ comp_body <- dashboardBody(
       tabName = "skin_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vskinc","Volume Ratio",min =0, max = 1, value =0.0553, step = 0.01)),
+               numericInput("ms_vskinc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.0553, step = 0.01)),
         column(6,
-               numericInput("ms_qskinc","Blood Flow Ratio",min =0 , max =1, value =0.06783))
+               numericInput("ms_qskinc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.06783))
       )
     ),
     tabItem(
@@ -440,9 +440,9 @@ comp_body <- dashboardBody(
       tabName = "muscle_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vmuscc","Volume Ratio",min =0, max = 1, value =0.4576, step = 0.01)),
+               numericInput("ms_vmuscc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.4576, step = 0.01)),
         column(6,
-               numericInput("ms_qmuscc","Blood Flow Ratio",min =0 , max =1, value =0.13711))
+               numericInput("ms_qmuscc","Blood Flow (Ftaction of Cardiac Output)",min =0 , max =1, value =0.13711))
       )
     ),
     tabItem(
@@ -456,9 +456,9 @@ comp_body <- dashboardBody(
       tabName = "bone_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vbonec","Volume Ratio",min =0, max = 1, value =0.1318, step = 0.01)),
+               numericInput("ms_vbonec","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.1318, step = 0.01)),
         column(6,
-               numericInput("ms_qbonec","Blood Flow Ratio",min =0 , max =1, value =0.1266))
+               numericInput("ms_qbonec","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.1266))
       )
     ),
     tabItem(
@@ -472,9 +472,9 @@ comp_body <- dashboardBody(
       tabName = "brain_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vbrnc","Volume Ratio",min =0, max = 1, value =0.0192, step = 0.01)),
+               numericInput("ms_vbrnc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.0192, step = 0.01)),
         column(6,
-               numericInput("ms_qbrnc","Blood Flow Ratio",min =0 , max =1, value =0.098))
+               numericInput("ms_qbrnc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.098))
       )
     ),
     tabItem(
@@ -488,9 +488,9 @@ comp_body <- dashboardBody(
       tabName = "lung_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vlngc","Volume Ratio",min =0, max = 1, value =0.0144, step = 0.01)),
+               numericInput("ms_vlngc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.0144, step = 0.01)),
         column(6,
-               numericInput("ms_qlngc","Blood Flow Ratio",min =0 , max =1, value =0.0234))
+               numericInput("ms_qlngc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.0234))
       )
     ),
     tabItem(
@@ -504,9 +504,9 @@ comp_body <- dashboardBody(
       tabName = "heart_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vhrtc","Volume Ratio",min =0, max = 1, value =0.0051, step = 0.01)),
+               numericInput("ms_vhrtc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.0051, step = 0.01)),
         column(6,
-               numericInput("ms_qhrtc","Blood Flow Ratio",min =0 , max =1, value =0.10536))
+               numericInput("ms_qhrtc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.10536))
       )
     ),
     tabItem(
@@ -520,9 +520,9 @@ comp_body <- dashboardBody(
       tabName = "gi_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vgic","Volume Ratio",min =0, max = 1, value =0.0222, step = 0.01)),
+               numericInput("ms_vgic","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.0222, step = 0.01)),
         column(6,
-               numericInput("ms_qgic","Blood Flow Ratio",min =0 , max =1, value =0.1139))
+               numericInput("ms_qgic","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.1139))
       )
     ),
     tabItem(
@@ -536,11 +536,11 @@ comp_body <- dashboardBody(
       tabName = "liver_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vlivc","Volume Ratio",min =0, max = 1, value =0.0225, step = 0.01))
+               numericInput("ms_vlivc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.0225, step = 0.01))
       ),
       fluidRow(
         column(6,
-               numericInput("ms_qalivc","Arterial Blood Flow ratio to liver",min =0 , max =1, value =0.0381)),
+               numericInput("ms_qalivc","Arterial Blood Flow to liver (Fraction of Cardiac Output)",min =0 , max =1, value =0.0381)),
         column(6,
                numericInput("ms_qvlivc","Fraction of Venous Liver Flow",min =0 , max =1, value =0.152))
         
@@ -557,9 +557,9 @@ comp_body <- dashboardBody(
       tabName = "kidney_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vkdnc","Volume Ratio",min =0, max = 1, value =0.0046, step = 0.01)),
+               numericInput("ms_vkdnc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.0046, step = 0.01)),
         column(6,
-               numericInput("ms_qkdnc","Blood Flow Ratio",min =0 , max =1, value =0.16886))
+               numericInput("ms_qkdnc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.16886))
       )
     ),
     tabItem(
@@ -573,9 +573,9 @@ comp_body <- dashboardBody(
       tabName = "rpf_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vrpfc","Volume Ratio",min =0, max = 1, value =0.00001, step = 0.01)),
+               numericInput("ms_vrpfc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.00001, step = 0.01)),
         column(6,
-               numericInput("ms_qrpfc","Blood Flow Ratio",min =0 , max =1, value =0))
+               numericInput("ms_qrpfc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0))
       )
     ),
     tabItem(
@@ -589,9 +589,9 @@ comp_body <- dashboardBody(
       tabName = "spf_blood",
       fluidRow(
         column(6,
-               numericInput("ms_vspfc","Volume Ratio",min =0, max = 1, value =0.00001, step = 0.01)),
+               numericInput("ms_vspfc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.00001, step = 0.01)),
         column(6,
-               numericInput("ms_qspfc","Blood Flow Ratio",min =0 , max =1, value =0))
+               numericInput("ms_qspfc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0))
       )
     )
   )
@@ -1205,7 +1205,7 @@ shinyUI(fluidPage(
                                                                       fluidRow(
                                                                         
                                                                         column(6,
-                                                                               numericInput("ms_km","Michaelis Menton Constant for Metabolism (μM)",1,0,250,0.01)
+                                                                               numericInput("ms_km","Michaelis Menten Constant for Metabolism (μM)",1,0,250,0.01)
                                                                         ),
                                                                         column(6,
                                                                                shinyBS::bsButton("btn_ivive_chem",
