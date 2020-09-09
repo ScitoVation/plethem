@@ -541,6 +541,7 @@ shinyServer(function(input, output, session) {
       sim_descrp <- input$sim_descrp
       sim_start <- input$sim_start
       sim_dur <- input$sim_dur
+      dur_units <- "h"
       mc_num <- ifelse(input$mc_mode,input$mc_num,0)
       chemid <- as.integer(input$sel_set_chem)
       physioid <- as.integer(input$sel_set_physio)
@@ -550,16 +551,17 @@ shinyServer(function(input, output, session) {
       chemvarid <- as.integer(input$sel_set_chemvar)
       expovarid <- as.integer(input$sel_set_expovar)
       query <- paste(strwrap(sprintf("INSERT INTO SimulationsSet (simid,name,descrp,expoid,physioid,
-                                     chemid,metabid,physiovarid, chemvarid,expovarid,tstart,sim_dur,mc_num) Values
-                                     (%d,'%s','%s',%i,%i,%i,%i,%i,%i,%i,%f,%f,%i) ;",
+                                     chemid,metabid,physiovarid,chemvarid,expovarid,tstart,sim_dur,dur_units,mc_num) Values
+                                     (%d,'%s','%s',%i,%i,%i,%i,%i,%i,%i,%f,%f,'%s',%i) ;",
                                      simid,sim_name,sim_descrp,
                                      expoid,physioid,
                                      chemid,metabid,
                                      physiovarid,chemvarid,
                                      expovarid,
-                                     sim_start,sim_dur,mc_num),
+                                     sim_start,sim_dur,dur_units,mc_num),
                              simplify = T),
                      sep = " ",collapse = "")
+      print(query)
       projectDbUpdate(query)
       sim_sets <- getAllSetChoices("sim")
       updateSelectizeInput(session,"sel_sim",choices = sim_sets)
@@ -626,22 +628,34 @@ shinyServer(function(input, output, session) {
   observeEvent(input$run_sim,{
     print("## 30 ##")
     simid <- as.integer(input$sel_sim)
+    print("%% a %%")
     results$simid <- simid
     # get the parameters needed to run the model
+    print("%% aa %%")
+    print(simid)
+    print(model)
     model_params <- getAllParamValuesForModel(simid,model)
+    print("%% b %%")
     #get total volume
     active_comp <- input$ms_cmplist
+    print("%% c %%")
     vol_comps <- c(active_comp,"blood")
+    print("%% d %%")
     total_vol <- sum(unlist(lapply(vol_comps,
                                    function(x){
                                      input[[vol_ids[x]]]
                                      })
                             )
                      )
+    print("%% e %%")
     query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
+    print("%% f %%")
     mc_num <- as.integer(projectDbSelect(query)$mc_num)
+    print("%% g %%")
     model_params$vals[["total_vol"]]<- total_vol
+    print("%% h %%")
     if (mc_num > 1){
+      print("%% i %%")
       MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
       query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
                        model)
@@ -669,6 +683,7 @@ shinyServer(function(input, output, session) {
       results$mode <- "MC"
       updateNavbarPage(session,"menu","output")
     }else{
+      print("%% j %%")
       #rep_flag <- all_params["rep_flag"]
       #model_params <- all_params["model_params"]
       initial_values <- calculateInitialValues(model_params)
