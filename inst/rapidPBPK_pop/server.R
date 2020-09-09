@@ -1120,9 +1120,9 @@ shinyServer(function(input, output, session) {
                                                                  ),
                                                                  fluidRow(column(width = 12,
                                                                                  shinyWidgets::radioGroupButtons("metab_type",justified = T,
-                                                                                                                 "Select Meatbolism Type",
+                                                                                                                 "Select Metabolism Type",
                                                                                                                  choices = c("Saturable Hepatic"="m1","Linear Hepatic"="m2",
-                                                                                                                             "Plasma Clearance"="m3","Gut Clerance"="m4"))
+                                                                                                                             "Plasma Clearance"="m3","Gut Clearance"="m4"))
                                                                  )
 
 
@@ -1131,7 +1131,7 @@ shinyServer(function(input, output, session) {
                                                                  fluidRow(
                                                                  column(width = 6,
                                                                         shinyBS::popify(numericInput("metab_ref_age",
-                                                                                     "Reference age in Years",
+                                                                                     "Reference Age in Years",
                                                                                      value = 25, min = 0),
                                                                                      title = "",
                                                                                      content = "If age defined in the physiological parameters is not a part of the table, the value at this age will be used")
@@ -1153,7 +1153,7 @@ shinyServer(function(input, output, session) {
   })
   output$metab_template <- downloadHandler(
     filename = function(){"Metabolism_Template.csv"},
-    content = function(file){write.csv(data.frame("Age"=c(25),"Clearence"=c(0),stringsAsFactors = F),
+    content = function(file){write.csv(data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F),
                                        file,
                                        row.names = F)
     },
