@@ -34,7 +34,7 @@ performIVIVEUI<- function(namespace){
                                    numericInput(ns("num_cppgl"),"Cytosolic protein per gram liver",value = 0)
                                    )
                           ),
-                          
+
                           fluidRow(
                                    tabsetPanel(id = ns("heptype"),
                                           tabPanel(title = "Whole Hepatocyte",value = "hep_whole",
@@ -46,24 +46,22 @@ performIVIVEUI<- function(namespace){
                                                      column(4,
                                                             selectizeInput(ns("sel_whunit"),label = "Units",
                                                                            choices = c("L/h"="Lh",
-                                                                                       "L/h/10^6 Hepatocytes"="LhH",
-                                                                                       "\ub5mol/min/10^6 hepatocytes"="ummH")
+                                                                                       "L/h/10^6 Hepatocytes"="LhH")
                                                                            )
                                                             )
-                                                   )                                   
+                                                   )
                                                    ),
                                           tabPanel(title = "Sub-cellular",value = "hep_sc",
-                                               
+
                                                      fluidRow(
                                                        column(4,
                                                               numericInput(ns("num_mscl"),
-                                                                           label = "Measure Microsomal Clearance",
+                                                                           label = "Microsomal Clearance",
                                                                            value = 0)
                                                               ),
                                                        column(4,
                                                               selectizeInput(ns("sel_msunit"),label = "Units",
-                                                                          choices = list("\ub5mol/min/mg Protein"="ummmP",
-                                                                                         "\ub5L/min/mg Protein"="ulmmP",
+                                                                          choices = list("\ub5L/min/mg Protein"="ulmmP",
                                                                                          "\ub5L/h/mg Protein"="ulhmP",
                                                                                          "mL/min/mg Protein"="mlmmP",
                                                                                          "mL/h/mg Protein"="mlhmP"))
@@ -72,7 +70,7 @@ performIVIVEUI<- function(namespace){
                                                      fluidRow(
                                                        column(4,
                                                               numericInput(ns("num_cycl"),
-                                                                           label = "Measure Cytosolic Clearance",0)
+                                                                           label = "Cytosolic Clearance",0)
 
                                                        ),
                                                        column(4,
@@ -84,13 +82,13 @@ performIVIVEUI<- function(namespace){
                                                                                          "mL/h/mg Protein"="mlhmP"))
                                                        )
                                                      )
-                                                   
+
                                           ),
                                           tabPanel(title = "S9 Fraction",value = "hep_s9",
                                                    fluidRow(
                                                      column(4,
                                                             numericInput(ns("num_S9cl"),
-                                                                         "Measured S9 Fraction Clearance",0)
+                                                                         "S9 Fraction Clearance",0)
                                                      ),
                                                      column(4,
                                                             selectizeInput(ns("sel_s9unit"),label = "Units",
@@ -119,8 +117,8 @@ performIVIVEUI<- function(namespace){
                         )
                         )
             )
-  
-  
+
+
 }
 
 #'server side function for performing IVIVE for a chemical
@@ -187,10 +185,10 @@ performIVIVE <- function(input,output,session,km){
     #print(c(vliv,vmax,km))
     return(c("Yes",vliv/liver_wt,vmax,km))
   }
-  #returnValues$ret_data<- 
+  #returnValues$ret_data<-
   returnValues$ret_data<- eventReactive(input$btn_ivive,module_calcs(),ignoreInit = TRUE,ignoreNULL = TRUE)
-  
-  
+
+
   observeEvent(input$btn_ivive,{
     removeModal()
   })
