@@ -23,7 +23,7 @@ shinyServer(function(input, output, session) {
   dataset$savedat <- reactiveVal(c("No","none"))
   dataset$iviveDat <- reactiveVal(c("No",0,0,0))
   parameterSets <- reactiveValues()
-  
+
   parameterSets$savedat <- reactiveVal(c("No","",0))
   parameterSets$sverestdat <- reactiveVal(c("None",0))
   parameterSets$importdat <- reactiveVal(c("No","",0))
@@ -98,7 +98,7 @@ shinyServer(function(input, output, session) {
   }
 
   },ignoreNULL = T, ignoreInit = T)
- 
+
   # get global variables needed to run the model
 
 
@@ -114,7 +114,7 @@ shinyServer(function(input, output, session) {
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
                    model)
   chem_name_df <- mainDbSelect(query)
-  
+
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Adme' AND UIParams = 'TRUE' ;",
                    model)
   adme_name_df <- mainDbSelect(query)
@@ -179,7 +179,7 @@ shinyServer(function(input, output, session) {
   if(length(biom_set)>0){
     updateSelectizeInput(session,"sel_biom",choices = biom_set)
   }
-  
+
 
 
 
@@ -224,7 +224,7 @@ shinyServer(function(input, output, session) {
                                               paste0("allData",input$btn_import_expo),
                                               expo_name_df)
   })
-  
+
   observe({
     result_vector <- parameterSets$importAllData
     if(result_vector()[1]=="Yes"){
@@ -237,12 +237,12 @@ shinyServer(function(input, output, session) {
                            choices = set_list)
     }
   })
-  
-  
+
+
   ### Import button handlers
    # Chunk for handling chemical tab
    observeEvent(input$btn_import_chem,{
-     
+
      importParameterSetUI(paste0("chem",input$btn_import_chem),"chem")
      parameterSets$savedat <- callModule(importParameterSet,paste0("chem",input$btn_import_chem),"chem")
 
@@ -251,10 +251,10 @@ shinyServer(function(input, output, session) {
    observeEvent(input$btn_import_physio,{
      importParameterSetUI(input$btn_import_physio,"physio")
      parameterSets$savedat <- callModule(importParameterSet,input$btn_import_physio,"physio")
-     
+
    })
   ### SAVE AS BUTTON HANDLERS
-   
+
   #Save a new physiological parameter set
   observeEvent(input$btn_saveas_physio,{
     active_comp <- input$ms_cmplist
@@ -317,7 +317,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$btn_saveas_expo,{
     expos_list <- c(input$ms_bdose,input$ms_drdose,input$ms_bdosev,
                     input$ms_inhdose,input$ms_ivdose,input$ms_dermrate)
-    
+
     # make sure atleast one route of exposure is active before saving the data
     if((input$ms_bdose==0 || input$ms_breps == 0) && input$ms_drdose==0 && (input$ms_bdosev==0 || input$ms_brepsv == 0)&& input$ms_inhdose==0 && input$ms_ivdose==0 && input$ms_dermrate == 0){
       shinyWidgets::sendSweetAlert(session,
@@ -330,7 +330,7 @@ shinyServer(function(input, output, session) {
                                    title = "Invalid Exposure Parameters",
                                    text = "More than one route of exposure is active",
                                    type = "error")
-      
+
     }else{
       ns <- paste0("expo",input$btn_saveas_expo)
       saveAsParameterSetUI(ns,"expo")
@@ -350,7 +350,7 @@ shinyServer(function(input, output, session) {
                                         "chem",isolate(input),
                                         chem_name_df)
   })
-  
+
   #Save a new chemical parameter set
   observeEvent(input$btn_saveas_adme,{
     chemid <- as.integer(input$sel_chem4adme)
@@ -370,9 +370,9 @@ shinyServer(function(input, output, session) {
                                           "adme",isolate(input),
                                           adme_name_df,id_list)
     }
-    
+
   })
-  
+
   ## CODE CHUNK FOR HANDLING BIOMONITORING DATA UPLOAD
   observeEvent(input$btn_new_biom,{
     namespace <- paste0("biom",input$btn_new_biom)
@@ -380,7 +380,7 @@ shinyServer(function(input, output, session) {
     parameterSets$savedat <- callModule(newEditBiomoniteringData,namespace,
                                         type= "new")
   })
-  
+
   observeEvent(input$btn_edit_biom,{
     if(input$sel_biom == ""){
       ## Error bubble no data yet loaded.
@@ -392,15 +392,15 @@ shinyServer(function(input, output, session) {
                                           type = "edit",biomid)
     }
   })
-  
-  
+
+
   ### CODE CHUNK FOR HANDLING SIMULATIONS TAB
-  
+
   #New Create simulation dialog
   observeEvent(input$btn_new_sim,{
     set_names <-c("expo","physio","chem","adme",
                   "expovar","physiovar","chemvar","admevar",
-                  "biom","extrapolate") 
+                  "biom","extrapolate")
     selected_list <- list()
     selected_list[set_names]<- list(NULL)
     set_list <- lapply(set_names,function(x){
@@ -416,7 +416,7 @@ shinyServer(function(input, output, session) {
     parameterSets$savedat <- callModule(createSimulation,
                                module_namespace,type = "new")
   })
-  
+
   observeEvent(input$btn_edit_sim,{
     if(input$sel_sim == ""){
       ## Error bubble no data yet loaded.
@@ -431,7 +431,7 @@ shinyServer(function(input, output, session) {
     # Get the choice of adme ids for the given simulation
     query <- sprintf("Select name,admeid from AdmeSet where chemid = %d AND physioid = %d AND expoid = %d;",
                      sim_details$chemid,
-                     sim_details$physioid, 
+                     sim_details$physioid,
                      sim_details$expoid)
     res <- projectDbSelect(query)
     adme_set <- as.list(res[["admeid"]])
@@ -445,18 +445,18 @@ shinyServer(function(input, output, session) {
       }else{
         return(parameterSets[[x]]())
       }
-      
+
     },adme_set)
     set_list <- setNames(set_list,set_names)
-    
+
     # create list for selected options from the dropdowns
     selected_list <- lapply(set_names,function(x){
       var_id <- paste0(x,"id")
       return(sim_details[[var_id]])
-      
+
     })
     selected_list<- setNames(selected_list,set_names)
-    
+
     # Update simulation settings based on simulation type
     simulation_settings <- list()
     simulation_settings$simid <- simid
@@ -466,13 +466,13 @@ shinyServer(function(input, output, session) {
     simulation_settings$tstart <- sim_details$tstart
     simulation_settings$sim_dur <- sim_details$sim_dur
     simulation_settings$dur_units <- sim_details$dur_units
-    
+
     sim_type <- sim_details$sim_type
     if(sim_details$sim_type %in% c("rd","r2r")){
       simulation_settings$expo_range <- c(sim_details$low_dose_estimate,
                                           sim_details$high_dose_estimate)
       simulation_settings$num_expos <- sim_details$num_expos
-      
+
     }
     if(sim_details$sim_type != "fd"){
       simulation_settings$mcruns <- sim_details$mcruns
@@ -481,7 +481,7 @@ shinyServer(function(input, output, session) {
     createSimulationUI(module_namespace,set_list,selected_list)
     parameterSets$savedat <- callModule(createSimulation,
                                module_namespace,type = "edit",simulation_settings)
-    
+
   }})
 
 
@@ -526,7 +526,7 @@ shinyServer(function(input, output, session) {
                                              UI_values,set_values,
                                              physio_name_df,"physio")
     }
-    
+
 
   })
 
@@ -547,7 +547,7 @@ shinyServer(function(input, output, session) {
                                              UI_values,set_values,
                                              expo_name_df,"expo")
     }
-    
+
   })
 
   #Save-restore chemical set
@@ -558,7 +558,7 @@ shinyServer(function(input, output, session) {
                      "Please create an chemical set first")
     }else{
       set_values <- getParameterSet("chem",chemid)
-      
+
       #chem_vars <- subset(chem_name_df$Var,!(chem_name_df$Var %in% c("name","cas","descrp")))
       UI_values <- reactiveValuesToList(input)[paste0("ms_",chem_name_df$Var)]
       names(UI_values) <- gsub("ms_","",names(UI_values))
@@ -569,9 +569,9 @@ shinyServer(function(input, output, session) {
                                              UI_values,set_values,
                                              chem_name_df,"chem")
     }
-    
+
   })
-  
+
   #Save/Restore Button function
   observeEvent(input$btn_sverest_adme,{
     sendSweetAlert(session,"Unavailable","Save/Restore Button is unavailable for ADME sets in this version of PLETHEM.")
@@ -643,7 +643,7 @@ shinyServer(function(input, output, session) {
 
     }
   })
-  
+
   observeEvent(input$btn_new_varphys,{
     param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
     param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
@@ -653,7 +653,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_edit_varphys,{
     if(input$sel_physio_var == ""){
       sendSweetAlert(session,"No Set Found","No Variability set is created",
@@ -667,10 +667,10 @@ shinyServer(function(input, output, session) {
       parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
                                          param_vars,input$sel_physio_var)
     }
-    
+
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_new_varchem,{
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
     param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
@@ -680,7 +680,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_edit_varchem,{
     if(input$sel_chem_var == ""){
       sendSweetAlert(session,"No Set Found","No Variability set is created",
@@ -696,7 +696,7 @@ shinyServer(function(input, output, session) {
     }
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_new_varexpo,{
       param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
       param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
@@ -704,10 +704,10 @@ shinyServer(function(input, output, session) {
       ns <- paste0("ven_",input$btn_new_varexpo)
       newEditVariabilityUI(ns)
       parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
-    
+
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_edit_varexpo,{
     if(input$sel_expo_var == ""){
       sendSweetAlert(session,"No Set Found","No Variability set is created",
@@ -722,7 +722,7 @@ shinyServer(function(input, output, session) {
                                        param_vars,input$sel_expo_var)
     }
   },ignoreInit = T, ignoreNULL = T)
-    
+
     observeEvent(input$btn_new_varadme,{
       param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
       param_vars <- adme_name_df$Var[which(adme_name_df$Variability == "TRUE")]
@@ -732,7 +732,7 @@ shinyServer(function(input, output, session) {
       parameterSets$vardat <- callModule(newEditVariability,ns,"adme","new",param_vars)
       ### Variability Tab
     },ignoreInit = T, ignoreNULL = T)
-    
+
     observeEvent(input$btn_edit_varadme,{
       if(input$sel_adme_var == ""){
         sendSweetAlert(session,"No Set Found","No Variability set is created",
@@ -748,8 +748,8 @@ shinyServer(function(input, output, session) {
       }
     },ignoreInit = T, ignoreNULL = T)
     ### Variability Tab
-  
-  
+
+
   observe({
     result_vector <- parameterSets$vardat
     if (result_vector()[1]=="Yes"){
@@ -765,7 +765,7 @@ shinyServer(function(input, output, session) {
       saveProject()
     }
   })
-  
+
   observeEvent(input$sel_physio_var,{
     varid <- input$sel_physio_var
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
@@ -778,9 +778,9 @@ shinyServer(function(input, output, session) {
                                                                       "Lower Bound"=7)
                                                          )
                                            )
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   observeEvent(input$sel_chem_var,{
     varid <- input$sel_chem_var
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
@@ -792,9 +792,9 @@ shinyServer(function(input, output, session) {
                                                                       "Upper Bound"=6,
                                                                       "Lower Bound"=7)
     ))
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   observeEvent(input$sel_expo_var,{
     varid <- input$sel_expo_var
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
@@ -806,9 +806,9 @@ shinyServer(function(input, output, session) {
                                                                       "Upper Bound"=6,
                                                                       "Lower Bound"=7)
     ))
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   observeEvent(input$sel_adme_var,{
     varid <- input$sel_adme_var
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
@@ -820,12 +820,12 @@ shinyServer(function(input, output, session) {
                                                                     "Upper Bound"=6,
                                                                     "Lower Bound"=7)
     ))
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
-  
+
+
 ## CODE CHUNK TO UPDATE UI BASED ON SELECTED SET FROM THE DROPDOWN
-  
+
   #update the inputs for the parameter set selected
   observeEvent(input$sel_physio,{
     physioid <- input$sel_physio
@@ -838,7 +838,7 @@ shinyServer(function(input, output, session) {
     shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
     shinyBS::updateButton(session,"btn_useQSAR4Partition",style = "primary")
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   #update the inputs for the exposure set selected
   observeEvent(input$sel_expo,{
     expoid <- input$sel_expo
@@ -849,7 +849,7 @@ shinyServer(function(input, output, session) {
     updateUIInputs(session,params_df)
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
-  
+
   #update the inputs for the chemical set selected
   observeEvent(input$sel_chem,{
     chemid <- input$sel_chem
@@ -860,7 +860,7 @@ shinyServer(function(input, output, session) {
     updateUIInputs(session,params_df)
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
-  
+
   #update the inputs for the adme set selected
   observeEvent(input$sel_adme,{
     admeid <- as.integer(input$sel_adme)
@@ -876,12 +876,12 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session,"sel_chem4adme",selected = adme_details$physio)
     updateSelectizeInput(session,"sel_physio4adme",selected = adme_details$physio)
     updateSelectizeInput(session,"sel_metabolite4adme",select = adme_details$metabid)
-    
+
   },ignoreInit = TRUE, ignoreNULL = TRUE)
-  
+
   #update the inputs for the biomonitering set selected
   observeEvent(input$sel_biom,{
-    
+
     biomid  <- as.integer(input$sel_biom)
     query <- sprintf("Select chem,tissue,units,data from Biomonitering where biomid = %i;",
                     biomid)
@@ -895,7 +895,7 @@ shinyServer(function(input, output, session) {
                     "mgl"="mg/L",
                     "ugd"="\u00B5g/day")
     data <- unserialize(charToRaw(biom_db_data$data))
-    density_fit <- density(data[,1],kernel = "gaussian") 
+    density_fit <- density(data[,1],kernel = "gaussian")
     density_fit$y <- density_fit$y/max(density_fit$y)
 
     if(tissue=="pls"){
@@ -927,19 +927,19 @@ shinyServer(function(input, output, session) {
         layout(
           title = "Biomonitoring Data",
           yaxis = list(title = "Count"),
-                       
+
           yaxis2 = list(overlaying = "y",title ="Density",side = "right"),
           xaxis = list(title = x_label)
         )
     })
   },ignoreInit = T,ignoreNULL = T)
-  
+
 
   ### This code chunk deals with updating pair using qsar models
   observeEvent(input$qsar4chem_props,{
     qsar_model <- input$qsarModelChem
     org <- ifelse(input$ms_org=="ha","human","rat")
-    
+
     chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw,
                             "vpa"=input$ms_vpa, "dkow"=input$ms_dkow,
                             "lkow"=input$ms_lkow, "wsol"=input$ms_wsol,
@@ -951,16 +951,16 @@ shinyServer(function(input, output, session) {
                                                  org)
     pair <- partitions$pair
     frwsol <- partitions$frwsol
-   
+
     updateNumericInput(session,"ms_frwsol",value = frwsol)
   })
-  
+
   ## This code chunk deals with performing IVIVE for the chemical
   observeEvent(input$btn_ivive_chem,{
     performIVIVEUI(input$btn_ivive_chem)
     dataset$iviveDat <<- callModule(performIVIVE,input$btn_ivive_chem,input$ms_km)
   })
-  
+
   observe({
     ivive_val <- dataset$iviveDat()
     if(ivive_val[1]=="Yes"){
@@ -979,7 +979,7 @@ shinyServer(function(input, output, session) {
     input_names <- c("ms_bdose","ms_drdose","ms_vdw","ms_inhdose","ms_ivdose")
     lapply(input_names, function(x){updateNumericInput(session,x,value = 0)})
   })
-  
+
   # Code chuck for displaying the correct absorptions inputs based on the exposure set seleted
   # in the ADME tab
   observeEvent(input$sel_expo4adme,{
@@ -995,13 +995,13 @@ shinyServer(function(input, output, session) {
     toggleElement(id = "ms_KPtot",condition = (expo_route == "derm"))
     toggleElement(id = "ms_maxcap",condition = (expo_route == "derm"))
     toggleElement(id = "ms_Kevap",condition = (expo_route == "derm"))
-                  
+
     # if (expo_route=='inh'){
     #   hide
-    # } 
+    # }
   },ignoreNULL = T,ignoreInit = T)
-  
-  # if no metabolite is selected, remove metabolite specific value from the 
+
+  # if no metabolite is selected, remove metabolite specific value from the
   # UI
   observeEvent(input$sel_metabolite4adme,{
     toggleElement("ms_fuplsmet",condition =input$sel_metabolite4adme != 0)
@@ -1096,7 +1096,7 @@ shinyServer(function(input, output, session) {
     DT::replaceData(metab_proxy,metabolism_dataframe,rownames = F)
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
-  
+
   ## CHUNK FOR HANDLING METABOLISM TAB UNDER ADME
 
   # show the modal to upload files when
@@ -1222,14 +1222,14 @@ shinyServer(function(input, output, session) {
 
         set_list <- getAllSetChoices(set_type)
         updateSelectizeInput(session,"sel_metabfiles",choices = set_list, selected = id_num)
-        
+
         removeModal()
       }
 
 
     }
   })
-  
+
   # logic for apply button- depending on the selected physiology and metab file,
   # populates the correct clearence value
   observeEvent(input$btn_use_age,{
@@ -1307,14 +1307,14 @@ shinyServer(function(input, output, session) {
                                           "h"="Hours",
                                           "d"="Days",
                                           "w"="Weeks"))
-    
+
     admeid <- as.integer(result[["admeid"]])
     chemid <- as.integer(result[["chemid"]])
     expoid <- as.integer(result[["expoid"]])
     physioid <- as.integer(result[["physioid"]])
-    
 
-    
+
+
 
     # get chemical name from chem table
     query <- sprintf("SELECT name from ChemicalSet WHERE chemid = %i ;",
@@ -1341,13 +1341,13 @@ shinyServer(function(input, output, session) {
 
 
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   ### CODE CHUNK TO RUN THE SIMULATION
   results <- reactiveValues(pbpk=NULL,expo = NULL,simid = NULL,sim_type = NULL)
   observeEvent(input$btn_run_sim,{
     showTab("menu","output")
-    
-    
+
+
     # Get the simulation details
     simid <- as.integer(input$sel_sim)
     sim_details <- projectDbSelect(sprintf("Select * From SimulationsSet where simid = %i",simid))
@@ -1356,9 +1356,9 @@ shinyServer(function(input, output, session) {
     # Get expo, chem, physio and simulation parameters for the model
     model_params <- getAllParamValuesForModel(simid,model)
     # get initial values for parmeters, states and event times needed by all workflows
-    
+
     initial_values <- calculateInitialValues(model_params)
-    
+
     event_times <- unique(initial_values[['evnt_data']][["time"]])
     times <- initial_values[['times']]
     tstop <- initial_values[['tstop']]
@@ -1366,11 +1366,11 @@ shinyServer(function(input, output, session) {
     times <- sort(c(deSolve::cleanEventTimes(times,event_times),
                     event_times))
     state <- rapidPBPK_initStates(initial_values$initial_params,state)
-    
+
     output <- rapidPBPK_Outputs
     # if the worfklow requires monte carlo analysis, set up the parameter matrices
     if(sim_details$sim_type %in% c("mc","rd","r2r")){
-      mcruns <- sim_details$mcruns 
+      mcruns <- sim_details$mcruns
       MC.matrix <- suppressWarnings(
         getAllVariabilityValuesForModel(simid,model_params$vals,mcruns)
       )
@@ -1390,9 +1390,9 @@ shinyServer(function(input, output, session) {
                              package = "plethem")
                  )
       }
-      
-      
-      
+
+
+
       modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
                                  func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
                                  events=list(func="event", time=event_times),nout = length(output),
@@ -1430,7 +1430,7 @@ shinyServer(function(input, output, session) {
                                  times_list,event_times_list,updatePB)
       results$pbpk <- cmax_list
       pb$close()
-      
+
     }# Reverse Dosimetry
     else{ #if(sim_details$sim_type == 'rd'){
       # reverse dosimetry specific Calculations
@@ -1447,7 +1447,7 @@ shinyServer(function(input, output, session) {
         metabid <- projectDbSelect(sprintf("Select metabid from AdmeSet where admeid = %i",
                                            sim_details$admeid)
                                    )$metabid
-        # create the list of lists for identifying the correct model variable 
+        # create the list of lists for identifying the correct model variable
         # that corresponds to the biomonitering data
         model_var_dict <- list(
           "pls"=list("prnt"=list("mgl"="cpls","uml"="cpls"),
@@ -1458,7 +1458,7 @@ shinyServer(function(input, output, session) {
         if(chem == "prnt" && units == "mgl"){
           mw <- projectDbSelect(sprintf("Select value from Chemical where param = 'mw' and chemid = %i",
                                         sim_details$chemid))$value
-          multiplier <- as.numeric(mw)/1000 
+          multiplier <- as.numeric(mw)/1000
         }else if (chem == "met" && units == "mgl"){
           mw <- projectDbSelect(sprintf("Select value from Chemical where param = 'mw' and chemid = %i",
                                         sim_details$metabid))$value
@@ -1466,17 +1466,17 @@ shinyServer(function(input, output, session) {
         }else{
           multiplier <- 1
         }
-        
+
         model_var<- model_var_dict[[tissue]][[chem]][[units]]
         # get the route for which exposure is to be estimated
         expo_route <- projectDbSelect(sprintf(
           "Select value from Exposure where param == 'expo_sidebar' AND expoid = %i;",
           sim_details$expoid
         ))$value
-        
+
         #Get all exposure variables that are needed by the model
         expo_vars_list <- mainDbSelect("Select Var from ParamNames Where ModelParams = 'TRUE' AND ParamSet = 'Exposure' AND Model = 'rapidPBPK';")$Var
-        
+
         # get all dataframe of values and params for the selected exposure set
         new_expo_data <- projectDbSelect(paste0(
           sprintf("Select param,value from Exposure where expoid = %i AND param in ",sim_details$expoid),
@@ -1486,8 +1486,8 @@ shinyServer(function(input, output, session) {
           }),sep = "",collapse = ","),
           ")")
         )
-        
-        
+
+
       }else{
         shinybusy::show_modal_progress_circle(value = 0,"Running simulation for current route of exposure")
         # Run the original model to generate a biomonitering equivalent
@@ -1513,7 +1513,7 @@ shinyServer(function(input, output, session) {
         pb$close()
         # create the list of lists for identifying the correct model variable
         # that corresponds to the biomonitering data
-        
+
         multiplier <- 1
         model_var<- "cpls"
        # get the route for which exposure is to be estimated
@@ -1535,7 +1535,7 @@ shinyServer(function(input, output, session) {
             ")")
           )
       }
-      
+
       update_modal_progress(0,text = "Setting up multiple MC simulations")
       # details for generating MC simulation for reverse dosimetry
       low_expo <-sim_details$low_dose_estimate
@@ -1557,13 +1557,13 @@ shinyServer(function(input, output, session) {
         for(each_run in 1:mcruns){
           model_params$vals[colnames(MC.matrix)]<- MC.matrix[each_run,]
           #updated_initial_params <- replaceDose(initial_params,each_dose,expo_route)
-          
+
           params <- rapidPBPK_initParms(calculateInitialValues(model_params,expo_route,
                                                                each_dose,new_expo_data)$initial_params)
           #params <- replaceDose(params,each_dose,expo_route)
           params_list[[each_run]]<- params
         }
-        
+
         states_list <- replicate(mcruns,state,F)
         times_list <- replicate(mcruns,times,F)
         event_times_list <- replicate(mcruns,event_times,F)
@@ -1576,9 +1576,9 @@ shinyServer(function(input, output, session) {
         pb$close()
         }
       update_modal_progress(1,text = "Estimating exposure")
-      # perform reverse dosimetry 
+      # perform reverse dosimetry
       reverse_dosimetry_values <- runReverseDosimetry(modelMCdata,biom_data,percentiles=c(5,10,25,50,75,95,99,100),dose_list = dose_list)
-      
+
       reverse_dosimetry_values$dose_list <- dose_list
       expo_units <- switch(expo_route,
                            "inh"="ppm",
@@ -1604,14 +1604,14 @@ shinyServer(function(input, output, session) {
       showTab("Modeloutput","plots")
       showTab("Modeloutput","params")
     }else{
-      
+
       showTab("Modeloutput","cdfpdf")
       showTab("Modeloutput","percentile")
       hideTab("Modeloutput","plots")
       hideTab("Modeloutput","params")
       hideTab("Modeloutput","nca")
     }
-    
+
     updateNavbarPage(session,"menu","output")
   })
 
@@ -1636,7 +1636,7 @@ shinyServer(function(input, output, session) {
     if (org == "ha"){
       shinyBS::updateButton(session,"btn_use_lifecourse",style = "primary")
       age <- input$ms_age
-      
+
       gender<- input$ms_gender
       # get volumes from life course equations
       tissues <- c(input$ms_cmplist,"blood")
@@ -1675,9 +1675,9 @@ shinyServer(function(input, output, session) {
    } else{
      updatePickerInput(session,"sel_qsar4Partition",choices = c("QSAR Model One" = 'one',
                                                                 "Unified QSAR model" = 'two'))
-   } 
+   }
  })
-  
+
 #Qsar models
   observeEvent(input$btn_useQSAR4Partition,
                {
@@ -1710,7 +1710,7 @@ current_params <-  reactive({
     temp <- getAllParamValuesForModel(input$sel_sim,model = model)
     # get exposure paramteres
 
-    
+
     expo_params <- data.frame("var" = expo_name_df$Name, "val" = temp$vals[expo_name_df$Var],
                               stringsAsFactors = F)
     physio_params <- data.frame("var" = physio_name_df$Name, "val" = temp$vals[physio_name_df$Var],
@@ -1890,7 +1890,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return(obs_name)
     }
   })
-  
+
   #NCA data processing
   ncaData <- reactive({
     mode <- results$sim_type
@@ -1906,7 +1906,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     colnames(nca_data)<- paste(param_names,"Concentration",sep = " ")
     return(nca_data)
   })
-  
+
   output$tble_ncavals <- DT::renderDT(DT::datatable(ncaData(),
                                                     rownames = c("Total AUC (\U00B5M.h)",
                                                                  "AUC at infinity (\U00B5M.h)",
@@ -1922,7 +1922,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                                                    )
                                                     )
                                       )
-  
+
 
   #  Concentration plot Data
   concData <- reactive({
@@ -1930,7 +1930,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     units <- input$r_cplt_type
     simid <- results$simid
     mode <- results$sim_type
- 
+
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
 
@@ -1952,7 +1952,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     result<- as.data.frame(result)
     values <- c()
-    
+
     query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s';",model,mode)
     legend_df <- mainDbSelect(query)
     legend_names <- setNames(legend_df$name,legend_df$model_var)
@@ -1979,7 +1979,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                  stringsAsFactors = F)
       }
     }
-   
+
     # select appropriate variables to plot
     if (dim(result)[1]==0){
       plot_frame["Model Not Yet Run"]<-rep(0,length(x))
@@ -2012,10 +2012,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     units <- input$r_aplt_type
     simid <- results$simid
     mode <- results$sim_type
-    
+
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
-      
+
     }else{
       query <- sprintf("SELECT chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
@@ -2023,7 +2023,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       query <- sprintf("Select value FROM Chemical WHERE chemid = %i AND param = 'mw';",
                        chemid)
       mw <- projectDbSelect(query)$value
-      
+
     }
     #get value multiplier based on concentration units
     if(units == "um"){
@@ -2040,7 +2040,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     plot_vals<- input$aplt_comp
     values <- unlist(lapply(plot_vals,function(x){var_names[x]}))
     names(values)<- NULL
-    
+
     if (exists("plot_frame")){
       rm(plot_frame)
     }
@@ -2058,7 +2058,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                  stringsAsFactors = F)
       }
     }
-    
+
     # select appropriate variables to plot
     if (dim(result)[1]==0){
       plot_frame["Model Not Yet Run"]<-rep(0,length(x))
@@ -2078,7 +2078,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
     return(plot_frame)
   })
-  
+
   #Concentration table data
   amt_tble_data <- reactive({
     mode <- results$sim_type
@@ -2109,7 +2109,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     return(plot_frame)
   })
-  
+
   concplt <- reactive({
     if (results$sim_type == "fd"){
       plotly::plot_ly()%>%
@@ -2130,7 +2130,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                     exponentformat = 'e'
                                     )
                        )
-      
+
     }else{
       plotly::plot_ly()%>%
         plotly::add_trace(data = concData(),
@@ -2144,7 +2144,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                        )
     }
   })
-  
+
   amtplt <- reactive({
     if (results$sim_type == "fd"){
       plotly::plot_ly() %>%
@@ -2245,7 +2245,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       write.csv(reshapePlotData(results()), file)
     }
   )
-  
+
   output$downloadModel <- downloadHandler(
     filename = function(){
       return("rapidPBPK.model.txt")
@@ -2259,8 +2259,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   pdf_data <- reactive({
     return(results$expo$pdf)
   })
-  
-  
+
+
   output$PDF <- renderPlotly({
     p <- plot_ly(
       pdf_data(),
@@ -2281,7 +2281,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         )
       )
   })
-  
+
   output$CDF <- renderPlotly({
     p <- plot_ly(
       results$expo$cdf,
@@ -2313,7 +2313,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                                                     )
                                                      )
     })
-  
+
   # power button to shut down the app
   observeEvent(input$menu,{
     if(input$menu=="stop"){
@@ -2332,8 +2332,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                      text = "No project is currently open",
                                      type = "error")
       }
-      
-      
+
+
       updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "load"){
       shinyWidgets::confirmSweetAlert(session,"load_dialog","Load New Project",
@@ -2352,10 +2352,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                                         "Any changes made to the current project since it was last saved will be lost.",
                                         type = "question")
       }
-      
+
       updateTabsetPanel(session,"menu","home")
     }
-    
+
   })
   observeEvent(input$close_dialog,{
     if (input$close_dialog){
@@ -2389,11 +2389,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     #   print('denied')
     # }
   })
-  
-  
+
+
   volumes <- c(Home = fs::path_home(), "R Installation" = R.home(), getVolumes()())
   shinyFileChoose(input, "files", roots = volumes, session = session, filetypes=c('Rdata'))
-  
+
   observeEvent(input$loadProjectFile,{
     if(is.integer(input$files)){
       sendSweetAlert(session,NULL,"No File Selected",
@@ -2408,10 +2408,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       mainDbUpdate(query)
       js$reset()
     }
-    
-    
+
+
   })
-  
+
   output$selectedFile <- renderPrint({
     if(is.integer(input$files)){
       cat("No file has been selected")
@@ -2439,11 +2439,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
           newProject(name,path)
           query <- "Update Utils Set Value=NULL;"
           mainDbUpdate(query)
-          
-          js$reset() 
+
+          js$reset()
         }
       }
-      
+
     }else{
       if(input$new_dialog){
         path <- getFileFolderPath("file",new_flag = T)
@@ -2458,16 +2458,16 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
           newProject(name,path)
           query <- "Update Utils Set Value=NULL;"
           mainDbUpdate(query)
-          js$reset() 
+          js$reset()
         }
       }
-      
+
     }
-    
+
   })
   Sys.sleep(1)
   remove_modal_spinner(session)
-  
+
 })
 
 calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_data=NULL){
@@ -2478,16 +2478,16 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
   derm_flag <- as.logical(params[["dermrep_flag"]])
   params <- params[which(grepl("[-]?[0-9]+[.]?[0-9]*|[-]?[0-9]+[L]?|[-]?[0-9]+[.]?[0-9]*[eE][0-9]+",params))]
   params <- lapply(params,function(x){as.numeric(x)})
-  
+
   # check if dose needs to be replaced. it would need to be replaced if route is given
   if(!(is.null(route))){
     if(!(is.null(new_expo_data))){
       var_names <- new_expo_data$param
-      
+
       var_values <- unlist(lapply(new_expo_data$value,as.numeric))
       params[var_names]<- var_values
     }
-    
+
     #params[new_expo_data$param]<- new_expo_data$value
     # get the appropriate dos variable based on the route
     dose_var <- switch(route,
@@ -2504,8 +2504,8 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
 
   initial_params <- within(as.list(params),{
     #total fractional volume
-    # this is used to correctly scale the volume if 
-    # since the distributions from the MC analysis can cause 
+    # this is used to correctly scale the volume if
+    # since the distributions from the MC analysis can cause
     # fractional volume to go above 1
     total_vol <- vfatc+vskinc+vmuscc+vbonec+vbrnc+vlngc+vhrtc+vgic+vlivc+vkdnc+vrpfc+vspfc+vbldc
     #Scaled Tissue Volumes
@@ -2566,14 +2566,14 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
     cinh <- (inhdose/24.45) # converting from  ppm to umoles/L
     # ppm * mw /24.45 => mg/m^3 => 1000 *mg/L
     # mg/L => mw/1000 umoles/L => ppm/24.45
-    
+
     qalv <- (tv-ds)*respr
     pair <- ifelse(pair >0,pair,1E-10)
     # scaled urinary flow rate per day
     uflw <- uflwc*bw/24.0
   })
-  
-  
+
+
 
   #function for dosing
 
@@ -2589,12 +2589,12 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
   ddose <- initial_params[["drdose"]]
   vdw <- initial_params[["vdw"]]
   dreps <- initial_params[["dreps"]]
-  
+
   #ORAL  with vehicle
   bdosev <- initial_params[["bdosev"]]
   brepsv <- initial_params[["brepsv"]]
   blenv <- initial_params[["blenv"]]
-  
+
   totbrepsv <- initial_params[["totbrepsv"]]<-brepsv*blenv
 
   #inhalation
@@ -2605,7 +2605,7 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
   #iv
   ivdose <- initial_params[["ivdose"]]
   ivlen <- initial_params[["ivlen"]]
-  
+
   #dermal
   dermrate <- initial_params[["dermrate"]]
   dermlen <- initial_params[["dermlen"]]
@@ -2694,7 +2694,7 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
   }else if(bdosev > 0){
     # var to change
     state_Var <- c("odosev","totodosev")
-    
+
     # operation of event
     operation <- c("add","add")
     # times of event
@@ -2709,7 +2709,7 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
       }else{
         event_times <- c(tstart)
       }
-      
+
     }else{
       # Value  of change
       change_val1<- (bdosev*bw*1000/mw)/totbrepsv
@@ -2732,18 +2732,18 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
         )
         )
       }
-      
+
     }
-    
+
     eventDat <- data.frame(
-      
+
       var = rep(x = state_Var,each = length(event_times)),
       time = rep(event_times,length(state_Var)),
       value = rep(x = change_arr,each = length(event_times)),
       method = rep(x = operation,each = length(event_times))
-      
+
     )
-    
+
   }else if (inhdose >0){
     # var to change
     state_var1 <- "inhswch"
@@ -2826,7 +2826,7 @@ calculateInitialValues <- function(params_list,route=NULL,dose=NULL,new_expo_dat
       value = c(rep(x = change_val1,each = length(event_times1)),rep(x = change_val2,each = length(event_times2))),
       method = c(rep(x = operation1,each = length(event_times1)),rep(x = operation2,each = length(event_times2)))
     )
-    
+
   }
 
   times <- seq(tstart,tstop,by=0.1)
@@ -3000,7 +3000,7 @@ rapidPBPK_initParms <- function(newParms = NULL) {
     fuplsmet = 1,
     vdmet = 1e-10
   )
-  
+
   if (!is.null(newParms)) {
     if (!all(names(newParms) %in% c(names(parms)))) {
       print(names(newParms)[!(names(newParms))%in% c(names(parms))])
@@ -3008,7 +3008,7 @@ rapidPBPK_initParms <- function(newParms = NULL) {
     }
     parms[names(newParms)] <- newParms
   }
-  
+
   parms <- within(as.list(parms), {
   })
   out <- .C("getParms",  as.double(parms),
@@ -3133,14 +3133,14 @@ rapidPBPK_initStates <- function(parms, newStates = NULL) {
     amet = 0.0,
     vurine = 1e-10
   )
-  
+
   if (!is.null(newStates)) {
     if (!all(names(newStates) %in% c(names(Y)))) {
       stop("illegal state variable name in newStates")
     }
     Y[names(newStates)] <- newStates
   }
-  
+
   .C("initState", as.double(Y));
   Y
 }
@@ -3316,15 +3316,15 @@ newEditBiomoniteringDataUI <- function(namespace,biomid=NULL){
                         size = "l"
   )
   )
-  
+
 }
 
 newEditBiomoniteringData <- function(input,output,session,type = "new",biomid = NULL){
   returnValues <- reactiveValues()
   returnValues$savedat <- c("No","",0)
   ns <- session$ns
-  
-  
+
+
   if(type == "edit"){
     query <- sprintf("Select name, descrp from BiomoniteringSet where biomid = %i",
                      biomid)
@@ -3362,7 +3362,7 @@ newEditBiomoniteringData <- function(input,output,session,type = "new",biomid = 
                      "No Biomonitering Data Uploaded",
                      type = "error")
       return(c("No","",0))
-      
+
     }
     else if(name == "" || descrp== ""){
       sendSweetAlert(session,"Error",
@@ -3371,7 +3371,7 @@ newEditBiomoniteringData <- function(input,output,session,type = "new",biomid = 
       return(c("No","",0))
     }
     else{
-      
+
       #write the data
       if(type == "new"){
         biom_fpath <- input$btn_import_file$datapath
@@ -3406,7 +3406,7 @@ newEditBiomoniteringData <- function(input,output,session,type = "new",biomid = 
                            biomid)
           projectDbUpdate(query)
         }
-        
+
       }
       removeModal()
       return(c("Yes","biom",biomid))
@@ -3421,7 +3421,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
   ns <- NS(namespace)
   showModal(modalDialog(title = "Create Simulation",
                         fluidPage(
-                          
+
                           fluidRow(
                             textInput(ns("txt_sim_name"),NULL,placeholder = "Simulation Name",
                                       width = validateCssUnit("100%"))
@@ -3509,7 +3509,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                                          width = validateCssUnit("100%"),
                                                                          options= list(placeholder = "No Variability Set Found"))
                                                    )
-                                                   
+
                                                  ),
                                                  fluidRow(
                                                    column(6,
@@ -3561,7 +3561,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                                            width = validateCssUnit("100%")
                                                             )
                                                      )
-                                                     
+
                                                    )
                                                  ),
                                                  fluidRow(
@@ -3607,16 +3607,16 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                      condition = "input.sel_sim_type != 'fd'",
                                                      ns = ns,
                                                      column(4,
-                                                            numericInput(ns("num_mcruns"),"Number of Montecarlo Runs",
+                                                            numericInput(ns("num_mcruns"),"Number of Monte Carlo Runs",
                                                                          value = 1000)
                                                      )
-                                                     
+
                                                    )
                                                  )
                                                )
                                       )
                           )
-                          
+
                         ),
                         footer = tagList(modalButton("Cancel"),
                                          actionButton(ns("btn_create_sim"),
@@ -3629,7 +3629,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
   returnValues <- reactiveValues()
   returnValues$savedat <- c("No","",0)
   ns <- session$ns
-  
+
   # if a new simulation needs to be created
   if (type == "new"){
     simid <- getNextID("SimulationsSet")
@@ -3643,7 +3643,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
     updateSelectizeInput(session,"sel_dur_units",selected = sim_settings$dur_units)
     updateNumericInputIcon(session,"num_tstrart",value = sim_settings$tstart)
     updateNumericInput(session,"num_sim_dur",value = sim_settings$sim_dur)
-    # set the rest if they are present in the 
+    # set the rest if they are present in the
     if(sim_settings$sim_type != "fd"){
       updateNumericInput(session,"num_mcruns",value = sim_settings$mcruns)
     }
@@ -3680,18 +3680,18 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       res <- projectDbSelect(query)
       set_list <- as.list(res[["admeid"]])
       names(set_list)<- res$name
-      
+
       if(length(set_list)>0){
         updateSelectizeInput(session,"sel_sim_adme",choices = set_list)
       }else{
         updateSelectizeInput(session,"sel_sim_adme",choices = set_list,
                              options = list(placeholder = "No appropriate ADME set found"))
       }
-      
+
     }
-    
+
   },ignoreNULL = T, ignoreInit = T)
-  
+
   #update the exposure extrapolation dropdown to exclude exposure set selected in the
   observeEvent(input$sel_sim_expo,{
     expo_sets <- getAllSetChoices("expo")
@@ -3699,11 +3699,11 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
     remaining_list <- expo_sets[which(expo_sets != as.integer(selected_expo))]
     updateSelectizeInput(session,"sel_r2rExpo",choices = remaining_list)
   })
-  
+
   returnValues$savedat <- eventReactive(input$btn_create_sim,{
     #simid <- getNextId("SimulationSet")
-    
-    
+
+
     # if a new simulation needs to be created, create an blank simulation set to update the data into
     if(type == "new"){
       query <- sprintf("INSERT INTO SimulationsSet (simid) VALUES (%i);",simid)
@@ -3725,7 +3725,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                     descrp = '%s',
                                     sim_type = '%s',
                                     expoid = %i,
-                                    chemid = %i, 
+                                    chemid = %i,
                                     physioid = %i,
                                     admeid = %i,
                                     tstart = %f,
@@ -3767,7 +3767,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                              simplify = T),
                      sep=" ",collapse = " ")
       projectDbUpdate(query)
-      
+
     }
     # update the simulation with inputs needed by the reverse dosimetry
     else if(sim_type == 'rd'){
@@ -3812,7 +3812,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                        high_dose_estimate,
                        simid)
       projectDbUpdate(query)
-      
+
     }
     removeModal()
     return(c("Yes","sim",simid))

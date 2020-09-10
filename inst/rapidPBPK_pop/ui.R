@@ -165,7 +165,7 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
                                        )
                               )
   )
-  
+
 )
 
 
@@ -181,7 +181,7 @@ chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
                            style = "primary"),
          "Estimate fraction dissoved in liquid phase of plasma using QSAR Models."
   )
-  
+
 )
 
 
@@ -222,7 +222,7 @@ plot_body <- fluidPage(
                                        fluidRow(
                                          column(2,
                                                 bsButton("btnAddData","Add Dataset",block = TRUE,style = "primary")
-                                         )  
+                                         )
                                        ),
                                        fluidRow(
                                          column(3,
@@ -254,9 +254,9 @@ plot_body <- fluidPage(
                                                                                      choices = c("No Dataset"="none"),#,
                                                                                      selected = "none")
                                                   )
-                                                  
-                                                  
-                                                  
+
+
+
                                                 )
                                          ),
                                          column(9,
@@ -299,10 +299,10 @@ plot_body <- fluidPage(
                                                                           "Slowly Perused Total"="to_spf",
                                                                           "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf"
                                                            )
-                                                           
+
                                                 )
                                                 #selectizeInput("aplt_data",tags$h4("Select Data Sets"),choices = c("a","b","c"))
-                                                
+
                                               )
                                        ),
                                        column(9,
@@ -323,7 +323,7 @@ plot_body <- fluidPage(
                                                               downloadButton("amwnld",label ="Get Data"))
                                               ))
                        ),
-                       
+
                        bsCollapsePanel(title = "Mass Balance Plots", style = "primary",
                                        column(8, offset = 2,
                                               tabBox(width = 12, height = validateCssUnit("100%"),
@@ -362,7 +362,7 @@ comp_body <- dashboardBody(
                numericInput("ms_age","Age",25,0.5,80,1)
         )
       ),
-      
+
       fluidRow(
         column(4,
                numericInput("ms_bw","Body Weight (kg)",70,0.1,90,0.1)),
@@ -370,7 +370,7 @@ comp_body <- dashboardBody(
                numericInput("ms_qcc","Cardiac Output (L/h)",420,1,50,0.1)),
         column(4,
                numericInput("ms_hct","Hematocrit Factor",0.441,0,1,0.001))
-        
+
       ),
       fluidRow(
         column(6,
@@ -393,10 +393,10 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_gfr","Glomerular Filtration (L/h)",min =0 , max =1, value =0.08)
         )
-        
+
       )
     ),
-    
+
     tabItem(
       tabName = "fat_tissue",
       fluidRow(
@@ -540,10 +540,10 @@ comp_body <- dashboardBody(
       ),
       fluidRow(
         column(6,
-               numericInput("ms_qalivc","Arterial Blood Flow to liver (Fraction of Cardiac Output)",min =0 , max =1, value =0.0381)),
+               numericInput("ms_qalivc","Arterial Blood Flow to Liver (Fraction of Cardiac Output)",min =0 , max =1, value =0.0381)),
         column(6,
                numericInput("ms_qvlivc","Fraction of Venous Liver Flow",min =0 , max =1, value =0.152))
-        
+
       )
     ),
     tabItem(
@@ -653,8 +653,8 @@ expo_body <- dashboardBody(
         column(6,
                awesomeCheckbox("ms_brep_flag","Repeat Exposure Daily?",value = F))
       )
-      
-      
+
+
     ),
     tabItem(tabName ="dw",
             fluidRow(
@@ -683,8 +683,8 @@ expo_body <- dashboardBody(
         column(6,
                awesomeCheckbox("ms_brepv_flag","Repeat Exposure Daily?",value = F))
       )
-      
-      
+
+
     ),
     tabItem(
       tabName = "inh",
@@ -720,15 +720,15 @@ expo_body <- dashboardBody(
                numericInput("ms_skarea","Exposed Surface Area (cm\U00B2)",0,step = 0.1))
       ),
       fluidRow(
-        column(6, 
+        column(6,
                numericInput("ms_dermlen","Duration of Dermal Exposure per Day (h/day)",0.1,step=0.01)),
         column(6,
                awesomeCheckbox("ms_dermrep_flag","Repeat Exposure Daily?",value = F))
       )
-      
+
     )
-    
-    
+
+
   )
 )
 
@@ -770,7 +770,7 @@ shinyUI(fluidPage(
                                   tabPanel("Exposure",value = "expo",
                                            fluidPage(
                                              bsModal("modalExpoSave",title = NULL,trigger = "btn_save_expo",
-                                                     
+
                                                      fluidRow(
                                                        column(8,offset = 2,
                                                               tags$h4("Overwrite existing Parameter Set ?")),
@@ -782,7 +782,7 @@ shinyUI(fluidPage(
                                                       div(style = "height:15px")
                                                )
                                              ),
-                                             
+
                                              fluidRow(
                                                column(12,
                                                       div(style = "height:15px")
@@ -801,7 +801,7 @@ shinyUI(fluidPage(
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
-                                                        
+
                                                       ))
                                              ),
                                              fluidRow(
@@ -818,12 +818,12 @@ shinyUI(fluidPage(
                                              )
                                            )
                                   ),
-                                  
-                                  
+
+
                                   tabPanel("Chemical",value = "chem",
                                            fluidPage(
-                                             
-                                             
+
+
                                              fluidRow(
                                                column(12,
                                                       div(style = "height:15px")
@@ -842,7 +842,7 @@ shinyUI(fluidPage(
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
-                                                        
+
                                                       ))
                                              ),
                                              fluidRow(
@@ -857,16 +857,16 @@ shinyUI(fluidPage(
                                                  chem_body
                                                )
                                              ))
-                                           
+
                                   ),
-                                  
-                                  
+
+
                                   tabPanel("Physiological",value= "physio",
-                                           
-                                           
+
+
                                            fluidPage(
-                                             
-                                             
+
+
                                              fluidRow(
                                                column(12,
                                                       div(style = "height:15px")
@@ -885,7 +885,7 @@ shinyUI(fluidPage(
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
-                                                        
+
                                                       ))
                                              ),
                                              fluidRow(
@@ -913,8 +913,8 @@ shinyUI(fluidPage(
                                                )
                                              )
                                            )
-                                           
-                                           
+
+
                                   ),
                                   tabPanel("ADME",value = "adme",
                                            fluidPage(
@@ -936,7 +936,7 @@ shinyUI(fluidPage(
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
-                                                        
+
                                                       ))
                                              ),
                                              fluidRow(
@@ -956,7 +956,7 @@ shinyUI(fluidPage(
                                                column(3,
                                                       selectizeInput("sel_metabolite4adme",choices = NULL, label=NULL,
                                                                      options = list(placeholder = "Select Metabolite"))
-                                                      
+
                                                ),
                                                column(3,
                                                       selectizeInput("sel_physio4adme",choices=NULL,label = NULL,
@@ -1060,7 +1060,7 @@ shinyUI(fluidPage(
                                                                                                                    menuItem("Slowly Perfused Tissue",
                                                                                                                             tabName = "spf")
                                                                                       )
-                                                                                      
+
                                                                                       ),
                                                                                       dashboardBody(tabItems(
                                                                                         tabItem(tabName = "fat",
@@ -1080,7 +1080,7 @@ shinyUI(fluidPage(
                                                                                                   column(6,
                                                                                                          numericInput("ms_paskin",label = "Skin Permeability Coefficient",value = 1000))
                                                                                                 )
-                                                                                                
+
                                                                                         ),
                                                                                         tabItem(tabName = "msc",
                                                                                                 fluidRow(
@@ -1201,11 +1201,11 @@ shinyUI(fluidPage(
                                                                       fluidRow(
                                                                         tags$hr(style = "border: 1px dashed black;")
                                                                       ),
-                                                                      
+
                                                                       fluidRow(
-                                                                        
+
                                                                         column(6,
-                                                                               numericInput("ms_km","Michaelis Menten Constant for Metabolism (μM)",1,0,250,0.01)
+                                                                               numericInput("ms_km","Michaelis-Menten Constant for Metabolism (μM)",1,0,250,0.01)
                                                                         ),
                                                                         column(6,
                                                                                shinyBS::bsButton("btn_ivive_chem",
@@ -1253,7 +1253,7 @@ shinyUI(fluidPage(
                                                )
                                              )
                                            )
-                                           
+
                                   ),
                                   tabPanel("Uncertainty and Variability", value = "variability",
                                            dashboardPage(
@@ -1268,9 +1268,9 @@ shinyUI(fluidPage(
                                                           tabName = "var_physio"),
                                                  menuItem("ADME",
                                                           tabName = "var_adme")
-                                                 
-                                                 
-                                                 
+
+
+
                                                )
                                              ),
                                              dashboardBody(tabItems(
@@ -1383,7 +1383,7 @@ shinyUI(fluidPage(
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
-                                                        
+
                                                       ))
                                              ),
                                              fluidRow(
@@ -1411,7 +1411,7 @@ shinyUI(fluidPage(
                                              fluidRow(
                                                tags$br()
                                              ),
-                                             
+
                                              fluidRow(
                                                br(),
                                                column(8,
@@ -1422,18 +1422,18 @@ shinyUI(fluidPage(
                                                       actionGroupButtons(c("btn_edit_sim","btn_new_sim","btn_run_sim"),status = "info",
                                                                          labels = c("Edit","New","Run"),fullwidth = T)
                                                )
-                                               
-                                               
+
+
                                              ),
                                              fluidRow(
                                                wellPanel(id= "Simulationdetails",
                                                          fluidRow(
                                                            column(8,offset =2,
-                                                                  
+
                                                                   tags$h4("Simulation Description"),
                                                                   textOutput("sim_descrp")
                                                            )
-                                                           
+
                                                          ),
                                                          fluidRow(
                                                            column(3,
@@ -1485,18 +1485,18 @@ shinyUI(fluidPage(
                                                                   tags$h4("Units"),
                                                                   textOutput("sim_metab_units")
                                                            )
-                                                           
+
                                                          )
-                                                         
+
                                                )
                                              )
-                                             
-                                             
+
+
                                            ))
                       )),
              tabPanel("Model Output",icon = icon("line-chart"),value = "output",
                       fluidRow(
-                        
+
                         column(3, offset= 6,
                                downloadButton("downloadModel", "Download Model",class = "btn btn-primary btn-block")
                         )
@@ -1514,7 +1514,7 @@ shinyUI(fluidPage(
                                                    DT::DTOutput("chem_params_tble")),
                                                box(title = "Physiological Parameters",width = 4,
                                                    DT::DTOutput("physio_params_tble"))
-                                               
+
                                              ),
                                              fluidRow(
                                                downloadButton("btn_param_dwnld",
@@ -1546,12 +1546,10 @@ shinyUI(fluidPage(
                                                DT::DTOutput("expo_estimate" )
                                              )
                                            ))
-                                  
+
                       )
-                      
+
              )
-             
+
   )
 ))
-
-

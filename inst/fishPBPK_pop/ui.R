@@ -52,7 +52,7 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
               menuItem("Poorly Perfused Tissue",tabName = "spf"),
               menuItem("Richly Perfused Tissue",tabName = "rpf")
   )
-              
+
 
   )
 
@@ -173,9 +173,9 @@ comp_body <- dashboardBody(
                numericInput("ms_qg","Effective respiratory rate (L/h)",
                             min =0 , max =10, value =7.2)),
         column(4,
-               numericInput("ms_pbldw", label = "Blood-Water Partition Coefficient", 
+               numericInput("ms_pbldw", label = "Blood-Water Partition Coefficient",
                             value = 5.17, min = 0)
-        
+
       ))),
     tabItem(
       tabName = "fat",
@@ -194,11 +194,11 @@ comp_body <- dashboardBody(
       fluidRow(
         column(6,
                numericInput("ms_vlivc","Volume (L)",min =0, max = 1, value =0.012, step = 0.01)),
-      
+
               column(6,
-               numericInput("ms_qlivc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, 
+               numericInput("ms_qlivc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1,
                             value =0.029))
-        
+
 
       ),
 
@@ -250,7 +250,7 @@ chem_body <- dashboardBody(
   fluidPage(id="Chemicals",
             tags$h4("Chemical Parameters", class="pager-header"),
             fluidRow(
-              
+
               column(6,
                      numericInput("ms_mw","Molecular Weight (g/mol)",167.8,0,250,0.01))
             ),
@@ -279,7 +279,7 @@ expo_body <- dashboardBody(
       tabName = "ins",
       fluidRow(
         column(4,
-               numericInput("ms_cins",label="Concentration in Water (mg/L)", 
+               numericInput("ms_cins",label="Concentration in Water (mg/L)",
                             value =1.062,
                             step= 0.01)
                )
@@ -411,7 +411,7 @@ shinyUI(fluidPage(
 
 
                                            fluidPage(
-                                            
+
 
                                              fluidRow(
                                                column(12,
@@ -434,7 +434,7 @@ shinyUI(fluidPage(
 
                                                       ))
                                              ),
-                                             
+
                                              fluidRow(
                                                dashboardPage(
                                                  dashboardHeader(disable = TRUE),
@@ -527,7 +527,7 @@ shinyUI(fluidPage(
                                                )
                                                )
                                            )
-                                           
+
 
                                           ),
                                   tabPanel("Simulations",
@@ -571,7 +571,7 @@ shinyUI(fluidPage(
                                                                    numericInput("sim_dur","Simulation Duration (h)",0)
                                                                    ),
                                                             column(4,
-                                                                   numericInput("mc_num","Number of Montecarlo Runs",1000)
+                                                                   numericInput("mc_num","Number of Monte Carlo Runs",1000)
                                                                    )
                                                           ),
                                                           checkboxInput("mc_mode","Run Monte Carlo Simulation",T),
@@ -579,7 +579,7 @@ shinyUI(fluidPage(
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")
                                                         ),
-                                                        icon = icon("plus"),circle = F, 
+                                                        icon = icon("plus"),circle = F,
                                                         tooltip = F,size = "default",right = F,
                                                         width = validateCssUnit("100%"),
                                                         label = "Create new simulation",
@@ -592,7 +592,7 @@ shinyUI(fluidPage(
                                                br(),
                                                selectizeInput("sel_sim", "Select a Simulation",
                                                               choices =NULL,  width = validateCssUnit("99%"))
-                                            
+
                                              ),
                                              fluidRow(
                                                wellPanel(id= "Simulationdetails1",
@@ -646,7 +646,7 @@ shinyUI(fluidPage(
                                                          #          tags$h4("Units"),
                                                          #          textOutput("sim_metab_units")
                                                          #          )
-                                                         # 
+                                                         #
                                                          # )
 
                                              )
@@ -693,5 +693,3 @@ shinyUI(fluidPage(
              tabPanel(title = "Quit",value = "stop",icon=icon("power-off"))
   )
 ))
-
-
