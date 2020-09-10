@@ -106,22 +106,23 @@ getAllParamValuesForModel <- function(simid,model){
   chem_params <- result$value
   names(chem_params)<- result$param
   
+  if (model == "fishPBPK"){
+    params <- c(physio_params,expo_params,chem_params)
+  } else {
   # get all the ADME parameters
   query <- sprintf("SELECT param,value FROM Adme WHERE admeid = %i;",
                    admeid)
   result <- projectDbSelect(query)
   adme_params <- result$value
   names(adme_params)<- result$param
-
   params <- c(physio_params,expo_params,chem_params,adme_params)
-
+  # get the metabolism data and adjust params accordingly
+  metab_data <- getMetabData(admeid,model)
+  metab_var <- metab_data$Var}
   # add time start and sim duration as tstart and totdays to work with the model
   params[["tstart"]]<- tstart
   params[["totdays"]]<- as.integer(sim_dur/24)
   params[["sim_dur"]]<- sim_dur
-  # get the metabolism data and adjust params accordingly
-  metab_data <- getMetabData(admeid,model)
-  metab_var <- metab_data$Var
   if (model == "rapidPBPK"){
     
     if(metab_var == "vmaxc"){
@@ -135,13 +136,11 @@ getAllParamValuesForModel <- function(simid,model){
    
     params[["Clmetabolismc"]]<- metab_data$Value
   }else if(model == "fishPBPK"){
-   
-    params[["vmax"]]<- metab_data$Value
+    params[["vmax"]] <- chem_params[['vmax']]
+    params[["km"]] <- chem_params[['km']]
+    params[["frspfkdn"]] <- 0.6
   }
-
-
   return(list("vals" = params,"names" =param_names))
-
 }
 
 #' Gets all the variability values for the model. This data returned by the function is not meant to be understandable by the user
