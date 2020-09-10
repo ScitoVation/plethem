@@ -260,15 +260,15 @@ chem_body <- dashboardBody(
               column(6,
                      numericInput("ms_km","Michaelis-Menten Constant for Metabolism (mg/L)",0,0,250,0.01))
             ),
-            fluidRow(
-              column(6,
-                     numericInput("ms_intrinsicClearance", "Intrinsic Clearance (L/h)", 0,250,0.01))
-              ),
-            fluidRow(
-              column(6,
-                     checkboxInput("ms_useIntrinsicClearance", paste0("","Use Intrinsic Clearance",sep="\n"), value = FALSE))
-            ))
-  )
+            # fluidRow(
+            #   column(6,
+            #          numericInput("ms_intrinsicClearance", "Intrinsic Clearance (L/h)", 0,250,0.01))
+            #   ),
+            # fluidRow(
+            #   column(6,
+            #          checkboxInput("ms_useIntrinsicClearance", paste0("","Use Intrinsic Clearance",sep="\n"), value = FALSE))
+            # )
+  ))
 
 
 
