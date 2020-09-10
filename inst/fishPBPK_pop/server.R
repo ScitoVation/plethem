@@ -637,22 +637,22 @@ shinyServer(function(input, output, session) {
     model_params <- getAllParamValuesForModel(simid,model)
     print("%% b %%")
     #get total volume
-    active_comp <- input$ms_cmplist
+    #active_comp <- input$ms_cmplist
     print("%% c %%")
-    vol_comps <- c(active_comp,"blood")
+    #vol_comps <- c(active_comp,"blood")
     print("%% d %%")
-    total_vol <- sum(unlist(lapply(vol_comps,
-                                   function(x){
-                                     input[[vol_ids[x]]]
-                                     })
-                            )
-                     )
+    # total_vol <- sum(unlist(lapply(vol_comps,
+    #                                function(x){
+    #                                  input[[vol_ids[x]]]
+    #                                  })
+    #                         )
+    #                  )
     print("%% e %%")
     query <- sprintf("Select mc_num From SimulationsSet where simid = %i",simid)
     print("%% f %%")
     mc_num <- as.integer(projectDbSelect(query)$mc_num)
     print("%% g %%")
-    model_params$vals[["total_vol"]]<- total_vol
+    #model_params$vals[["total_vol"]]<- total_vol
     print("%% h %%")
     if (mc_num > 1){
       print("%% i %%")
@@ -687,13 +687,16 @@ shinyServer(function(input, output, session) {
       #rep_flag <- all_params["rep_flag"]
       #model_params <- all_params["model_params"]
       initial_values <- calculateInitialValues(model_params)
-
+      print("%% k %%")
       updateProgressBar(session,"pb",value = 100, total = 100,
                         status = "info")
+      print("%% l %%")
+      #initial_values$initial_params$`<NA>` <- NULL
+      #print(initial_values)
       tempDF <- runFDPBPK(initial_values,model)
-      
+      print("%% m %%")
       results$pbpk<- tempDF$pbpk
-      
+      print("%% n %%")
       
       results$mode <- "FD"
       updateNavbarPage(session,"menu","output")
