@@ -1,17 +1,17 @@
-#' Function that runs the httk oral equivalent dose gadget. 
+#' Function that runs the httk oral equivalent dose gadget.
 #' @description Launches the HTTK oral equivalent dose gadget. It servers as a UI wrapper around HTTK's functions to calculate oral equivalent dose.
-#' @examples 
+#' @examples
 #' \dontrun{
 #' httkCalcOralEqDose()
 #' }
 #' @export
 httkCalcOralEqDose <- function(){
-  
+
   ui <- miniPage(
     gadgetTitleBar(""),
     miniContentPanel(
       fillCol(flex = 1,
-        numericInput("ivc","Enter Invitro Concentration (uM)",
+        numericInput("ivc","Enter In vitro Concentration (uM)",
                      value = 0,width = validateCssUnit("90%")),
         pickerInput("chem_list","Select Chemical",
                     choices = NULL,
@@ -25,12 +25,12 @@ httkCalcOralEqDose <- function(){
         )
     )
   )
-  
+
   server <- function(input,output,session){
     vals <- setNames(httk::chem.physical_and_invitro.data$CAS,
                      httk::chem.physical_and_invitro.data$Compound)
     updatePickerInput(session,"chem_list",choices = vals)
-    
+
     observe({
       ivc <- input$ivc
       chem_cas <- input$chem_list
@@ -41,7 +41,7 @@ httkCalcOralEqDose <- function(){
       }else{
         oral_eq <- 0
       }
-      
+
       output$oraleq <- renderText({paste(signif(oral_eq,4),"mg/kg BW/day",sep = " ")})
     })
     observeEvent(input$done,{
@@ -52,8 +52,8 @@ httkCalcOralEqDose <- function(){
                                which.quantile = quantile,suppress.messages = T)
       stopApp(returnValue = oral_eq)
     })
-    
-    
+
+
   }
   runGadget(ui,server,viewer =dialogViewer("HTTK Oral Equivalent Dose",
                                            width = 350,height = 400))

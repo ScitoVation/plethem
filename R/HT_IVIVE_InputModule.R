@@ -102,12 +102,12 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                   ),
 
 
-                  tabPanel("Invitro POD",
+                  tabPanel("In vitro POD",
                            fluidRow(
                              column(8,offset = 2,
                                     fluidRow(
                                       column(6,
-                                             numericInput(ns("num_ivc"),tags$h4("Invitro POD"),0,
+                                             numericInput(ns("num_ivc"),tags$h4("In vitro POD"),0,
                                                           width = validateCssUnit("100%"))
                                       ),
                                       column(6,
@@ -143,7 +143,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                            fluidRow(tabsetPanel(id = ns("tab_heptype"),type = "pills",
                                  tabPanel("No Hepatic Clearance",value = "hep_null",
                                           tags$h3("No Hepatic Clearance")),
-                                 tabPanel("Subcellular Clearance",value = "hep_sc",
+                                 tabPanel("Sub-cellular Clearance",value = "hep_sc",
                                           fluidRow(
                                             column(4,offset = 2,
                                                    numericInput(ns("num_mppgl"),
@@ -158,13 +158,12 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                           fluidRow(
                                            column(6,
                                                   numericInput(ns("num_mscl"),
-                                                               label = "Measured Microsomal Clearance",
+                                                               label = "Microsomal Clearance",
                                                                step = 0.001,value = 0.0,
                                                                width = validateCssUnit("100%"))),
                                            column(6,
                                                   selectInput(ns("sel_msunit"),label = "Units",
-                                                              choices = list("\ub5mol/min/mg Protein"="ummmP",
-                                                                             "\ub5L/min/mg Protein"="ulmmP",
+                                                              choices = list("\ub5L/min/mg Protein"="ulmmP",
                                                                              "\ub5L/h/mg Protein"="ulhmP",
                                                                              "mL/min/mg Protein"="mlmmP",
                                                                              "mL/h/mg Protein"="mlhmP"),
@@ -173,7 +172,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                          fluidRow(
                                            column(6,
                                                   numericInput(ns("num_cycl"),
-                                                               label = "Measured Cytosolic Clearance",
+                                                               label = "Cytosolic Clearance",
                                                                step = 0.001,value = 0.0,
                                                                width = validateCssUnit("100%"))),
                                            column(6,
@@ -194,7 +193,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                          fluidRow(
                                            column(6,
                                                   numericInput(ns("num_s9cl"),
-                                                               label = "Measured S9 Fraction Clearance",
+                                                               label = "S9 Fraction Clearance",
                                                                value = 0,width = validateCssUnit("100%"))),
                                            column(6,
                                                   selectInput(ns("sel_s9unit"),
@@ -216,7 +215,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                          fluidRow(
                                            column(6,
                                                   numericInput(ns("num_whcl"),
-                                                               label = "Measured Whole Hepatocyte Clearance",
+                                                               label = "Whole Hepatocyte Clearance",
                                                                value = 0,width = validateCssUnit("100%"))),
                                            column(6,
                                                   selectInput(ns("sel_whunit"),label = "Units",
@@ -232,7 +231,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                           fluidRow(
 
                                             column(4,
-                                                   fileInput(ns("cypCl_upload"),"Upload CYP Clearance",
+                                                   fileInput(ns("cypCl_upload"),"Upload Enzyme Clearance",
                                                              multiple = F,placeholder = "Select CSV File",
                                                              buttonLabel = icon("search"),
                                                              accept = c("text/csv")
@@ -261,13 +260,13 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                            fluidRow(
                              column(4, offset = 2,
                                       numericInput(ns("num_gfr"),
-                                                       label = "Glomerular Filteration Rate (L/h)",
+                                                       label = "Glomerular Filtration Rate (L/h)",
                                                        value = 6.7,
                                                        width = validateCssUnit("100%")
                                                        ),
 
                                       checkboxInput(ns("ch_rencl"),label = "Include Renal Clearance",width = validateCssUnit("100%")),
-                                      tags$h4("Renal Clearence is calculated as a product of Glomerular Filteration Rate measured in L/h
+                                      tags$h4("Renal Clearance is calculated as a product of Glomerular Filtration Rate measured in L/h
                                                and Fraction of chemical unbound in Blood Plasma")
 
                                     )
@@ -662,7 +661,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                                         "Organism"=org_type_name,
                                         "Type" = rd_type_name,
                                         "Standard Exposure"=stdexposure,
-                                        "Invitro POD"=invitro_data,
+                                        "In vitro POD"=invitro_data,
                                         "Hepatic Clearance"=hep_type_name,
                                         "Renal Clearance"=ren_data,
                                         "Plasma Clearance"=pl_data)
