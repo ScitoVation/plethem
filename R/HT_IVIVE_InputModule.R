@@ -231,7 +231,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                           fluidRow(
 
                                             column(4,
-                                                   fileInput(ns("cypCl_upload"),"Upload CYP Clearance",
+                                                   fileInput(ns("cypCl_upload"),"Upload Enzyme Clearance",
                                                              multiple = F,placeholder = "Select CSV File",
                                                              buttonLabel = icon("search"),
                                                              accept = c("text/csv")
