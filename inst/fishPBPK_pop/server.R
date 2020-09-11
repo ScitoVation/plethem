@@ -561,7 +561,7 @@ shinyServer(function(input, output, session) {
                                      sim_start,sim_dur,dur_units,mc_num),
                              simplify = T),
                      sep = " ",collapse = "")
-      print(query)
+      #print(query)
       projectDbUpdate(query)
       sim_sets <- getAllSetChoices("sim")
       updateSelectizeInput(session,"sel_sim",choices = sim_sets)
@@ -612,7 +612,7 @@ shinyServer(function(input, output, session) {
     expo_name <- result$name
     output$sim_expo <- renderText(expo_name)
     
-    print(output)
+    #print(output)
     # # get metabolism data.
     # print(paste0("metabid: ", metabid, ", physioid: ", physioid,", chemid:", chemid, ", model: ", model))
     # metab_data <- getMetabData(metabid,physioid,chemid,model)
@@ -632,8 +632,8 @@ shinyServer(function(input, output, session) {
     results$simid <- simid
     # get the parameters needed to run the model
     print("%% aa %%")
-    print(simid)
-    print(model)
+    #print(simid)
+    #print(model)
     model_params <- getAllParamValuesForModel(simid,model)
     print("%% b %%")
     #get total volume
@@ -1411,7 +1411,6 @@ fishPBPK_initParms <- function(newParms = NULL) {
     cins = 0,
     pbldw = 1e10,
     gul = 1,
-    intcl = -1
   )
   
   if (!is.null(newParms)) {

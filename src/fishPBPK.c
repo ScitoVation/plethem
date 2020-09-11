@@ -30,7 +30,7 @@
 
    0 Inputs:
 
-   35 Parameters:
+   34 Parameters:
      bw = 0,
      qc = 0,
      qg = 0,
@@ -64,8 +64,7 @@
      km = 1e-10,
      cins = 0,
      pbldw = 1e10,
-     gul = 1,
-     intcl = -1,
+     gul = 1
 */
 
 #include <R.h>
@@ -125,7 +124,6 @@ static double parms[35];
 #define cins parms[31]
 #define pbldw parms[32]
 #define gul parms[33]
-#define intcl parms[34]
 
 /* Forcing (Input) functions */
 static double forc[1];
@@ -224,11 +222,11 @@ void derivsfishPBPK (int *neq, double *pdTime, double *y, double *ydot, double *
 
   ydot[ID_ckdn] = ( qkdn * yout[ID_ca] + frspfkdn * qspf * y[ID_cspf] / pspf ) / vkdn - ( qkdn + frspfkdn * qspf ) / vkdn * y[ID_ckdn] / pkdn ;
   
-  if(intcl == -1){
-  rcmet = ( vmax * y[ID_cliv] / pliv ) / ( km + y[ID_cliv] / pliv ) / vliv ;
+  if(km == -1){
+    rcmet = (vmax * y[ID_cliv] / pliv) / vliv ;
   }
   else{
-  rcmet = (intcl * y[ID_cliv] / pliv) / vliv ;
+    rcmet = ( vmax * y[ID_cliv] / pliv ) / ( km + y[ID_cliv] / pliv ) / vliv ;
   }
 
   ydot[ID_cmet] = rcmet ;
