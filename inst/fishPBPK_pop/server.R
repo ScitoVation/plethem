@@ -657,7 +657,7 @@ shinyServer(function(input, output, session) {
     if (mc_num > 1){
       print("%% i %%")
       MC.matrix <- getAllVariabilityValuesForModel(simid,model_params$vals,mc_num)
-      query <- sprintf("Select model_var from ResultNames where mode = 'MC' AND model = '%s'",
+      query <- sprintf("Select model_var from ResultNames where mode = 'mc' AND model = '%s'",
                        model)
       mc_vars<- mainDbSelect(query)$model_var
       mc_results <- lapply(mc_vars,function(x,n){

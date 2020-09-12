@@ -174,7 +174,7 @@ getAllVariabilityValuesForModel<- function(simid, params,mc_num){
   lbound <- list()
   ubound <- list()
   for(varid in varid_list){
-    if(varid != 0){
+    if(varid != 0 && !is.na(varid)){
       # get the data associated with varid
       query <- sprintf("Select var_tble from Variability where varid = %d",varid)
       ret_data <- projectDbSelect(query)
