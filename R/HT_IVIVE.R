@@ -72,7 +72,6 @@ preprocessUIData<- function(val){
                            ),org,age,liver_wt),
                          0
   )
-  #print(scaled_hepcl)
   #scaled_hepcl_bw <- signif(scaled_hepcl*km/(bw^0.75),4)
   # calculate renal clearance
   scaled_rencl <- ifelse(val$ch_rencl,val$num_gfr*val$num_fupls,0)
@@ -225,9 +224,11 @@ calculateScaledS9Clearance<- function(clearance,units,organism,
 # @param km michelis-menten constant for chemical
 # @return Scaled invivo clearance in L/h
 calculateScaledWholeHepClearance <- function(clearance,units,liver_wt,hpgl,km = 1){
+
+  
   if (units == "Lh"){ #Liters per hour
     scaled_hepcl <- clearance
-  }else if(units == "LhH"){ # Liters per hour per 10^6 hepatocytes
+  }else if(units == "lhhep"){ # Liters per hour per 10^6 hepatocytes
     scaled_hepcl <- clearance*hpgl*liver_wt*1000
   }else{ # umol/min/10^6 hepatocytes 
     scaled_hepcl <- (clearance/km)*60*hpgl*liver_wt*1000

@@ -46,7 +46,7 @@ getLifecourseTissueVolumes<- function(age = 25, gender = "M",perf_frct = 0.85,
   rpf_inactive_tissues <- inactive_tissues[inactive_tissues %in% rpf_tissues]
   spf_inactive_tissues <- inactive_tissues[inactive_tissues %in% spf_tissues]
 
-  if(is.na(age)) return
+  if(is.na(age)) return()
 
   tissue_vol_list[["gi"]]<-getLifecourseGutVolume(age,gender)
   tissue_vol_list[["liver"]]<-getLifecourseLiverVolume(age,gender)
