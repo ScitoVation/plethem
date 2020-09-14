@@ -9,6 +9,8 @@
 #' @import doParallel
 #' @import shinyalert
 #' @import shinyFiles
+#' @import devEMF
+#' @import officer
 #' @importFrom stats approx setNames
 #' @importFrom utils installed.packages read.csv write.csv
 #' @importFrom magrittr %>%
