@@ -1499,6 +1499,11 @@ shinyUI(fluidPage(
 
                         column(3, offset= 6,
                                downloadButton("downloadModel", "Download Model",class = "btn btn-primary btn-block")
+                        ),
+                        column(
+                          3,
+                          actionGroupButtons(c("btn_dlHESI"),status = "btn btn-primary btn-block",
+                                             labels = c("Download HESI"),fullwidth = T)
                         )
                       ),
                       tabsetPanel(id = "Modeloutput", type = "tabs",
