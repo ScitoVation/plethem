@@ -1445,7 +1445,7 @@ shinyUI(fluidPage(
                                                                   textOutput("sim_start")
                                                            ),
                                                            column(3,
-                                                                  tags$h4("Simulation Duration (h)"),
+                                                                  tags$h4("Simulation Duration"),
                                                                   textOutput("sim_dur")
                                                            ),
                                                            column(3,
