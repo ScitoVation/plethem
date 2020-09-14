@@ -2303,13 +2303,13 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       sendSweetAlert(session, title = "No Directory Chosen", text = "Please select a directory to save to.",type = "error")
     } else{
       print(hesiPath())
-      HESI_doc <- read_docx()
-      HESI_doc <- HESI_doc %>%
-        body_add_par("HESI Report", style = "center") %>%
-        body_add_par("Executive Summary", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Background Information", style = "heading 2")
-      print(HESI_doc, target = hesiPath())
+      # HESI_doc <- read_docx()
+      # HESI_doc <- HESI_doc %>%
+      #   body_add_par("HESI Report", style = "center") %>%
+      #   body_add_par("Executive Summary", style = "heading 1") %>%
+      #   body_add_par("User Created Section") %>%
+      #   body_add_par("Background Information", style = "heading 2")
+      # print(HESI_doc, target = hesiPath())
       
       # HESI_doc <- read_docx()
       # HESI_doc <- HESI_doc %>%
