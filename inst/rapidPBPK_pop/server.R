@@ -2302,21 +2302,51 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if(length(hesiPath())==0){
       sendSweetAlert(session, title = "No Directory Chosen", text = "Please select a directory to save to.",type = "error")
     } else{
-      print(hesiPath())
-      # HESI_doc <- read_docx()
-      # HESI_doc <- HESI_doc %>%
-      #   body_add_par("HESI Report", style = "center") %>%
-      #   body_add_par("Executive Summary", style = "heading 1") %>%
-      #   body_add_par("User Created Section") %>%
-      #   body_add_par("Background Information", style = "heading 2")
-      # print(HESI_doc, target = hesiPath())
-      
-      # HESI_doc <- read_docx()
-      # HESI_doc <- HESI_doc %>%
-      #     body_add_par("HESI Report", style = "center") %>%
-      #     body_add_par("Executive Summary", style = "heading 1") %>%
-      #     body_add_par("User Created Section")
-      # print(HESI_doc, target = hesiPath())
+      HESI_doc <- read_docx()
+      HESI_doc <- HESI_doc %>%
+        body_add_par("HESI Report", style = "centered") %>%
+        body_add_par("Executive Summary", style = "heading 1") %>%
+        body_add_par("User Created Section") %>%
+        body_add_par("Background Information", style = "heading 1") %>%
+        body_add_par("User Created Section") %>%
+        body_add_par("Model Purpose", style = "heading 1") %>%
+        body_add_par("User Created Section") %>%
+        body_add_par("Materials and Methods", style = "heading 1") %>%
+        body_add_par("User Created Section") %>%
+        body_add_par("Modeling Strategy", style = "heading 2") %>%
+        body_add_par("User Created Section") %>%
+        body_add_par("Summary of Data for Model Development and Evaluation", style = "heading 2") %>%
+        body_add_par("User Created Section") %>%
+        body_add_par("Model Development and Structure", style = "heading 2") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Model Equations", style="heading 2") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Model Parameters", style="heading 2") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Model Simulations", style = "heading 2") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Model Simulations", style = "heading 2") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Software", style = "heading 2") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Modeling Results", style = "heading 1") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Model Evaluation", style = "heading 2") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Variability Analyses", style = "heading 2") %>%
+        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("Model Applicability", style = "heading 2") %>%
+        body_add_par("User Created Section", style="Normal") %>%
+        body_add_par("Discussion and Conclusions", style = "heading 1") %>%
+        body_add_par("User Created Section", style="Normal") %>%
+        body_add_par("Electronic Files and Supporting Documents", style = "heading 1") %>%
+        body_add_par("User Created Section", style="Normal") %>%
+        body_add_par("Appendices", style = "heading 1") %>%
+        body_add_par("User Created Section", style="Normal") %>%
+        body_add_par("References", style = "heading 1")
+        
+      #c('Normal', 'heading 1', 'heading 2', 'heading 3', 'centered', 'Image Caption', 'Table Caption', 'toc 1', 'toc 2', 'Balloon Text', 'graphic title', 'table title')
+      print(HESI_doc, target = paste0(hesiPath(),"/HESIreport.docx"))
       removeModal()
     }
   })
