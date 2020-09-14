@@ -64,7 +64,10 @@ Imports:
   data.table,
   tidyr,
   shinyalert,
-  shinyFiles
+  shinyFiles,
+  officer,
+  devEMF,
+  magrittr
 Suggests: testthat,
     rmarkdown,
     knitr
