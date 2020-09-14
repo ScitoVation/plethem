@@ -2267,8 +2267,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         body_add_par("HESI Report", style = "center") %>%
         body_add_par("Executive Summary", style = "heading 1") %>%
         body_add_par("User Created Section") %>%
-        body_add_par("")
-
+        body_add_par("Background Information", style = "heading 2")
     print(HESI_doc, target = "PATH TO FILE")
     })
  # END HESI
