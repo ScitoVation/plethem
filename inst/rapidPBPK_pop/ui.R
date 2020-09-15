@@ -1283,8 +1283,8 @@ shinyUI(fluidPage(
                                                                                              openOnFocus = T))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
-                                                                  c("btn_new_varphys","btn_edit_varphys","btn_import_varphys"),
-                                                                  c("New","Edit","Import"),
+                                                                  c("btn_new_varphys","btn_import_varphys"),#,"btn_edit_varphys"
+                                                                  c("New","Import"),#,"Edit"
                                                                   direction = "horizontal",
                                                                   status = "info",
                                                                   fullwidth = T)
@@ -1305,8 +1305,8 @@ shinyUI(fluidPage(
                                                                                              openOnFocus = T))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
-                                                                  c("btn_new_varchem","btn_edit_varchem","btn_import_varchem"),
-                                                                  c("New","Edit","Import"),
+                                                                  c("btn_new_varchem","btn_import_varchem"),#,"btn_edit_varchem"
+                                                                  c("New","Import"),#,"Edit"
                                                                   direction = "horizontal",
                                                                   status = "info",
                                                                   fullwidth = T)
@@ -1326,8 +1326,8 @@ shinyUI(fluidPage(
                                                                                              openOnFocus = T))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
-                                                                  c("btn_new_varexpo","btn_edit_varexpo","btn_import_varexpo"),
-                                                                  c("New","Edit","Import"),
+                                                                  c("btn_new_varexpo","btn_import_varexpo"),#,"btn_edit_varexpo"
+                                                                  c("New","Import"),#,"Edit"
                                                                   direction = "horizontal",
                                                                   status = "info",
                                                                   fullwidth = T)
@@ -1347,8 +1347,8 @@ shinyUI(fluidPage(
                                                                                              openOnFocus = T))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
-                                                                  c("btn_new_varadme","btn_edit_varadme","btn_import_varadme"),
-                                                                  c("New","Edit","Import"),
+                                                                  c("btn_new_varadme","btn_import_varadme"),#,"btn_edit_varadme"
+                                                                  c("New","Import"),#,"Edit"
                                                                   direction = "horizontal",
                                                                   status = "info",
                                                                   fullwidth = T)
@@ -1378,8 +1378,8 @@ shinyUI(fluidPage(
                                                                                    openOnFocus = T))),
                                                column(width = 4, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
-                                                        c("btn_edit_biom","btn_new_biom"),
-                                                        c("Edit","New"),
+                                                        c("btn_new_biom"),#"btn_edit_biom",
+                                                        c("New"),#"Edit",
                                                         direction = "horizontal",
                                                         status = "info",
                                                         fullwidth = T
@@ -1419,8 +1419,8 @@ shinyUI(fluidPage(
                                                                      width = validateCssUnit("99%"))
                                                       ),
                                                column(4,
-                                                      actionGroupButtons(c("btn_edit_sim","btn_new_sim","btn_run_sim"),status = "info",
-                                                                         labels = c("Edit","New","Run"),fullwidth = T)
+                                                      actionGroupButtons(c("btn_new_sim","btn_run_sim"),status = "info",#"btn_edit_sim",
+                                                                         labels = c("New","Run"),fullwidth = T)#"Edit",
                                                )
 
 
