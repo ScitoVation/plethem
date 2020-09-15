@@ -244,7 +244,7 @@ plot_body <- fluidPage(
                                                                                                    "Rapidly Perfused Tissue"="ti_rpf","Rapidly Perfused Exchange"="bl_rpf",
                                                                                                    "Slowly Perfused Total"="to_spf",
                                                                                                    "Slowly Perfused Tissue"="ti_spf","Slowly Perfused Exchange"="bl_spf",
-                                                                                                   "Parent urine concentration"="urine","Metabolite Urine Concentration"="meturine"
+                                                                                                   "Parent Urinary Concentration"="urine","Metabolite Urinary Concentration"="meturine"
                                                                                     )
                                                            )
                                                   ),
@@ -442,7 +442,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_vmuscc","Volume (Fraction of Body Weight)",min =0, max = 1, value =0.4576, step = 0.01)),
         column(6,
-               numericInput("ms_qmuscc","Blood Flow (Ftaction of Cardiac Output)",min =0 , max =1, value =0.13711))
+               numericInput("ms_qmuscc","Blood Flow (Fraction of Cardiac Output)",min =0 , max =1, value =0.13711))
       )
     ),
     tabItem(
@@ -1189,7 +1189,7 @@ shinyUI(fluidPage(
                                                                       fluidRow(
                                                                         column(4,
                                                                                bsButton("btn_metab_upload",
-                                                                                        "Upload Age-based Metabolism Data",
+                                                                                        "Upload Age-Based Metabolism Data",
                                                                                         block = T)
                                                                         ),
                                                                         column(6,
