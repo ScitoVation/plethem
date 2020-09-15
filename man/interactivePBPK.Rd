@@ -7,7 +7,7 @@
 interactivePBPK(name = "rapidPBPK")
 }
 \arguments{
-\item{name}{Name of the model. "rapidPBPK","httk", or "fishPBPK". Defaults to rapidPBPK.}
+\item{name}{Name of the model. "rapidPBPK" or "fishPBPK". Defaults to rapidPBPK.}
 }
 \description{
 Used to launch the PBPK workflow for the given model. This interface can be used to launch either the rapidPBPK model, The HTTK model or the fishPBPK model.
