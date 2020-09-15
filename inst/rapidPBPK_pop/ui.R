@@ -1189,7 +1189,7 @@ shinyUI(fluidPage(
                                                                       fluidRow(
                                                                         column(4,
                                                                                bsButton("btn_metab_upload",
-                                                                                        "Upload Age-based Metabolism Data",
+                                                                                        "Upload Age-Based Metabolism Data",
                                                                                         block = T)
                                                                         ),
                                                                         column(6,
