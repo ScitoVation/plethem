@@ -2272,7 +2272,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
           shinyDirButton(
             id="dirHESI",
             label="choose location",
-            title="Download HESI",
+            title="Download HESI Report",
             buttonType = "default",
             class = NULL,
             icon = NULL,
@@ -2281,7 +2281,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         ),
         title="Download HESI File",
         footer = tagList(
-          actionButton("btn_dlHesi","Download HESI"),
+          actionButton("btn_dlHesi","Download HESI Report"),
           modalButton("Dismiss")
         ), size = c("m"), easyClose = F, fade = T))
     
@@ -2302,51 +2302,16 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if(length(hesiPath())==0){
       sendSweetAlert(session, title = "No Directory Chosen", text = "Please select a directory to save to.",type = "error")
     } else{
-      HESI_doc <- read_docx()
-      HESI_doc <- HESI_doc %>%
-        body_add_par("HESI Report", style = "centered") %>%
-        body_add_par("Executive Summary", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Background Information", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Model Purpose", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Materials and Methods", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Modeling Strategy", style = "heading 2") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Summary of Data for Model Development and Evaluation", style = "heading 2") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Model Development and Structure", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Model Equations", style="heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Model Parameters", style="heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Model Simulations", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Model Simulations", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Software", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Modeling Results", style = "heading 1") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Model Evaluation", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Variability Analyses", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Model Applicability", style = "heading 2") %>%
-        body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("Discussion and Conclusions", style = "heading 1") %>%
-        body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("Electronic Files and Supporting Documents", style = "heading 1") %>%
-        body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("Appendices", style = "heading 1") %>%
-        body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("References", style = "heading 1")
-        
-      #c('Normal', 'heading 1', 'heading 2', 'heading 3', 'centered', 'Image Caption', 'Table Caption', 'toc 1', 'toc 2', 'Balloon Text', 'graphic title', 'table title')
-      print(HESI_doc, target = paste0(hesiPath(),"/HESIreport.docx"))
+      template_location <- system.file(package = "plethem", "extdata/pbpk_reporting_template.docx")
+      report_doc <- read_docx(template_location)
+      
+      #TODO Update sections like this with content from model setup and simulations
+      #report_doc %>% 
+      #  cursor_reach('^Model Parameters$') %>% # regex for the section title
+      #  cursor_forward() %>% # get the next element in the document, originally just the placeholder text
+      #  body_add_par(value = "Arrrh, here be the parameters.", pos = "on") # replace the placeholder text
+
+      print(report_doc, target = paste0(hesiPath(),"/hesi_pbpk_model_report.docx"))
       removeModal()
     }
   })
@@ -3917,3 +3882,5 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
   })
   return(returnValues$savedat)
 }
+
+
