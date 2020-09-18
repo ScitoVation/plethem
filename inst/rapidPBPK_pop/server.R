@@ -2279,16 +2279,16 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
           shinyDirButton(
             id="dirHESI",
             label="choose location",
-            title="Download HESI Report",
+            title="Download PBPK Report",
             buttonType = "default",
             class = NULL,
             icon = NULL,
             style = NULL
           )
         ),
-        title="Download HESI File",
+        title="Download Report File",
         footer = tagList(
-          actionButton("btn_dlHesi","Download HESI Report"),
+          actionButton("btn_dlHesi","Download PBPK Report"),
           modalButton("Dismiss")
         ), size = c("m"), easyClose = F, fade = T))
     
