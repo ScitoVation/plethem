@@ -1503,7 +1503,7 @@ shinyUI(fluidPage(
                         column(
                           3,
                           actionGroupButtons(c("btn_dlHESI"),status = "btn btn-primary btn-block",
-                                             labels = c("Download HESI"),fullwidth = T)
+                                             labels = c("Download Report"),fullwidth = T)
                         )
                       ),
                       tabsetPanel(id = "Modeloutput", type = "tabs",

@@ -2,9 +2,9 @@ Package: plethem
 Title: Population Life Course Exposure to Health Effects Modeling
 Version: 1.1.0
 Authors@R: c(
-    person("Salil", "Pendse", email = "spendse@scitovation.com", role = c("aut", "cre")),
+    person("Salil", "Pendse", email = "spendse@scitovation.com", role = "aut"),
     person("Kevin","Bronson",email = "kbronson@scitovation.com",role = "aut"),
-    person("Jeremy","Fitzpatrick",email = "jfitzpatrick@scitovation.com",role = "aut"),
+    person("Jeremy","Fitzpatrick",email = "jfitzpatrick@scitovation.com",role = c("aut", "cre")),
     person("Patrick","McMullen",email = "pmcmullen@scitovation.com",role="ctb"),
     person("ScitoVation, LLC",role ="cph")
   )
@@ -68,7 +68,10 @@ Imports:
   shinyFiles,
   officer,
   devEMF,
-  magrittr
+  magrittr,
+  DiagrammeR,
+  DiagrammeRsvg,
+  rsvg
 Suggests: testthat,
     rmarkdown,
     knitr

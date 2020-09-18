@@ -2,6 +2,9 @@ library(shinyFiles)
 library(officer)
 library(devEMF)
 library(magrittr)
+library(DiagrammeR)
+library(DiagrammeRsvg)
+library(rsvg)
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
   run_type <- "prod" #"prod" for production, "dev" for development
@@ -2302,9 +2305,48 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if(length(hesiPath())==0){
       sendSweetAlert(session, title = "No Directory Chosen", text = "Please select a directory to save to.",type = "error")
     } else{
+      ### Create Graph For Section 4.3
+      flowChartString <- "digraph {
+
+graph [layout = dot, rankdir = LR]
+
+# define the global styles of the nodes. We can override these in box if we wish
+node [shape = rectangle, style = filled, fillcolor = Linen]
+
+skinSurface [label = 'Skin\nSurface', shape = oval, fillcolor = yellowGreen]
+dermal [label = 'Dermal', shape = oval, fillcolor = yellowGreen]
+inhalation [label = 'Inhalation', shape = oval, fillcolor = yellowGreen]
+skin [label = 'Skin', shape = oval, fillcolor = Purple]
+fat [label = 'Fat', shape = oval, fillcolor = Purple]
+richlyPerfused [label = 'Richly\nPerfused', shape = oval, fillcolor = Purple]
+slowlyPerfused [label = 'Slowly\nPerfused', shape = oval, fillcolor = Purple]
+liver [label = 'Liver', shape = oval, fillcolor = Purple]
+oral [label = 'Oral', shape = oval, fillcolor = yellowGreen]
+venousBlood [label = 'Venous\nBlood', shape = oval, fillcolor = Blue]
+arterialBlood [label = 'Arterial\nBlood', shape = oval, fillcolor = Red]
+liver2 [label = 'Liver', shape = oval, fillcolor = forestGreen]
+restOfBody [label = 'Rest\nof\nBody', shape = oval, fillcolor = forestGreen]
+kidney [label = 'Kidney', shape = oval, fillcolor = forestGreen]
+urine [label = 'Urine' shape = oval, fillcolor = Orange]
+
+
+# edge definitions with the node IDs
+dermal -> skinSurface -> skin
+inhalation -> arterialBlood -> {skin fat richlyPerfused slowlyPerfused liver} -> venousBlood -> arterialBlood
+oral -> liver -> liver2 -> restOfBody -> kidney -> urine
+kidney -> restOfBody -> liver2
+}"
+      
+      # produce an emf file containing the 
+      flowChart43 <- tempfile(fileext = ".png")
+      print(flowChart43)
+      grViz(flowChartString) %>%
+        export_svg %>% charToRaw %>% rsvg_png(flowChart43)
+      
       HESI_doc <- read_docx()
       HESI_doc <- HESI_doc %>%
-        body_add_par("HESI Report", style = "centered") %>%
+        ## Initial Sections Are All User Defined Sections
+        body_add_par("Report", style = "centered") %>%
         body_add_par("Executive Summary", style = "heading 1") %>%
         body_add_par("User Created Section") %>%
         body_add_par("Background Information", style = "heading 1") %>%
@@ -2317,12 +2359,23 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         body_add_par("User Created Section") %>%
         body_add_par("Summary of Data for Model Development and Evaluation", style = "heading 2") %>%
         body_add_par("User Created Section") %>%
+        
+        ## Model Development and Structure Section Include Schematic and Key Model Assumptions
         body_add_par("Model Development and Structure", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_img(src = flowChart43, width = 5, height = 2) %>%
+        body_add_par("Flow Chart of PBPK Model", style="Normal") %>%
+        
+        
+        ## MCsim Code Equations
         body_add_par("Model Equations", style="heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        body_add_par("", style="Normal") %>% ## Add Stuff Here
+        
+        # MCsim Code Parameters
         body_add_par("Model Parameters", style="heading 2") %>%
+        
         body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
+        
+        
         body_add_par("Model Simulations", style = "heading 2") %>%
         body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
         body_add_par("Model Simulations", style = "heading 2") %>%
@@ -2343,10 +2396,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         body_add_par("User Created Section", style="Normal") %>%
         body_add_par("Appendices", style = "heading 1") %>%
         body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("References", style = "heading 1")
-        
+        body_add_par("References", style = "heading 1") %>%
+        body_add_par("User Created Section", style = "Normal")
       #c('Normal', 'heading 1', 'heading 2', 'heading 3', 'centered', 'Image Caption', 'Table Caption', 'toc 1', 'toc 2', 'Balloon Text', 'graphic title', 'table title')
-      print(HESI_doc, target = paste0(hesiPath(),"/HESIreport.docx"))
+      print(HESI_doc, target = paste0(hesiPath(),"/Report.docx"))
       removeModal()
     }
   })
