@@ -2323,7 +2323,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     return(results$expo$pdf)
   })
 
-
+  # probability density
   output$PDF <- renderPlotly({
     p <- plot_ly(
       pdf_data(),
@@ -2345,6 +2345,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       )
   })
 
+  # cumulative density
   output$CDF <- renderPlotly({
     p <- plot_ly(
       results$expo$cdf,
