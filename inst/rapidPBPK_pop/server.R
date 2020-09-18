@@ -2348,9 +2348,6 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         body_add_par("Model Parameters", style="heading 2") %>%
         body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
         
-        
-        body_add_par("Model Simulations", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
         body_add_par("Model Simulations", style = "heading 2") %>%
         body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
         body_add_par("Software", style = "heading 2") %>%
@@ -2378,20 +2375,20 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       # template_location <- system.file(package = "plethem", "extdata/pbpk_reporting_template.docx")
       # report_doc <- read_docx(template_location)
       # 
-      # #TODO Update sections like this with content from model setup and simulations
-      # #report_doc %>% 
-      # #  cursor_reach('^Model Parameters$') %>% # regex for the section title
-      # #  cursor_forward() %>% # get the next element in the document, originally just the placeholder text
-      # #  body_add_par(value = "Arrrh, here be the parameters.", pos = "on") # replace the placeholder text
-      # 
-      # # Concentration time series
-      # plot <- ggplot2::ggplot(concData(), aes(x=time, y=value))+ geom_line()
-      # report_doc %>%
-      #   cursor_reach('^Model Evaluation$') %>%
-      #   cursor_forward() %>% 
-      #   body_add_par(value = "Some models were simulated.", pos = "on") %>%
-      #   body_add_par(value = "Key concentration time-series", style = "heading 3") %>%
-      #   body_add_gg(plot)
+      #TODO Update sections like this with content from model setup and simulations
+      #report_doc %>%
+      #  cursor_reach('^Model Parameters$') %>% # regex for the section title
+      #  cursor_forward() %>% # get the next element in the document, originally just the placeholder text
+      #  body_add_par(value = "Arrrh, here be the parameters.", pos = "on") # replace the placeholder text
+
+      # Concentration time series
+      plot <- ggplot2::ggplot(concData(), aes(x=time, y=value))+ geom_line()
+      report_doc %>%
+        cursor_reach('^Model Evaluation$') %>%
+        cursor_forward() %>%
+        body_add_par(value = "Some models were simulated.", pos = "on") %>%
+        body_add_par(value = "Key concentration time-series", style = "heading 3") %>%
+        body_add_gg(plot)
       removeModal()
     }
   })

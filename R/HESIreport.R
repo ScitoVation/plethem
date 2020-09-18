@@ -42,3 +42,27 @@ kidney -> restOfBody -> liver2
   
   return(flowChartString)
 }
+
+
+
+#' Gets the metabolism data. Should not be used by directly by the user
+#' @description The function returns the relavent metabolism data if the simulation contains
+#' data from the metabolism set
+#' @param admeid The id for ADME set. The admeid is used to obtain information about the other sets.
+#' @return List containing the metabolism values needed to run PBPK model or
+#' display simulation information
+#' @export
+addPBPKequations <- function(){
+ PBPKequations <- "" 
+}
+
+#' Gets the metabolism data. Should not be used by directly by the user
+#' @description The function returns the relavent metabolism data if the simulation contains
+#' data from the metabolism set
+#' @param admeid The id for ADME set. The admeid is used to obtain information about the other sets.
+#' @return List containing the metabolism values needed to run PBPK model or
+#' display simulation information
+#' @export
+createHESIgraphs <- function(){
+  PBPKequations <- "" 
+}
