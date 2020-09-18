@@ -22,7 +22,7 @@ performIVIVEUI<- function(namespace){
                           ),
                           fluidRow(
                             column(3,
-                                   numericInput(ns("num_km"),"Michaelis-Menten Constant (\ub5M)",value = 1)
+                                   numericInput(ns("num_km"),"Michaelis-Menten Constant (uM)",value = 1)
                                    ),
                             column(3,
                                    numericInput(ns("num_hpgl"),"10^6 Hepatocytes per gram liver", value = 0)
@@ -61,8 +61,8 @@ performIVIVEUI<- function(namespace){
                                                               ),
                                                        column(4,
                                                               selectizeInput(ns("sel_msunit"),label = "Units",
-                                                                          choices = list("\ub5L/min/mg Protein"="ulmmP",
-                                                                                         "\ub5L/h/mg Protein"="ulhmP",
+                                                                          choices = list("uL/min/mg Protein"="ulmmP",
+                                                                                         "uL/h/mg Protein"="ulhmP",
                                                                                          "mL/min/mg Protein"="mlmmP",
                                                                                          "mL/h/mg Protein"="mlhmP"))
                                                        )
@@ -76,8 +76,8 @@ performIVIVEUI<- function(namespace){
                                                        column(4,
                                                               selectizeInput(ns("sel_cyunit"),
                                                                           label = "Units",
-                                                                          choices = list("\ub5L/min/mg Protein"="ulmmP",
-                                                                                         "\ub5L/h/mg Protein"="ulhmP",
+                                                                          choices = list("uL/min/mg Protein"="ulmmP",
+                                                                                         "uL/h/mg Protein"="ulhmP",
                                                                                          "mL/min/mg Protein"="mlmmP",
                                                                                          "mL/h/mg Protein"="mlhmP"))
                                                        )
@@ -92,8 +92,8 @@ performIVIVEUI<- function(namespace){
                                                      ),
                                                      column(4,
                                                             selectizeInput(ns("sel_s9unit"),label = "Units",
-                                                                        choices = list("\ub5L/min/mg Protein"="ulmmP",
-                                                                                       "\ub5L/h/mg Protein"="ulhmP",
+                                                                        choices = list("uL/min/mg Protein"="ulmmP",
+                                                                                       "uL/h/mg Protein"="ulhmP",
                                                                                        "mL/min/mg Protein"="mlmmP",
                                                                                        "mL/h/mg Protein"="mlhmP"))
                                                             )

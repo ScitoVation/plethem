@@ -50,7 +50,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                column(4,
                                       numericInputIcon(ns("num_km"),
                                                    label = "Michaelis-Menten Constant",
-                                                   value = 1, min = 0.1,icon = list("\U00B5M"),
+                                                   value = 1, min = 0.1,icon = list("uM"),
                                                    width = validateCssUnit("100%"))
                                ),
                                column(4,
@@ -112,7 +112,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                       ),
                                       column(6,
                                              selectInput(ns("sel_ivunit"),tags$h4("Unit"),
-                                                         list("\ub5M"="um",
+                                                         list("uM"="um",
                                                               "mg/L"="mgL"),
                                                          width = validateCssUnit("100%"))
                                       )
@@ -163,8 +163,8 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                                                width = validateCssUnit("100%"))),
                                            column(6,
                                                   selectInput(ns("sel_msunit"),label = "Units",
-                                                              choices = list("\ub5L/min/mg Protein"="ulmmP",
-                                                                             "\ub5L/h/mg Protein"="ulhmP",
+                                                              choices = list("uL/min/mg Protein"="ulmmP",
+                                                                             "uL/h/mg Protein"="ulhmP",
                                                                              "mL/min/mg Protein"="mlmmP",
                                                                              "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -176,8 +176,8 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                                                step = 0.001,value = 0.0,
                                                                width = validateCssUnit("100%"))),
                                            column(6,
-                                                  selectInput(ns("sel_cyunit"),label = "Units",choices = list("\ub5L/min/mg Protein"="ulmmP",
-                                                                                                          "\ub5L/h/mg Protein"="ulhmP",
+                                                  selectInput(ns("sel_cyunit"),label = "Units",choices = list("uL/min/mg Protein"="ulmmP",
+                                                                                                          "uL/h/mg Protein"="ulhmP",
                                                                                                           "mL/min/mg Protein"="mlmmP",
                                                                                                           "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -198,8 +198,8 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                            column(6,
                                                   selectInput(ns("sel_s9unit"),
                                                               label = "Units",
-                                                              choices = list("\ub5L/min/mg Protein"="ulmmP",
-                                                                             "\ub5L/h/mg Protein"="ulhmP",
+                                                              choices = list("uL/min/mg Protein"="ulmmP",
+                                                                             "uL/h/mg Protein"="ulhmP",
                                                                              "mL/min/mg Protein"="mlmmP",
                                                                              "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -320,10 +320,10 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                        "oralnonvol"="Oral Exposure Non Volatile Chemical",
                        "oralvol"="Oral Exposure Volatile Chemical",
                        "inhvol"="Inhalation Exposure Volatile Chemical",
-                       "um"="\ub5M",
+                       "um"="uM",
                        "mgL"="mg/L",
-                       "ulmmP"="\ub5L/min/mg Protein",
-                       "ulhmP"="\ub5L/h/mg Protein",
+                       "ulmmP"="uL/min/mg Protein",
+                       "ulhmP"="uL/h/mg Protein",
                        "mlmmP"="mL/min/mg Protein",
                        "mlhmP"="mL/h/mg Protein",
                        "Lh"="L/h",
@@ -384,7 +384,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                    ),
             column(6,
                    numericInputIcon(ns("num_new_chem_km"),"Michaelis-Menten Constant",
-                                    value = 1, min = 1, icon= list("\U00B5M")))
+                                    value = 1, min = 1, icon= list("uM")))
           )
         ),
         footer = tagList(modalButton("Cancel"),
@@ -556,7 +556,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
 
 
   output$cypCl <- DT::renderDT(DT::datatable(cypCl(),
-                                             caption = "Clearence in \u00B5L/min/pmol",
+                                             caption = "Clearence in uL/min/pmol",
                                              rowname = NULL,
                                              options= list(dom = "tp",pageLength = 4)),
                                server = T
