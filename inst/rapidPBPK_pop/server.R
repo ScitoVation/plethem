@@ -2,6 +2,8 @@ library(shinyFiles)
 library(officer)
 library(devEMF)
 library(magrittr)
+library(ggplot2)
+
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
   run_type <- "prod" #"prod" for production, "dev" for development
@@ -1897,7 +1899,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   #NCA data processing
   ncaData <- reactive({
     mode <- results$sim_type
-    query <- sprintf("Select name,model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",
+    query <- sprintf("Select name, model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",
                      model,
                      mode)
     name_df<- mainDbSelect(query)
@@ -2311,6 +2313,16 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       #  cursor_forward() %>% # get the next element in the document, originally just the placeholder text
       #  body_add_par(value = "Arrrh, here be the parameters.", pos = "on") # replace the placeholder text
 
+      # Concentration time series
+      plot <- ggplot2::ggplot(concData(), aes(x=time, y=value))+ geom_line()
+      report_doc %>%
+        cursor_reach('^Model Evaluation$') %>%
+        cursor_forward() %>% 
+        body_add_par(value = "Some models were simulated.", pos = "on") %>%
+        body_add_par(value = "Key concentration time-series", style = "heading 3") %>%
+        body_add_gg(plot)
+        
+      
       print(report_doc, target = paste0(hesiPath(),"/hesi_pbpk_model_report.docx"))
       removeModal()
     }
