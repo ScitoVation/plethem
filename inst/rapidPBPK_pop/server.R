@@ -5,6 +5,8 @@ library(magrittr)
 library(DiagrammeR)
 library(DiagrammeRsvg)
 library(rsvg)
+library(ggplot2)
+
 shinyServer(function(input, output, session) {
   # Type of environment in which the shiny app is called
   run_type <- "prod" #"prod" for production, "dev" for development
@@ -1900,7 +1902,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   #NCA data processing
   ncaData <- reactive({
     mode <- results$sim_type
-    query <- sprintf("Select name,model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",
+    query <- sprintf("Select name, model_var from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s' AND nca = 'TRUE';",
                      model,
                      mode)
     name_df<- mainDbSelect(query)
@@ -2275,7 +2277,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
           shinyDirButton(
             id="dirHESI",
             label="choose location",
-            title="Download HESI",
+            title="Download HESI Report",
             buttonType = "default",
             class = NULL,
             icon = NULL,
@@ -2284,7 +2286,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         ),
         title="Download HESI File",
         footer = tagList(
-          actionButton("btn_dlHesi","Download HESI"),
+          actionButton("btn_dlHesi","Download HESI Report"),
           modalButton("Dismiss")
         ), size = c("m"), easyClose = F, fade = T))
     
@@ -2305,8 +2307,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if(length(hesiPath())==0){
       sendSweetAlert(session, title = "No Directory Chosen", text = "Please select a directory to save to.",type = "error")
     } else{
-      ### Create Graph For Section 4.3
-      flowChartString <- "digraph {
+### Create Graph For Section 4.3
+flowChartString <- "digraph {
 
 graph [layout = dot, rankdir = LR]
 
@@ -2399,7 +2401,26 @@ kidney -> restOfBody -> liver2
         body_add_par("References", style = "heading 1") %>%
         body_add_par("User Created Section", style = "Normal")
       #c('Normal', 'heading 1', 'heading 2', 'heading 3', 'centered', 'Image Caption', 'Table Caption', 'toc 1', 'toc 2', 'Balloon Text', 'graphic title', 'table title')
-      print(HESI_doc, target = paste0(hesiPath(),"/Report.docx"))
+      #print(HESI_doc, target = paste0(hesiPath(),"/Report.docx"))
+      print(report_doc, target = paste0(hesiPath(),"/pbpk_model_report.docx"))
+      
+      # template_location <- system.file(package = "plethem", "extdata/pbpk_reporting_template.docx")
+      # report_doc <- read_docx(template_location)
+      # 
+      # #TODO Update sections like this with content from model setup and simulations
+      # #report_doc %>% 
+      # #  cursor_reach('^Model Parameters$') %>% # regex for the section title
+      # #  cursor_forward() %>% # get the next element in the document, originally just the placeholder text
+      # #  body_add_par(value = "Arrrh, here be the parameters.", pos = "on") # replace the placeholder text
+      # 
+      # # Concentration time series
+      # plot <- ggplot2::ggplot(concData(), aes(x=time, y=value))+ geom_line()
+      # report_doc %>%
+      #   cursor_reach('^Model Evaluation$') %>%
+      #   cursor_forward() %>% 
+      #   body_add_par(value = "Some models were simulated.", pos = "on") %>%
+      #   body_add_par(value = "Key concentration time-series", style = "heading 3") %>%
+      #   body_add_gg(plot)
       removeModal()
     }
   })
@@ -2411,7 +2432,7 @@ kidney -> restOfBody -> liver2
     return(results$expo$pdf)
   })
 
-
+  # probability density
   output$PDF <- renderPlotly({
     p <- plot_ly(
       pdf_data(),
@@ -2433,6 +2454,7 @@ kidney -> restOfBody -> liver2
       )
   })
 
+  # cumulative density
   output$CDF <- renderPlotly({
     p <- plot_ly(
       results$expo$cdf,
@@ -3970,3 +3992,5 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
   })
   return(returnValues$savedat)
 }
+
+

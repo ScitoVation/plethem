@@ -245,7 +245,8 @@ plot_body <- fluidPage(
                                                                                                    "Slowly Perfused Total"="to_spf",
                                                                                                    "Slowly Perfused Tissue"="ti_spf","Slowly Perfused Exchange"="bl_spf",
                                                                                                    "Parent Urinary Concentration"="urine","Metabolite Urinary Concentration"="meturine"
-                                                                                    )
+                                                                                    ),
+                                                                                    selected="art_bld"
                                                            )
                                                   ),
                                                   tabPanel("Dataset",value = "dataset",
@@ -298,7 +299,8 @@ plot_body <- fluidPage(
                                                                           "Rapidly Perused Tissue"="ti_rpf","Rapidly Perused Exchange"="bl_rpf",
                                                                           "Slowly Perused Total"="to_spf",
                                                                           "Slowly Perused Tissue"="ti_spf","Slowly Perused Exchange"="bl_spf"
-                                                           )
+                                                           ),
+                                                           selected="art_bld"
 
                                                 )
                                                 #selectizeInput("aplt_data",tags$h4("Select Data Sets"),choices = c("a","b","c"))
@@ -1503,7 +1505,7 @@ shinyUI(fluidPage(
                         column(
                           3,
                           actionGroupButtons(c("btn_dlHESI"),status = "btn btn-primary btn-block",
-                                             labels = c("Download Report"),fullwidth = T)
+                                             labels = c("Download Model Report"),fullwidth = T)
                         )
                       ),
                       tabsetPanel(id = "Modeloutput", type = "tabs",
