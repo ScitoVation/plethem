@@ -1392,6 +1392,7 @@ shinyServer(function(input, output, session) {
       if(run_type== "dev"){
         dyn.load("../../src/plethem.dll")
       }else if(run_type == "prod"){
+        print('I am running')
         dyn.load(system.file("libs",
                              .Platform$r_arch,
                              paste0("plethem",.Platform$dynlib.ext),
@@ -1399,12 +1400,13 @@ shinyServer(function(input, output, session) {
                  )
       }
 
-
+      print('we have gotten this far')
 
       modelOutput<- deSolve::ode(y = state, times = times,method = "lsodes",
                                  func = "derivs", dllname = "plethem",initfunc= "initmod",parms = initial_params,
                                  events=list(func="event", time=event_times),nout = length(output),
                                  outnames = output)
+      print('and here we are')
       if(run_type == "dev"){
         dyn.unload("../../src/plethem.dll")
       }else if(run_type == "prod"){
