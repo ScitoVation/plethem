@@ -2317,8 +2317,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       grViz(flowChartString) %>%
         export_svg %>% charToRaw %>% rsvg_png(flowChart43)
       
-      HESI_doc <- read_docx()
-
+      template_location <- system.file(package = "plethem", "extdata/pbpk_reporting_template.docx")
+      HESI_doc <- read_docx(template_location)
+      HESI_doc %>% createHESIgraphs(concData())
+      
       print(HESI_doc, target = paste0(hesiPath(),"/pbpk_model_report.docx"))
  
       removeModal()
