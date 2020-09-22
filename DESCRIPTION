@@ -67,7 +67,6 @@ Imports:
   shinyalert,
   shinyFiles,
   officer,
-  devEMF,
   DiagrammeR,
   DiagrammeRsvg,
   rsvg,
