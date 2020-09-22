@@ -68,7 +68,6 @@ Imports:
   shinyFiles,
   officer,
   devEMF,
-  magrittr,
   DiagrammeR,
   DiagrammeRsvg,
   rsvg,
