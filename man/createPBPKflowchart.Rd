@@ -4,7 +4,7 @@
 \alias{createPBPKflowchart}
 \title{Gets the metabolism data. Should not be used by directly by the user}
 \usage{
-createPBPKflowchart()
+createPBPKflowchart(HESI_doc)
 }
 \arguments{
 \item{admeid}{The id for ADME set. The admeid is used to obtain information about the other sets.}
