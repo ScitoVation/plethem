@@ -2309,11 +2309,14 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if(length(hesiPath())==0){
       sendSweetAlert(session, title = "No Directory Chosen", text = "Please select a directory to save to.",type = "error")
     } else{
+
 ### Create HESI Report
       template_location <- system.file(package = "plethem", "extdata/pbpk_reporting_template.docx")
       HESI_doc <- read_docx(template_location)
       HESI_doc <- createPBPKflowchart(HESI_doc)
       HESI_doc <- addPBPKequations(HESI_doc)
+      HESI_doc %>% createHESIgraphs(concData())
+      
       print(HESI_doc, target = paste0(hesiPath(),"/pbpk_model_report.docx"))
       removeModal()
     }

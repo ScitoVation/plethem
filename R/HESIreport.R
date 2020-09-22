@@ -259,21 +259,25 @@ addPBPKequations <- function(HESI_doc){
  return(HESI_doc)
 }
 
-#' Gets the metabolism data. Should not be used by directly by the user
-#' @description The function returns the relavent metabolism data if the simulation contains
-#' data from the metabolism set
-#' @param admeid The id for ADME set. The admeid is used to obtain information about the other sets.
-#' @return List containing the metabolism values needed to run PBPK model or
-#' display simulation information
+#' Pipe to add concentration-timecourse data to the report
+#' @description 
+#' @param report_doc 
+#' @return report_doc
 #' @export
-createHESIgraphs <- function(){
+createHESIgraphs <- function(report_doc, context){
   PBPKequations <- "" 
-  plot <- ggplot2::ggplot(concData(), aes(x=time, y=value))+ geom_line()
+  # @JF, i'm guessing based on the above line that you want this ultimately to draw the plots for variables that are included in the pbpk model. for now, this just takes the "selected" plots in the gui
   report_doc %>%
     cursor_reach('^Model Evaluation$') %>%
     cursor_forward() %>%
     body_add_par(value = "Some models were simulated.", pos = "on") %>%
-    body_add_par(value = "Key concentration time-series", style = "heading 3") %>%
-    body_add_gg(plot)
-  
+    body_add_par(value = "Key concentration time-series", style = "heading 3") 
+    
+  for (tissue in unique(context$variable)) {
+    
+    subset <- context[which(context$variable==tissue),]
+    
+    plot <- ggplot2::ggplot(subset, aes(x=time, y=value))+ geom_line()
+    report_doc %>% body_add_gg(plot)
+  }
 }
