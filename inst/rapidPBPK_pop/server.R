@@ -2318,77 +2318,9 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         export_svg %>% charToRaw %>% rsvg_png(flowChart43)
       
       HESI_doc <- read_docx()
-      HESI_doc <- HESI_doc %>%
-        ## Initial Sections Are All User Defined Sections
-        body_add_par("Report", style = "centered") %>%
-        body_add_par("Executive Summary", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Background Information", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Model Purpose", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Materials and Methods", style = "heading 1") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Modeling Strategy", style = "heading 2") %>%
-        body_add_par("User Created Section") %>%
-        body_add_par("Summary of Data for Model Development and Evaluation", style = "heading 2") %>%
-        body_add_par("User Created Section") %>%
-        
-        ## Model Development and Structure Section Include Schematic and Key Model Assumptions
-        body_add_par("Model Development and Structure", style = "heading 2") %>%
-        body_add_img(src = flowChart43, width = 5, height = 2) %>%
-        body_add_par("Flow Chart of PBPK Model", style="Normal") %>%
-        
-        
-        ## MCsim Code Equations
-        body_add_par("Model Equations", style="heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        
-        # MCsim Code Parameters
-        body_add_par("Model Parameters", style="heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        
-        body_add_par("Model Simulations", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Software", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Modeling Results", style = "heading 1") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Model Evaluation", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Variability Analyses", style = "heading 2") %>%
-        body_add_par("Programmatic", style="Normal") %>% ## Add Stuff Here
-        body_add_par("Model Applicability", style = "heading 2") %>%
-        body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("Discussion and Conclusions", style = "heading 1") %>%
-        body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("Electronic Files and Supporting Documents", style = "heading 1") %>%
-        body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("Appendices", style = "heading 1") %>%
-        body_add_par("User Created Section", style="Normal") %>%
-        body_add_par("References", style = "heading 1") %>%
-        body_add_par("User Created Section", style = "Normal")
-      #c('Normal', 'heading 1', 'heading 2', 'heading 3', 'centered', 'Image Caption', 'Table Caption', 'toc 1', 'toc 2', 'Balloon Text', 'graphic title', 'table title')
-      #print(HESI_doc, target = paste0(hesiPath(),"/Report.docx"))
-      print(HESI_doc, target = paste0(hesiPath(),"/pbpk_model_report.docx"))
-      
-      # template_location <- system.file(package = "plethem", "extdata/pbpk_reporting_template.docx")
-      # report_doc <- read_docx(template_location)
-      # 
-      #TODO Update sections like this with content from model setup and simulations
-      #report_doc %>%
-      #  cursor_reach('^Model Parameters$') %>% # regex for the section title
-      #  cursor_forward() %>% # get the next element in the document, originally just the placeholder text
-      #  body_add_par(value = "Arrrh, here be the parameters.", pos = "on") # replace the placeholder text
 
-      # Concentration time series
-      plot <- ggplot2::ggplot(concData(), aes(x=time, y=value))+ geom_line()
-      report_doc %>%
-        cursor_reach('^Model Evaluation$') %>%
-        cursor_forward() %>%
-        body_add_par(value = "Some models were simulated.", pos = "on") %>%
-        body_add_par(value = "Key concentration time-series", style = "heading 3") %>%
-        body_add_gg(plot)
+      print(HESI_doc, target = paste0(hesiPath(),"/pbpk_model_report.docx"))
+ 
       removeModal()
     }
   })
