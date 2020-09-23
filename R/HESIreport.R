@@ -45,7 +45,7 @@ kidney -> restOfBody -> liver2
   grViz(flowChartString) %>%
     export_svg %>% charToRaw %>% rsvg_png(flowChart43)
   HESI_doc %>%
-  cursor_reach('^Model Development and Structure$') %>%
+    cursor_reach('^Model Development and Structure$') %>%
     cursor_forward() %>%
     body_add_img(src = flowChart43, width = 5, height = 2) %>%
     body_add_par("Flow Chart of PBPK Model", style="Normal")
@@ -66,7 +66,6 @@ addPBPKequations <- function(HESI_doc){
   HESI_doc %>%
     cursor_reach('^Model Equations$') %>%
     cursor_forward() %>%
-    body_add_par( style="Normal") %>%
     body_add_par("### CONCENTRATION CALCULATIONS ###", style="Normal") %>%
     body_add_par("Blood Plasma (arterial)", style="Normal") %>%
     body_add_par("cpls = abld/vpls", style="Normal") %>%
