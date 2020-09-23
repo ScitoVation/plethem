@@ -2133,7 +2133,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                           error_y = list(array= ~sd,
                                          color = '#000')
         )%>%
-        plotly::layout(xaxis = list(title = ('Time(h)')),
+        plotly::layout(xaxis = list(title = ('Time (h)')),
                        yaxis = list(title = (ifelse(input$r_cplt_type=="um",
                                                     'Concentration (\u00B5M)',
                                                     'Concentration (mg/L)')),
@@ -2315,7 +2315,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       HESI_doc <- read_docx(template_location)
       HESI_doc <- createPBPKflowchart(HESI_doc)
       HESI_doc <- addPBPKequations(HESI_doc)
-      HESI_doc %>% createHESIgraphs(concData())
+      
+      conc_units <- ifelse(input$r_cplt_type=="um",
+                          '\u00B5M',
+                          'mg/L')
+      HESI_doc %>% createHESIgraphs(concData(), conc_units)
       
       print(HESI_doc, target = paste0(hesiPath(),"/pbpk_model_report.docx"))
       removeModal()

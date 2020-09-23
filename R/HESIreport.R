@@ -260,10 +260,12 @@ addPBPKequations <- function(HESI_doc){
 
 #' Pipe to add concentration-timecourse data to the report
 #' @description 
-#' @param report_doc 
-#' @return report_doc
+#' @param report_doc an officer::read_docx object 
+#' @param context a data.frame of concentrationXtime data, as returned by concData()
+#' @param conc_units a string denoting the units of concentration
+#' @return report_doc, the same officer::read_docx object 
 #' @export
-createHESIgraphs <- function(report_doc, context){
+createHESIgraphs <- function(report_doc, context, conc_units){
   PBPKequations <- "" 
   # @JF, i'm guessing based on the above line that you want this ultimately to draw the plots for variables that are included in the pbpk model. for now, this just takes the "selected" plots in the gui
   report_doc %>%
@@ -276,7 +278,13 @@ createHESIgraphs <- function(report_doc, context){
     
     subset <- context[which(context$variable==tissue),]
     
-    plot <- ggplot2::ggplot(subset, aes(x=time, y=value))+ geom_line()
+    plot <- ggplot2::ggplot(subset, aes(x=time, y=value)) +
+      geom_line() +
+      labs(
+        x = 'Time (h)', #FIXME is this always 'hours'?
+        y = paste0(tissue, ' concentration (', conc_units ,')')
+      )
+  
     report_doc %>% body_add_gg(plot)
   }
 }
