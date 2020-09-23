@@ -321,3 +321,21 @@ createHESIgraphs <- function(report_doc, context, conc_units){
     report_doc %>% body_add_gg(plot)
   }
 }
+
+
+#' Pipe to add concentration-timecourse data to the report
+#' @description 
+#' @param report_doc an officer::read_docx object 
+#' @param context a data.frame of concentrationXtime data, as returned by concData()
+#' @param conc_units a string denoting the units of concentration
+#' @return report_doc, the same officer::read_docx object 
+#' @export
+addParameters <- function(HESI_doc, chemical, exposure, physiological){
+  HESI_doc %>%
+    cursor_reach('^Model Parameters$') %>%
+    cursor_forward() %>%
+    body_add_table(chemical) %>%
+    body_add_table(exposure) %>%
+    body_add_table(physiological)
+    return(HESI_doc)
+}

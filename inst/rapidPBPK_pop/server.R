@@ -2315,6 +2315,8 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       HESI_doc <- read_docx(template_location)
       HESI_doc <- createPBPKflowchart(HESI_doc)
       HESI_doc <- addPBPKequations(HESI_doc)
+      HESI_doc <- addParameters(HESI_doc, current_params()$cur,
+                                current_params()$expo, current_params()$physio)
       
       conc_units <- ifelse(input$r_cplt_type=="um",
                           '\u00B5M',
