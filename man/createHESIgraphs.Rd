@@ -17,5 +17,5 @@ createHESIgraphs(report_doc, context, conc_units)
 report_doc, the same officer::read_docx object
 }
 \description{
-Pipe to add concentration-timecourse data to the report
+graphs
 }

@@ -17,5 +17,5 @@ addParameters(HESI_doc, chemical, exposure, physiological)
 report_doc, the same officer::read_docx object
 }
 \description{
-Pipe to add concentration-timecourse data to the report
+add user defined parameter tables
 }

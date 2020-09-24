@@ -287,12 +287,238 @@ addPBPKequations <- function(HESI_doc){
     body_add_par("body = abld + afat + askin + amusc + abone + abrn + alng + ahrt + agi + aliv + akdn + arpf + aspf + odose + ddose + odosev + alas", style="Normal") %>%
     body_add_par("cleared = ametliv1 + ametliv2 + aclbld + auexc + anabsgut + aexh + akent + afec", style="Normal") %>%
     body_add_par("tmass = dose - body - cleared", style="Normal")
+  
+  HESI_doc %>%
+    cursor_reach('^Model Parameters$') %>%
+    cursor_forward() %>%
+    body_add_par(" Initial Parameters ", style = "Normal") %>%
+    body_add_par("mw = 0", style="Normal") %>%
+    body_add_par("bdose = 0", style="Normal") %>%
+    body_add_par("blen = 0", style="Normal") %>%
+    body_add_par("breps = 0", style="Normal") %>%
+    body_add_par("totbreps = 0", style="Normal") %>%
+    body_add_par("drdose = 0", style="Normal") %>%
+    body_add_par("vdw = 0", style="Normal") %>%
+    body_add_par("dreps = 0", style="Normal") %>%
+    body_add_par("inhdose = 0", style="Normal") %>%
+    body_add_par("inhtlen = 0", style="Normal") %>%
+    body_add_par("inhdays = 0", style="Normal") %>%
+    body_add_par("ivdose = 0", style="Normal") %>%
+    body_add_par("ivlen = 0", style="Normal") %>%
+    body_add_par("dermrate = 0", style="Normal") %>%
+    body_add_par("KPtot = 0", style="Normal") %>%
+    body_add_par("Kevap = 0", style="Normal") %>%
+    body_add_par("maxcap = 0", style="Normal") %>%
+    body_add_par("wsol = 0", style="Normal") %>%
+    body_add_par("skarea = 0", style="Normal") %>%
+    body_add_par("bdosev = 0", style="Normal") %>%
+    body_add_par("blenv = 0", style="Normal") %>%
+    body_add_par("brepsv = 0", style="Normal") %>%
+    body_add_par("totbrepsv = 0", style="Normal") %>%
+    body_add_par("kfec = 0", style="Normal") %>%
+    body_add_par("kVtoL = 0", style="Normal") %>%
+    body_add_par("kent = 0", style="Normal") %>%
+    body_add_par("bw = 0", style="Normal") %>%
+    body_add_par("qcc = 0", style="Normal") %>%
+    body_add_par("hct = 0", style="Normal") %>%
+    body_add_par("vbldc = 0", style="Normal") %>%
+    body_add_par("perfc = 0", style="Normal") %>%
+    body_add_par("kbld = 0", style="Normal") %>%
+    body_add_par("respr = 0", style="Normal") %>%
+    body_add_par("tv = 0", style="Normal") %>%
+    body_add_par("ds = 0", style="Normal") %>%
+    body_add_par("uflw = 0", style="Normal") %>%
+    body_add_par("gfr = 0", style="Normal") %>%
+    body_add_par("frwsol = 0", style="Normal") %>%
+    body_add_par("fatvtbc = 0", style="Normal") %>%
+    body_add_par("vfatc = 0", style="Normal") %>%
+    body_add_par("qfatc = 0", style="Normal") %>%
+    body_add_par("pfat = 0", style="Normal") %>%
+    body_add_par("skinvtbc = 0", style="Normal") %>%
+    body_add_par("vskinc = 0", style="Normal") %>%
+    body_add_par("qskinc = 0", style="Normal") %>%
+    body_add_par("pskin = 0", style="Normal") %>%
+    body_add_par("muscvtbc = 0", style="Normal") %>%
+    body_add_par("vmuscc = 0", style="Normal") %>%
+    body_add_par("qmuscc = 0", style="Normal") %>%
+    body_add_par("pmusc = 0", style="Normal") %>%
+    body_add_par("bonevtbc = 0", style="Normal") %>%
+    body_add_par("vbonec = 0", style="Normal") %>%
+    body_add_par("qbonec = 0", style="Normal") %>%
+    body_add_par("pbone = 0", style="Normal") %>%
+    body_add_par("brnvtbc = 0", style="Normal") %>%
+    body_add_par("vbrnc = 0", style="Normal") %>%
+    body_add_par("qbrnc = 0", style="Normal") %>%
+    body_add_par("pbrn = 0", style="Normal") %>%
+    body_add_par("lngvtbc = 0", style="Normal") %>%
+    body_add_par("vlngc = 0", style="Normal") %>%
+    body_add_par("qlngc = 0", style="Normal") %>%
+    body_add_par("plng = 0", style="Normal") %>%
+    body_add_par("hrtvtbc = 0", style="Normal") %>%
+    body_add_par("vhrtc = 0", style="Normal") %>%
+    body_add_par("qhrtc = 0", style="Normal") %>%
+    body_add_par("phrt = 0", style="Normal") %>%
+    body_add_par("givtbc = 0", style="Normal") %>%
+    body_add_par("vgic = 0", style="Normal") %>%
+    body_add_par("qgic = 0", style="Normal") %>%
+    body_add_par("pgi = 0", style="Normal") %>%
+    body_add_par("fa = 0", style="Normal") %>%
+    body_add_par("ka = 0", style="Normal") %>%
+    body_add_par("livvtbc = 0", style="Normal") %>%
+    body_add_par("vlivc = 0", style="Normal") %>%
+    body_add_par("qalivc = 0", style="Normal") %>%
+    body_add_par("qvlivc = 0", style="Normal") %>%
+    body_add_par("pliv = 0", style="Normal") %>%
+    body_add_par("kdnvtbc = 0", style="Normal") %>%
+    body_add_par("vkdnc = 0", style="Normal") %>%
+    body_add_par("qkdnc = 0", style="Normal") %>%
+    body_add_par("pkdn = 0", style="Normal") %>%
+    body_add_par("rpfvtbc = 0", style="Normal") %>%
+    body_add_par("vrpfc = 0", style="Normal") %>%
+    body_add_par("qrpfc = 0", style="Normal") %>%
+    body_add_par("prpf = 0", style="Normal") %>%
+    body_add_par("spfvtbc = 0", style="Normal") %>%
+    body_add_par("vspfc = 0", style="Normal") %>%
+    body_add_par("qspfc = 0", style="Normal") %>%
+    body_add_par("pspf = 0", style="Normal") %>%
+    body_add_par("res = 0", style="Normal") %>%
+    body_add_par("fupls = 0", style="Normal") %>%
+    body_add_par("vbld = 0", style="Normal") %>%
+    body_add_par("vpls = 0", style="Normal") %>%
+    body_add_par("vfat = 0", style="Normal") %>%
+    body_add_par("vskin = 0", style="Normal") %>%
+    body_add_par("vmusc = 0", style="Normal") %>%
+    body_add_par("vbone = 0", style="Normal") %>%
+    body_add_par("vbrn = 0", style="Normal") %>%
+    body_add_par("vlng = 0", style="Normal") %>%
+    body_add_par("vhrt = 0", style="Normal") %>%
+    body_add_par("vkdn = 0", style="Normal") %>%
+    body_add_par("vgi = 0", style="Normal") %>%
+    body_add_par("vliv = 0", style="Normal") %>%
+    body_add_par("vrpf = 0", style="Normal") %>%
+    body_add_par("vspf = 0", style="Normal") %>%
+    body_add_par("total_perf = 0", style="Normal") %>%
+    body_add_par("qcp = 0", style="Normal") %>%
+    body_add_par("qfat = 0", style="Normal") %>%
+    body_add_par("qskin = 0", style="Normal") %>%
+    body_add_par("qmusc = 0", style="Normal") %>%
+    body_add_par("qbone = 0", style="Normal") %>%
+    body_add_par("qbrn = 0", style="Normal") %>%
+    body_add_par("qlng = 0", style="Normal") %>%
+    body_add_par("qhrt = 0", style="Normal") %>%
+    body_add_par("qkdn = 0", style="Normal") %>%
+    body_add_par("qvliv = 0", style="Normal") %>%
+    body_add_par("qgi = 0", style="Normal") %>%
+    body_add_par("qaliv = 0", style="Normal") %>%
+    body_add_par("qrpf = 0", style="Normal") %>%
+    body_add_par("qspf = 0", style="Normal") %>%
+    body_add_par("pafat = 0", style="Normal") %>%
+    body_add_par("paskin = 0", style="Normal") %>%
+    body_add_par("pamusc = 0", style="Normal") %>%
+    body_add_par("pabone = 0", style="Normal") %>%
+    body_add_par("pabrn = 0", style="Normal") %>%
+    body_add_par("palng = 0", style="Normal") %>%
+    body_add_par("pahrt = 0", style="Normal") %>%
+    body_add_par("pakdn = 0", style="Normal") %>%
+    body_add_par("pagi = 0", style="Normal") %>%
+    body_add_par("paliv = 0", style="Normal") %>%
+    body_add_par("parpf = 0", style="Normal") %>%
+    body_add_par("paspf = 0", style="Normal") %>%
+    body_add_par("vkm1 = 0", style="Normal") %>%
+    body_add_par("vmaxliv = 0", style="Normal") %>%
+    body_add_par("km = 0", style="Normal") %>%
+    body_add_par("cinh = 0", style="Normal") %>%
+    body_add_par("qalv = 0", style="Normal") %>%
+    body_add_par("pair = 1e10", style="Normal") %>%
+    body_add_par("fuplsmet = 1", style="Normal") %>%
+    body_add_par("vdmet = 1e-10", style="Normal") %>%
+    body_add_par(" Initial States ", style = "Normal") %>%
+    body_add_par("inhswch = 0.0", style="Normal") %>%
+    body_add_par("ainh = 0.0", style="Normal") %>%
+    body_add_par("aexh = 0.0", style="Normal") %>%
+    body_add_par("totodose = 0.0", style="Normal") %>%
+    body_add_par("odose = 0.0", style="Normal") %>%
+    body_add_par("totddose = 0.0", style="Normal") %>%
+    body_add_par("ddose = 0.0", style="Normal") %>%
+    body_add_par("odosev = 0.0", style="Normal") %>%
+    body_add_par("totodosev = 0.0", style="Normal") %>%
+    body_add_par("alas = 0.0", style="Normal") %>%
+    body_add_par("akent = 0.0", style="Normal") %>%
+    body_add_par("afec = 0.0", style="Normal") %>%
+    body_add_par("aabsgut = 0.0", style="Normal") %>%
+    body_add_par("ivswch = 0.0", style="Normal") %>%
+    body_add_par("aiv = 0.0", style="Normal") %>%
+    body_add_par("dermswch = 0.0", style="Normal") %>%
+    body_add_par("aderm = 0.0", style="Normal") %>%
+    body_add_par("adermabs = 0.0", style="Normal") %>%
+    body_add_par("adermevap = 0.0", style="Normal") %>%
+    body_add_par("abld = 0.0", style="Normal") %>%
+    body_add_par("abfat = 0.0", style="Normal") %>%
+    body_add_par("atfat = 0.0", style="Normal") %>%
+    body_add_par("abskin = 0.0", style="Normal") %>%
+    body_add_par("asc = 0.0", style="Normal") %>%
+    body_add_par("ascMgcm2 = 0.0", style="Normal") %>%
+    body_add_par("atskin = 0.0", style="Normal") %>%
+    body_add_par("abmusc = 0.0", style="Normal") %>%
+    body_add_par("atmusc = 0.0", style="Normal") %>%
+    body_add_par("abbone = 0.0", style="Normal") %>%
+    body_add_par("atbone = 0.0", style="Normal") %>%
+    body_add_par("abbrn = 0.0", style="Normal") %>%
+    body_add_par("atbrn = 0.0", style="Normal") %>%
+    body_add_par("ablng = 0.0", style="Normal") %>%
+    body_add_par("atlng = 0.0", style="Normal") %>%
+    body_add_par("abhrt = 0.0", style="Normal") %>%
+    body_add_par("athrt = 0.0", style="Normal") %>%
+    body_add_par("abgi = 0.0", style="Normal") %>%
+    body_add_par("atgi = 0.0", style="Normal") %>%
+    body_add_par("abliv = 0.0", style="Normal") %>%
+    body_add_par("atliv = 0.0", style="Normal") %>%
+    body_add_par("abkdn = 0.0", style="Normal") %>%
+    body_add_par("atkdn = 0.0", style="Normal") %>%
+    body_add_par("abrpf = 0.0", style="Normal") %>%
+    body_add_par("atrpf = 0.0", style="Normal") %>%
+    body_add_par("abspf = 0.0", style="Normal") %>%
+    body_add_par("atspf = 0.0", style="Normal") %>%
+    body_add_par("ametliv1 = 0.0", style="Normal") %>%
+    body_add_par("ametliv2 = 0.0", style="Normal") %>%
+    body_add_par("aclbld = 0.0", style="Normal") %>%
+    body_add_par("auexc = 0.0", style="Normal") %>%
+    body_add_par("anabsgut = 0.0", style="Normal") %>%
+    body_add_par("auexcmet = 0.0", style="Normal") %>%
+    body_add_par("amet = 0.0", style="Normal") %>%
+    body_add_par("vurine = 1e-10", style="Normal")
 
  return(HESI_doc)
 }
 
+
+
 #' Pipe to add concentration-timecourse data to the report
-#' @description 
+#' @description add user defined parameter tables
+#' @param report_doc an officer::read_docx object 
+#' @param context a data.frame of concentrationXtime data, as returned by concData()
+#' @param conc_units a string denoting the units of concentration
+#' @return report_doc, the same officer::read_docx object 
+#' @export
+addParameters <- function(HESI_doc, chemical, exposure, physiological){
+  HESI_doc %>%
+    cursor_reach('^Model Simulations$') %>%
+    cursor_forward() %>%
+    body_add_par("Chemical User Set Parameters", style="Normal") %>%
+    body_add_table(chemical) %>%
+    body_add_par("Exposure User Set Parameters", style="Normal") %>%
+    body_add_table(exposure) %>%
+    body_add_par("Physiological User Set Parameters", style="Normal") %>%
+    body_add_table(physiological)
+  HESI_doc %>%
+    cursor_reach('^Software$') %>%
+    cursor_forward() %>%
+    body_add_par("PLETHEM version 1.1.0")
+    return(HESI_doc)
+}
+
+#' Pipe to add concentration-timecourse data to the report
+#' @description graphs
 #' @param report_doc an officer::read_docx object 
 #' @param context a data.frame of concentrationXtime data, as returned by concData()
 #' @param conc_units a string denoting the units of concentration
@@ -306,7 +532,7 @@ createHESIgraphs <- function(report_doc, context, conc_units){
     cursor_forward() %>%
     body_add_par(value = "Some models were simulated.", pos = "on") %>%
     body_add_par(value = "Key concentration time-series", style = "heading 3") 
-    
+  
   for (tissue in unique(context$variable)) {
     
     subset <- context[which(context$variable==tissue),]
@@ -317,25 +543,7 @@ createHESIgraphs <- function(report_doc, context, conc_units){
         x = 'Time (h)', #FIXME is this always 'hours'?
         y = paste0(tissue, ' concentration (', conc_units ,')')
       )
-  
+    
     report_doc %>% body_add_gg(plot)
   }
-}
-
-
-#' Pipe to add concentration-timecourse data to the report
-#' @description 
-#' @param report_doc an officer::read_docx object 
-#' @param context a data.frame of concentrationXtime data, as returned by concData()
-#' @param conc_units a string denoting the units of concentration
-#' @return report_doc, the same officer::read_docx object 
-#' @export
-addParameters <- function(HESI_doc, chemical, exposure, physiological){
-  HESI_doc %>%
-    cursor_reach('^Model Parameters$') %>%
-    cursor_forward() %>%
-    body_add_table(chemical) %>%
-    body_add_table(exposure) %>%
-    body_add_table(physiological)
-    return(HESI_doc)
 }
