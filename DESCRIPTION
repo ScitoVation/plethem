@@ -72,6 +72,7 @@ Imports:
   rsvg,
   devEMF
 Suggests: testthat,
+    shinytest,
     rmarkdown,
     knitr
 RoxygenNote: 7.1.1

@@ -2412,7 +2412,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
       updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "load"){
-      shinyWidgets::confirmSweetAlert(session,"load_dialog","Load New Project",
+      shinyWidgets::confirmSweetAlert(session,"load_dialog","Load Existing Project",
                                       "Load existing project? Unsaved changes to the current project will be lost",
                                       type = "question",danger_mode = T)
       updateTabsetPanel(session,"menu","home")
