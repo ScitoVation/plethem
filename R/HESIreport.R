@@ -40,8 +40,8 @@ kidney -> restOfBody -> liver2
   
   # produce an emf file containing the 
   flowChart43 <- tempfile(fileext = ".png")
-  grViz(flowChartString) %>%
-    export_svg %>% charToRaw %>% rsvg_png(flowChart43)
+  DiagrammeR::grViz(flowChartString) %>%
+    DiagrammeRsvg::export_svg %>% charToRaw %>% rsvg::rsvg_png(flowChart43)
   HESI_doc %>%
     cursor_reach('^Model Development and Structure$') %>%
     cursor_forward() %>%
@@ -537,7 +537,7 @@ createHESIgraphs <- function(report_doc, context, conc_units){
     
     subset <- context[which(context$variable==tissue),]
     
-    plot <- ggplot2::ggplot(subset, aes(x=time, y=value)) +
+    plot <- ggplot2::ggplot(subset, aes(x="time", y="value")) +
       geom_line() +
       labs(
         x = 'Time (h)', #FIXME is this always 'hours'?
