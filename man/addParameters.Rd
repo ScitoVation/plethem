@@ -2,19 +2,22 @@
 % Please edit documentation in R/HESIreport.R
 \name{addParameters}
 \alias{addParameters}
-\title{Pipe to add concentration-timecourse data to the report}
+\title{Add user selected parameters to the PBPK reporting document.
+Should not be used by directly by the user}
 \usage{
 addParameters(HESI_doc, chemical, exposure, physiological)
 }
 \arguments{
-\item{report_doc}{an officer::read_docx object}
+\item{HESI_doc}{This is the PBPK modeling document that the flowchart will be added too.}
 
-\item{context}{a data.frame of concentrationXtime data, as returned by concData()}
+\item{chemical}{dataframe of chemical data added by the user}
 
-\item{conc_units}{a string denoting the units of concentration}
+\item{exposure}{dataframe of exposure data added by the user}
+
+\item{physiological}{dataframe of physiological data added by the user}
 }
 \value{
-report_doc, the same officer::read_docx object
+HESI_doc, the same officer::read_docx object
 }
 \description{
 add user defined parameter tables

@@ -2,7 +2,8 @@
 % Please edit documentation in R/HESIreport.R
 \name{createHESIgraphs}
 \alias{createHESIgraphs}
-\title{Pipe to add concentration-timecourse data to the report}
+\title{Pipe to add concentration-timecourse data to the report
+Should not be used by directly by the user}
 \usage{
 createHESIgraphs(report_doc, context, conc_units)
 }
@@ -17,5 +18,5 @@ createHESIgraphs(report_doc, context, conc_units)
 report_doc, the same officer::read_docx object
 }
 \description{
-graphs
+add graphs to the PBPK reporting document
 }
