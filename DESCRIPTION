@@ -70,7 +70,8 @@ Imports:
   DiagrammeR,
   DiagrammeRsvg,
   rsvg,
-  devEMF
+  devEMF,
+  magrittr
 Suggests: testthat,
     shinytest,
     rmarkdown,

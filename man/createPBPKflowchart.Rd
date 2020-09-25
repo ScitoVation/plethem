@@ -2,18 +2,16 @@
 % Please edit documentation in R/HESIreport.R
 \name{createPBPKflowchart}
 \alias{createPBPKflowchart}
-\title{Gets the metabolism data. Should not be used by directly by the user}
+\title{Creates the PBPK model flowchart. Should not be used by directly by the user}
 \usage{
 createPBPKflowchart(HESI_doc)
 }
 \arguments{
-\item{admeid}{The id for ADME set. The admeid is used to obtain information about the other sets.}
+\item{HESI_doc}{This is the PBPK modeling document that the flowchart will be added too.}
 }
 \value{
-List containing the metabolism values needed to run PBPK model or
-display simulation information
+The PBPK modeling document with the PBPK flowchart added to it.
 }
 \description{
-The function returns the relavent metabolism data if the simulation contains
-data from the metabolism set
+The function returns the PBPK model flowchart
 }

@@ -1,12 +1,10 @@
-# This file contains utility functions for PBPK models
+# This file contains utility functions for PBPK model reporting
 # none of these functions should be called by the user
 
-#' Gets the metabolism data. Should not be used by directly by the user
-#' @description The function returns the relavent metabolism data if the simulation contains
-#' data from the metabolism set
-#' @param admeid The id for ADME set. The admeid is used to obtain information about the other sets.
-#' @return List containing the metabolism values needed to run PBPK model or
-#' display simulation information
+#' Creates the PBPK model flowchart. Should not be used by directly by the user
+#' @description The function returns the PBPK model flowchart
+#' @param HESI_doc This is the PBPK modeling document that the flowchart will be added too.
+#' @return The PBPK modeling document with the PBPK flowchart added to it.
 #' @export
 createPBPKflowchart <- function(HESI_doc){
   flowChartString <- "digraph {
@@ -55,12 +53,11 @@ kidney -> restOfBody -> liver2
 
 
 
-#' Gets the metabolism data. Should not be used by directly by the user
-#' @description The function returns the relavent metabolism data if the simulation contains
-#' data from the metabolism set
-#' @param admeid The id for ADME set. The admeid is used to obtain information about the other sets.
-#' @return List containing the metabolism values needed to run PBPK model or
-#' display simulation information
+#' Add PBPK equations to the PBPK reporting document. Should not be used by directly by the user
+#' @description The function returns the PBPK reporting document with the PBPK modeling equations
+#' and starting variable values to it.
+#' @param HESI_doc This is the PBPK modeling document that the flowchart will be added too.
+#' @return PBPK modeling document with equations and starting parameter values. 
 #' @export
 addPBPKequations <- function(HESI_doc){
   HESI_doc %>%
@@ -493,12 +490,14 @@ addPBPKequations <- function(HESI_doc){
 
 
 
-#' Pipe to add concentration-timecourse data to the report
+#' Add user selected parameters to the PBPK reporting document.
+#' Should not be used by directly by the user
 #' @description add user defined parameter tables
-#' @param report_doc an officer::read_docx object 
-#' @param context a data.frame of concentrationXtime data, as returned by concData()
-#' @param conc_units a string denoting the units of concentration
-#' @return report_doc, the same officer::read_docx object 
+#' @param HESI_doc This is the PBPK modeling document that the flowchart will be added too.
+#' @param chemical dataframe of chemical data added by the user
+#' @param exposure dataframe of exposure data added by the user
+#' @param physiological dataframe of physiological data added by the user
+#' @return HESI_doc, the same officer::read_docx object 
 #' @export
 addParameters <- function(HESI_doc, chemical, exposure, physiological){
   HESI_doc %>%
@@ -518,7 +517,8 @@ addParameters <- function(HESI_doc, chemical, exposure, physiological){
 }
 
 #' Pipe to add concentration-timecourse data to the report
-#' @description graphs
+#' Should not be used by directly by the user
+#' @description add graphs to the PBPK reporting document
 #' @param report_doc an officer::read_docx object 
 #' @param context a data.frame of concentrationXtime data, as returned by concData()
 #' @param conc_units a string denoting the units of concentration
