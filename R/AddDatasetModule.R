@@ -11,7 +11,7 @@ addDataSetUI <- function(namespace, data_type){
   ns <- NS(namespace)
   showModal(modalDialog(title = "Add Dataset",easyClose = TRUE,size = "l",
                         tagList(
-                          tags$h4(paste0("Dataset for ",data_type,".")),
+                          tags$h4(paste0("Dataset for ",data_type)),
                           textInput(ns("name"),"Dataset Name",placeholder = "Enter Name for the dataset"),
                           textInput(ns("descrp"),"Description",placeholder = "Enter description for the dataset"),
                           fluidRow(
