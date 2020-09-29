@@ -292,7 +292,7 @@ shinyUI(fluidPage(
   shinyWidgets::useSweetAlert(),
   theme = shinythemes::shinytheme("spacelab"),
   includeCSS("www/styles.css"),
-  shinyjs::extendShinyjs(text = jscode),
+  shinyjs::extendShinyjs(text = jscode, functions = c("disableTab", "enableTab")),
   shinyjs::inlineCSS(css),
   titlePanel(title="", windowTitle = "PLETHEM rapidPBPK"),
   tags$head(
