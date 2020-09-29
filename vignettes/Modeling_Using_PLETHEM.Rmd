@@ -1,6 +1,6 @@
 ---
 title: "Modeling Using PLETHEM"
-author: "Salil N. Pendse"
+author: "ScitoVation"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 # Installing PLETHEM
 PLETHEM can be run installed from CRAN 
 ```{r eval = F}
-install.packages(plethem)
+install.packages("plethem")
 ```
 The most recent development version can be installed from 
 ```{r eval = F}
@@ -29,7 +29,8 @@ and then use
 ```{r eval = F}
 library(plethem)
 ```
-to start using PLETHEM
+to start using PLETHEM.
+
 ## Running rapidPBPK models
 The rapidPBPK model within PLETHEM can be used to run forward dosimetry, monte carlo analysis, reverse dosimetry, and route to route extrapolation workflows. 
 To start the rapidPBPK application

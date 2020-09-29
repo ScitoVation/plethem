@@ -64,7 +64,7 @@
      km = 1e-10,
      cins = 0,
      pbldw = 1e10,
-     gul = 1,
+     gul = 1
 */
 
 #include <R.h>
@@ -88,7 +88,7 @@
 #define ID_mbal 0x00002
 
 /* Parameters */
-static double parms[34];
+static double parms[35];
 
 #define bw parms[0]
 #define qc parms[1]
@@ -221,8 +221,13 @@ void derivsfishPBPK (int *neq, double *pdTime, double *y, double *ydot, double *
   ydot[ID_crpf] = qrpf * ( yout[ID_ca] - y[ID_crpf] / prpf ) / vrpf ;
 
   ydot[ID_ckdn] = ( qkdn * yout[ID_ca] + frspfkdn * qspf * y[ID_cspf] / pspf ) / vkdn - ( qkdn + frspfkdn * qspf ) / vkdn * y[ID_ckdn] / pkdn ;
-
-  rcmet = ( vmax * y[ID_cliv] / pliv ) / ( km + y[ID_cliv] / pliv ) / vliv ;
+  
+  if(km == -1){
+    rcmet = (vmax * y[ID_cliv] / pliv) / vliv ;
+  }
+  else{
+    rcmet = ( vmax * y[ID_cliv] / pliv ) / ( km + y[ID_cliv] / pliv ) / vliv ;
+  }
 
   ydot[ID_cmet] = rcmet ;
 
@@ -230,7 +235,7 @@ void derivsfishPBPK (int *neq, double *pdTime, double *y, double *ydot, double *
 
   totdose = y[ID_ains] ;
 
-  totbody = y[ID_cfat] * vfat + y[ID_cspf] * vspf + vrpf * vrpf + y[ID_ckdn] * vkdn + y[ID_cliv] * vliv ;
+  totbody = y[ID_cfat] * vfat + y[ID_cspf] * vspf + vrpf * y[ID_crpf] + y[ID_ckdn] * vkdn + y[ID_cliv] * vliv ;
 
   totclear = y[ID_cmet] * vliv ;
 

@@ -2,7 +2,7 @@
 #' @description The UI function for the add dataset module used in PLETHEM. This function creates the add dataset dialog
 #'   box that is triggered by the modeling interface. This is a module function and the user will never need to call it
 #' @param namespace the namespace for this module
-#' @param data_type the type of data to be uploaded based on where the UI is called from 
+#' @param data_type the type of data to be uploaded based on where the UI is called from
 #' @export
 
 addDataSetUI <- function(namespace, data_type){
@@ -11,8 +11,8 @@ addDataSetUI <- function(namespace, data_type){
   ns <- NS(namespace)
   showModal(modalDialog(title = "Add Dataset",easyClose = TRUE,size = "l",
                         tagList(
-                          tags$h4(paste0("Dataset for ",data_type,".")),
-                          textInput(ns("name"),"Data Set Name",placeholder = "Enter Name for the dataset"),
+                          tags$h4(paste0("Dataset for ",data_type)),
+                          textInput(ns("name"),"Dataset Name",placeholder = "Enter Name for the dataset"),
                           textInput(ns("descrp"),"Description",placeholder = "Enter description for the dataset"),
                           fluidRow(
                             column(6,

@@ -12,6 +12,6 @@ HT_IVIVEUI(namespace = "", set_list = NULL)
 \item{set_list}{A list of inputs for the dropdown menus.}
 }
 \description{
-The UI for defining HT-IVIVE parameters in the HT-IVIVE project. 
+The UI for defining HT-IVIVE parameters in the HT-IVIVE project.
 It is called by the HT-IVIVE server script when a new row is added or existing row is edited. It is never called directly by the user.
 }

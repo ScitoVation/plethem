@@ -7,6 +7,10 @@
 #' @import shinydashboard
 #' @import foreach
 #' @import doParallel
+#' @import shinyFiles
+#' @import devEMF
+#' @import officer
+#' @importFrom shinyalert shinyalert
 #' @importFrom stats approx setNames
 #' @importFrom utils installed.packages read.csv write.csv
 #' @importFrom magrittr %>%

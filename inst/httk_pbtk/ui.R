@@ -43,7 +43,7 @@ expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
 ################################compartment sidebar
 comp_sidebar <- shinydashboard::dashboardSidebar(
   shinydashboard::sidebarMenu(id="compsidebar",
-              
+
               menuItem(tags$h5(tags$span(style = "color:white",
                                          "Physiological Parameters")),
                        tabName = "physiolocal_parameters", selected = TRUE),
@@ -53,7 +53,7 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
               menuItem("Kidney",tabName = "kidney"),
               menuItem("Lungs",tabName="lung"),
               menuItem("Rest of the body",tabName="rob")
-             
+
               )
 
   )
@@ -63,8 +63,8 @@ comp_sidebar <- shinydashboard::dashboardSidebar(
 chem_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="chem_sidebar",
   selectizeInput("qsarModelChem", "Select A QSAR Model",
-                          choices = c("QSAR model one" = 'one',
-                                      "QSAR model two" = 'two'),
+                          choices = c("QSAR Model One" = 'one',
+                                      "QSAR Model Two" = 'two'),
                           width = "99%"),
   shinyBS::bsButton("qsar4chem_props","Calculate Chemical Params",style = "primary"),
   shinyBS::bsButton("btn_ivive_chem","Perform IVIVE",style = "primary")
@@ -160,9 +160,9 @@ plot_body <- fluidPage(
                                                                               "Amount in Renal Tubules"="atubules")
                                                 )
                                                 )
-                                              
+
                                               ),
-                                       
+
                                        column(9,
                                               tabBox(width = 12,height = validateCssUnit("100%"),
                                                      tabPanel("Plot",
@@ -271,7 +271,7 @@ comp_body <- dashboardBody(
 
       ),
       fluidRow(
-        
+
         column(4,
                numericInput("ms_Qgfrc","Glomerular Filteration (L/h/kg BW)",min =0 , max =1, value =0.08)
                ),
@@ -291,7 +291,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_Qgutf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
-      
+
       fluidRow(class="",
                column(6,
                       numericInput("ms_Kgut2pu","Partition Coefficient",0.5,0,2, 0.01)))
@@ -304,7 +304,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_Qliverf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
-      
+
       fluidRow(class="",
                column(6,
                       numericInput("ms_Kliver2pu","Partition Coefficient",0.5,0,2, 0.01)
@@ -329,7 +329,7 @@ comp_body <- dashboardBody(
                numericInput("ms_Vvenc","Venous Volume Ratio",min =0 , max =1, value =0.1139)
                )
       ),
-      
+
       fluidRow(class="",
                column(6,
                       numericInput("ms_Krbc2pu","RBC to Plasma Partition Coefficient",0.5,0,2, 0.01)
@@ -344,7 +344,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_Qkidneyf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
-      
+
       fluidRow(class="",
                column(6,
                       numericInput("ms_Kkidney2pu","Partition Coefficient",0.5,0,2, 0.01)))
@@ -357,7 +357,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_Qlungf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
-      
+
       fluidRow(class="",
                column(6,
                       numericInput("ms_Klung2pu","Partition Coefficient",0.5,0,2, 0.01)))
@@ -370,7 +370,7 @@ comp_body <- dashboardBody(
         column(6,
                numericInput("ms_Qrestf","Blood Flow Ratio",min =0 , max =1, value =0.1139))
       ),
-      
+
       fluidRow(class="",
                column(6,
                       numericInput("ms_Krest2pu","Partition Coefficient",0.5,0,2, 0.01)))
@@ -621,7 +621,7 @@ shinyUI(fluidPage(
 
 
                                            fluidPage(
-                                            
+
 
                                              fluidRow(
                                                column(12,
@@ -657,8 +657,8 @@ shinyUI(fluidPage(
                                                                   choices = list("Human" = "Human","Rat"= "Rat"),
                                                                   selected = "Human")
                                                       # shinyBS::tipify(selectizeInput("sel_qsar4Partition", NULL,
-                                                      #                choices = c("QSAR model one" = 'one',
-                                                      #                            "QSAR model two" = 'two')
+                                                      #                choices = c("QSAR Model One" = 'one',
+                                                      #                            "QSAR Model Two" = 'two')
                                                       #                ),
                                                       #                "Select QSAR model for partition coefficients")
                                                       ),
@@ -774,10 +774,10 @@ shinyUI(fluidPage(
                                                )
                                                )
                                            )
-                                           
+
                                            ),
                                   # tabPanel("Metabolism",
-                                  # 
+                                  #
                                   #          fluidPage(
                                   #            fluidRow(
                                   #              column(12,
@@ -785,11 +785,11 @@ shinyUI(fluidPage(
                                   #              )
                                   #            ),
                                   #            fluidRow(
-                                  # 
+                                  #
                                   #              column(2,
                                   #                     bsButton("btn_metab_upload",
                                   #                              "Upload Metabolism Files",
-                                  # 
+                                  #
                                   #                              block = T)
                                   #                     )
                                   #            ),
@@ -811,7 +811,7 @@ shinyUI(fluidPage(
                                   #                       direction = "horizontal",
                                   #                       status = "info",
                                   #                       fullwidth = T
-                                  # 
+                                  #
                                   #                     ))
                                   #            ),
                                   #            fluidRow(
@@ -853,10 +853,10 @@ shinyUI(fluidPage(
                                   #            # ),
                                   #            fluidRow(column(width = 6, offset = 3,
                                   #                            DT::DTOutput("metab_tble")))
-                                  # 
-                                  # 
+                                  #
+                                  #
                                   #          )
-                                  # 
+                                  #
                                   #         ),
                                   tabPanel("Simulations",
                                            fluidPage(
@@ -913,7 +913,7 @@ shinyUI(fluidPage(
                                                                    numericInput("sim_dur","Simulation Duration (days)",0)
                                                                    ),
                                                             column(6,
-                                                                   numericInput("mc_num","Number of Montecarlo Runs",1000)
+                                                                   numericInput("mc_num","Number of Monte Carlo Runs",1000)
                                                                    )
                                                           ),
                                                           checkboxInput("mc_mode","Run Monte Carlo Simulation",T),
@@ -921,7 +921,7 @@ shinyUI(fluidPage(
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")
                                                         ),
-                                                        icon = icon("plus"),circle = F, 
+                                                        icon = icon("plus"),circle = F,
                                                         tooltip = F,size = "default",right = F,
                                                         width = validateCssUnit("100%"),
                                                         label = "Create new simulation",
@@ -1061,5 +1061,3 @@ shinyUI(fluidPage(
              tabPanel(title = "",value = "Stop",icon=icon("power-off"))
   )
 ))
-
-

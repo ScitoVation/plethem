@@ -1,14 +1,22 @@
 #' Launch the interactive PBPK workflow for the given model
 #' @description Used to launch the PBPK workflow for the given model. This interface can be used to launch either the rapidPBPK model, The HTTK model or the fishPBPK model.
-#' @param name Name of the model. "rapidPBPK","httk", or "fishPBPK". Defaults to rapidPBPK.
+#' @param name Name of the model. "rapidPBPK" or "fishPBPK". Defaults to rapidPBPK.
 #' @examples
 #' \dontrun{
 #' interactivePBPK("rapidPBPK")
 #' }
 #' @export
 interactivePBPK <- function(name = "rapidPBPK"){
+
+
   if(name == "rapidPBPK"){
     name = "rapidPBPK_pop"
+  } else if (name == "fishPBPK"){
+    name = "fishPBPK_pop"
+  } else {
+    # This probably isn't the prefered way to do this, but there needs to be some better error handling on user-facing functions.
+    stop('`interactivePBPK` takes the name of a model as its arguement. Either "rapidPBPK" or "fishPBPK". Defaults to rapidPBPK.') 
+
   }
   clearProjectDb()
   shiny::runApp(system.file(name,package="plethem"),launch.browser = T)

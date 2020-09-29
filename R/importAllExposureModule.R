@@ -48,7 +48,7 @@ importAllExposureDataUI <- function(namespace){
                            checkboxInput(ns("TRA_repeated_oral"), "Repeated Oral Dose")),
                   
                   ## Import SEEM Data ##
-                  tabPanel(title = "Seem Data",
+                  tabPanel(title = "SEEM Data",
                            shinyBS::bsButton(ns("btn_SEEM_data_file"),
                                              "Select SEEM Data File",
                                              block = T),

@@ -1,5 +1,5 @@
 #' Module for editing high throughput reverse dosimetry functions
-#' @description The UI for defining HT-IVIVE parameters in the HT-IVIVE project. 
+#' @description The UI for defining HT-IVIVE parameters in the HT-IVIVE project.
 #' It is called by the HT-IVIVE server script when a new row is added or existing row is edited. It is never called directly by the user.
 #' @param namespace namespace for the module. This is unique and decided by the project server function
 #' @param set_list A list of inputs for the dropdown menus.
@@ -23,12 +23,12 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                                 width = validateCssUnit("100%"),
                                                 placeholder = "Identifier for HT-IVIVE"))
                                ),
-                             
+
                              fluidRow(
                                column(4,
                                       uiOutput(ns("org_output"))
                                       #$h4("Standard Human")
-                                      
+
                                       ),
                                column(4,
                                       uiOutput(ns("chem_output"))
@@ -43,14 +43,14 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                column(4,
                                       numericInputIcon(ns("num_fupls"),
                                                        label = "Fraction Unbound in Plasma",
-                                                       value = 1,min = 0 , max = 1, 
+                                                       value = 1,min = 0 , max = 1,
                                                        icon = list("fraction"),
                                                        width = validateCssUnit("100%"))
                                ),
                                column(4,
                                       numericInputIcon(ns("num_km"),
-                                                   label = "Michaelis Menten Constant",
-                                                   value = 1, min = 0.1,icon = list("\U00B5M"),
+                                                   label = "Michaelis-Menten Constant",
+                                                   value = 1, min = 0.1,icon = list("uM"),
                                                    width = validateCssUnit("100%"))
                                ),
                                column(4,
@@ -61,8 +61,8 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                ),
                              ),
                              fluidRow(
-                               
-                               
+
+
 
                                column(3,
                                       numericInputIcon(ns("num_bw"),
@@ -78,7 +78,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                                        icon = list("L/h"),
                                                        width = validateCssUnit("100%"))
                                ),
-                               
+
                                column(3,
                                       numericInputIcon(ns("num_lw"),
                                                        label = "Liver Weight",
@@ -94,25 +94,25 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                                        width = validateCssUnit("100%"))
                                )
                                ),
-                             
-                               
 
-                             
+
+
+
                            )
                   ),
 
-                    
-                  tabPanel("Invitro POD",
+
+                  tabPanel("In vitro POD",
                            fluidRow(
                              column(8,offset = 2,
                                     fluidRow(
                                       column(6,
-                                             numericInput(ns("num_ivc"),tags$h4("Invitro POD"),0,
+                                             numericInput(ns("num_ivc"),tags$h4("In vitro POD"),0,
                                                           width = validateCssUnit("100%"))
                                       ),
                                       column(6,
                                              selectInput(ns("sel_ivunit"),tags$h4("Unit"),
-                                                         list("\ub5M"="um",
+                                                         list("uM"="um",
                                                               "mg/L"="mgL"),
                                                          width = validateCssUnit("100%"))
                                       )
@@ -143,7 +143,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                            fluidRow(tabsetPanel(id = ns("tab_heptype"),type = "pills",
                                  tabPanel("No Hepatic Clearance",value = "hep_null",
                                           tags$h3("No Hepatic Clearance")),
-                                 tabPanel("Subcellular Clearance",value = "hep_sc",
+                                 tabPanel("Sub-cellular Clearance",value = "hep_sc",
                                           fluidRow(
                                             column(4,offset = 2,
                                                    numericInput(ns("num_mppgl"),
@@ -158,14 +158,13 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                           fluidRow(
                                            column(6,
                                                   numericInput(ns("num_mscl"),
-                                                               label = "Measured Microsomal Clearance",
+                                                               label = "Microsomal Clearance",
                                                                step = 0.001,value = 0.0,
                                                                width = validateCssUnit("100%"))),
                                            column(6,
                                                   selectInput(ns("sel_msunit"),label = "Units",
-                                                              choices = list("\ub5mol/min/mg Protein"="ummmP",
-                                                                             "\ub5L/min/mg Protein"="ulmmP",
-                                                                             "\ub5L/h/mg Protein"="ulhmP",
+                                                              choices = list("uL/min/mg Protein"="ulmmP",
+                                                                             "uL/h/mg Protein"="ulhmP",
                                                                              "mL/min/mg Protein"="mlmmP",
                                                                              "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -173,12 +172,12 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                          fluidRow(
                                            column(6,
                                                   numericInput(ns("num_cycl"),
-                                                               label = "Measured Cytosolic Clearance",
+                                                               label = "Cytosolic Clearance",
                                                                step = 0.001,value = 0.0,
                                                                width = validateCssUnit("100%"))),
                                            column(6,
-                                                  selectInput(ns("sel_cyunit"),label = "Units",choices = list("\ub5L/min/mg Protein"="ulmmP",
-                                                                                                          "\ub5L/h/mg Protein"="ulhmP",
+                                                  selectInput(ns("sel_cyunit"),label = "Units",choices = list("uL/min/mg Protein"="ulmmP",
+                                                                                                          "uL/h/mg Protein"="ulhmP",
                                                                                                           "mL/min/mg Protein"="mlmmP",
                                                                                                           "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -194,13 +193,13 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                          fluidRow(
                                            column(6,
                                                   numericInput(ns("num_s9cl"),
-                                                               label = "Measured S9 Fraction Clearance",
+                                                               label = "S9 Fraction Clearance",
                                                                value = 0,width = validateCssUnit("100%"))),
                                            column(6,
                                                   selectInput(ns("sel_s9unit"),
                                                               label = "Units",
-                                                              choices = list("\ub5L/min/mg Protein"="ulmmP",
-                                                                             "\ub5L/h/mg Protein"="ulhmP",
+                                                              choices = list("uL/min/mg Protein"="ulmmP",
+                                                                             "uL/h/mg Protein"="ulhmP",
                                                                              "mL/min/mg Protein"="mlmmP",
                                                                              "mL/h/mg Protein"="mlhmP"),
                                                               width = validateCssUnit("100%")))
@@ -216,7 +215,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                          fluidRow(
                                            column(6,
                                                   numericInput(ns("num_whcl"),
-                                                               label = "Measured Whole Hepatocyte Clearance",
+                                                               label = "Whole Hepatocyte Clearance",
                                                                value = 0,width = validateCssUnit("100%"))),
                                            column(6,
                                                   selectInput(ns("sel_whunit"),label = "Units",
@@ -232,7 +231,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                           fluidRow(
 
                                             column(4,
-                                                   fileInput(ns("cypCl_upload"),"Upload CYP Clearance",
+                                                   fileInput(ns("cypCl_upload"),"Upload Enzyme Clearance",
                                                              multiple = F,placeholder = "Select CSV File",
                                                              buttonLabel = icon("search"),
                                                              accept = c("text/csv")
@@ -246,7 +245,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                                                    DT::DTOutput(ns("cypCl"))
                                                    )
                                             )
-                                    
+
                                          )
                                )),
                            fluidRow(column(12,
@@ -261,13 +260,13 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
                            fluidRow(
                              column(4, offset = 2,
                                       numericInput(ns("num_gfr"),
-                                                       label = "Glomerular Filteration Rate (L/h)",
+                                                       label = "Glomerular Filtration Rate (L/h)",
                                                        value = 6.7,
                                                        width = validateCssUnit("100%")
                                                        ),
 
                                       checkboxInput(ns("ch_rencl"),label = "Include Renal Clearance",width = validateCssUnit("100%")),
-                                      tags$h4("Renal Clearence is calculated as a product of Glomerular Filteration Rate measured in L/h
+                                      tags$h4("Renal Clearance is calculated as a product of Glomerular Filtration Rate measured in L/h
                                                and Fraction of chemical unbound in Blood Plasma")
 
                                     )
@@ -301,10 +300,10 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
 #' server function of high throughput dosimetry
 #' @description This function is needed internally by the package to handle the server functions related to
 #' adding compounds in the HT-IVIVE UI. It is never intended to be called by the user.
-#' @param input input object from the data input UI 
+#' @param input input object from the data input UI
 #' @param output output object from the data input UI
 #' @param session session in which this module is called
-#' @param vals values for clearance 
+#' @param vals values for clearance
 #' @param type IVIVE type
 #' @param chem_list List of imported chemicals in the project
 #' @param idx index of the row
@@ -313,7 +312,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
 HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),idx = 0,row_selected = 0){
   #Get session ID
   ns <- session$ns
- 
+
 
   # Create a dictionary for input ids to their natural language equivalent
   text_ui_dict <- list("ha"="Human Adult",
@@ -321,10 +320,10 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                        "oralnonvol"="Oral Exposure Non Volatile Chemical",
                        "oralvol"="Oral Exposure Volatile Chemical",
                        "inhvol"="Inhalation Exposure Volatile Chemical",
-                       "um"="\ub5M",
+                       "um"="uM",
                        "mgL"="mg/L",
-                       "ulmmP"="\ub5L/min/mg Protein",
-                       "ulhmP"="\ub5L/h/mg Protein",
+                       "ulmmP"="uL/min/mg Protein",
+                       "ulhmP"="uL/h/mg Protein",
                        "mlmmP"="mL/min/mg Protein",
                        "mlhmP"="mL/h/mg Protein",
                        "Lh"="L/h",
@@ -336,7 +335,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   project_chems <- getProjectChemicalList()
   chem_set_choices <-c(getAllSetChoices("chem"),"Generic Chemical"=0)
   if (type == "add"){
-    
+
     output$chem_output <- renderUI({
       fluidRow(
         column(12,
@@ -354,21 +353,21 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
         #                         style = "material-flat",size = "xs",block = T)
         #            )
         #          )
-        #          
+        #
         #        )
         #        )
       )
-      
-      
+
+
     })
-    
+
     output$org_output <- renderUI({
       selectInput(ns("sel_org"),label = "Select Organism",
                   choices = list("Human"="ha",
                                  "Rat"="ra"),
                   selected = "ha")
     })
-    
+
     observeEvent(input$btn_new_chem,{
       showModal(modalDialog(title = "Add New Chemical",
         fluidPage(
@@ -385,7 +384,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                    ),
             column(6,
                    numericInputIcon(ns("num_new_chem_km"),"Michaelis-Menten Constant",
-                                    value = 1, min = 1, icon= list("\U00B5M")))
+                                    value = 1, min = 1, icon= list("uM")))
           )
         ),
         footer = tagList(modalButton("Cancel"),
@@ -393,9 +392,9 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                          )
         ))
     })
-    
-   
-    
+
+
+
     observeEvent(input$sel_chem,{
       chid <- input$sel_chem
       if(!is.null(chid)){
@@ -408,14 +407,14 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
           km <- project_chems[[as.integer(chid)]]["km"]
           mw <- project_chems[[as.integer(chid)]]["mw"]
         }
-        
+
         updateNumericInput(session,"num_fupls",value = as.numeric(fupls))
         updateNumericInput(session,"num_km",value = as.numeric(km))
         updateNumericInputIcon(session,"num_mw",value = as.numeric(mw))
       }
     },ignoreInit = T,ignoreNULL = T,priority = 10)
-    
-    
+
+
     # On Organism Change
     observeEvent(input$sel_org,{
       if(input$sel_org == "ha"){
@@ -435,7 +434,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
         updateNumericInput(session,"num_qc",value = qcc)
         updateNumericInput(session,"num_ql",value =liv_flw)
         updateNumericInputIcon(session,"num_gfr",value =gfr)
-        
+
       }else{
         updateNumericInput(session,"num_mppgl",value = 45)
         updateNumericInput(session,"num_cppgl",value = 91)
@@ -448,15 +447,15 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
         updateNumericInputIcon(session,"num_gfr",value =0.228)
       }
     },ignoreInit = T,priority = 10)
-    
-    
+
+
   }else{
     # all the updates in this section come from existing data from vals
     # get the row to be edited
     row_data <- vals$m_table[row_selected,]
-    
+
     # get the row key for the vals object. The row key is stored in a hidden rn column
-    
+
     row_number <- vals$m_table[row_selected,]["rn"]
     row_key <- paste0("row_",row_number)
     row_values <- vals[[row_key]]
@@ -471,12 +470,12 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     output$org_output <- renderUI({
       tags$h4(organism)
     })
-    
-    
-    
+
+
+
     #update select inputs
     values <- row_values[grep("sel_",names(row_values),value = TRUE)]
-    
+
     lapply(names(values),function(x){
       if (!(x %in% c("chem","org"))){
         updateSelectInput(session,x,selected = values[[x]])
@@ -495,15 +494,15 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     values <- row_values[grep("txt_",names(row_values),value = TRUE)]
     lapply(names(values),function(x){updateTextInput(session,x,value = values[[x]])})
     #update numeric Values
-    
+
     values <- row_values[grep("num_",names(row_values),value = TRUE)]
     lapply(names(values),function(x){updateNumericInput(session,x,value = values[[x]])})
 
-    
+
   }
-  
-  
-  
+
+
+
   #chem_names <- chem_list$chem_names
   output$org_name <- renderText({return("Standard Human")})
   observe({
@@ -557,22 +556,22 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
 
 
   output$cypCl <- DT::renderDT(DT::datatable(cypCl(),
-                                             caption = "Clearence in \u00B5L/min/pmol",
+                                             caption = "Clearence in uL/min/pmol",
                                              rowname = NULL,
                                              options= list(dom = "tp",pageLength = 4)),
                                server = T
   )
 
-  
+
   # On Chemical Change
-  
-  
-  
-  
- 
+
+
+
+
+
   if (type == "edit"){
 
-    
+
   }
 
   observeEvent(input$ok,{
@@ -641,9 +640,9 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
       chem <- input$sel_chem
       org <- input$sel_org
     }else{
-      
+
       # get the row key for the vals object. The row key is stored in a hidden rn column
-      
+
       row_number <- vals$m_table[row_selected,]["rn"]
       row_key <- paste0("row_",row_number)
       chem <- vals[[row_key]]$sel_chem
@@ -662,7 +661,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                                         "Organism"=org_type_name,
                                         "Type" = rd_type_name,
                                         "Standard Exposure"=stdexposure,
-                                        "Invitro POD"=invitro_data,
+                                        "In vitro POD"=invitro_data,
                                         "Hepatic Clearance"=hep_type_name,
                                         "Renal Clearance"=ren_data,
                                         "Plasma Clearance"=pl_data)
@@ -687,4 +686,3 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   })
   return(vals)
 }
-

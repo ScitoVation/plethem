@@ -54,7 +54,7 @@ saveAsParameterSetUI <- function(namespace, set_type){
 #' @param other placeholder paramter for data needed for certain sets
 #'@export
 saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df,other= NULL){
-
+  #print("save parameter set")
   returnValues <- reactiveValues()
   returnValues$savedat <- c("No","",0)
   ns <- session$ns

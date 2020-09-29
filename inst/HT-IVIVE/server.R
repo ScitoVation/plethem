@@ -23,7 +23,7 @@ shinyServer(function(input,output,session){
     "Organism"=numeric(),
     "Type" = numeric(),
     "Standard Exposure"=numeric(),
-    "Invitro POD"=numeric(),
+    "In vitro POD"=numeric(),
     "Hepatic Clearance"=numeric(),
     "Renal Clearance"=numeric(),
     "Plasma Clearance"=numeric(),keep.rownames = TRUE
@@ -38,7 +38,7 @@ shinyServer(function(input,output,session){
                #"Oral Non Volatile","Oral Non Volatile"),
     "Standard Exposure"=numeric(),#c("1 mg/kg/day","1 mg/kg/day",
                          #"1 mg/kg/day","1 mg/kg/day"),
-    "Invitro POD"=character(),#c("50.3 \u03BCm",
+    "In vitro POD"=character(),#c("50.3 \u03BCm",
                     #"10.2 \u03BCm",
                     #"2.5 mg/L",
                     #"8.9 \u03BCm"),
@@ -73,6 +73,7 @@ shinyServer(function(input,output,session){
     DT::datatable(data = vals$result_table,rownames = F,escape = F,selection = "single",extensions = "Buttons",
                   options = list(
                     dom="Btpl",
+                    charset = "utf-8",
                     buttons = c("copy","csv","colvis"))#,
                     #rowCallback = DT::JS(scientific_notation_js))
                     ),server = T)
@@ -164,7 +165,7 @@ makeResultTable <- function(input_table,result){
     "Organism"=input_table$Organism,
     "Type" = input_table$Type,
     "Standard Exposure"=input_table[["Standard Exposure"]],
-    "Invitro POD"=input_table[["Invitro POD"]],
+    "In vitro POD"=input_table[["In vitro POD"]],
     "Actual Hepatic Clearance (L/h)"=paste0(lapply(result,"[[","hep")),
     "Actual Renal Clearance (L/h)"=paste0(lapply(result,"[[","ren")),
     "Actual Plasma Clearance (L/h)"=paste0(lapply(result,"[[","pls")),
