@@ -188,17 +188,12 @@ clearProjectDb <- function(){
 
 #' Show dialogs to select files or folders
 #' @description The function shows the dialog to select files or folders. The functions change depending on the OS in which 
-#' RStudio is running. It is only called internally
+#' RStudio is running. It is only called internally and should not be run by the user.
 #' @param type Type of document to get a path for. dir for directory or file for file
 #' @param caption Caption to display for choose file/directory modal
 #' @param extension extensions to display for selecting file type
 #' @param new_flag Logical value for the "new" parameter in file.choose. Only used on MacOS
 #' @return path to the selected file or directory
-#' @examples
-#' \dontrun{
-#' getFileFolderPath("dir","Select PLETHEM Project Directory)
-#' getFileFolderPath("file","Select )
-#' }
 #' @export
 getFileFolderPath <- function(type ="dir",caption="",
                               extension="",new_flag = F){
@@ -213,6 +208,5 @@ getFileFolderPath <- function(type ="dir",caption="",
   }else{
     returned_path <- tryCatch({file.choose(new = new_flag)},error = function(e){return(NA)})
   }
-  
   return(returned_path)
 }

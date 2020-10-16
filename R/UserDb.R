@@ -29,6 +29,7 @@ setUserDb<- function(path = NULL){
 #' @param path path to where the user database needs to be stored. Make sure you have write permission to this folder. If no path is provided, it launches a folder select dialog.
 #' @examples
 #' if(interactive()){
+#' createEmptyUserDb()
 #' currentDirectory <- getwd()
 #' createEmptyUserDb(currentDirectory)
 #' }
