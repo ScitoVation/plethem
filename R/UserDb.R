@@ -28,9 +28,9 @@ setUserDb<- function(path = NULL){
 #' @description The function allows the users to create a new empty user database file that is needed to run plethem.
 #' @param path path to where the user database needs to be stored. Make sure you have write permission to this folder. If no path is provided, it launches a folder select dialog.
 #' @examples
-#' \dontrun{
-#' createEmptyUserDb(),
-#' createEmptyUserDb("C:/Users/Documents/")
+#' if(interactive()){
+#' currentDirectory <- getwd()
+#' createEmptyUserDb(currentDirectory)
 #' }
 #' @export
 createEmptyUserDb <- function(path = NULL){
