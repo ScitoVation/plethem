@@ -19,13 +19,13 @@ shinyServer(function(input, output, session) {
   #updateSelectInput(session,"sel_chem4Partition",choices = httk_chem)
   # this dataframe is only used to display the metabolism data.
   #The actual model uses values stored in the database
-  metabolism_dataframe <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F)
+  metabolism_dataframe <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = FALSE)
 
   dataset <- reactiveValues()
   dataset$savedat <- reactiveVal(c("No","none"))
   dataset$iviveDat <- reactiveVal(c("No",0,0,0))
   parameterSets <- reactiveValues()
-  
+
   parameterSets$savedat <- reactiveVal(c("No","",0))
   parameterSets$sverestdat <- reactiveVal(c("None",0))
   parameterSets$importdat <- reactiveVal(c("No","",0))
@@ -143,7 +143,7 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session,"sel_expo_var",
                          choices = set_choices)
   }
-  
+
 
 
 
@@ -195,7 +195,7 @@ shinyServer(function(input, output, session) {
    observeEvent(input$btn_import_physio,{
      importParameterSetUI(input$btn_import_physio,"physio")
      parameterSets$importdat <- callModule(importParameterSet,input$btn_import_physio,"physio")
-     
+
    })
 
 
@@ -210,13 +210,13 @@ shinyServer(function(input, output, session) {
        updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
        if(set_type == "chem"){
          updateSelectizeInput(session,"sel_chem4Partition",choices = set_list)
-         
+
        }
-       
+
        # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
      }
    })
-   
+
    # Import SEEM data
    observeEvent(input$btn_seem_upload,{
      path <-fpath()
@@ -224,12 +224,12 @@ shinyServer(function(input, output, session) {
      parameterSets$importSeem <- callModule(importSEEMData,paste0("seem",input$btn_seem_upload),
                                             path,expo_name_df)
    })
-   
+
    fpath <- reactive({
      fpath <- file.choose()
      return(fpath)
    })
-   
+
    observe({
      result_vector <- parameterSets$importSeem
      if(result_vector()[1]=="Yes"){
@@ -240,13 +240,13 @@ shinyServer(function(input, output, session) {
                             choices = set_list)
      }
    })
-   
-   
-  
+
+
+
 
   #Save a new physiological parameter set
   observeEvent(input$btn_saveas_physio,{
-   
+
     saveAsParameterSetUI(paste0("physio",input$btn_saveas_physio),"physio")
     parameterSets$savedat <- callModule(saveAsParameterSet,
                                         paste0("physio",input$btn_saveas_physio),
@@ -384,7 +384,7 @@ shinyServer(function(input, output, session) {
                               "Val" = result_vector[["Original Value"]],
                               "ParamType"=var_type,
                               row.names = NULL,
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE)
       updateUIInputs(session,change_df)
       # a <- mapply(function(var,org){
       #   print(var)
@@ -394,7 +394,7 @@ shinyServer(function(input, output, session) {
 
     }
   })
-  
+
   observeEvent(input$btn_new_varphys,{
     param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
     param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
@@ -404,7 +404,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_edit_varphys,{
     param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
     param_vars <- physio_name_df$Var[which(physio_name_df$Variability == "TRUE")]
@@ -415,7 +415,7 @@ shinyServer(function(input, output, session) {
                                        param_vars,input$sel_physio_var)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_new_varchem,{
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
     param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
@@ -425,7 +425,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_edit_varchem,{
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
     param_vars <- chem_name_df$Var[which(chem_name_df$Variability == "TRUE")]
@@ -436,7 +436,7 @@ shinyServer(function(input, output, session) {
                                        param_vars,input$sel_chem_var)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_new_varexpo,{
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
     param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
@@ -446,7 +446,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observeEvent(input$btn_edit_varexpo,{
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
     param_vars <- expo_name_df$Var[which(expo_name_df$Variability == "TRUE")]
@@ -457,7 +457,7 @@ shinyServer(function(input, output, session) {
                                        param_vars,input$sel_expo_var)
     ### Variability Tab
   },ignoreInit = T, ignoreNULL = T)
-  
+
   observe({
     result_vector <- parameterSets$vardat
     if (result_vector()[1]=="Yes"){
@@ -472,37 +472,37 @@ shinyServer(function(input, output, session) {
                            selected = as.integer(varid))
     }
   })
-  
+
   observeEvent(input$sel_physio_var,{
     varid <- input$sel_physio_var
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
     var_data <- projectDbSelect(query)
     dataset <- unserialize(charToRaw(var_data$var_tble))
     output$physio_var_tble <- DT::renderDT(DT::datatable(dataset))
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   observeEvent(input$sel_chem_var,{
     varid <- input$sel_chem_var
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
     var_data <- projectDbSelect(query)
     dataset <- unserialize(charToRaw(var_data$var_tble))
     output$chem_var_tble <- renderTable(dataset)
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   observeEvent(input$sel_expo_var,{
     varid <- input$sel_expo_var
     query <- sprintf("Select var_tble from Variability where varid = %d;",as.integer(varid))
     var_data <- projectDbSelect(query)
     dataset <- unserialize(charToRaw(var_data$var_tble))
     output$expo_var_tble <- renderTable(dataset)
-    
-  },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
-  
 
-  
+  },ignoreInit = TRUE, ignoreNULL =  TRUE)
+
+
+
+
   # # Handle radio buttons for changing organisms
   # observeEvent(input$ms_org,{
   #   if(input$ms_org == "ha"){
@@ -521,7 +521,7 @@ shinyServer(function(input, output, session) {
   #     params_df <- physio_name_df
   #     params_df$Val <- param_values[physio_name_df$Var]
   #     updateUIInputs(session,params_df)
-  #     
+  #
   #   }
   # })
 
@@ -563,7 +563,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$qsar4chem_props,{
     qsar_model <- input$qsarModelChem
     org <- ifelse(input$ms_org=="ha","human","rat")
-    
+
     chemical_params <- list("den"=input$ms_den, "mw"=input$ms_mw,
                             "vpa"=input$ms_vpa, "dkow"=input$ms_dkow,
                             "lkow"=input$ms_lkow, "wsol"=input$ms_wsol,
@@ -575,16 +575,16 @@ shinyServer(function(input, output, session) {
                                                  org)
     pair <- partitions$pair
     frwsol <- partitions$frwsol
-   
+
     updateNumericInput(session,"ms_frwsol",value = frwsol)
   })
-  
+
   ## This code chunk deals with performing IVIVE for the chemical
   observeEvent(input$btn_ivive_chem,{
     performIVIVEUI(input$btn_ivive_chem)
     dataset$iviveDat <<- callModule(performIVIVE,input$btn_ivive_chem,input$ms_km)
   })
-  
+
   observe({
     ivive_val <- dataset$iviveDat()
     if(ivive_val[1]=="Yes"){
@@ -615,7 +615,7 @@ shinyServer(function(input, output, session) {
   output$metab_tble <- DT::renderDT(formatRound(DT::datatable(metabolism_dataframe,
                                                               caption = "Metabolism Table",
 
-                                                              rowname = NULL,editable = F,
+                                                              rowname = NULL,editable = FALSE,
                                                               options= list(dom = "tp",pageLength = 5)),
                                                 2,digits = 4,mark = "" ),
                                     server = T)
@@ -689,7 +689,7 @@ shinyServer(function(input, output, session) {
     shinyWidgets::updateAwesomeCheckbox(session,"use_ref",value = as.logical(ret_data[["use_ref"]]))
     updateNumericInput(session,"metab_ref_age",value = ret_data[["ref_age"]])
     metabolism_dataframe <<- unserialize(charToRaw(ret_data[["metab_tble"]]))
-    DT::replaceData(metab_proxy,metabolism_dataframe,rownames = F)
+    DT::replaceData(metab_proxy,metabolism_dataframe,rownames = FALSE)
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
 
@@ -750,9 +750,9 @@ shinyServer(function(input, output, session) {
   ##Metabolism realated functions
   output$metab_template <- downloadHandler(
     filename = function(){"Metabolism_Template.csv"},
-    content = function(file){write.csv(data.frame("Age"=c(25),"Clearence"=c(0),stringsAsFactors = F),
+    content = function(file){write.csv(data.frame("Age"=c(25),"Clearence"=c(0),stringsAsFactors = FALSE),
                                        file,
-                                       row.names = F)
+                                       row.names = FALSE)
     },
     contentType = "text/csv"
   )
@@ -766,15 +766,15 @@ shinyServer(function(input, output, session) {
   metab_upload_tble <- reactive({
     validate(need(input$metab_csv,"No dataset uploaded"))
     #if(!(is.null(input$metab_csv))){
-    ret_dat <- read.csv(metabFile()$datapath,header = T,stringsAsFactors = F)
+    ret_dat <- read.csv(metabFile()$datapath,header = T,stringsAsFactors = FALSE)
     #}else{
-    # ret_dat <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F)
+    # ret_dat <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = FALSE)
     #}
     return(ret_dat)
   })
   output$metab_upload_tble <- DT::renderDT(formatRound(DT::datatable(metab_upload_tble(),
                                                                      caption = "Metabolism Table",
-                                                                     rowname = NULL,editable = F,
+                                                                     rowname = NULL,editable = FALSE,
                                                                      options= list(dom = "tp",pageLength = 5)),
                                                        2,digits = 4,mark = "" ),
                                            server = T)
@@ -968,9 +968,9 @@ shinyServer(function(input, output, session) {
         tempDF <- runFDPBPK(initial_values,model)
         max_list <- unlist(lapply(mc_vars,function(x,data){
           var_name <- gsub("_max","",x)
-          
+
           val <- max(data[[var_name]])
- 
+
           return(val)
         },as.data.frame(tempDF$pbpk)))
         names(max_list)<- mc_vars
@@ -989,14 +989,14 @@ shinyServer(function(input, output, session) {
       updateProgressBar(session,"pb",value = 100, total = 100,
                         status = "info")
       tempDF <- runFDPBPK(initial_values,model)
-      
+
       results$pbpk<- tempDF$pbpk
-      
-      
+
+
       results$mode <- "FD"
       updateNavbarPage(session,"menu","output")
     }
-    
+
 
 
   })
@@ -1013,7 +1013,7 @@ shinyServer(function(input, output, session) {
  #
  #  output$sim_tble <- DT::renderDataTable(
  #    DT::datatable(isolate(sim_table()),
- #                  rownames = F,escape = F,
+ #                  rownames = FALSE,escape = FALSE,
  #                  selection = "single",
  #                  options = list(dom = "t",paging = F
  #                                 )),
@@ -1302,22 +1302,22 @@ current_params <-  reactive({
     # get exposure paramteres
     expo_list <- temp[expo_name_df$Var]
     expo_params <- data.frame("var" = expo_name_df$Var, "val" = temp[expo_name_df$Var],
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE)
     physio_params <- data.frame("var" = physio_name_df$Var, "val" = temp[physio_name_df$Var],
-                              stringsAsFactors = F)
-    current_params <- data.frame("var" = names(temp),"val" = temp,stringsAsFactors = F)
+                              stringsAsFactors = FALSE)
+    current_params <- data.frame("var" = names(temp),"val" = temp,stringsAsFactors = FALSE)
     #current_params <- temp$a
     #current_params <- cbind(gsub("ms_", "",temp$b),current_params)
     return(list("cur" = current_params,"expo" = expo_params,"physio" = physio_params))
   })
 output$pamamstbl <- DT::renderDT(DT::datatable(current_params()$cur,
-                                                  rownames = F),
+                                                  rownames = FALSE),
                                     colnames=c("Variable names", "Value"))
 output$expo_params_tble <- DT::renderDT(DT::datatable(current_params()$expo,
-                                                  rownames = F),
+                                                  rownames = FALSE),
                                     colnames=c("Variable names", "Value"))
 output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
-                                                         rownames = F),
+                                                         rownames = FALSE),
                                            colnames=c("Variable names", "Value"))
 
 
@@ -1578,7 +1578,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     units <- input$r_cplt_type
     simid <- results$simid
     mode <- results$mode
- 
+
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
 
@@ -1601,7 +1601,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     result<- as.data.frame(result)
     values <- c()
-    
+
     query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s';",model,mode)
     legend_df <- mainDbSelect(query)
     legend_names <- setNames(legend_df$name,legend_df$model_var)
@@ -1621,14 +1621,14 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "FD"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE)
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE)
       }
     }
-   
+
     # select appropriate variables to plot
     if (dim(result)[1]==0){
       plot_frame["Model not yet run"]<-rep(0,length(x))
@@ -1663,7 +1663,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     plot_vals<- input$aplt_comp
     values <- unlist(lapply(plot_vals,function(x){var_names[x]}))
     names(values)<- NULL
-    # 
+    #
     # if (exists("plot_frame")){
     #   rm(plot_frame)
     # }
@@ -1688,7 +1688,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     # }
     # plot_frame <- reshape2::melt(plot_frame,id.vars = "time")
     # return(plot_frame)
-    
+
     if (exists("plot_frame")){
       rm(plot_frame)
     }
@@ -1699,14 +1699,14 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "FD"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE)
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE)
       }
     }
-    
+
     # select appropriate variables to plot
     if (dim(result)[1]==0){
       plot_frame["Model not yet run"]<-rep(0,length(x))
@@ -1754,7 +1754,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   # output$concplt <- plotly::renderPlotly(plotly::ggplotly(ggplot()
   #                              +geom_line(data = concData(), aes(x=time,y=value,color = variable))
   #                              +geom_pointrange(data = concDataset(),aes(x = time,y = mean, ymin = mean-sd ,ymax = mean+sd,fill = "Dataset (mg/L)"))
-  # 
+  #
   #                              +labs(x="Time (h)",y="Concentration")
   #                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
   concplt <- reactive({
@@ -1773,7 +1773,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         plotly::layout(xaxis = list(title = ('Time(days)')),
                        yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
                                                     'Concentration (mg/L)'))))
-      
+
     }else{
       plotly::plot_ly()%>%
         plotly::add_trace(data = concData(),
@@ -1781,7 +1781,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                           type = "box")
     }
   })
-  
+
   amtplt <- reactive({
     if (results$mode == "FD"){
       plotly::plot_ly() %>%
@@ -1894,7 +1894,7 @@ calculateInitialValues <- function(params_list){
   params <- params_list$vals
   brep_flag <- as.logical(params[["brep_flag"]])
   iv_flag <- as.logical(params[["ivrep_flag"]])
- 
+
   params <- params[which(grepl("[-]?[0-9]+[.]?[0-9]*|[-]?[0-9]+[L]?|[-]?[0-9]+[.]?[0-9]*[eE][0-9]+",params))]
   params <- lapply(params,function(x){as.numeric(x)})
 

@@ -122,7 +122,7 @@ plot_body <- fluidPage(
                                                    )
                                                    ),
                                           tabPanel("Dataset",value = "dataset",
-                                                   shinyWidgets::pickerInput("cplt_data",multiple = F,
+                                                   shinyWidgets::pickerInput("cplt_data",multiple = FALSE,
                                                                             label = tags$h4("Select Datasets"),
                                                                             choices = c("No Dataset"="none"),#,
                                                                             selected = "none")
@@ -439,7 +439,7 @@ expo_body <- dashboardBody(
         column(6,
                numericInput("ms_breps","Number of Bolus Doses",0,0,100, 1)),
         column(6,
-               awesomeCheckbox("ms_brep_flag","Repeat Dose Daily?",value = F))
+               awesomeCheckbox("ms_brep_flag","Repeat Dose Daily?",value = FALSE))
       )
 
 
@@ -479,7 +479,7 @@ expo_body <- dashboardBody(
       ),
       fluidRow(
         column(6,
-               awesomeCheckbox("ms_ivrep_flag","Repeat Dose Daily?",value = F))
+               awesomeCheckbox("ms_ivrep_flag","Repeat Dose Daily?",value = FALSE))
       )
     )
   )
@@ -921,8 +921,8 @@ shinyUI(fluidPage(
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")
                                                         ),
-                                                        icon = icon("plus"),circle = F,
-                                                        tooltip = F,size = "default",right = F,
+                                                        icon = icon("plus"),circle = FALSE,
+                                                        tooltip = FALSE,size = "default",right = FALSE,
                                                         width = validateCssUnit("100%"),
                                                         label = "Create new simulation",
                                                         status = "default" )),

@@ -50,7 +50,7 @@ importShedsData <- function(input,output,session,path,expo_name_df){
   # get all the scenarios run from the output folder
   #Path to output folder
   path2output <- file.path(path,"Output")
-  scenario_dirs <- list.dirs(path2output,full.names = F)
+  scenario_dirs <- list.dirs(path2output,full.names = FALSE)
   scenario_dirs <- scenario_dirs[scenario_dirs!= ""]
   updateSelectInput(session,"sel_scene",choices = scenario_dirs)
   observeEvent(input$sel_scene,{

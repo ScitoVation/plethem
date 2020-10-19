@@ -47,7 +47,7 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
 
 
   name_list <- names(UI_values)
-  
+
 
   name_list <- name_list[!(name_list == "cmplist")]
   print(setdiff(name_list,names(set_values)))
@@ -61,7 +61,7 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
   if (dim(param_data)[1]==0){
     param_data <- data.frame(matrix(ncol = 4, nrow = 0))
     sendSweetAlert(session,"No changes detected",
-                   "The user interface data mataches the set data. No changes were detected.",closeOnClickOutside = F,
+                   "The user interface data mataches the set data. No changes were detected.",closeOnClickOutside = FALSE,
                    showCloseButton = T)
     removeModal()
 
@@ -88,13 +88,13 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
     # Name, Variable, Original Value, New Value
     param_data <- param_data[c(2,1,4,3)]
 
-  
+
   colnames(param_data) <- col_names
   output$param_table<- DT::renderDataTable(DT::datatable(param_data),server = TRUE)
-  
-  
-  
-  
+
+
+
+
   returnValues$retData <- eventReactive({
     input$saveall
     input$savesel
@@ -129,4 +129,3 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
   return(returnValues$retData)
 
 }
-

@@ -13,7 +13,7 @@ importAllExposureDataUI <- function(namespace){
                   tabPanel("Batch Exposure",
                            shinyWidgets::useSweetAlert(),
                            fileInput(ns("batchExposure"),
-                                     "Select Exposure file",multiple = F,
+                                     "Select Exposure file",multiple = FALSE,
                                      accept = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                            ),
                            shinyBS::bsCollapse(
@@ -32,7 +32,7 @@ importAllExposureDataUI <- function(namespace){
                            ## Begin ##
                            fileInput(ns("expoFile_upload"),
                                      label = "Upload Exposure Excel File",
-                                     multiple = F,
+                                     multiple = FALSE,
                                      buttonLabel = "Browse"),
                            # pickerInput(ns("sel_expo"),
                            #             label= "Select Exposure",
@@ -83,7 +83,7 @@ importAllExposureDataUI <- function(namespace){
       tabPanel(title = "ConsExpo",
                fileInput(ns("consExpo_upload"),
                          label = "Upload ConsExpo File",
-                         multiple = F,
+                         multiple = FALSE,
                          buttonLabel = "Browse"),
                pickerInput(ns("sel_consexpo"),"Select Exposures to import",choices = NULL)
                ))),
@@ -152,16 +152,16 @@ importAllExposureData <- function(input,output,session,expo_name_df){
 
     output$oralDT <- DT::renderDT(DT::datatable(oral_tble(),
                                                 autoHideNavigation = T,
-                                                fillContainer = T,rownames = F),server = T)
+                                                fillContainer = T,rownames = FALSE),server = T)
     output$inhDT <- DT::renderDT(DT::datatable(inh_tble(),
                                                autoHideNavigation = T,
-                                               fillContainer = T,rownames = F),server = T)
+                                               fillContainer = T,rownames = FALSE),server = T)
     output$dwDT <- DT::renderDT(DT::datatable(dw_tble(),
                                               autoHideNavigation = T,
-                                              fillContainer = T,rownames = F),server = T)
+                                              fillContainer = T,rownames = FALSE),server = T)
     output$ivDT <- DT::renderDT(DT::datatable(iv_tble(),
                                               autoHideNavigation = T,
-                                              fillContainer = T,rownames = F),server = T)
+                                              fillContainer = T,rownames = FALSE),server = T)
     batch_values$oral_tble <- oral_tble
     batch_values$inh_tble <- inh_tble
     batch_values$dw_tble <- dw_tble
@@ -367,7 +367,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
       # get all the scenarios run from the output folder
       #Path to output folder
       path2output <- file.path(path,"Output")
-      scenario_dirs <- list.dirs(path2output,full.names = F)
+      scenario_dirs <- list.dirs(path2output,full.names = FALSE)
       scenario_dirs <- scenario_dirs[scenario_dirs!= ""]
       updateSelectInput(session,"sel_scene",choices = scenario_dirs)
       file_paths$sheds <- path2output
@@ -407,7 +407,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
         # parse Oral exposures and write to database
         for (i in oral_rows){
           print(i)
-          data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
+          data <- as.data.frame(oral_tble()[i,],stringsAsFactors = FALSE)
           print(data)
           colnames(data)<- c("Name","bdose","blen","breps","brep_flag")
           name <- data$Name
@@ -449,7 +449,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
         # parse Oral exposures and write to database
         for (i in dw_rows){
           #  print(i)
-          data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
+          data <- as.data.frame(oral_tble()[i,],stringsAsFactors = FALSE)
           # print(data)
           colnames(data)<- c("Name","drdose","dreps","vdw")
           name <- data$Name
@@ -490,7 +490,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
         # parse Inhalation exposures and write to database
         for (i in inh_rows){
           #print(i)
-          data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
+          data <- as.data.frame(oral_tble()[i,],stringsAsFactors = FALSE)
           #print(data)
           colnames(data)<- c("Name","inhdose","inhtlen","inhdays")
           name <- data$Name
@@ -532,7 +532,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
         # parse Intravenous exposures and write to database
         for (i in oral_rows){
           # print(i)
-          data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
+          data <- as.data.frame(oral_tble()[i,],stringsAsFactors = FALSE)
           #print(data)
           colnames(data)<- c("Name","ivdose","ivlen","ivrep_flag")
           name <- data$Name
@@ -590,8 +590,8 @@ importAllExposureData <- function(input,output,session,expo_name_df){
           data <- expoData()$dermal
           data <- data[which(data$ids == ids),c(1,5,10)]
         }
-        #write.csv(inh_exposure,file.path(base_path,"inhalation_exposure.csv"),row.names = F)
-        #write.csv(oral_exposure,file.path(base_path,"oral_exposure.csv"),row.names = F)
+        #write.csv(inh_exposure,file.path(base_path,"inhalation_exposure.csv"),row.names = FALSE)
+        #write.csv(oral_exposure,file.path(base_path,"oral_exposure.csv"),row.names = FALSE)
       }
       if (nrow(inh_exposure)>0){
       for (n in 1:nrow(inh_exposure)){

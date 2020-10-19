@@ -232,7 +232,7 @@ HT_IVIVEUI <- function(namespace="",set_list = NULL){
 
                                             column(4,
                                                    fileInput(ns("cypCl_upload"),"Upload Enzyme Clearance",
-                                                             multiple = F,placeholder = "Select CSV File",
+                                                             multiple = FALSE,placeholder = "Select CSV File",
                                                              buttonLabel = icon("search"),
                                                              accept = c("text/csv")
                                                              )
@@ -516,7 +516,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   #Get Cyp Data from main database
   query <- "SELECT name,abundance,isef,fumic,loc FROM CypData;"
   cypdb <- mainDbSelect(query)
-  cypOnt<-as.data.frame(getAllCypData(25),stringsAsFactors = F)
+  cypOnt<-as.data.frame(getAllCypData(25),stringsAsFactors = FALSE)
   cypdata <- merge(cypdb,cypOnt,by.x = "name",by.y = "Enzymes")
   cypdata[["Ontogeny"]]<- round(cypdata[["Ontogeny"]],0)
   output$cypDb <- DT::renderDT(DT::datatable(cypdata,
@@ -530,8 +530,8 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     content = function(file){
       data <- data.frame("Names"= cypdb[["name"]],
                          "Clearance"= rep(0,length(cypdb[["name"]])),
-                         stringsAsFactors = F)
-      utils::write.csv(data,file,row.names = F)
+                         stringsAsFactors = FALSE)
+      utils::write.csv(data,file,row.names = FALSE)
     },
     contentType = c("text/csv")
   )
@@ -545,7 +545,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
     if(!(is.null(input$cypCl_upload))){
       ret_dat <- utils::read.csv(cypFile()$datapath)
     }else{
-      ret_dat <- data.frame("Names"= cypdb[["name"]],"Clearance"= rep(0,length(cypdb[["name"]])),stringsAsFactors = F)
+      ret_dat <- data.frame("Names"= cypdb[["name"]],"Clearance"= rep(0,length(cypdb[["name"]])),stringsAsFactors = FALSE)
     }
 
 

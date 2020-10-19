@@ -170,7 +170,7 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
                                      #"Unifrom"= "uform"))
                               ),
                               column(1,
-                                     checkboxInput(ns(paste0("bflag_",x)),label = NULL,value = F)
+                                     checkboxInput(ns(paste0("bflag_",x)),label = NULL,value = FALSE)
                               ),
                               column(2,
                                      numericInput(ns(paste0("ubound_",x)),label = NULL, 
@@ -215,7 +215,7 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
                            "BFlag"=bound_flags,
                            "UpperBound"=ubounds,
                            "LowerBound"=lbounds,
-                           stringsAsFactors = F)
+                           stringsAsFactors = FALSE)
     var_tble_serialized<- rawToChar(serialize(var_tble,NULL,T))
     name <- input$name
     descrp <- input$descrp

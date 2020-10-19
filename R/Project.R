@@ -15,7 +15,7 @@ interactivePBPK <- function(name = "rapidPBPK"){
     name = "fishPBPK_pop"
   } else {
     # This probably isn't the prefered way to do this, but there needs to be some better error handling on user-facing functions.
-    stop('`interactivePBPK` takes the name of a model as its arguement. Either "rapidPBPK" or "fishPBPK". Defaults to rapidPBPK.') 
+    stop('`interactivePBPK` takes the name of a model as its arguement. Either "rapidPBPK" or "fishPBPK". Defaults to rapidPBPK.')
 
   }
   clearProjectDb()
@@ -27,7 +27,7 @@ interactivePBPK <- function(name = "rapidPBPK"){
 #' @examples
 #' \dontrun{
 #' interactiveReverseDosimetry()
-#' } 
+#' }
 #' @export
 interactiveReverseDosimetry <- function(){
   shiny::runApp(system.file("ReverseDosimetry",package = "plethem"),launch.browser = T)
@@ -84,16 +84,16 @@ saveProject <- function(){
 #' newProject(name = "TestPBPK",type = "PBPK",mode = "httk_pbpk",mode = "MC")
 #' }
 #' @export
-newProject <- function(name="new_project", save_path= "",type = "PBPK", model = "rapidPBPK", mode = "MC",runUI = F){
+newProject <- function(name="new_project", save_path= "",type = "PBPK", model = "rapidPBPK", mode = "MC",runUI = FALSE){
   if(save_path == ""){
     temp_path <- getFileFolderPath("dir",
                                    caption =sprintf("Select folder where %s will be saved",name))
-    
-    
+
+
     save_path <- gsub("\\\\","/",temp_path)
   }
-  
-  
+
+
   clearProjectDb()
   # write new project details to the project table
   query <- sprintf("INSERT INTO Project (name, path, type, model, mode) Values ('%s','%s','%s','%s','%s');",
@@ -123,7 +123,7 @@ newProject <- function(name="new_project", save_path= "",type = "PBPK", model = 
 #' @description Loads the project data from the project file and then launches the shiny UI that corresponds to the analysis type that the project belongs to.
 #' @param file_path path to the project file. If no path is provided, launches a select file dialog box for the user to select the path
 #' @param runUI trigger the appropriate interface after data is loaded into the database
-#' @examples 
+#' @examples
 #' \dontrun{
 #' loadProject(file_path = "C:/Project/TestPBPK.Rdata")
 #' loadProject()
@@ -134,9 +134,9 @@ loadProject <- function(file_path = "",runUI = T){
     file_path <- getFileFolderPath(type = "file",
                                    caption = "Select PLETHEM Project",
                                    extension = "*.Rdata")
-    
+
   }
-  
+
   load(file_path)
   # set the project details to match where the current file was loaded from
   # this will be helpful if the user changes the location/name of the files outside the package
@@ -158,7 +158,7 @@ loadProject <- function(file_path = "",runUI = T){
       shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
     }
     if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
-      
+
       shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
     }
     if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
@@ -168,12 +168,12 @@ loadProject <- function(file_path = "",runUI = T){
       shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = T)
     }
   }
-  
+
 }
 
 
 #' Clear Project Db
-#' @description This function clears the project Db. It is called internally when a new project is created. 
+#' @description This function clears the project Db. It is called internally when a new project is created.
 #' It is also used by developers to make a clean project db
 #' @export
 clearProjectDb <- function(){
@@ -187,7 +187,7 @@ clearProjectDb <- function(){
 }
 
 #' Show dialogs to select files or folders
-#' @description The function shows the dialog to select files or folders. The functions change depending on the OS in which 
+#' @description The function shows the dialog to select files or folders. The functions change depending on the OS in which
 #' RStudio is running. It is only called internally and should not be run by the user.
 #' @param type Type of document to get a path for. dir for directory or file for file
 #' @param caption Caption to display for choose file/directory modal
@@ -196,13 +196,13 @@ clearProjectDb <- function(){
 #' @return path to the selected file or directory
 #' @export
 getFileFolderPath <- function(type ="dir",caption="",
-                              extension="",new_flag = F){
+                              extension="",new_flag = FALSE){
   os <- .Platform$OS.type
   if (os == "windows"){
     if(type == "dir"){
       returned_path <- utils::choose.dir(caption)
     }else{
-      returned_path <- utils::choose.files(caption = caption, multi = F,
+      returned_path <- utils::choose.files(caption = caption, multi = FALSE,
                                            filters = matrix(c(extension),1,2,byrow=TRUE))
     }
   }else{

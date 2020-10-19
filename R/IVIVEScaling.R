@@ -50,7 +50,7 @@ scale_enzymatic<- function(out_ages,tot_scaled_recomcl,cypDb,cypCl,gender){
                                MoreArgs = list(clearance = cypCl,
                                                organism="human",
                                                cyp_data=cypDb,
-                                               return_total = F))
+                                               return_total = FALSE))
   # get the clearance in l/h/ kgliver
   agewise_enzyme_cl <- sweep(agewise_enzyme_cl,2,unlist(liver_wt_list),"/")
   # get the total enzyme based clearance for each age
