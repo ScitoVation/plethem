@@ -25,7 +25,7 @@ shinyServer(function(input, output, session) {
   model <- "rapidPBPK"
   # this dataframe is only used to display the metabolism data.
   #The actual model uses values stored in the database
-  metabolism_dataframe <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F)
+  metabolism_dataframe <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = FALSE
 
   dataset <- reactiveValues()
   dataset$savedat <- reactiveVal(c("No","none"))
@@ -645,7 +645,7 @@ shinyServer(function(input, output, session) {
                               "Val" = result_vector[["Original Value"]],
                               "ParamType"=var_type,
                               row.names = NULL,
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE
       updateUIInputs(session,change_df)
 
 
@@ -1027,7 +1027,7 @@ shinyServer(function(input, output, session) {
   output$metab_tble <- DT::renderDT(DT::formatRound(DT::datatable(metabolism_dataframe,
                                                               caption = "Metabolism Table",
 
-                                                              rowname = NULL,editable = F,
+                                                              rowname = NULL,editable = FALSE
                                                               options= list(dom = "tp",pageLength = 5)),
                                                 2,digits = 4,mark = "" ),
                                     server = TRUE
@@ -1101,7 +1101,7 @@ shinyServer(function(input, output, session) {
     shinyWidgets::updateAwesomeCheckbox(session,"use_ref",value = as.logical(ret_data[["use_ref"]]))
     updateNumericInput(session,"metab_ref_age",value = ret_data[["ref_age"]])
     metabolism_dataframe <<- unserialize(charToRaw(ret_data[["metab_tble"]]))
-    DT::replaceData(metab_proxy,metabolism_dataframe,rownames = F)
+    DT::replaceData(metab_proxy,metabolism_dataframe,rownames = FALSE
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
 
@@ -1161,9 +1161,9 @@ shinyServer(function(input, output, session) {
   })
   output$metab_template <- downloadHandler(
     filename = function(){"Metabolism_Template.csv"},
-    content = function(file){write.csv(data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F),
+    content = function(file){write.csv(data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = FALSE,
                                        file,
-                                       row.names = F)
+                                       row.names = FALSE
     },
     contentType = "text/csv"
   )
@@ -1176,12 +1176,12 @@ shinyServer(function(input, output, session) {
   # The user's data, parsed into a data frame
   metab_upload_tble <- reactive({
     validate(need(input$metab_csv,"No dataset uploaded"))
-    ret_dat <- read.csv(metabFile()$datapath,header = TRUEstringsAsFactors = F)
+    ret_dat <- read.csv(metabFile()$datapath,header = TRUEstringsAsFactors = FALSE
     return(ret_dat)
   })
   output$metab_upload_tble <- DT::renderDT(DT::formatRound(DT::datatable(metab_upload_tble(),
                                                                      caption = "Metabolism Table",
-                                                                     rowname = NULL,editable = F,
+                                                                     rowname = NULL,editable = FALSE
                                                                      options= list(dom = "tp",pageLength = 5)),
                                                        2,digits = 4,mark = "" ),
                                            server = TRUE
@@ -1412,7 +1412,7 @@ shinyServer(function(input, output, session) {
       }else if(run_type == "prod"){
         dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
       }
-      dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
+      dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = FALSE
       results$pbpk<- dfModelOutput
       pb$close()
       updateNavbarPage(session,"menu","output")
@@ -1722,23 +1722,23 @@ current_params <-  reactive({
 
 
     expo_params <- data.frame("var" = expo_name_df$Name, "val" = temp$vals[expo_name_df$Var],
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE
     physio_params <- data.frame("var" = physio_name_df$Name, "val" = temp$vals[physio_name_df$Var],
-                              stringsAsFactors = F)
-    current_params <- data.frame("var" = chem_name_df$Name,"val" = temp$vals[chem_name_df$Var],stringsAsFactors = F)
+                              stringsAsFactors = FALSE
+    current_params <- data.frame("var" = chem_name_df$Name,"val" = temp$vals[chem_name_df$Var],stringsAsFactors = FALSE
     #current_params <- temp$a
     #current_params <- cbind(gsub("ms_", "",temp$b),current_params)
     return(list("cur" = current_params,"expo" = expo_params,"physio" = physio_params))
   })
 output$chem_params_tble <- DT::renderDT(DT::datatable(current_params()$cur,
-                                                  rownames = F),
+                                                  rownames = FALSE,
                                     colnames=c("Variable names", "Value"))
 output$expo_params_tble <- DT::renderDT(DT::datatable(current_params()$expo,
-                                                  rownames = F,
+                                                  rownames = FALSE
                                                   colnames=c("Variable names", "Value"))
                                     )
 output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
-                                                         rownames = F,
+                                                         rownames = FALSE
                                                         colnames=c("Variable names", "Value")))
 
 
@@ -1982,11 +1982,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "fd"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }
     }
 
@@ -2061,11 +2061,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "fd"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }
     }
 
@@ -2290,7 +2290,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         footer = tagList(
           actionButton("btn_dlHesi","Download PBPK Report"),
           modalButton("Dismiss")
-        ), size = c("m"), easyClose = F, fade = TRUE)
+        ), size = c("m"), easyClose = FALSE fade = TRUE)
 
   })
 
@@ -2380,7 +2380,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   })
 
   output$expo_estimate<- DT::renderDT({DT::datatable(results$expo$expoEstimates,
-                                                     rownames = F,
+                                                     rownames = FALSE
                                                      colname = c("Percentiles",paste("Exposure (",results$expo$expo_units,")",collapse = "")),
                                                      extensions = "Buttons",
                                                      options = list(dom= 'Blfrtip',
@@ -2459,7 +2459,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
           footer = tagList(
             actionButton("loadProjectFile","Load Project"),
             modalButton("Dismiss")
-          ), size = c("m"), easyClose = F, fade = TRUE)
+          ), size = c("m"), easyClose = FALSE fade = TRUE)
     }
     # else{
     #   print('denied')
@@ -2479,7 +2479,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       fpath <- parseFilePaths(volumes, input$files)$datapath
       # fpath2 <<- parseFilePaths(volumes, input$files)
       # output$selectedFile <- renderPrint({fpath})
-      loadProject(fpath,runUI = F)
+      loadProject(fpath,runUI = FALSE
       query <- "Update Utils Set Value=NULL;"
       mainDbUpdate(query)
       js$reset()
@@ -3278,7 +3278,7 @@ runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,
   cmax_list <- foreach(idx=seq_len(mcruns),params_list,
                        states_list,times_list,
                        event_times_list,output_list,
-                       .combine = 'rbind',.inorder = F,
+                       .combine = 'rbind',.inorder = FALSE
                        .options.snow = opts,
                        .packages = c("deSolve"))%dopar%{
                          params <- params_list[[idx]]
@@ -3676,7 +3676,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                                                 choices = list("Hours"="h",
                                                                                                "Days"="d",
                                                                                                "Weeks"="w"),
-                                                                                selected = "h",multiple = F
+                                                                                selected = "h",multiple = FALSE
                                                           )
                                                    ),
                                                    conditionalPanel(

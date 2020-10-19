@@ -18,7 +18,7 @@ parseTRAFile <- function(path){
                         "Events per day","Fraction Released to Air",
                         "Dilution Fraction","Exposure Time (h)","Inhalation Rate(m^3/h)","CF",
                         "Room Volume","Body Weight(kg)","Exposure (mg/m^3)")
-  inh_list <- unlist(inh_data[,1],use.names = F)
+  inh_list <- unlist(inh_data[,1],use.names = FALSE
   ids <- paste0("inh",as.character(seq_along(inh_list)))
   inh_data$ids <- ids
   inh_list <- setNames(ids,inh_list)
@@ -29,7 +29,7 @@ parseTRAFile <- function(path){
   oral_data <- oral_data[-idx,]
   colnames(oral_data)<-c("Exposure Name","Product Ingredient","Dosing Volume per Event (m^3)","TF",
                          "Events per day","Density","CF","Body Weight (kg)","Exposure (mg/kg/day)")
-  oral_list <- unlist(oral_data[,1],use.names = F)
+  oral_list <- unlist(oral_data[,1],use.names = FALSE
   ids <- paste0("oral",as.character(seq_along(oral_list)))
   oral_data$ids <- ids
   oral_list <- setNames(ids,oral_list)
@@ -41,7 +41,7 @@ parseTRAFile <- function(path){
   colnames(dermal_data)<-c("Exposure Name","Product Ingredient","Contact Area (cm^2)","TF",
                            "Events per day","Skin Thickness (cm)","Density","CF","Body Weight (kg)",
                            "Exposure (mg/kg/day)")
-  dermal_list <- unlist(dermal_data[,1],use.names = F)
+  dermal_list <- unlist(dermal_data[,1],use.names = FALSE
   ids <- paste0("dermal",as.character(seq_along(dermal_list)))
   dermal_data$ids <- ids
   dermal_list <- setNames(ids,dermal_list)
@@ -62,7 +62,7 @@ parseTRAFile <- function(path){
 #' 
 parseConsExpoFile <- function(path){
   print(path)
-  f <- readLines(file(description = path),warn = F,skipNul = TRUE
+  f <- readLines(file(description = path),warn = FALSEskipNul = TRUE
   f <- f[-which(f=="")]
   #f_frame <- setNames(f[c("value","Units")],f["Cat"])
   # Category Keywords to scan the file fow

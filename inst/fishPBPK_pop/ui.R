@@ -105,7 +105,7 @@ plot_body <- fluidPage(
                                                    )
                                                    ),
                                           tabPanel("Dataset",value = "dataset",
-                                                   shinyWidgets::pickerInput("cplt_data",multiple = F,
+                                                   shinyWidgets::pickerInput("cplt_data",multiple = FALSE
                                                                             label = tags$h4("Select Datasets"),
                                                                             choices = c("No Dataset"="none"),
                                                                             selected = "none")
@@ -579,8 +579,8 @@ shinyUI(fluidPage(
                                                                                    icon = icon("floppy-save",lib = "glyphicon"),
                                                                                    style = "material-circle")
                                                         ),
-                                                        icon = icon("plus"),circle = F,
-                                                        tooltip = F,size = "default",right = F,
+                                                        icon = icon("plus"),circle = FALSE
+                                                        tooltip = FALSEsize = "default",right = FALSE
                                                         width = validateCssUnit("100%"),
                                                         label = "Create new simulation",
                                                         status = "default" )),

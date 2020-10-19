@@ -52,7 +52,7 @@ shinyServer(function(input,output,session){
     "Margin of exposure"=numeric()
   )
   output$master_table <- DT::renderDataTable(
-    DT::datatable(data = vals$m_table,rownames = F,escape = F,selection = "single",
+    DT::datatable(data = vals$m_table,rownames = FALSEescape = FALSEselection = "single",
                   options = list(
                     dom="tpl",
                     preDrawCallback = DT::JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
@@ -70,7 +70,7 @@ shinyServer(function(input,output,session){
   #                             "}")
 
   output$result_table <- DT::renderDataTable(
-    DT::datatable(data = vals$result_table,rownames = F,escape = F,selection = "single",extensions = "Buttons",
+    DT::datatable(data = vals$result_table,rownames = FALSEescape = FALSEselection = "single",extensions = "Buttons",
                   options = list(
                     dom="Btpl",
                     charset = "utf-8",
@@ -81,7 +81,7 @@ shinyServer(function(input,output,session){
     #               options = list(buttons=c('copy'),
     #                              dom = 'Bfrtip'))
 
-  #mster_tble_proxy <- DT::dataTableProxy("master_table",session,deferUntilFlush = F)
+  #mster_tble_proxy <- DT::dataTableProxy("master_table",session,deferUntilFlush = FALSE
   observeEvent(input$run,{
     non_reactive_vals <- reactiveValuesToList(vals)
 

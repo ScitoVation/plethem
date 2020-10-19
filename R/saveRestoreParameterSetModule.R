@@ -61,7 +61,7 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
   if (dim(param_data)[1]==0){
     param_data <- data.frame(matrix(ncol = 4, nrow = 0))
     sendSweetAlert(session,"No changes detected",
-                   "The user interface data mataches the set data. No changes were detected.",closeOnClickOutside = F,
+                   "The user interface data mataches the set data. No changes were detected.",closeOnClickOutside = FALSE
                    showCloseButton = TRUE
     removeModal()
 

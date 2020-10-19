@@ -46,7 +46,7 @@ addChemsToHTTK <- function(){
           numericInput("fupls","Fraction Unbound in Plasma",1,width = validateCssUnit("90%"))
         ),
         fillRow(
-          checkboxInput("show_code","Show Code",value = F)
+          checkboxInput("show_code","Show Code",value = FALSE
         ),
         fillRow(
           shinyjs::hidden(textAreaInput("code_output","HTTK Add Chemical Function",
@@ -95,7 +95,7 @@ addChemsToHTTK <- function(){
       logp <- input$logp
       clint <- input$clint
       fupls <- input$fupls
-      DF_code <- sprintf("data2add <- data.frame('Compound' = c('%s'), 'CAS' = c('%s'),'MW' = c(%f),'logP' = c(%f),'Clint' = c(%f), 'Funbound.plasma' = c(%f),stringsAsFactors = F)",
+      DF_code <- sprintf("data2add <- data.frame('Compound' = c('%s'), 'CAS' = c('%s'),'MW' = c(%f),'logP' = c(%f),'Clint' = c(%f), 'Funbound.plasma' = c(%f),stringsAsFactors = FALSE",
                          name,cas,mw,logp,clint,fupls)
       name_code <- "data_list <- setNames(colnames(data2add),colnames(data2add))"
       httk_table <- 'chem.physical_and_invitro.data'

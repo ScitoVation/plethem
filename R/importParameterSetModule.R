@@ -27,7 +27,7 @@ importParameterSetUI <- function(namespace,set_type){
                                                 choices = NULL)),
                         tabPanel("Import from file",value = "batch",
                                  fileInput(ns("btn_batch_upload"),"Upload File",
-                                           multiple = F),
+                                           multiple = FALSE,
                                  radioButtons(ns("rdo_ftype"),
                                               label = "Select file type",
                                               choices = list("Chemical Input File"="chem_batch",

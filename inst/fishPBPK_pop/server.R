@@ -349,7 +349,7 @@ shinyServer(function(input, output, session) {
                               "Val" = result_vector[["Original Value"]],
                               "ParamType"=var_type,
                               row.names = NULL,
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE
       updateUIInputs(session,change_df)
     }
   })
@@ -715,23 +715,23 @@ current_params <-  reactive({
 
     
     expo_params <- data.frame("var" = expo_name_df$Name, "val" = temp$vals[expo_name_df$Var],
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE
     physio_params <- data.frame("var" = physio_name_df$Name, "val" = temp$vals[physio_name_df$Var],
-                              stringsAsFactors = F)
-    current_params <- data.frame("var" = chem_name_df$Name,"val" = temp$vals[chem_name_df$Var],stringsAsFactors = F)
+                              stringsAsFactors = FALSE
+    current_params <- data.frame("var" = chem_name_df$Name,"val" = temp$vals[chem_name_df$Var],stringsAsFactors = FALSE
     #current_params <- temp$a
     #current_params <- cbind(gsub("ms_", "",temp$b),current_params)
     return(list("cur" = current_params,"expo" = expo_params,"physio" = physio_params))
   })
 output$chem_params_tble <- DT::renderDT(DT::datatable(current_params()$cur,
-                                                  rownames = F),
+                                                  rownames = FALSE,
                                     colnames=c("Variable names", "Value"))
 output$expo_params_tble <- DT::renderDT(DT::datatable(current_params()$expo,
-                                                  rownames = F,
+                                                  rownames = FALSE
                                                   colnames=c("Variable names", "Value"))
                                     )
 output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
-                                                         rownames = F,
+                                                         rownames = FALSE
                                                         colnames=c("Variable names", "Value")))
 
   observeEvent(input$run,{
@@ -1006,11 +1006,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "FD"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }
     }
    
@@ -1086,11 +1086,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "FD"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }
     }
     

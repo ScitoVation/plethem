@@ -1,6 +1,6 @@
 # Gadget UI and server for importing data run using Commercial TRA version
 #
-exposureTRAGadget <- function(save_flag = F, base_path = NULL){
+exposureTRAGadget <- function(save_flag = FALSE base_path = NULL){
   ui <- miniPage(
     shinyjs::useShinyjs(),
     gadgetTitleBar("Process Exposures Estimates from TRA",right = miniTitleBarButton("save","Export Selected")),
@@ -10,7 +10,7 @@ exposureTRAGadget <- function(save_flag = F, base_path = NULL){
                 fillRow(
                   fileInput("expoFile_upload",
                             label = "Upload Exposure Excel File",
-                            multiple = F,
+                            multiple = FALSE
                             buttonLabel = "Browse")
                 ),
                 fillRow(
@@ -35,7 +35,7 @@ exposureTRAGadget <- function(save_flag = F, base_path = NULL){
   #   miniTabstripPanel(id = "menu",
   #                     between = tagList(fileInput("expoFile_upload",
   #                                                 label = "Upload Exposure Excel File",
-  #                                                 multiple = F,
+  #                                                 multiple = FALSE
   #                                                 buttonLabel = "Browse")),
   #                     miniTabPanel(title = "View",value = "view",
   #                                  miniContentPanel(
@@ -184,8 +184,8 @@ exposureTRAGadget <- function(save_flag = F, base_path = NULL){
           data <- expoData()$dermal
           data <- data[which(data$ids == ids),c(1,5,10)]
         }
-        write.csv(inh_exposure,file.path(base_path,"inhalation_exposure.csv"),row.names = F)
-        write.csv(oral_exposure,file.path(base_path,"oral_exposure.csv"),row.names = F)
+        write.csv(inh_exposure,file.path(base_path,"inhalation_exposure.csv"),row.names = FALSE
+        write.csv(oral_exposure,file.path(base_path,"oral_exposure.csv"),row.names = FALSE
         stopApp()
       }
       

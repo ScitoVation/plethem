@@ -250,7 +250,7 @@ plot_body <- fluidPage(
                                                            )
                                                   ),
                                                   tabPanel("Dataset",value = "dataset",
-                                                           shinyWidgets::pickerInput("cplt_data",multiple = F,
+                                                           shinyWidgets::pickerInput("cplt_data",multiple = FALSE
                                                                                      label = tags$h4("Select Datasets"),
                                                                                      choices = c("No Dataset"="none"),#,
                                                                                      selected = "none")
@@ -653,7 +653,7 @@ expo_body <- dashboardBody(
         column(6,
                numericInput("ms_breps","Number of Boluses per Day",1,0,100, 1)),
         column(6,
-               awesomeCheckbox("ms_brep_flag","Repeat Exposure Daily?",value = F))
+               awesomeCheckbox("ms_brep_flag","Repeat Exposure Daily?",value = FALSE)
       )
 
 
@@ -683,7 +683,7 @@ expo_body <- dashboardBody(
         column(6,
                numericInput("ms_brepsv","Number of Boluses per Day",1,0,100, 1)),
         column(6,
-               awesomeCheckbox("ms_brepv_flag","Repeat Exposure Daily?",value = F))
+               awesomeCheckbox("ms_brepv_flag","Repeat Exposure Daily?",value = FALSE)
       )
 
 
@@ -710,7 +710,7 @@ expo_body <- dashboardBody(
       ),
       fluidRow(
         column(6,
-               awesomeCheckbox("ms_ivrep_flag","Repeat Exposure Daily?",value = F))
+               awesomeCheckbox("ms_ivrep_flag","Repeat Exposure Daily?",value = FALSE)
       )
     ),
     tabItem(
@@ -725,7 +725,7 @@ expo_body <- dashboardBody(
         column(6,
                numericInput("ms_dermlen","Duration of Dermal Exposure per Day (h/day)",0.1,step=0.01)),
         column(6,
-               awesomeCheckbox("ms_dermrep_flag","Repeat Exposure Daily?",value = F))
+               awesomeCheckbox("ms_dermrep_flag","Repeat Exposure Daily?",value = FALSE)
       )
 
     )
@@ -1211,7 +1211,7 @@ shinyUI(fluidPage(
                                                                         ),
                                                                         column(6,
                                                                                shinyBS::bsButton("btn_ivive_chem",
-                                                                                                 "Perform IVIVE",block = F)
+                                                                                                 "Perform IVIVE",block = FALSE
                                                                         )
                                                                       ),
                                                                       fluidRow(

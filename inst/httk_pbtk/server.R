@@ -19,7 +19,7 @@ shinyServer(function(input, output, session) {
   #updateSelectInput(session,"sel_chem4Partition",choices = httk_chem)
   # this dataframe is only used to display the metabolism data.
   #The actual model uses values stored in the database
-  metabolism_dataframe <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F)
+  metabolism_dataframe <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = FALSE
 
   dataset <- reactiveValues()
   dataset$savedat <- reactiveVal(c("No","none"))
@@ -384,7 +384,7 @@ shinyServer(function(input, output, session) {
                               "Val" = result_vector[["Original Value"]],
                               "ParamType"=var_type,
                               row.names = NULL,
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE
       updateUIInputs(session,change_df)
       # a <- mapply(function(var,org){
       #   print(var)
@@ -615,7 +615,7 @@ shinyServer(function(input, output, session) {
   output$metab_tble <- DT::renderDT(formatRound(DT::datatable(metabolism_dataframe,
                                                               caption = "Metabolism Table",
 
-                                                              rowname = NULL,editable = F,
+                                                              rowname = NULL,editable = FALSE
                                                               options= list(dom = "tp",pageLength = 5)),
                                                 2,digits = 4,mark = "" ),
                                     server = TRUE
@@ -689,7 +689,7 @@ shinyServer(function(input, output, session) {
     shinyWidgets::updateAwesomeCheckbox(session,"use_ref",value = as.logical(ret_data[["use_ref"]]))
     updateNumericInput(session,"metab_ref_age",value = ret_data[["ref_age"]])
     metabolism_dataframe <<- unserialize(charToRaw(ret_data[["metab_tble"]]))
-    DT::replaceData(metab_proxy,metabolism_dataframe,rownames = F)
+    DT::replaceData(metab_proxy,metabolism_dataframe,rownames = FALSE
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)
 
@@ -750,9 +750,9 @@ shinyServer(function(input, output, session) {
   ##Metabolism realated functions
   output$metab_template <- downloadHandler(
     filename = function(){"Metabolism_Template.csv"},
-    content = function(file){write.csv(data.frame("Age"=c(25),"Clearence"=c(0),stringsAsFactors = F),
+    content = function(file){write.csv(data.frame("Age"=c(25),"Clearence"=c(0),stringsAsFactors = FALSE,
                                        file,
-                                       row.names = F)
+                                       row.names = FALSE
     },
     contentType = "text/csv"
   )
@@ -766,15 +766,15 @@ shinyServer(function(input, output, session) {
   metab_upload_tble <- reactive({
     validate(need(input$metab_csv,"No dataset uploaded"))
     #if(!(is.null(input$metab_csv))){
-    ret_dat <- read.csv(metabFile()$datapath,header = TRUEstringsAsFactors = F)
+    ret_dat <- read.csv(metabFile()$datapath,header = TRUEstringsAsFactors = FALSE
     #}else{
-    # ret_dat <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = F)
+    # ret_dat <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = FALSE
     #}
     return(ret_dat)
   })
   output$metab_upload_tble <- DT::renderDT(formatRound(DT::datatable(metab_upload_tble(),
                                                                      caption = "Metabolism Table",
-                                                                     rowname = NULL,editable = F,
+                                                                     rowname = NULL,editable = FALSE
                                                                      options= list(dom = "tp",pageLength = 5)),
                                                        2,digits = 4,mark = "" ),
                                            server = TRUE
@@ -1013,9 +1013,9 @@ shinyServer(function(input, output, session) {
  #
  #  output$sim_tble <- DT::renderDataTable(
  #    DT::datatable(isolate(sim_table()),
- #                  rownames = F,escape = F,
+ #                  rownames = FALSEescape = FALSE
  #                  selection = "single",
- #                  options = list(dom = "t",paging = F
+ #                  options = list(dom = "t",paging = FALSE
  #                                 )),
  #    server = FALSE)
  #  sim_tble_proxy <- DT::dataTableProxy("sim_tble")
@@ -1302,22 +1302,22 @@ current_params <-  reactive({
     # get exposure paramteres
     expo_list <- temp[expo_name_df$Var]
     expo_params <- data.frame("var" = expo_name_df$Var, "val" = temp[expo_name_df$Var],
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE
     physio_params <- data.frame("var" = physio_name_df$Var, "val" = temp[physio_name_df$Var],
-                              stringsAsFactors = F)
-    current_params <- data.frame("var" = names(temp),"val" = temp,stringsAsFactors = F)
+                              stringsAsFactors = FALSE
+    current_params <- data.frame("var" = names(temp),"val" = temp,stringsAsFactors = FALSE
     #current_params <- temp$a
     #current_params <- cbind(gsub("ms_", "",temp$b),current_params)
     return(list("cur" = current_params,"expo" = expo_params,"physio" = physio_params))
   })
 output$pamamstbl <- DT::renderDT(DT::datatable(current_params()$cur,
-                                                  rownames = F),
+                                                  rownames = FALSE,
                                     colnames=c("Variable names", "Value"))
 output$expo_params_tble <- DT::renderDT(DT::datatable(current_params()$expo,
-                                                  rownames = F),
+                                                  rownames = FALSE,
                                     colnames=c("Variable names", "Value"))
 output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
-                                                         rownames = F),
+                                                         rownames = FALSE,
                                            colnames=c("Variable names", "Value"))
 
 
@@ -1621,11 +1621,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "FD"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }
     }
 
@@ -1699,11 +1699,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "FD"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE
       }
     }
 

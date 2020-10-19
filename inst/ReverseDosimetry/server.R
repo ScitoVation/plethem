@@ -50,7 +50,7 @@ shinyServer(function(input, output,session) {
     modalDialog(
       useShinyjs(),
       # title = "Upload Monte Carlo Results",
-      easyClose = F,#TRUE,
+      easyClose = FALSE#TRUE,
       size = "l",
       tagList(
         useSweetAlert(),
@@ -96,14 +96,14 @@ shinyServer(function(input, output,session) {
           #     label = "Select Project file",
           #     accept = c(".RData", ".Rdata"),
           #     placeholder = 'Upload .RData file',
-          #     multiple = F
+          #     multiple = FALSE
           #   ),
           #   pickerInput(
           #     'simulation',
           #     'Select Simulation',
           #     choices = NULL,
           #     selected = NULL,
-          #     multiple = F
+          #     multiple = FALSE
           #     # ,options = list(
           #     # 'live-search' = TRUE,
           #     # 'actions-box' = TRUE,
@@ -243,7 +243,7 @@ shinyServer(function(input, output,session) {
     # shinyjs::enable('addMC')
     inFile <- input$rDataFile
     rDFile <- inFile$datapath
-    loadProject(rDFile,runUI = F)
+    loadProject(rDFile,runUI = FALSE
     simSet <- projectDbSelect("Select simid,name,descrp from SimulationsSet;")
     # e = new.env()
     # name <- load(rDFile, envir = e)
@@ -776,7 +776,7 @@ shinyServer(function(input, output,session) {
     input$showpanel
   })
   
-  outputOptions(output, "toggleSidebar", suspendWhenHidden = F)
+  outputOptions(output, "toggleSidebar", suspendWhenHidden = FALSE
   
   #############################################################################################
   
@@ -897,9 +897,9 @@ shinyServer(function(input, output,session) {
         data = revDosResults$expoEstimates,
         extensions = 'Buttons',
         class = 'cell-border stripe',
-        rownames = F,
+        rownames = FALSE
         options = list(
-          ordering = F,
+          ordering = FALSE
           autoWidth = TRUE
           dom='rtB',
           buttons = list(
@@ -1014,7 +1014,7 @@ shinyServer(function(input, output,session) {
     #     rownames = TRUE
     #     extensions = c('FixedColumns','FixedHeader'),
     #     options = list(
-    #       ordering = F,
+    #       ordering = FALSE
     #       autoWidth = TRUE
     #       fixedColumns = TRUE
     #       scrollX = '100%',
@@ -1058,7 +1058,7 @@ shinyServer(function(input, output,session) {
     #       file = file,
     #       sep = ",",
     #       row.names = TRUE
-    #       col.names = F
+    #       col.names = FALSE
     #     )
     #   }
     # )
@@ -1075,7 +1075,7 @@ shinyServer(function(input, output,session) {
     #       file = file,
     #       sep = ",",
     #       row.names = TRUE
-    #       col.names = F
+    #       col.names = FALSE
     #     )
     #   }
     # )
@@ -1092,7 +1092,7 @@ shinyServer(function(input, output,session) {
     #       file = file,
     #       sep = ",",
     #       row.names = TRUE
-    #       col.names = F
+    #       col.names = FALSE
     #     )
     #   }
     # )

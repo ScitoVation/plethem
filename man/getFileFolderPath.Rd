@@ -4,7 +4,7 @@
 \alias{getFileFolderPath}
 \title{Show dialogs to select files or folders}
 \usage{
-getFileFolderPath(type = "dir", caption = "", extension = "", new_flag = F)
+getFileFolderPath(type = "dir", caption = "", extension = "", new_flag = FALSE
 }
 \arguments{
 \item{type}{Type of document to get a path for. dir for directory or file for file}

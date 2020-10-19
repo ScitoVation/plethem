@@ -18,15 +18,15 @@ knitr::opts_chunk$set(
 
 # Installing PLETHEM
 PLETHEM can be run installed from CRAN 
-```{r eval = F}
+```{r eval = FALSE
 install.packages("plethem")
 ```
 The most recent development version can be installed from 
-```{r eval = F}
+```{r eval = FALSE
 devtools::install_github("Scitovation/plethem")
 ```
 and then use 
-```{r eval = F}
+```{r eval = FALSE
 library(plethem)
 ```
 to start using PLETHEM.
@@ -34,13 +34,13 @@ to start using PLETHEM.
 ## Running rapidPBPK models
 The rapidPBPK model within PLETHEM can be used to run forward dosimetry, monte carlo analysis, reverse dosimetry, and route to route extrapolation workflows. 
 To start the rapidPBPK application
-```{r eval = F}
+```{r eval = FALSE
 interactivePBPK()
 ```
 ## Running HT-IVIVE models in PLETHEM
 The High-Throughput IVIVE workflow within PELTHEM can be used to extrapolate in vitro points of depature to equivalent applied dose in vivo
 TO start the HT-IVIVE application
-```{r eval = F}
+```{r eval = FALSE
 interactiveHT()
 ```
 ## Running HTTK models 

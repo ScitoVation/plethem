@@ -84,7 +84,7 @@ saveProject <- function(){
 #' newProject(name = "TestPBPK",type = "PBPK",mode = "httk_pbpk",mode = "MC")
 #' }
 #' @export
-newProject <- function(name="new_project", save_path= "",type = "PBPK", model = "rapidPBPK", mode = "MC",runUI = F){
+newProject <- function(name="new_project", save_path= "",type = "PBPK", model = "rapidPBPK", mode = "MC",runUI = FALSE{
   if(save_path == ""){
     temp_path <- getFileFolderPath("dir",
                                    caption =sprintf("Select folder where %s will be saved",name))
@@ -196,13 +196,13 @@ clearProjectDb <- function(){
 #' @return path to the selected file or directory
 #' @export
 getFileFolderPath <- function(type ="dir",caption="",
-                              extension="",new_flag = F){
+                              extension="",new_flag = FALSE{
   os <- .Platform$OS.type
   if (os == "windows"){
     if(type == "dir"){
       returned_path <- utils::choose.dir(caption)
     }else{
-      returned_path <- utils::choose.files(caption = caption, multi = F,
+      returned_path <- utils::choose.files(caption = caption, multi = FALSE
                                            filters = matrix(c(extension),1,2,byrow=TRUE))
     }
   }else{
