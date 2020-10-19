@@ -82,7 +82,7 @@ projectWriteTable <- function(data, tble_name, db_path =""){
     db_path <- system.file("database","project.sqlite",package = "plethem")
   }
   conn <- getDbConn(db_path)
-  ret_data <- RSQLite::dbWriteTable(conn,tble_name,data, overwrite = T)
+  ret_data <- RSQLite::dbWriteTable(conn,tble_name,data, overwrite = TRUE
   RSQLite::dbDisconnect(conn)
 }
 

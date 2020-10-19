@@ -25,7 +25,7 @@ exposureTRAGadget <- function(save_flag = F, base_path = NULL){
                 fillCol(flex = c(8,2),
                         fillRow(
                           pickerInput("sel_export","Select exposures to export",
-                                      choices = NULL,multiple = T)
+                                      choices = NULL,multiple = TRUE
                         )
                         )
                 )
@@ -72,19 +72,19 @@ exposureTRAGadget <- function(save_flag = F, base_path = NULL){
   #                                            fillRow(
   #                                              shinyWidgets::pickerInput("inh_export",
   #                                                                        "Select Exposures",
-  #                                                                        choices = "",multiple = T,
+  #                                                                        choices = "",multiple = TRUE
   #                                                                        options = list(`actions-box`=TRUE,
   #                                                                                       `dropupAuto`=TRUE,
   #                                                                                       `selected-text-format` = "count > 1")),
   #                                              shinyWidgets::pickerInput("oral_export",
   #                                                                        "Select Exposures",
-  #                                                                        choices = "",multiple = T,
+  #                                                                        choices = "",multiple = TRUE
   #                                                                        
   #                                                                        options = list("action-box"=TRUE,
   #                                                                                       "dropupAuto"=TRUE))#,
   #                                              # shinyWidgets::pickerInput("dermal_export",
   #                                              #                           "Select Exposures",
-  #                                              #                           choices = "",multiple = T,
+  #                                              #                           choices = "",multiple = TRUE
   #                                              #                           options = list('action-box'=TRUE,
   #                                              #                                          'dropupAuto'=TRUE))
   #                                            )

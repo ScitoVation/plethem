@@ -26,7 +26,7 @@ importBatchExposureUI <- function(namespace){
     # DT::DTOutput(ns("iv_expo")),
     footer = tagList(modalButton("Dismiss"),
                      shinyBS::bsButton(ns("import"),"Import Selected Exposures")),
-    # pickerInput(ns("sel_expo"),multiple = T,label = "Select Exposure",choices = NULL),
+    # pickerInput(ns("sel_expo"),multiple = TRUElabel = "Select Exposure",choices = NULL),
     # DT::DTOutput(ns("expo_tble"))
     # 
     # tabsetPanel(id = ns("expo_box"),type = "tabs",
@@ -93,17 +93,17 @@ importBatchExposure<- function(input,output,session,expo_name_df){
   # 
   # updatePickerInput(session,"sel_expo",choices = expo_choices())
   output$oralDT <- DT::renderDT(DT::datatable(oral_tble(),
-                                                 autoHideNavigation = T,
-                                                 fillContainer = T,rownames = F),server = T)
+                                                 autoHideNavigation = TRUE
+                                                 fillContainer = TRUErownames = F),server = TRUE
   output$inhDT <- DT::renderDT(DT::datatable(inh_tble(),
-                                                autoHideNavigation = T,
-                                                fillContainer = T,rownames = F),server = T)
+                                                autoHideNavigation = TRUE
+                                                fillContainer = TRUErownames = F),server = TRUE
   output$dwDT <- DT::renderDT(DT::datatable(dw_tble(),
-                                               autoHideNavigation = T,
-                                               fillContainer = T,rownames = F),server = T)
+                                               autoHideNavigation = TRUE
+                                               fillContainer = TRUErownames = F),server = TRUE
   output$ivDT <- DT::renderDT(DT::datatable(iv_tble(),
-                                               autoHideNavigation = T,
-                                               fillContainer = T,rownames = F),server = T)
+                                               autoHideNavigation = TRUE
+                                               fillContainer = TRUErownames = F),server = TRUE
   
   observeEvent(input$import,{
     oral_rows <- input$oralDT_rows_selected

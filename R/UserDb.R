@@ -8,7 +8,7 @@
 #' }
 #' @export
 setUserDb<- function(path = NULL){
-  filters <- matrix(c("SQLite DB",".sqlite"),1,2,byrow = T)
+  filters <- matrix(c("SQLite DB",".sqlite"),1,2,byrow = TRUE
   if (is.null(path)){
     userDbPath <- getFileFolderPath(type="file",
                       caption = "Select user database",

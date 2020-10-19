@@ -123,7 +123,7 @@ saveAsParameterSet <- function(input,output,session,set_type,main_input,name_df,
     query <- sprintf("INSERT INTO %s (%s) VALUES %s ;",vals_table_name, write_col_names,all_values_string)
     projectDbUpdate(query)
     removeModal()
-  },ignoreNULL = T,ignoreInit = T)
+  },ignoreNULL = TRUEignoreInit = TRUE
   return(returnValues$savedat)
 }
 

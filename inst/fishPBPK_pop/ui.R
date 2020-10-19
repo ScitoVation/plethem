@@ -33,7 +33,7 @@ css <- "div .disabled-comp {
 ################################exposure sidebar
 expo_sidebar <- shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
   id="ms_expo_sidebar",
-  menuItem("Inspiration Through Gills", tabName = "ins",selected = T)
+  menuItem("Inspiration Through Gills", tabName = "ins",selected = TRUE
 ))
 
 ################################compartment sidebar
@@ -310,7 +310,7 @@ shinyUI(fluidPage(
              tabPanel("Model Setup",value = "setup",
                       icon = icon("flask"),
                       fluidRow(
-                        progressBar(id = "pb",value = 0, status = "success",striped = T)
+                        progressBar(id = "pb",value = 0, status = "success",striped = TRUE
                       ),
                       tabsetPanel(id= "modelSetupTabs", type = "tabs",
                                   tabPanel("Exposure",
@@ -339,14 +339,14 @@ shinyUI(fluidPage(
                                                       selectizeInput("sel_expo",NULL,
                                                                      choices = NULL,
                                                                      options= list(placeholder = "Exposure Parameter Set",
-                                                                                   openOnFocus = T))),
+                                                                                   openOnFocus = TRUE)),
                                                column(width = 3, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
                                                         c("btn_sverest_expo","btn_saveas_expo"),
                                                         c("Save/Restore","Save As"),
                                                         direction = "horizontal",
                                                         status = "info",
-                                                        fullwidth = T
+                                                        fullwidth = TRUE
 
                                                       ))
                                              ),
@@ -380,14 +380,14 @@ shinyUI(fluidPage(
                                                       selectizeInput("sel_chem",NULL,
                                                                      choices = NULL,
                                                                      options= list(placeholder = "Chemicals",
-                                                                                   openOnFocus = T))),
+                                                                                   openOnFocus = TRUE)),
                                                column(width = 5, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
                                                         c("btn_import_chem","btn_sverest_chem","btn_saveas_chem"),
                                                         c("Import","Save/Restore","Save As"),
                                                         direction = "horizontal",
                                                         status = "info",
-                                                        fullwidth = T
+                                                        fullwidth = TRUE
 
                                                       ))
                                              ),
@@ -423,14 +423,14 @@ shinyUI(fluidPage(
                                                       selectizeInput("sel_physio",NULL,
                                                                   choices = NULL,
                                                                   options= list(placeholder = "Physiological Parameter Set",
-                                                                                openOnFocus = T))),
+                                                                                openOnFocus = TRUE)),
                                                column(width = 3, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
                                                         c("btn_import_physio","btn_sverest_physio","btn_saveas_physio"),
                                                         c("Import","Save/Restore","Save As"),
                                                         direction = "horizontal",
                                                         status = "info",
-                                                        fullwidth = T
+                                                        fullwidth = TRUE
 
                                                       ))
                                              ),
@@ -448,7 +448,7 @@ shinyUI(fluidPage(
                                   ),
                                   tabPanel("Uncertanity and Variability",
                                            dashboardPage(
-                                             dashboardHeader(disable = T),
+                                             dashboardHeader(disable = TRUE,
                                              dashboardSidebar(
                                                shinydashboard::sidebarMenu(
                                                  menuItem("Physiological",
@@ -466,14 +466,14 @@ shinyUI(fluidPage(
                                                                   selectizeInput("sel_physio_var",NULL,
                                                                                  choices = NULL,
                                                                                  options= list(placeholder = "Population Parameter Set",
-                                                                                               openOnFocus = T))),
+                                                                                               openOnFocus = TRUE)),
                                                            column(width = 8, offset = 0,
                                                                   shinyWidgets::actionGroupButtons(
                                                                     c("btn_new_varphys","btn_edit_varphys","btn_import_varphys"),
                                                                     c("New","Edit","Import"),
                                                                     direction = "horizontal",
                                                                     status = "info",
-                                                                    fullwidth = T)
+                                                                    fullwidth = TRUE
                                                                   )
                                                            ),
                                                        fluidRow(
@@ -488,14 +488,14 @@ shinyUI(fluidPage(
                                                                 selectizeInput("sel_chem_var",NULL,
                                                                                choices = NULL,
                                                                                options= list(placeholder = "Chemical Parameter Set",
-                                                                                             openOnFocus = T))),
+                                                                                             openOnFocus = TRUE)),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
                                                                   c("btn_new_varchem","btn_edit_varchem","btn_import_varchem"),
                                                                   c("New","Edit","Import"),
                                                                   direction = "horizontal",
                                                                   status = "info",
-                                                                  fullwidth = T)
+                                                                  fullwidth = TRUE
                                                          )
                                                        ),
                                                        fluidRow(
@@ -509,14 +509,14 @@ shinyUI(fluidPage(
                                                                 selectizeInput("sel_expo_var",NULL,
                                                                                choices = NULL,
                                                                                options= list(placeholder = "Exposure Parameter Set",
-                                                                                             openOnFocus = T))),
+                                                                                             openOnFocus = TRUE)),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
                                                                   c("btn_new_varexpo","btn_edit_varexpo","btn_import_varexpo"),
                                                                   c("New","Edit","Import"),
                                                                   direction = "horizontal",
                                                                   status = "info",
-                                                                  fullwidth = T)
+                                                                  fullwidth = TRUE
                                                          )
                                                        ),
                                                        fluidRow(

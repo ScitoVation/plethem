@@ -330,7 +330,7 @@ shinyServer(function(input, output, session) {
                         tbl_nme,val,id_nme,id,var)
         return(temp)
       },
-      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = T)
+      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = TRUE
       lapply(query_list,projectDbUpdate)
 
     }else if (ops_type == "restore"){
@@ -343,7 +343,7 @@ shinyServer(function(input, output, session) {
         name_data <- expo_name_df
       }
       var_type <- sapply(result_vector$Variable,function(var){
-        tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = T)]
+        tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = TRUE]
         return(tempvar)})
       change_df <- data.frame("Var"=result_vector$Variable,
                               "Val" = result_vector[["Original Value"]],
@@ -363,7 +363,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE ignoreNULL = TRUE
   
   observeEvent(input$btn_edit_varphys,{
     # print("## 16 ##")
@@ -375,7 +375,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
                                        param_vars,input$sel_physio_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE ignoreNULL = TRUE
   
   observeEvent(input$btn_new_varchem,{
     # print("## 17 ##")
@@ -386,7 +386,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE ignoreNULL = TRUE
   
   observeEvent(input$btn_edit_varchem,{
     # print("## 18 ##")
@@ -398,7 +398,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","edit",
                                        param_vars,input$sel_chem_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE ignoreNULL = TRUE
   
   observeEvent(input$btn_new_varexpo,{
     # print("## 19 ##")
@@ -409,7 +409,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE ignoreNULL = TRUE
   
   observeEvent(input$btn_edit_varexpo,{
     # print("## 20 ##")
@@ -421,7 +421,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
                                        param_vars,input$sel_expo_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE ignoreNULL = TRUE
   
   observe({
     # print("## 21 ##")
@@ -559,7 +559,7 @@ shinyServer(function(input, output, session) {
                                      physiovarid,chemvarid,
                                      expovarid,
                                      sim_start,sim_dur,dur_units,mc_num),
-                             simplify = T),
+                             simplify = TRUE,
                      sep = " ",collapse = "")
       #print(query)
       projectDbUpdate(query)
@@ -1286,11 +1286,11 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     # print("## 34 ##")
     if(input$menu=="stop"){
       shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close Application",
-                                   "Any changes will not be saved. Proceed?",type = "info",danger_mode = T)
+                                   "Any changes will not be saved. Proceed?",type = "info",danger_mode = TRUE
 
     }else if(input$menu == "save"){
       shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
-                                      "Unsaved changes will be lost. Proceed?",type = "info",danger_mode = T)
+                                      "Unsaved changes will be lost. Proceed?",type = "info",danger_mode = TRUE
     }
     
   })

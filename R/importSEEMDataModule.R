@@ -10,7 +10,7 @@ importSEEMDataUI <- function(namespace){
    
     uiOutput(ns("fltr_ui")),
     actionButton(ns("get_list"),"Get Selected Chemical List"),
-    pickerInput(ns("chems"),"Select Chemicals to Import",choices = c(""),multiple = T),
+    pickerInput(ns("chems"),"Select Chemicals to Import",choices = c(""),multiple = TRUE,
     checkboxGroupButtons(ns("data2add"),"Select Estimates to Import",
                          choices = c("Population Median"="Total_Median",
                                      "Population Upper 95th Percentile"="Total_Upper95")),

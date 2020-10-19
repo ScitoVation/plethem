@@ -16,7 +16,7 @@ httkCalcOralEqDose <- function(){
         pickerInput("chem_list","Select Chemical",
                     choices = NULL,
                     options = list(size = 2,
-                                   'live-search'= T),
+                                   'live-search'= TRUE,
                     width = validateCssUnit("90%")),
         numericInput("quantile","Quantile",0.5,min = 0,max =1,
                      validateCssUnit("90%")),
@@ -49,7 +49,7 @@ httkCalcOralEqDose <- function(){
       chem_cas <- input$chem_list
       quantile <- input$quantile
       oral_eq <- httk::calc_mc_oral_equiv(ivc,chem.cas = chem_cas,
-                               which.quantile = quantile,suppress.messages = T)
+                               which.quantile = quantile,suppress.messages = TRUE
       stopApp(returnValue = oral_eq)
     })
 

@@ -13,13 +13,13 @@ saveRestoreParameterSetUI <- function(namespace){
       column(6,
              shinyWidgets::actionGroupButtons(c(ns("saveall"),ns("savesel")),
                                                 c("Save All","Save Selected"),
-                                                direction = "horizontal",fullwidth = T )
+                                                direction = "horizontal",fullwidth = TRUE)
       ),
 
       column(6,
              shinyWidgets::actionGroupButtons(c(ns("restoreall"),ns("restoresel")),
                                               c("Restore All","Restore Selected"),
-                                              direction = "horizontal",fullwidth = T )
+                                              direction = "horizontal",fullwidth = TRUE)
              )
     )
 
@@ -62,7 +62,7 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
     param_data <- data.frame(matrix(ncol = 4, nrow = 0))
     sendSweetAlert(session,"No changes detected",
                    "The user interface data mataches the set data. No changes were detected.",closeOnClickOutside = F,
-                   showCloseButton = T)
+                   showCloseButton = TRUE
     removeModal()
 
   }else{
@@ -123,7 +123,7 @@ saveRestoreParameterSet <- function(input,output,session,UI_values,set_values,pa
 
 
     return(return_data)
-  },ignoreInit = TRUE,ignoreNULL = T)
+  },ignoreInit = TRUE,ignoreNULL = TRUE
   }
 
   return(returnValues$retData)

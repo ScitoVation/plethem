@@ -51,7 +51,7 @@ preprocessUIData<- function(val){
                                                              c(val$sel_msunit,val$sel_cyunit),
                                                              org,age,liver_wt,
                                                              km,mpcppgl,
-                                                             return_total = T),
+                                                             return_total = TRUE,
                          "hep_s9"=calculateScaledS9Clearance(val$num_s9cl,val$sel_s9unit,
                                                              org,age,liver_wt,
                                                              km,mpcppgl),
@@ -127,7 +127,7 @@ preprocessUIData<- function(val){
 # @param return_total logical, type of value to be returned,
 # @return  Total scaled invivo clearance in L/h if return_total is TRUE, else a named list of individual clearances
 calculateScaledSCClearance <- function(clearance,units,organism="human",
-                                       age,liver_wt,km,mpcppgl = list(),return_total = T){
+                                       age,liver_wt,km,mpcppgl = list(),return_total = TRUE{
   if (length(mpcppgl) == 0){
     # get MPPGL and CPPGL
     if (organism == "human"){
@@ -248,7 +248,7 @@ calculateScaledWholeHepClearance <- function(clearance,units,liver_wt,hpgl,km = 
 # @return  Total scaled invivo clearance in L/h if return_total is TRUE, else a named list of individual clearances
 
 calculateRecombClearance <- function(clearance,organism,age,
-                                     liver_wt,cyp_data,return_total = T){
+                                     liver_wt,cyp_data,return_total = TRUE{
   # get a vector of enzyme names
   cyp_names <- cyp_data[["name"]]
   # get a list of enzyme location

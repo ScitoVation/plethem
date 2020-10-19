@@ -350,7 +350,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
         #          fluidPage(
         #            fluidRow(
         #              actionBttn(ns("btn_new_chem"),NULL,icon = icon("plus"),
-        #                         style = "material-flat",size = "xs",block = T)
+        #                         style = "material-flat",size = "xs",block = TRUE
         #            )
         #          )
         #
@@ -412,7 +412,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
         updateNumericInput(session,"num_km",value = as.numeric(km))
         updateNumericInputIcon(session,"num_mw",value = as.numeric(mw))
       }
-    },ignoreInit = T,ignoreNULL = T,priority = 10)
+    },ignoreInit = TRUEignoreNULL = TRUEpriority = 10)
 
 
     # On Organism Change
@@ -446,7 +446,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
         updateNumericInput(session,"num_ql",value =0.5709)
         updateNumericInputIcon(session,"num_gfr",value =0.228)
       }
-    },ignoreInit = T,priority = 10)
+    },ignoreInit = TRUEpriority = 10)
 
 
   }else{
@@ -521,9 +521,9 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
   cypdata[["Ontogeny"]]<- round(cypdata[["Ontogeny"]],0)
   output$cypDb <- DT::renderDT(DT::datatable(cypdata,
                                              caption = "CYP Data",
-                                             rownames = NULL,autoHideNavigation = T,editable = T,
+                                             rownames = NULL,autoHideNavigation = TRUEeditable = TRUE
                                              colnames = c("Name","Abundance","ISEF","fumic","Location","Ontogeny"),
-                                             options= list(dom = "tp",pageLength = 4)),server = T)
+                                             options= list(dom = "tp",pageLength = 4)),server = TRUE
   # download handler for CSV file template
   output$cypCl_temp <- downloadHandler(
     filename= function(){return("Cyp_template.csv")},
@@ -559,7 +559,7 @@ HT_IVIVE <- function(input,output,session,vals="",type = "",chem_list = list(),i
                                              caption = "Clearence in uL/min/pmol",
                                              rowname = NULL,
                                              options= list(dom = "tp",pageLength = 4)),
-                               server = T
+                               server = TRUE
   )
 
 

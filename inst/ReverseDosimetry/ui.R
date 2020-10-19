@@ -51,8 +51,8 @@ shinyUI(
       id = 'navbar',
       position = 'fixed-top',
       windowTitle = 'PLETHEM: Reverse Dosimetry',
-      fluid = T,
-      collapsible = T,
+      fluid = TRUE
+      collapsible = TRUE
       tabPanel(
         title = 'Inputs',
         icon = icon('line-chart'),

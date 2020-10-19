@@ -42,7 +42,7 @@ importAllExposureDataUI <- function(namespace){
                            #   DT::DTOutput("expo_table")
                            # ),
                            pickerInput(ns("sel_export"),"Select exposures to export",
-                                       choices = NULL,multiple = T),
+                                       choices = NULL,multiple = TRUE,
                            numericInput(ns("TRA_MW"), "Molecular Weight", 1),
                            numericInput(ns("TRA_inhalation_week"), "Inhalation Doses Per Week", 1),
                            checkboxInput(ns("TRA_repeated_oral"), "Repeated Oral Dose")),
@@ -51,10 +51,10 @@ importAllExposureDataUI <- function(namespace){
                   tabPanel(title = "SEEM Data",
                            shinyBS::bsButton(ns("btn_SEEM_data_file"),
                                              "Select SEEM Data File",
-                                             block = T),
+                                             block = TRUE,
                            uiOutput(ns("fltr_ui")),
                            actionButton(ns("get_list"),"Get Selected Chemical List"),
-                           pickerInput(ns("chems"),"Select Chemicals to Import",choices = c(""),multiple = T),
+                           pickerInput(ns("chems"),"Select Chemicals to Import",choices = c(""),multiple = TRUE,
                            checkboxGroupButtons(ns("data2add"),"Select Estimates to Import",
                                                 choices = c("Population Median"="Total_Median",
                                                             "Population Upper 95th Percentile"="Total_Upper95"))),
@@ -63,14 +63,14 @@ importAllExposureDataUI <- function(namespace){
                   tabPanel(title = "SHEDS Data",
                            shinyBS::bsButton(ns("btn_SHEDS_data_file"),
                                              "Select SHEDS Data Folder",
-                                             block = T),
+                                             block = TRUE,
                            selectInput(ns("sel_scene"),"Select Scenario",choices = NULL),
-                           pickerInput(ns("sel_chem"),"Select Chemical",choices = NULL,multiple = T),
+                           pickerInput(ns("sel_chem"),"Select Chemical",choices = NULL,multiple = TRUE,
                            pickerInput(ns("sel_cohort"),"Select Cohort",
                                        choices = c("Population"="Total",
                                                    "Males"="Males",
                                                    "Females"="Females"),
-                                       multiple = T)
+                                       multiple = TRUE
                            # ,
                            # checkboxGroupButtons(ns("ch_expotype"),"Select Exposures",
                            #                      choices = c("Oral","Inhalation"),#,"Dermal"
@@ -78,7 +78,7 @@ importAllExposureDataUI <- function(namespace){
                            #                        yes = icon("ok", 
                            #                                   lib = "glyphicon"))),
                            # prettyCheckbox(ns("ch_var"),"Create Variability Sets from Data",
-                           #                fill = T,status = "info",bigger = T)
+                           #                fill = TRUEstatus = "info",bigger = TRUE
       ),
       tabPanel(title = "ConsExpo",
                fileInput(ns("consExpo_upload"),
@@ -151,17 +151,17 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     
 
     output$oralDT <- DT::renderDT(DT::datatable(oral_tble(),
-                                                autoHideNavigation = T,
-                                                fillContainer = T,rownames = F),server = T)
+                                                autoHideNavigation = TRUE
+                                                fillContainer = TRUErownames = F),server = TRUE
     output$inhDT <- DT::renderDT(DT::datatable(inh_tble(),
-                                               autoHideNavigation = T,
-                                               fillContainer = T,rownames = F),server = T)
+                                               autoHideNavigation = TRUE
+                                               fillContainer = TRUErownames = F),server = TRUE
     output$dwDT <- DT::renderDT(DT::datatable(dw_tble(),
-                                              autoHideNavigation = T,
-                                              fillContainer = T,rownames = F),server = T)
+                                              autoHideNavigation = TRUE
+                                              fillContainer = TRUErownames = F),server = TRUE
     output$ivDT <- DT::renderDT(DT::datatable(iv_tble(),
-                                              autoHideNavigation = T,
-                                              fillContainer = T,rownames = F),server = T)
+                                              autoHideNavigation = TRUE
+                                              fillContainer = TRUErownames = F),server = TRUE
     batch_values$oral_tble <- oral_tble
     batch_values$inh_tble <- inh_tble
     batch_values$dw_tble <- dw_tble
@@ -303,7 +303,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     
   })
   
-  fpath_seem <- eventReactive(input$btn_SEEM_data_file,ignoreInit = T,{
+  fpath_seem <- eventReactive(input$btn_SEEM_data_file,ignoreInit = TRUE{
     fpath <- getFileFolderPath(type = "file","Select SEEM Database","*.sqlite")
     return(fpath)
   })
@@ -315,7 +315,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
     vals_table_name <- "Exposure"
     id_num <- getNextID(set_table_name)
     if(length(fpath)==0){
-      sendSweetAlert(session,"No File Selected",type = "error",closeOnClickOutside = T)
+      sendSweetAlert(session,"No File Selected",type = "error",closeOnClickOutside = TRUE
       
     }else{
       query <- "SELECT Category,catid from ChemData;"
@@ -354,7 +354,7 @@ importAllExposureData <- function(input,output,session,expo_name_df){
   observe({
     path <- fpath_sheds() 
     if(length(path)==0){
-      sendSweetAlert(session,"No Folder Selected",type = "error",closeOnClickOutside = T)
+      sendSweetAlert(session,"No Folder Selected",type = "error",closeOnClickOutside = TRUE
     }else{
       ns <- session$ns
       returnValues <- reactiveValues()
