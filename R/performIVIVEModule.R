@@ -103,10 +103,10 @@ performIVIVEUI<- function(namespace){
                                    ),
                           fluidRow(
                             column(4,
-                                   shinyBS::bsButton(ns("btn_reset_metab"),"Reset All Clearance Values",block = T)
+                                   shinyBS::bsButton(ns("btn_reset_metab"),"Reset All Clearance Values",block = TRUE)
                                    ),
                             column(8,
-                                   pickerInput(ns("sel_metabtype"),inline = T,label = "Metabolism Type",
+                                   pickerInput(ns("sel_metabtype"),inline = TRUE,label = "Metabolism Type",
                                                   choices = c("Saturable"="m1","Linear"="m2"))
                             )
                           )
@@ -171,7 +171,7 @@ performIVIVE <- function(input,output,session,km){
                                                        c(input$sel_msunit,input$sel_cyunit),
                                                        org,age,liver_wt,
                                                        km,mpcppgl,
-                                                       return_total = T),
+                                                       return_total = TRUE),
                    "hep_s9"=calculateScaledS9Clearance(input$num_s9cl,input$sel_s9unit,
                                                        org,age,liver_wt,
                                                        km,mpcppgl),

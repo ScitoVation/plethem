@@ -7,19 +7,19 @@ importShedsDataUI <- function(namespace){
   showModal(modalDialog(
     title = "Import SHEDS Data",
     selectInput(ns("sel_scene"),"Select Scenario",choices = NULL),
-    pickerInput(ns("sel_chem"),"Select Chemical",choices = NULL,multiple = T),
+    pickerInput(ns("sel_chem"),"Select Chemical",choices = NULL,multiple = TRUE),
     pickerInput(ns("sel_cohort"),"Select Cohort",
                 choices = c("Population"="Total",
                             "Males"="Males",
                             "Females"="Females"),
-                multiple = T),
+                multiple = TRUE),
     checkboxGroupButtons(ns("ch_expotype"),"Select Exposures",
                          choices = c("Oral","Inhalation"),#,"Dermal"
                          checkIcon = list(
                            yes = icon("ok", 
                                       lib = "glyphicon"))),
     prettyCheckbox(ns("ch_var"),"Create Variability Sets from Data",
-                   fill = T,status = "info",bigger = T),
+                   fill = TRUE,status = "info",bigger = TRUE),
     footer = tagList(
       actionButton(ns("import"),"Import"),
       modalButton("Dismiss")
@@ -59,7 +59,7 @@ importShedsData <- function(input,output,session,path,expo_name_df){
     chem_options <- gsub(".csv","",gsub("CAS_","",chem_list))
     updatePickerInput(session,"sel_chem",choices = chem_options)
   },
-  ignoreInit = T,ignoreNULL = T)
+  ignoreInit = TRUE,ignoreNULL = TRUE)
   
   observeEvent(input$import,{
     chem_list <- input$sel_chem

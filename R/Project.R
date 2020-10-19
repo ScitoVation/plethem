@@ -19,7 +19,7 @@ interactivePBPK <- function(name = "rapidPBPK"){
 
   }
   clearProjectDb()
-  shiny::runApp(system.file(name,package="plethem"),launch.browser = T)
+  shiny::runApp(system.file(name,package="plethem"),launch.browser = TRUE)
 }
 #' Launch Reverse Dosimetry Interface
 #' @description Used to launch the reverse dosimetry UI. This UI allows the user to perform reverse dosimetry if they have already run Monte Carlo Anlaysis outside of PLETHEM.
@@ -30,7 +30,7 @@ interactivePBPK <- function(name = "rapidPBPK"){
 #' }
 #' @export
 interactiveReverseDosimetry <- function(){
-  shiny::runApp(system.file("ReverseDosimetry",package = "plethem"),launch.browser = T)
+  shiny::runApp(system.file("ReverseDosimetry",package = "plethem"),launch.browser = TRUE)
 }
 
 #' Launch HT-IVIVE interface
@@ -42,7 +42,7 @@ interactiveReverseDosimetry <- function(){
 #' }
 #' @export
 interactiveHT <- function(name = "HT-IVIVE"){
-  shiny::runApp(system.file(name,package = "plethem"),launch.browser = T)
+  shiny::runApp(system.file(name,package = "plethem"),launch.browser = TRUE)
 }
 
 #' Save the current project to a location
@@ -60,8 +60,8 @@ saveProject <- function(){
   # get all the table names from the database
   query <- "SELECT name FROM sqlite_master WHERE type = 'table';"
   table_names_list <- projectDbSelect(query)$name
-  #print(which(table_names_list == "sqlite_sequence",arr.ind = T))
-  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = T)]
+  #print(which(table_names_list == "sqlite_sequence",arr.ind = TRUE))
+  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = TRUE)]
   for (x in table_names_list){
     assign(x,projectReadTable(x))
   }
@@ -102,16 +102,16 @@ newProject <- function(name="new_project", save_path= "",type = "PBPK", model = 
   if(runUI){
     # run the appropriate UI
     if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
-      shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
+      shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = TRUE)
     }
     if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
-      shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
+      shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = TRUE)
     }
     if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
-      shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = T)
+      shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = TRUE)
     }
     if (type == "PBPK" && model == "fishPBPK" && mode == "MC"){
-      shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = T)
+      shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = TRUE)
     }
   }
   saveProject()
@@ -129,7 +129,7 @@ newProject <- function(name="new_project", save_path= "",type = "PBPK", model = 
 #' loadProject()
 #' }
 #' @export
-loadProject <- function(file_path = "",runUI = T){
+loadProject <- function(file_path = "",runUI = TRUE){
   if(file_path == ""){
     file_path <- getFileFolderPath(type = "file",
                                    caption = "Select PLETHEM Project",
@@ -148,24 +148,24 @@ loadProject <- function(file_path = "",runUI = T){
   # get all the table names from the database
   query <- "SELECT name FROM sqlite_master WHERE type = 'table';"
   table_names_list <- projectDbSelect(query)$name
-  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = T)]
+  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = TRUE)]
   # can use apply here but tables are small and for is more readable
   for (x in table_names_list){
     projectWriteTable(eval(parse(text = x)),x)
   }
-  if (runUI == T){
+  if (runUI == TRUE){
     if (type == "PBPK" && model == "rapidPBPK" && mode == "FD"){
-      shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = T)
+      shiny::runApp(system.file("rapidPBPK",package="plethem"),launch.browser = TRUE)
     }
     if (type == "PBPK" && model == "rapidPBPK" && mode == "MC"){
 
-      shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = T)
+      shiny::runApp(system.file("rapidPBPK_pop",package="plethem"),launch.browser = TRUE)
     }
     if(type=="PBPK"&& model == "httk_pbtk" && mode == "MC"){
-      shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = T)
+      shiny::runApp(system.file("httk_pbtk",package="plethem"),launch.browser = TRUE)
     }
     if (type == "PBPK" && model == "fishPBPK" && mode == "MC"){
-      shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = T)
+      shiny::runApp(system.file("fishPBPK_pop",package="plethem"),launch.browser = TRUE)
     }
   }
 
@@ -179,7 +179,7 @@ loadProject <- function(file_path = "",runUI = T){
 clearProjectDb <- function(){
   query <- "SELECT name FROM sqlite_master WHERE type = 'table';"
   table_names_list <- projectDbSelect(query)$name
-  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = T)]
+  table_names_list <- table_names_list[which(table_names_list != "sqlite_sequence",arr.ind = TRUE)]
   # can use apply here but tables are small and for is more readable
   for (x in table_names_list){
     projectDbUpdate(sprintf("DELETE FROM %s ;",x))

@@ -3,7 +3,7 @@
 #' @param file_path path to the batch chemical csv file
 #'@export
 readBatchChemicalFile<- function(file_path){
-  ret_data <- read.csv(file_path,header = T,stringsAsFactors = FALSE)
+  ret_data <- read.csv(file_path,header = TRUE,stringsAsFactors = FALSE)
   return(as.data.frame(ret_data))
 }
 

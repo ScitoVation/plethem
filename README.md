@@ -10,7 +10,7 @@ While installing Rtools make sure the box that says "Add Rtools to System Path" 
 ### Installing the package
 Open Rstudio once all of the above are installed. On the Rstudio console type the following command
 ---
-  >install.packages("devtools",dependencies = T)
+  >install.packages("devtools",dependencies = TRUE)
   
 This will install the package "devtools". This package is needed to install PLETHEM from the repos
 Then type one of the following commands

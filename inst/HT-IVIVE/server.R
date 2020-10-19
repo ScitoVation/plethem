@@ -62,7 +62,7 @@ shinyServer(function(input,output,session){
                       targets = 0,
                       visible = FALSE
                     ))
-                  )),server = T)
+                  )),server = TRUE)
   # scientific_notation_js <- c("function(row,data){",
   #                             "for (i=6,i< data.length,i++){",
   #                             "$('td:eq('+i+')',row).html(data[i].toExponential(2);",
@@ -76,7 +76,7 @@ shinyServer(function(input,output,session){
                     charset = "utf-8",
                     buttons = c("copy","csv","colvis"))#,
                     #rowCallback = DT::JS(scientific_notation_js))
-                    ),server = T)
+                    ),server = TRUE)
     # ,extensions = "Buttons",
     #               options = list(buttons=c('copy'),
     #                              dom = 'Bfrtip'))

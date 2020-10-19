@@ -766,7 +766,7 @@ shinyUI(fluidPage(
              tabPanel("Model Setup",value = "setup",
                       icon = icon("flask"),
                       fluidRow(
-                        progressBar(id = "pb",value = 0, status = "success",striped = T)
+                        progressBar(id = "pb",value = 0, status = "success",striped = TRUE)
                       ),
                       tabsetPanel(id= "modelSetupTabs", type = "tabs",
                                   tabPanel("Exposure",value = "expo",
@@ -795,7 +795,7 @@ shinyUI(fluidPage(
                                                       selectizeInput("sel_expo",NULL,
                                                                      choices = NULL,
                                                                      options= list(placeholder = "Exposure Parameter Set",
-                                                                                   openOnFocus = T))),
+                                                                                   openOnFocus = TRUE))),
                                                column(width = 5, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
                                                         c("btn_import_expo","btn_sverest_expo","btn_saveas_expo"),
@@ -836,7 +836,7 @@ shinyUI(fluidPage(
                                                       selectizeInput("sel_chem",NULL,
                                                                      choices = NULL,
                                                                      options= list(placeholder = "Chemicals",
-                                                                                   openOnFocus = T))),
+                                                                                   openOnFocus = TRUE))),
                                                column(width = 5, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
                                                         c("btn_import_chem","btn_sverest_chem","btn_saveas_chem"),
@@ -879,7 +879,7 @@ shinyUI(fluidPage(
                                                       selectizeInput("sel_physio",NULL,
                                                                      choices = NULL,
                                                                      options= list(placeholder = "Physiological Parameter Set",
-                                                                                   openOnFocus = T))),
+                                                                                   openOnFocus = TRUE))),
                                                column(width = 5, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
                                                         c("btn_import_physio","btn_sverest_physio","btn_saveas_physio"),
@@ -930,7 +930,7 @@ shinyUI(fluidPage(
                                                       selectizeInput("sel_adme",NULL,
                                                                      choices = NULL,
                                                                      options= list(placeholder = "ADME",
-                                                                                   openOnFocus = T))),
+                                                                                   openOnFocus = TRUE))),
                                                column(width = 4, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
                                                         c("btn_sverest_adme","btn_saveas_adme"),
@@ -1037,10 +1037,10 @@ shinyUI(fluidPage(
                                                                         )
                                                                       ),
                                                                       fluidRow(
-                                                                        dashboardPage(dashboardHeader(disable = T),
+                                                                        dashboardPage(dashboardHeader(disable = TRUE),
                                                                                       dashboardSidebar(sidebarMenu(id = "dist_comps",
                                                                                                                    menuItem("Fat",
-                                                                                                                            tabName = "fat",selected = T),
+                                                                                                                            tabName = "fat",selected = TRUE),
                                                                                                                    menuItem("Skin",
                                                                                                                             tabName = "skn"),
                                                                                                                    menuItem("Muscle",
@@ -1192,7 +1192,7 @@ shinyUI(fluidPage(
                                                                         column(4,
                                                                                bsButton("btn_metab_upload",
                                                                                         "Upload Age-Based Metabolism Data",
-                                                                                        block = T)
+                                                                                        block = TRUE)
                                                                         ),
                                                                         column(6,
                                                                                selectizeInput("sel_metabfiles",choices = NULL,label = NULL)
@@ -1259,11 +1259,11 @@ shinyUI(fluidPage(
                                   ),
                                   tabPanel("Uncertainty and Variability", value = "variability",
                                            dashboardPage(
-                                             dashboardHeader(disable = T),
+                                             dashboardHeader(disable = TRUE),
                                              dashboardSidebar(
                                                shinydashboard::sidebarMenu(
                                                  menuItem("Chemical",
-                                                          tabName = "var_chem",selected = T),
+                                                          tabName = "var_chem",selected = TRUE),
                                                  menuItem("Exposure",
                                                           tabName = "var_expo"),
                                                  menuItem("Physiological",
@@ -1282,14 +1282,14 @@ shinyUI(fluidPage(
                                                                 selectizeInput("sel_physio_var",NULL,
                                                                                choices = NULL,
                                                                                options= list(placeholder = "Population Parameter Set",
-                                                                                             openOnFocus = T))),
+                                                                                             openOnFocus = TRUE))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
                                                                   c("btn_new_varphys","btn_import_varphys"),#,"btn_edit_varphys"
                                                                   c("New","Import"),#,"Edit"
                                                                   direction = "horizontal",
                                                                   status = "info",
-                                                                  fullwidth = T)
+                                                                  fullwidth = TRUE)
                                                          )
                                                        ),
                                                        fluidRow(
@@ -1304,14 +1304,14 @@ shinyUI(fluidPage(
                                                                 selectizeInput("sel_chem_var",NULL,
                                                                                choices = NULL,
                                                                                options= list(placeholder = "Chemical Parameter Set",
-                                                                                             openOnFocus = T))),
+                                                                                             openOnFocus = TRUE))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
                                                                   c("btn_new_varchem","btn_import_varchem"),#,"btn_edit_varchem"
                                                                   c("New","Import"),#,"Edit"
                                                                   direction = "horizontal",
                                                                   status = "info",
-                                                                  fullwidth = T)
+                                                                  fullwidth = TRUE)
                                                          )
                                                        ),
                                                        fluidRow(
@@ -1325,14 +1325,14 @@ shinyUI(fluidPage(
                                                                 selectizeInput("sel_expo_var",NULL,
                                                                                choices = NULL,
                                                                                options= list(placeholder = "Exposure Parameter Set",
-                                                                                             openOnFocus = T))),
+                                                                                             openOnFocus = TRUE))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
                                                                   c("btn_new_varexpo","btn_import_varexpo"),#,"btn_edit_varexpo"
                                                                   c("New","Import"),#,"Edit"
                                                                   direction = "horizontal",
                                                                   status = "info",
-                                                                  fullwidth = T)
+                                                                  fullwidth = TRUE)
                                                          )
                                                        ),
                                                        fluidRow(
@@ -1346,14 +1346,14 @@ shinyUI(fluidPage(
                                                                 selectizeInput("sel_adme_var",NULL,
                                                                                choices = NULL,
                                                                                options= list(placeholder = "ADME Parameter Set",
-                                                                                             openOnFocus = T))),
+                                                                                             openOnFocus = TRUE))),
                                                          column(width = 8, offset = 0,
                                                                 shinyWidgets::actionGroupButtons(
                                                                   c("btn_new_varadme","btn_import_varadme"),#,"btn_edit_varadme"
                                                                   c("New","Import"),#,"Edit"
                                                                   direction = "horizontal",
                                                                   status = "info",
-                                                                  fullwidth = T)
+                                                                  fullwidth = TRUE)
                                                          )
                                                        ),
                                                        fluidRow(
@@ -1377,7 +1377,7 @@ shinyUI(fluidPage(
                                                       selectizeInput("sel_biom",NULL,
                                                                      choices = NULL,
                                                                      options= list(placeholder = "Biomonitoring Data",
-                                                                                   openOnFocus = T))),
+                                                                                   openOnFocus = TRUE))),
                                                column(width = 4, offset = 0,
                                                       shinyWidgets::actionGroupButtons(
                                                         c("btn_new_biom"),#"btn_edit_biom",
@@ -1422,7 +1422,7 @@ shinyUI(fluidPage(
                                                       ),
                                                column(4,
                                                       actionGroupButtons(c("btn_new_sim","btn_run_sim"),status = "info",#"btn_edit_sim",
-                                                                         labels = c("New","Run"),fullwidth = T)#"Edit",
+                                                                         labels = c("New","Run"),fullwidth = TRUE)#"Edit",
                                                )
 
 
@@ -1505,7 +1505,7 @@ shinyUI(fluidPage(
                         column(
                           3,
                           actionGroupButtons(c("btn_dlHESI"),status = "btn btn-primary btn-block",
-                                             labels = c("Download Model Report"),fullwidth = T)
+                                             labels = c("Download Model Report"),fullwidth = TRUE)
                         )
                       ),
                       tabsetPanel(id = "Modeloutput", type = "tabs",

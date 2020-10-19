@@ -105,7 +105,7 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session,"sel_set_adme",choices = set_list)
   }
 
-  },ignoreNULL = T, ignoreInit = T)
+  },ignoreNULL = TRUE, ignoreInit = TRUE)
 
   # get global variables needed to run the model
 
@@ -623,7 +623,7 @@ shinyServer(function(input, output, session) {
                         tbl_nme,val,id_nme,id,var)
         return(temp)
       },
-      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = T)
+      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = TRUE)
       lapply(query_list,projectDbUpdate)
       saveProject()
 
@@ -639,7 +639,7 @@ shinyServer(function(input, output, session) {
         name_data <- adme_name_df
       }
       var_type <- sapply(result_vector$Variable,function(var){
-        tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = T)]
+        tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = TRUE)]
         return(tempvar)})
       change_df <- data.frame("Var"=result_vector$Variable,
                               "Val" = result_vector[["Original Value"]],
@@ -660,7 +660,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_edit_varphys,{
     if(input$sel_physio_var == ""){
@@ -677,7 +677,7 @@ shinyServer(function(input, output, session) {
     }
 
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_new_varchem,{
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
@@ -687,7 +687,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_edit_varchem,{
     if(input$sel_chem_var == ""){
@@ -703,7 +703,7 @@ shinyServer(function(input, output, session) {
                                          param_vars,input$sel_chem_var)
     }
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_new_varexpo,{
       param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
@@ -714,7 +714,7 @@ shinyServer(function(input, output, session) {
       parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
 
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_edit_varexpo,{
     if(input$sel_expo_var == ""){
@@ -729,7 +729,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
                                        param_vars,input$sel_expo_var)
     }
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
     observeEvent(input$btn_new_varadme,{
       param_names <- adme_name_df$Name[which(adme_name_df$Variability == "TRUE")]
@@ -739,7 +739,7 @@ shinyServer(function(input, output, session) {
       newEditVariabilityUI(ns)
       parameterSets$vardat <- callModule(newEditVariability,ns,"adme","new",param_vars)
       ### Variability Tab
-    },ignoreInit = T, ignoreNULL = T)
+    },ignoreInit = TRUE, ignoreNULL = TRUE)
 
     observeEvent(input$btn_edit_varadme,{
       if(input$sel_adme_var == ""){
@@ -754,7 +754,7 @@ shinyServer(function(input, output, session) {
         parameterSets$vardat <- callModule(newEditVariability,ns,"adme","edit",
                                            param_vars,input$sel_adme_var)
       }
-    },ignoreInit = T, ignoreNULL = T)
+    },ignoreInit = TRUE, ignoreNULL = TRUE)
     ### Variability Tab
 
 
@@ -940,7 +940,7 @@ shinyServer(function(input, output, session) {
           xaxis = list(title = x_label)
         )
     })
-  },ignoreInit = T,ignoreNULL = T)
+  },ignoreInit = TRUE,ignoreNULL = TRUE)
 
 
   ### This code chunk deals with updating pair using qsar models
@@ -1007,7 +1007,7 @@ shinyServer(function(input, output, session) {
     # if (expo_route=='inh'){
     #   hide
     # }
-  },ignoreNULL = T,ignoreInit = T)
+  },ignoreNULL = TRUE,ignoreInit = TRUE)
 
   # if no metabolite is selected, remove metabolite specific value from the
   # UI
@@ -1030,7 +1030,7 @@ shinyServer(function(input, output, session) {
                                                               rowname = NULL,editable = FALSE,
                                                               options= list(dom = "tp",pageLength = 5)),
                                                 2,digits = 4,mark = "" ),
-                                    server = T)
+                                    server = TRUE)
   metab_proxy <- DT::dataTableProxy("metab_tble",session)
 
   #Save current metabolism set.
@@ -1127,7 +1127,7 @@ shinyServer(function(input, output, session) {
 
                                                                  ),
                                                                  fluidRow(column(width = 12,
-                                                                                 shinyWidgets::radioGroupButtons("metab_type",justified = T,
+                                                                                 shinyWidgets::radioGroupButtons("metab_type",justified = TRUE,
                                                                                                                  "Select Metabolism Type",
                                                                                                                  choices = c("Saturable Hepatic"="m1","Linear Hepatic"="m2",
                                                                                                                              "Plasma Clearance"="m3","Gut Clearance"="m4"))
@@ -1176,7 +1176,7 @@ shinyServer(function(input, output, session) {
   # The user's data, parsed into a data frame
   metab_upload_tble <- reactive({
     validate(need(input$metab_csv,"No dataset uploaded"))
-    ret_dat <- read.csv(metabFile()$datapath,header = T,stringsAsFactors = FALSE)
+    ret_dat <- read.csv(metabFile()$datapath,header = TRUE,stringsAsFactors = FALSE)
     return(ret_dat)
   })
   output$metab_upload_tble <- DT::renderDT(DT::formatRound(DT::datatable(metab_upload_tble(),
@@ -1184,7 +1184,7 @@ shinyServer(function(input, output, session) {
                                                                      rowname = NULL,editable = FALSE,
                                                                      options= list(dom = "tp",pageLength = 5)),
                                                        2,digits = 4,mark = "" ),
-                                           server = T)
+                                           server = TRUE)
 
   observeEvent(input$metab_upload_done,{
     if(is.null(input$metab_csv)){
@@ -2290,7 +2290,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         footer = tagList(
           actionButton("btn_dlHesi","Download PBPK Report"),
           modalButton("Dismiss")
-        ), size = c("m"), easyClose = FALSE, fade = T))
+        ), size = c("m"), easyClose = FALSE, fade = TRUE))
 
   })
 
@@ -2395,14 +2395,14 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     if(input$menu=="stop"){
       shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close PBPK Application?",
                                    "Any changes made to the project since the last save will be lost. Consider saving the project before closing the application.",
-                                   type = "question",danger_mode = T)
+                                   type = "question",danger_mode = TRUE)
       updateTabsetPanel(session,"menu","home")
 
     }else if(input$menu == "save"){
       name <- projectDbSelect(sprintf("Select Name from Project;"))$name
       if(length(name)>0){
         shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
-                                        "Save project in its current state?",type = "question",danger_mode = T)
+                                        "Save project in its current state?",type = "question",danger_mode = TRUE)
       }else{
         shinyWidgets::sendSweetAlert(session,"Nothing to save",
                                      text = "No project is currently open",
@@ -2414,7 +2414,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }else if(input$menu == "load"){
       shinyWidgets::confirmSweetAlert(session,"load_dialog","Load Existing Project",
                                       "Load existing project? Unsaved changes to the current project will be lost",
-                                      type = "question",danger_mode = T)
+                                      type = "question",danger_mode = TRUE)
       updateTabsetPanel(session,"menu","home")
     }else if(input$menu == "new"){
       if(.Platform$OS.type == "windows"){
@@ -2459,7 +2459,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
           footer = tagList(
             actionButton("loadProjectFile","Load Project"),
             modalButton("Dismiss")
-          ), size = c("m"), easyClose = FALSE, fade = T))
+          ), size = c("m"), easyClose = FALSE, fade = TRUE))
     }
     # else{
     #   print('denied')
@@ -2522,7 +2522,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     }else{
       if(input$new_dialog){
-        path <- getFileFolderPath("file",new_flag = T)
+        path <- getFileFolderPath("file",new_flag = TRUE)
         if(is.na(path)){
           sendSweetAlert(session,NULL,"No folder selected",
                          type = "error")
@@ -3301,7 +3301,7 @@ runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,
                          #dyn.unload("../../src/plethem.dll")
                          dyn.unload(system.file("libs",.Platform$r_arch,paste0("plethem",.Platform$dynlib.ext),package = "plethem"))
                          modelOutput <- as.data.frame(modelOutput)
-                         max_vals <- sapply(modelOutput,max,na.rm = T)
+                         max_vals <- sapply(modelOutput,max,na.rm = TRUE)
                          return(max_vals)
                        }
   stopCluster(c1)
@@ -3358,7 +3358,7 @@ newEditBiomoniteringDataUI <- function(namespace,biomid=NULL){
                                 selected = selected_set$tissue,
                                 status = "info",
                                 checkIcon = list("yes"=icon("ok",lib = "glyphicon")),
-                                justified = T,
+                                justified = TRUE,
                                 width = "100%"
                               )
                             ),
@@ -3371,7 +3371,7 @@ newEditBiomoniteringDataUI <- function(namespace,biomid=NULL){
                                 selected = selected_set$chem,
                                 status = "info",
                                 checkIcon = list("yes"=icon("ok",lib = "glyphicon")),
-                                justified = T,
+                                justified = TRUE,
                                 width = "100%"
                               )
                             ),
@@ -3426,7 +3426,7 @@ newEditBiomoniteringData <- function(input,output,session,type = "new",biomid = 
       choices = list("ng/L"="ngl","mg/L"="mgl","\u00B5g/day"="ugd")
     }
     updateSelectizeInput(session,"sel_biomdata_units",choices = choices)
-  },ignoreInit = T,ignoreNULL = T)
+  },ignoreInit = TRUE,ignoreNULL = TRUE)
   returnValues$savedat<- eventReactive(input$ok,{
     name <- input$txt_biom_name
     descrp <- input$txt_biom_descrp
@@ -3699,7 +3699,7 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                       "Create Simulation")
                         ),
                         size = "l",
-                        fade = T))
+                        fade = TRUE))
 }
 createSimulation <- function(input,output,session,type="new",sim_settings){
   returnValues <- reactiveValues()
@@ -3766,7 +3766,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
 
     }
 
-  },ignoreNULL = T, ignoreInit = T)
+  },ignoreNULL = TRUE, ignoreInit = TRUE)
 
   #update the exposure extrapolation dropdown to exclude exposure set selected in the
   observeEvent(input$sel_sim_expo,{
@@ -3818,7 +3818,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                    sim_dur,
                                    dur_units,
                                    simid),
-                           simplify = T),
+                           simplify = TRUE),
                    sep = " ",collapse = " ")
     projectDbUpdate(query)
     # update the simulation with inputs needed by montecarlo workflow
@@ -3840,7 +3840,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                      ifelse(is.na(admevarid),0,admevarid),
                                      mcruns,
                                      simid),
-                             simplify = T),
+                             simplify = TRUE),
                      sep=" ",collapse = " ")
       projectDbUpdate(query)
 

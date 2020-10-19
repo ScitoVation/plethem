@@ -365,7 +365,7 @@ shinyServer(function(input, output, session) {
                         tbl_nme,val,id_nme,id,var)
         return(temp)
       },
-      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = T)
+      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = TRUE)
       lapply(query_list,projectDbUpdate)
 
     }else if (ops_type == "restore"){
@@ -378,7 +378,7 @@ shinyServer(function(input, output, session) {
         name_data <- expo_name_df
       }
       var_type <- sapply(result_vector$Variable,function(var){
-        tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = T)]
+        tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = TRUE)]
         return(tempvar)})
       change_df <- data.frame("Var"=result_vector$Variable,
                               "Val" = result_vector[["Original Value"]],
@@ -388,7 +388,7 @@ shinyServer(function(input, output, session) {
       updateUIInputs(session,change_df)
       # a <- mapply(function(var,org){
       #   print(var)
-      #   tempvar <- name_data$ParamType[which(name_data$Var == var, arr.ind = T)]
+      #   tempvar <- name_data$ParamType[which(name_data$Var == var, arr.ind = TRUE)]
       #   return(var,tempvar)
       # },table_data$Variable,table_data$Original.Value)
 
@@ -403,7 +403,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_edit_varphys,{
     param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
@@ -414,7 +414,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
                                        param_vars,input$sel_physio_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_new_varchem,{
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
@@ -424,7 +424,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_edit_varchem,{
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
@@ -435,7 +435,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","edit",
                                        param_vars,input$sel_chem_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_new_varexpo,{
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
@@ -445,7 +445,7 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observeEvent(input$btn_edit_varexpo,{
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
@@ -456,7 +456,7 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
                                        param_vars,input$sel_expo_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
 
   observe({
     result_vector <- parameterSets$vardat
@@ -618,7 +618,7 @@ shinyServer(function(input, output, session) {
                                                               rowname = NULL,editable = FALSE,
                                                               options= list(dom = "tp",pageLength = 5)),
                                                 2,digits = 4,mark = "" ),
-                                    server = T)
+                                    server = TRUE)
   metab_proxy <- DT::dataTableProxy("metab_tble",session)
 
   #Save current metabolism set.
@@ -715,7 +715,7 @@ shinyServer(function(input, output, session) {
 
                                                                  ),
                                                                  fluidRow(column(width = 6,
-                                                                                 shinyWidgets::radioGroupButtons("metab_type",justified = T,
+                                                                                 shinyWidgets::radioGroupButtons("metab_type",justified = TRUE,
                                                                                                                  "Select Meatbolism Type",
                                                                                                                  choices = c("Linear"="m2"))
                                                                  )
@@ -766,7 +766,7 @@ shinyServer(function(input, output, session) {
   metab_upload_tble <- reactive({
     validate(need(input$metab_csv,"No dataset uploaded"))
     #if(!(is.null(input$metab_csv))){
-    ret_dat <- read.csv(metabFile()$datapath,header = T,stringsAsFactors = FALSE)
+    ret_dat <- read.csv(metabFile()$datapath,header = TRUE,stringsAsFactors = FALSE)
     #}else{
     # ret_dat <- data.frame("Age"=c(25),"Clearance"=c(0),stringsAsFactors = FALSE)
     #}
@@ -777,7 +777,7 @@ shinyServer(function(input, output, session) {
                                                                      rowname = NULL,editable = FALSE,
                                                                      options= list(dom = "tp",pageLength = 5)),
                                                        2,digits = 4,mark = "" ),
-                                           server = T)
+                                           server = TRUE)
 
   observeEvent(input$metab_upload_done,{
     if(is.null(input$metab_csv)){
@@ -872,7 +872,7 @@ shinyServer(function(input, output, session) {
                                      physiovarid,chemvarid,
                                      expovarid,
                                      sim_start,sim_dur,mc_num),
-                             simplify = T),
+                             simplify = TRUE),
                      sep = " ",collapse = "")
       projectDbUpdate(query)
       sim_sets <- getAllSetChoices("sim")
@@ -1275,7 +1275,7 @@ observeEvent({input$chemScenFilter},{
                  #                                        data_list,species = "Human",
                  #                                        current.table = chem.physical_and_invitro.data,
                  #                                        reference = "None",
-                 #                                        overwrite = T)
+                 #                                        overwrite = TRUE)
                  # httk::chem.physical_and_invitro.data <- temp_httk_table
                  params <- httkParameterPBTK(chem_name,org)
                  #parameterize_pbtk(chem.cas = ret_data$cas)
@@ -1876,7 +1876,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   observeEvent(input$menu,{
     if(input$menu=="Stop"){
       shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close Application",
-                                   "Any changes will be saved. Proceed?",type = "info",danger_mode = T)
+                                   "Any changes will be saved. Proceed?",type = "info",danger_mode = TRUE)
 
     }
   })

@@ -5,8 +5,8 @@ isBetween <- function(largerThan, smallerThanEqualTo, testValue){
 
 # Create bins for concentrations from the monte carlo data
 getMCConcBins <- function(mcDF = data.frame()){
-  minVal <- min(mcDF, na.rm = T)
-  maxVal <- max(mcDF, na.rm = T)
+  minVal <- min(mcDF, na.rm = TRUE)
+  maxVal <- max(mcDF, na.rm = TRUE)
   numCol <- ncol(mcDF)
   bcMCResult2 <- mcDF
   incRate <- (maxVal/minVal)^(1/(numCol-1))
@@ -178,7 +178,7 @@ runReverseDosimetry <- function(mcData,biomData,percentiles=c(5,10,25,50,75,95,9
   },
   error = function(e){
     message("Issues with Calculating percentiles. Returning null exposure values instead")
-    return(replicate(length(percentiles),0,simplify = T))
+    return(replicate(length(percentiles),0,simplify = TRUE))
   })
   exposureDF <- data.frame("Percentile"=percentiles,"Exposure"=exposures)
   cdf <- data.frame("dose_list"=extended_dose_list,"cdf"=interpCDF)

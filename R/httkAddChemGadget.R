@@ -85,7 +85,7 @@ addChemsToHTTK <- function(){
         updateNumericInput(session,"clint",value = ifelse(is.na(clint),0,clint))
         updateNumericInput(session,"fupls",value = ifelse(is.na(fupls),0,fupls))
 
-    },ignoreInit = T)
+    },ignoreInit = TRUE)
 
     observe({
       org <- input$org
@@ -99,7 +99,7 @@ addChemsToHTTK <- function(){
                          name,cas,mw,logp,clint,fupls)
       name_code <- "data_list <- setNames(colnames(data2add),colnames(data2add))"
       httk_table <- 'chem.physical_and_invitro.data'
-      add_code <- sprintf("%s <- add_chemtable(data2add,data_list,%s,reference = 'None',species = '%s', overwrite = T)",
+      add_code <- sprintf("%s <- add_chemtable(data2add,data_list,%s,reference = 'None',species = '%s', overwrite = TRUE)",
                           httk_table,httk_table,org)
       final_code <- paste(DF_code,";\n",name_code,";\n",add_code)
 
