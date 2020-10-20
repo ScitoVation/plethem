@@ -10,7 +10,7 @@ addChemsToHTTK()
 internal function that interfaces with httk package
 }
 \examples{
-\dontrun{
+if(interactive()){
 addChemsToHTTK()
 }
 }

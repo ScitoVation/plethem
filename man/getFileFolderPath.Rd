@@ -19,6 +19,6 @@ getFileFolderPath(type = "dir", caption = "", extension = "", new_flag = FALSE)
 path to the selected file or directory
 }
 \description{
-The function shows the dialog to select files or folders. The functions change depending on the OS in which 
+The function shows the dialog to select files or folders. The functions change depending on the OS in which
 RStudio is running. It is only called internally and should not be run by the user.
 }

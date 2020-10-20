@@ -30,8 +30,7 @@ setUserDb<- function(path = NULL){
 #' @examples
 #' if(interactive()){
 #' createEmptyUserDb()
-#' currentDirectory <- getwd()
-#' createEmptyUserDb(currentDirectory)
+#' createEmptyUserDb("DatabaseDirectory/")
 #' }
 #' @export
 createEmptyUserDb <- function(path = NULL){

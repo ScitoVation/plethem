@@ -10,7 +10,7 @@ runHTIVIVE()
 Launches the HT-IVIVE UI.
 }
 \examples{
-\dontrun{
+if(interactive()){
 runHTIVIVE()
 }
 }

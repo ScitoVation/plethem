@@ -15,8 +15,8 @@ loadProject(file_path = "", runUI = TRUE)
 Loads the project data from the project file and then launches the shiny UI that corresponds to the analysis type that the project belongs to.
 }
 \examples{
-\dontrun{
-loadProject(file_path = "C:/Project/TestPBPK.Rdata")
+if(interactive()){
+loadProject(file_path = "TestPBPK.Rdata")
 loadProject()
 }
 }

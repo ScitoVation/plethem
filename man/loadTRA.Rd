@@ -10,7 +10,7 @@ loadTRA()
 Run TRA gadget and save CSV files needed to export TRA exposures for the PBPK model
 }
 \examples{
-\dontrun{
+if(interactive()){
 loadTRA()
 }
 }

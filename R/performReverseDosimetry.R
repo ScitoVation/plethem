@@ -143,7 +143,10 @@ calcPercentileValue <- function(whichPercentile = 25,cdf,exposure_list){
 #' @importFrom pracma akimaInterp logseq
 #' @export
 runReverseDosimetry <- function(mcData,biomData,percentiles=c(5,10,25,50,75,95,99,100),dose_list=NULL){
-  
+  print("## mcData ##")
+  print(mcData)
+  print("## BiomData ##")
+  print(biomData)
   # if a list of doses is not provided get them from colnames of the mc data file
   # this is generally used when passing MC data generated outside of plethem 
   # to the reverse dosimetry workflow

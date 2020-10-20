@@ -7,6 +7,6 @@
 clearProjectDb()
 }
 \description{
-This function clears the project Db. It is called internally when a new project is created. 
+This function clears the project Db. It is called internally when a new project is created.
 It is also used by developers to make a clean project db
 }

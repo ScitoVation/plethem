@@ -2,7 +2,7 @@
 #' @description Used to launch the PBPK workflow for the given model. This interface can be used to launch either the rapidPBPK model, The HTTK model or the fishPBPK model.
 #' @param name Name of the model. "rapidPBPK" or "fishPBPK". Defaults to rapidPBPK.
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' interactivePBPK("rapidPBPK")
 #' }
 #' @export
@@ -25,7 +25,7 @@ interactivePBPK <- function(name = "rapidPBPK"){
 #' @description Used to launch the reverse dosimetry UI. This UI allows the user to perform reverse dosimetry if they have already run Monte Carlo Anlaysis outside of PLETHEM.
 #' @seealso \code{\link{interactivePBPK}} for running reverse dosimetry using the rapidPBPK model in PLETHEM.
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' interactiveReverseDosimetry()
 #' }
 #' @export
@@ -37,7 +37,7 @@ interactiveReverseDosimetry <- function(){
 #' @description Used internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses.
 #' @param name name of the  model. Has to be "HT-IVIVE"
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' interactiveHT("HT-IVIVE")
 #' }
 #' @export
@@ -79,7 +79,7 @@ saveProject <- function(){
 #' @param mode Either Forward Dosimetry(FD) or Monte Carlo(MC) mode. Only valid for PBPK type models
 #' @param runUI trigger the appropriate interface after data is loaded into the database
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' newProject(name = "TestPBPK",type = "PBPK",model = "rapidPBPK",mode = "MC")
 #' newProject(name = "TestPBPK",type = "PBPK",mode = "httk_pbpk",mode = "MC")
 #' }
@@ -124,8 +124,8 @@ newProject <- function(name="new_project", save_path= "",type = "PBPK", model = 
 #' @param file_path path to the project file. If no path is provided, launches a select file dialog box for the user to select the path
 #' @param runUI trigger the appropriate interface after data is loaded into the database
 #' @examples
-#' \dontrun{
-#' loadProject(file_path = "C:/Project/TestPBPK.Rdata")
+#' if(interactive()){
+#' loadProject(file_path = "TestPBPK.Rdata")
 #' loadProject()
 #' }
 #' @export

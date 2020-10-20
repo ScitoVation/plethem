@@ -1,7 +1,7 @@
 #' Function that runs the httk oral equivalent dose gadget.
 #' @description Launches the HTTK oral equivalent dose gadget. It servers as a UI wrapper around HTTK's functions to calculate oral equivalent dose.
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' httkCalcOralEqDose()
 #' }
 #' @export

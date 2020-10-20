@@ -3,12 +3,11 @@
 #' @import httk
 #' @importFrom rstudioapi sendToConsole
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' addChemsToHTTK()
 #' }
 #' @export
 addChemsToHTTK <- function(){
-
   ui <- miniPage(
     gadgetTitleBar("Add Chemical Data to HTTK"),
     miniContentPanel(

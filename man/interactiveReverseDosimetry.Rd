@@ -10,9 +10,9 @@ interactiveReverseDosimetry()
 Used to launch the reverse dosimetry UI. This UI allows the user to perform reverse dosimetry if they have already run Monte Carlo Anlaysis outside of PLETHEM.
 }
 \examples{
-\dontrun{
+if(interactive()){
 interactiveReverseDosimetry()
-} 
+}
 }
 \seealso{
 \code{\link{interactivePBPK}} for running reverse dosimetry using the rapidPBPK model in PLETHEM.
