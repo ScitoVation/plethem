@@ -27,8 +27,8 @@ getMetabData <- function(admeid,model="rapidPBPK"){
     variable <- "vmaxc"
     value <- result[["vmaxc"]]
   }
- 
-  
+
+
   return(list("Type"= metab_type,
               "Units"=metab_units,
               "Value"= value,
@@ -83,7 +83,7 @@ getAllParamValuesForModel <- function(simid,model){
                             "d"=24,
                             "w"=168)
   sim_dur <-result[["sim_dur"]]*time_multiplier
-  
+
 
   # get all the physiology parameters
   query <- sprintf("SELECT param,value FROM Physiological WHERE physioid = %i;",
@@ -105,7 +105,7 @@ getAllParamValuesForModel <- function(simid,model){
   result <- projectDbSelect(query)
   chem_params <- result$value
   names(chem_params)<- result$param
-  
+
   if (model == "fishPBPK"){
     params <- c(physio_params,expo_params,chem_params)
   } else {
@@ -124,7 +124,7 @@ getAllParamValuesForModel <- function(simid,model){
   params[["totdays"]]<- as.integer(sim_dur/24)
   params[["sim_dur"]]<- sim_dur
   if (model == "rapidPBPK"){
-    
+
     if(metab_var == "vmaxc"){
       params[["vmaxc"]]<- metab_data$Value
       params[["vkm1c"]]<- 0
@@ -133,7 +133,7 @@ getAllParamValuesForModel <- function(simid,model){
       params[["vmaxc"]]<- 0
     }
   }else if(model == "httk_pbtk"){
-   
+
     params[["Clmetabolismc"]]<- metab_data$Value
   }else if(model == "fishPBPK"){
     params[["vmax"]] <- chem_params[['vmax']]
@@ -144,18 +144,16 @@ getAllParamValuesForModel <- function(simid,model){
 }
 
 #' Gets all the variability values for the model. This data returned by the function is not meant to be understandable by the user
-#' @description Get all the variability values required for creating paramter sets for 
-#' montecarlo analysis. The values are obtained from the Project database. 
+#' @description Get all the variability values required for creating paramter sets for
+#' montecarlo analysis. The values are obtained from the Project database.
 #' @param simid Integer The id for simulation selected to run
 #' @param params list of model parameters
 #' @param mc_num number of montecarlo runs
 #' @return matrix of parameters that will be used for individual montecarlo runs
-#' 
+#'
 #' @export
 getAllVariabilityValuesForModel<- function(simid, params,mc_num){
-  # set the seed
-  set.seed(as.numeric(Sys.time()))
-  
+
   params <- lapply(params,function(x){as.numeric(x)})
   # get the ids for variability sets
   query <- sprintf("Select expovarid,physiovarid,chemvarid,admevarid FROM SimulationsSet Where simid = %i;",
@@ -208,13 +206,13 @@ getAllVariabilityValuesForModel<- function(simid, params,mc_num){
           upperlim = mean+2*sd
           lowerlim = mean-2*sd
         }
-        MC.matrix[,this.param]<- truncdist::rtrunc(mc_num,"norm",a = lowerlim, 
-                                        b = upperlim, mean = mean, 
+        MC.matrix[,this.param]<- truncdist::rtrunc(mc_num,"norm",a = lowerlim,
+                                        b = upperlim, mean = mean,
                                         sd = sd)
       }else if(dist_type == "lnorm"){
         sdlog = sqrt(log(1+sd^2/mean^2))
         meanlog = log(mean)-(0.5*sdlog^2)
-       
+
         if (flag){
           upperlim = ubound[[this.param]]
           lowerlim = lbound[[this.param]]
@@ -222,8 +220,8 @@ getAllVariabilityValuesForModel<- function(simid, params,mc_num){
           upperlim = exp(meanlog+2*sdlog)
           lowerlim = exp(meanlog-2*sdlog)
         }
-        MC.matrix[,this.param]<- truncdist::rtrunc(mc_num,"lnorm",a = lowerlim, 
-                                        b = upperlim, mean = meanlog, 
+        MC.matrix[,this.param]<- truncdist::rtrunc(mc_num,"lnorm",a = lowerlim,
+                                        b = upperlim, mean = meanlog,
                                         sd = sdlog)
       }else if(dist_type == "uform"){
         upperlim = mean+2*sd
@@ -238,7 +236,7 @@ getAllVariabilityValuesForModel<- function(simid, params,mc_num){
                                               ifelse(lowerlim>=0,lowerlim,0),
                                               upperlim)
       }
-      
+
     }else{
       MC.matrix[, this.param] <- 0
     }
@@ -339,7 +337,7 @@ getVariabilitySetChoices <- function(var_type="physio"){
 #' @param type Workflow type - either fd (Forward Dosimetry) or mc (Monte Carlo Analysis)
 #' @export
 reshapePlotData<- function(plotData,type = "fd"){
-  
+
   if (type == "fd"){
     data <- unique.data.frame(plotData)
     return(reshape2::dcast(data,time~variable))
@@ -347,6 +345,6 @@ reshapePlotData<- function(plotData,type = "fd"){
     data <- plotData
     return(reshape2::dcast(data,sample~variable))
   }
-                          
-  
+
+
 }
