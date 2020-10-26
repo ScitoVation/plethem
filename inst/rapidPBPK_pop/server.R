@@ -111,18 +111,22 @@ shinyServer(function(input, output, session) {
 
 
   # get the parameter table for physiological,exposure, chemical and adme variables.
+  print('Here 1')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';",
                    model)
   physio_name_df <- mainDbSelect(query)
 
+print('Here 2')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';",
                    model)
   expo_name_df <- mainDbSelect(query)
 
+print('Here 3')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
                    model)
   chem_name_df <- mainDbSelect(query)
 
+print('Here 4')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Adme' AND UIParams = 'TRUE' ;",
                    model)
   adme_name_df <- mainDbSelect(query)
@@ -993,6 +997,7 @@ shinyServer(function(input, output, session) {
   # in the ADME tab
   observeEvent(input$sel_expo4adme,{
     expoid <- as.integer(input$sel_expo4adme)
+    print('Here 5')
     query <- sprintf("SELECT value from Exposure where expoid = %i AND param = 'expo_sidebar'",expoid)
     expo_route <- projectDbSelect(query)$value
     toggleElement(id = "ms_pair",condition = (expo_route=="inh"))
@@ -1048,6 +1053,7 @@ shinyServer(function(input, output, session) {
       set_table_name <- "MetabolismSet"
       set_name <- "Metabolism"
       # get the current ID for the parameter set.
+      print('Here 6')
       query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
       id_list <- projectDbSelect(query)
       if (length(id_list[[id_name]])==0){
@@ -1198,6 +1204,7 @@ shinyServer(function(input, output, session) {
       set_table_name <- "MetabolismSet"
       set_name <- "Metabolism"
       # get the current ID for the parameter set.
+      print('Here 7')
       query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
       id_list <- projectDbSelect(query)
       if (length(id_list[[id_name]])==0){
@@ -1326,6 +1333,7 @@ shinyServer(function(input, output, session) {
 
 
     # get chemical name from chem table
+    print('Here 8')
     query <- sprintf("SELECT name from ChemicalSet WHERE chemid = %i ;",
                      chemid)
 
@@ -1334,6 +1342,7 @@ shinyServer(function(input, output, session) {
     output$sim_chem <- renderText(chem_name)
 
     # get exposure name form exposure set table
+    print('Here 9')
     query <- sprintf("SELECT name from ExposureSet WHERE expoid = %i ;",
                      expoid)
 
@@ -1698,6 +1707,7 @@ shinyServer(function(input, output, session) {
                  chemid <- input$sel_chem4adme
                  qsar_model <- input$sel_qsar4Partition
                  org <- ifelse(input$ms_org=="ha","human","rat")
+                 print('Here 10')
                  query <- sprintf("SELECT param,value FROM Chemical Where chemid = %i",
                                   as.integer(chemid))
                  ret_data <- projectDbSelect(query)
@@ -1794,6 +1804,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       ddose <- 0
       idose <- 0
     }else{
+    print('Here 11')
       query <- sprintf("SELECT expoid FROM SimulationsSet Where simid = %i ;",
                        simid)
       expoid <- projectDbSelect(query)$expoid
@@ -1879,6 +1890,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return(data.frame("time"=c(0),"mean"=c(0),"sd"=c(0)))#data.frame("time"=NULL,"mean"=NULL,"sd"=NULL))
     }else{
       obsid <- input$cplt_data
+      print('Here 12')
       query <- sprintf("SELECT units, obs_tble FROM Observation WHERE obsid = %i",
                        as.integer(obsid))
       obs_data <- projectDbSelect(query)
@@ -1897,6 +1909,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return("No Dataset Selected")#data.frame("time"=NULL,"mean"=NULL,"sd"=NULL))
     }else{
       obsid <- input$cplt_data
+      print('Here 13')
       query <- sprintf("SELECT name FROM ObservationSet WHERE obsid = %i",
                        as.integer(obsid))
       obs_name <- projectDbSelect(query)
@@ -1948,6 +1961,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       mw <- 1000 # to keep the multiplier as 1
 
     }else{
+    print('Here 14')
       query <- sprintf("SELECT chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
       chemid <- projectDbSelect(query)$chemid
@@ -2030,6 +2044,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       mw <- 1000 # to keep the multiplier as 1
 
     }else{
+    print('Here 15')
       query <- sprintf("SELECT chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
       chemid <- projectDbSelect(query)$chemid
@@ -2268,13 +2283,13 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       file.copy(system.file("rapidPBPK.model",package = "plethem"),file)
     }
   )
-  
+
   ## Save HESI Report
-  
+
   observeEvent(input$anotherbutton,{
     sendSweetAlert(session,title = "asdf",text="alert_message",type="info")
   })
-  
+
   observeEvent(input$btn_dlHESI,{
     showModal(
       modalDialog(
@@ -2294,12 +2309,12 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
           actionButton("btn_dlHesi","Download PBPK Report"),
           modalButton("Dismiss")
         ), size = c("m"), easyClose = F, fade = T))
-    
+
   })
-  
+
   hesivolumes <- c(Home = fs::path_home(), "R Installation" = R.home(), getVolumes()())
   shinyDirChoose(input, "dirHESI", roots = hesivolumes, session = session)
-  
+
   hesiPath <- reactive({
     parseDirPath(hesivolumes, input$dirHESI)
   })
@@ -2307,7 +2322,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     hesiPath <- parseDirPath(hesivolumes, input$dirHESI)
     # print(parseDirPath(hesivolumes, input$dirHESI))
   })
-  
+
   observeEvent(input$btn_dlHesi,{
     if(length(hesiPath())==0){
       sendSweetAlert(session, title = "No Directory Chosen", text = "Please select a directory to save to.",type = "error")
@@ -2320,19 +2335,19 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       HESI_doc <- addPBPKequations(HESI_doc)
       HESI_doc <- addParameters(HESI_doc, current_params()$cur,
                                 current_params()$expo, current_params()$physio)
-      
+
       conc_units <- ifelse(input$r_cplt_type=="um",
                           '\u00B5M',
                           'mg/L')
       HESI_doc %>% createHESIgraphs(concData(), conc_units)
-      
+
       print(HESI_doc, target = paste0(hesiPath(),"/pbpk_model_report.docx"))
       removeModal()
     }
   })
-    
+
  # END HESI
-  
+
   ## CODE CHUCK TO HANDLE OUTPUTS GENERATED BY REVERSE DOSIMETRY AND ROUTE TO ROUTE EXTRAPOLATION
   pdf_data <- reactive({
     return(results$expo$pdf)
@@ -3909,5 +3924,3 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
   })
   return(returnValues$savedat)
 }
-
-
