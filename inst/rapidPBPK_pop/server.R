@@ -2495,7 +2495,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       updateTabsetPanel(session,"menu","home")
     } else{
       fpath <- parseFilePaths(volumes, input$files)$datapath
-      # fpath2 <<- parseFilePaths(volumes, input$files)
+      # fpath2 <- parseFilePaths(volumes, input$files)
       # output$selectedFile <- renderPrint({fpath})
       loadProject(fpath,runUI = FALSE)
       query <- "Update Utils Set Value=NULL;"
