@@ -13,7 +13,7 @@ interactivePBPK(name = "rapidPBPK")
 Used to launch the PBPK workflow for the given model. This interface can be used to launch either the rapidPBPK model, The HTTK model or the fishPBPK model.
 }
 \examples{
-\dontrun{
+if(interactive()){
 interactivePBPK("rapidPBPK")
 }
 }

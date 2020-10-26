@@ -3,7 +3,7 @@
 #' @param file_path path to the batch chemical csv file
 #'@export
 readBatchChemicalFile<- function(file_path){
-  ret_data <- read.csv(file_path,header = T,stringsAsFactors = F)
+  ret_data <- read.csv(file_path,header = TRUE,stringsAsFactors = FALSE)
   return(as.data.frame(ret_data))
 }
 
@@ -13,7 +13,7 @@ readBatchChemicalFile<- function(file_path){
 #' @importFrom dplyr select mutate_at
 #'@export
 readOperaPredictions<- function(file_path){
-  preds <- read.csv(file_path,stringsAsFactors = F)
+  preds <- read.csv(file_path,stringsAsFactors = FALSE)
   #preds <- as.data.frame(preds)
   columnTranslate <- list("MoleculeID"="ID","MolWeight"="Molecular Weight",
                           "LogP_pred"="LogKow","LogWS_pred"="Water Solubility",

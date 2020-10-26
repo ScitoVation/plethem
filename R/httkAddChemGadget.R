@@ -3,12 +3,11 @@
 #' @import httk
 #' @importFrom rstudioapi sendToConsole
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' addChemsToHTTK()
 #' }
 #' @export
 addChemsToHTTK <- function(){
-  
   ui <- miniPage(
     gadgetTitleBar("Add Chemical Data to HTTK"),
     miniContentPanel(
@@ -26,7 +25,7 @@ addChemsToHTTK <- function(){
                       ),
           selectInput("org","Select Organism",choices = c("Human","Rat"),
                       width = validateCssUnit("90%"))
-                
+
         ),
         fillRow(
           textInput("cname","Compound Name",placeholder = "Enter Name",
@@ -35,7 +34,7 @@ addChemsToHTTK <- function(){
           textInput("casnm","CAS Number",placeholder = "00-00-0001",
                     value = "00-00-00001",
                     width = validateCssUnit("90%"))
-          
+
           ),
         fillRow(
             numericInput("mw","Molecular Weight",0,width = validateCssUnit("90%")),
@@ -46,7 +45,7 @@ addChemsToHTTK <- function(){
           numericInput("fupls","Fraction Unbound in Plasma",1,width = validateCssUnit("90%"))
         ),
         fillRow(
-          checkboxInput("show_code","Show Code",value = F)
+          checkboxInput("show_code","Show Code",value = FALSE)
         ),
         fillRow(
           shinyjs::hidden(textAreaInput("code_output","HTTK Add Chemical Function",
@@ -84,9 +83,9 @@ addChemsToHTTK <- function(){
         updateNumericInput(session,"logp",value = logp)
         updateNumericInput(session,"clint",value = ifelse(is.na(clint),0,clint))
         updateNumericInput(session,"fupls",value = ifelse(is.na(fupls),0,fupls))
-                           
-    },ignoreInit = T)
-    
+
+    },ignoreInit = TRUE)
+
     observe({
       org <- input$org
       name <- input$cname
@@ -95,11 +94,11 @@ addChemsToHTTK <- function(){
       logp <- input$logp
       clint <- input$clint
       fupls <- input$fupls
-      DF_code <- sprintf("data2add <- data.frame('Compound' = c('%s'), 'CAS' = c('%s'),'MW' = c(%f),'logP' = c(%f),'Clint' = c(%f), 'Funbound.plasma' = c(%f),stringsAsFactors = F)",
+      DF_code <- sprintf("data2add <- data.frame('Compound' = c('%s'), 'CAS' = c('%s'),'MW' = c(%f),'logP' = c(%f),'Clint' = c(%f), 'Funbound.plasma' = c(%f),stringsAsFactors = FALSE)",
                          name,cas,mw,logp,clint,fupls)
       name_code <- "data_list <- setNames(colnames(data2add),colnames(data2add))"
       httk_table <- 'chem.physical_and_invitro.data'
-      add_code <- sprintf("%s <- add_chemtable(data2add,data_list,%s,reference = 'None',species = '%s', overwrite = T)",
+      add_code <- sprintf("%s <- add_chemtable(data2add,data_list,%s,reference = 'None',species = '%s', overwrite = TRUE)",
                           httk_table,httk_table,org)
       final_code <- paste(DF_code,";\n",name_code,";\n",add_code)
 

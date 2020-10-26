@@ -17,6 +17,6 @@ getAllVariabilityValuesForModel(simid, params, mc_num)
 matrix of parameters that will be used for individual montecarlo runs
 }
 \description{
-Get all the variability values required for creating paramter sets for 
+Get all the variability values required for creating paramter sets for
 montecarlo analysis. The values are obtained from the Project database.
 }

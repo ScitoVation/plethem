@@ -50,7 +50,7 @@ shinyServer(function(input, output,session) {
     modalDialog(
       useShinyjs(),
       # title = "Upload Monte Carlo Results",
-      easyClose = F,#TRUE,
+      easyClose = FALSE,#TRUE,
       size = "l",
       tagList(
         useSweetAlert(),
@@ -169,13 +169,13 @@ shinyServer(function(input, output,session) {
           #                         value = 1000))
           #   ),
           #   fluidRow(
-          #     progressBar(id = "pb",value = 0, status = "success",striped = T)
+          #     progressBar(id = "pb",value = 0, status = "success",striped = TRUE)
           #   )
           # )
         )
       ),
       footer= tagList(
-        uiOutput('mcFooter', inline = T),
+        uiOutput('mcFooter', inline = TRUE),
         modalButton('Cancel')
       )
     )
@@ -243,7 +243,7 @@ shinyServer(function(input, output,session) {
     # shinyjs::enable('addMC')
     inFile <- input$rDataFile
     rDFile <- inFile$datapath
-    loadProject(rDFile,runUI = F)
+    loadProject(rDFile,runUI = FALSE)
     simSet <- projectDbSelect("Select simid,name,descrp from SimulationsSet;")
     # e = new.env()
     # name <- load(rDFile, envir = e)
@@ -776,7 +776,7 @@ shinyServer(function(input, output,session) {
     input$showpanel
   })
   
-  outputOptions(output, "toggleSidebar", suspendWhenHidden = F)
+  outputOptions(output, "toggleSidebar", suspendWhenHidden = FALSE)
   
   #############################################################################################
   
@@ -897,10 +897,10 @@ shinyServer(function(input, output,session) {
         data = revDosResults$expoEstimates,
         extensions = 'Buttons',
         class = 'cell-border stripe',
-        rownames = F,
+        rownames = FALSE,
         options = list(
-          ordering = F,
-          autoWidth = T,
+          ordering = FALSE,
+          autoWidth = TRUE,
           dom='rtB',
           buttons = list(
             list(
@@ -1011,15 +1011,15 @@ shinyServer(function(input, output,session) {
     #   DT::datatable(
     #     data = userData,
     #     container = sketch,
-    #     rownames = T,
+    #     rownames = TRUE,
     #     extensions = c('FixedColumns','FixedHeader'),
     #     options = list(
-    #       ordering = F,
-    #       autoWidth = T,
-    #       fixedColumns = T,
+    #       ordering = FALSE,
+    #       autoWidth = TRUE,
+    #       fixedColumns = TRUE,
     #       scrollX = '100%',
     #       scrollY = 600,
-    #       scrollCollapse = T, # When scrollY is defined, bottom of table won't "float" below the table
+    #       scrollCollapse = TRUE, # When scrollY is defined, bottom of table won't "float" below the table
     #       pageLength = 50, # How many rows to display by default
     #       # ,dom='rt',
     #       columnDefs = list(
@@ -1057,7 +1057,7 @@ shinyServer(function(input, output,session) {
     #       dlTable1,
     #       file = file,
     #       sep = ",",
-    #       row.names = T,
+    #       row.names = TRUE,
     #       col.names = F
     #     )
     #   }
@@ -1074,7 +1074,7 @@ shinyServer(function(input, output,session) {
     #       dlTable2,
     #       file = file,
     #       sep = ",",
-    #       row.names = T,
+    #       row.names = TRUE,
     #       col.names = F
     #     )
     #   }
@@ -1091,7 +1091,7 @@ shinyServer(function(input, output,session) {
     #       dlTable3,
     #       file = file,
     #       sep = ",",
-    #       row.names = T,
+    #       row.names = TRUE,
     #       col.names = F
     #     )
     #   }

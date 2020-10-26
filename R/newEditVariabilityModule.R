@@ -19,7 +19,7 @@ newEditVariabilityUI <- function(namespace){
         column(8,
                pickerInput(ns("param_names"),
                            label = "Select Parameters to Assign Variability",
-                           choices = NULL,multiple = T,
+                           choices = NULL,multiple = TRUE,
                            options = list('selected-text-format' = "count > 3",
                                           'live-search'=TRUE,
                                           'size'=10)
@@ -170,7 +170,7 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
                                      #"Unifrom"= "uform"))
                               ),
                               column(1,
-                                     checkboxInput(ns(paste0("bflag_",x)),label = NULL,value = F)
+                                     checkboxInput(ns(paste0("bflag_",x)),label = NULL,value = FALSE)
                               ),
                               column(2,
                                      numericInput(ns(paste0("ubound_",x)),label = NULL, 
@@ -189,7 +189,7 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
       for(x in remove_list){
         removeUI(session = session,
                  selector = paste0("#",ns(paste0("div_",x))),
-                 immediate = T)
+                 immediate = TRUE)
       }
       
     }
@@ -215,7 +215,7 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
                            "BFlag"=bound_flags,
                            "UpperBound"=ubounds,
                            "LowerBound"=lbounds,
-                           stringsAsFactors = F)
+                           stringsAsFactors = FALSE)
     var_tble_serialized<- rawToChar(serialize(var_tble,NULL,T))
     name <- input$name
     descrp <- input$descrp

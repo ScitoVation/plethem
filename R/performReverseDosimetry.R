@@ -5,8 +5,8 @@ isBetween <- function(largerThan, smallerThanEqualTo, testValue){
 
 # Create bins for concentrations from the monte carlo data
 getMCConcBins <- function(mcDF = data.frame()){
-  minVal <- min(mcDF, na.rm = T)
-  maxVal <- max(mcDF, na.rm = T)
+  minVal <- min(mcDF, na.rm = TRUE)
+  maxVal <- max(mcDF, na.rm = TRUE)
   numCol <- ncol(mcDF)
   bcMCResult2 <- mcDF
   incRate <- (maxVal/minVal)^(1/(numCol-1))
@@ -100,7 +100,7 @@ calcPercentileValue <- function(whichPercentile = 25,cdf,exposure_list){
   if(your.number != 1){
     xIndex <- which(abs(cdf-your.number)==min(abs(cdf-your.number)))
     closestNum <- cdf[xIndex]
-    if(closestNum > your.number) { # xIndex is higher than the percentile we're looking for
+    if(closestNum[1] > your.number) { # xIndex is higher than the percentile we're looking for
       lowerIndex <- xIndex - 1
       upperIndex <- xIndex
     } else{ #xIndex is lower than the percentile we're looking for
@@ -136,14 +136,14 @@ calcPercentileValue <- function(whichPercentile = 25,cdf,exposure_list){
 #' }
 #' 
 #' @examples
-#' \dontrun{
-#' runReverseDosimetry(mcData,biomData,percentiles = c(5,50,95))
-#' runReverseDosimetry(mcData,biomData,percentiles = c(50,95),dose_list = c(0.04,0.10,0.15,0.2,0.25,1))
-#' }
+#' pD <- c(seq(.05,.90,.05),.94,.95,.96,.97,.98,.99,1.00)
+#' dosing <- c(0.010, 0.011, 0.012, 0.014, 0.016, 0.018, 0.021, 0.023, 0.027, 0.030, 0.034, 0.039)
+#' dosing <- c(dosing, 0.044, 0.050, 0.057, 0.065, 0.073, 0.083, 0.094, 0.107, 0.121, 0.137)
+#' dosing <- c(dosing, 0.155, 0.176, 0.200)
+#' runReverseDosimetry(mcDataExample, biomDataExample, percentiles = pD, dose_list = dosing)
 #' @importFrom pracma akimaInterp logseq
 #' @export
 runReverseDosimetry <- function(mcData,biomData,percentiles=c(5,10,25,50,75,95,99,100),dose_list=NULL){
-  
   # if a list of doses is not provided get them from colnames of the mc data file
   # this is generally used when passing MC data generated outside of plethem 
   # to the reverse dosimetry workflow
@@ -178,7 +178,7 @@ runReverseDosimetry <- function(mcData,biomData,percentiles=c(5,10,25,50,75,95,9
   },
   error = function(e){
     message("Issues with Calculating percentiles. Returning null exposure values instead")
-    return(replicate(length(percentiles),0,simplify = T))
+    return(replicate(length(percentiles),0,simplify = TRUE))
   })
   exposureDF <- data.frame("Percentile"=percentiles,"Exposure"=exposures)
   cdf <- data.frame("dose_list"=extended_dose_list,"cdf"=interpCDF)

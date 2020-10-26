@@ -23,11 +23,11 @@ importParameterSetUI <- function(namespace,set_type){
                                  #DTOutput(ns("user_tble"))),
                         tabPanel("PLETHEM Database",value = "main",
                                  pickerInput(ns("sel_main"),
-                                                label = "Select Chemical",multiple = T,
+                                                label = "Select Chemical",multiple = TRUE,
                                                 choices = NULL)),
                         tabPanel("Import from file",value = "batch",
                                  fileInput(ns("btn_batch_upload"),"Upload File",
-                                           multiple = F),
+                                           multiple = FALSE),
                                  radioButtons(ns("rdo_ftype"),
                                               label = "Select file type",
                                               choices = list("Chemical Input File"="chem_batch",
@@ -38,7 +38,7 @@ importParameterSetUI <- function(namespace,set_type){
                                    column(8,offset = 2,
                                           bsButton(ns("btn_userDb_file"),
                                                    "Select User Database",
-                                                   block = T)
+                                                   block = TRUE)
                                           )
                                    
                                  ),
@@ -49,7 +49,7 @@ importParameterSetUI <- function(namespace,set_type){
                                  fluidRow(
                                    pickerInput(ns("sel_user"),
                                                label = "Select Chemical",
-                                               choices = NULL,multiple = T)
+                                               choices = NULL,multiple = TRUE)
                                  )
                                  
                                  
@@ -131,11 +131,11 @@ importParameterSet <- function(input,output,session,set_type,module_source = "PB
   fpath_userDb<- eventReactive(input$btn_userDb_file,{
     fpath <- getFileFolderPath(type = "file","Select User Database","*.sqlite")
     return(fpath)
-  },ignoreInit = T)
+  },ignoreInit = TRUE)
   observe({
     fpath <- fpath_userDb()
     if (length(fpath)==0){
-      sendSweetAlert(session,"No File Selected",type = "error",closeOnClickOutside = T)
+      sendSweetAlert(session,"No File Selected",type = "error",closeOnClickOutside = TRUE)
     }else{
       output$txt_path2userDb <- renderText({fpath})
       query <- sprintf("Update Utils Set value = '%s' Where variable = 'UserDbPath';",fpath)
@@ -161,7 +161,7 @@ importParameterSet <- function(input,output,session,set_type,module_source = "PB
     req(input$btn_batch_upload)
     tryCatch(
       {
-        datafile <- read.csv(input$btn_batch_upload$datapath,header = T)
+        datafile <- read.csv(input$btn_batch_upload$datapath,header = TRUE)
       },
       error = function(e){
         stop(safeError(e))
@@ -178,7 +178,7 @@ importParameterSet <- function(input,output,session,set_type,module_source = "PB
     batchdata <- reactive({
       
     })
-  },ignoreInit = T)
+  },ignoreInit = TRUE)
 
   observeEvent(input$import,{
     userDbIds <- input$sel_user

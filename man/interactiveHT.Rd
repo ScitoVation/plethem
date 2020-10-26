@@ -13,7 +13,7 @@ interactiveHT(name = "HT-IVIVE")
 Used internally to launch the HT-IVIVE UI. HT-IVIVE does not use the project management system that PBPK models uses.
 }
 \examples{
-\dontrun{
+if(interactive()){
 interactiveHT("HT-IVIVE")
 }
 }

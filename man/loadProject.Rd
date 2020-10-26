@@ -4,7 +4,7 @@
 \alias{loadProject}
 \title{Load the project from the project file located at the given path}
 \usage{
-loadProject(file_path = "", runUI = T)
+loadProject(file_path = "", runUI = TRUE)
 }
 \arguments{
 \item{file_path}{path to the project file. If no path is provided, launches a select file dialog box for the user to select the path}
@@ -15,8 +15,8 @@ loadProject(file_path = "", runUI = T)
 Loads the project data from the project file and then launches the shiny UI that corresponds to the analysis type that the project belongs to.
 }
 \examples{
-\dontrun{
-loadProject(file_path = "C:/Project/TestPBPK.Rdata")
+if(interactive()){
+loadProject(file_path = "TestPBPK.Rdata")
 loadProject()
 }
 }

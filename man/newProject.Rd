@@ -10,7 +10,7 @@ newProject(
   type = "PBPK",
   model = "rapidPBPK",
   mode = "MC",
-  runUI = F
+  runUI = FALSE
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ newProject(
 A project consists of chemicals, organisms and datasets. The function asks the user for a location to save the project files on exit. It then launches the shiny user interface used to parameterize and run the model.
 }
 \examples{
-\dontrun{
+if(interactive()){
 newProject(name = "TestPBPK",type = "PBPK",model = "rapidPBPK",mode = "MC")
 newProject(name = "TestPBPK",type = "PBPK",mode = "httk_pbpk",mode = "MC")
 }

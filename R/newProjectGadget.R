@@ -1,7 +1,7 @@
 #' Command line function launching the new project gadget
 #' @description This launches the new project gadget for launching a new project in PLETHEM. With RStudio, this function is available as an addin
 #' @examples 
-#' \dontrun{
+#' if(interactive()){
 #' newProjectGadget()
 #' }
 #' @export

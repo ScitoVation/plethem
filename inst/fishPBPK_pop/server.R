@@ -12,12 +12,12 @@ shinyServer(function(input, output, session) {
   # define the model name once here. It will be used throughout this server file
   # this will make it easier to create new model UI/SERVERS
   model <- "fishPBPK"
-  
+
   dataset <- reactiveValues()
   dataset$savedat <- reactiveVal(c("No","none"))
   dataset$iviveDat <- reactiveVal(c("No",0,0,0))
   parameterSets <- reactiveValues()
-  
+
   parameterSets$savedat <- reactiveVal(c("No","",0))
   parameterSets$sverestdat <- reactiveVal(c("None",0))
   parameterSets$importdat <- reactiveVal(c("No","",0))
@@ -127,9 +127,9 @@ shinyServer(function(input, output, session) {
   flow_ids <- c("fat"="ms_qfatc","liver"="ms_qlivc",
                 "kidney"="ms_qkdnc",
                 "rpf"="ms_qrpfc","spf"="ms_qspfc")
-  
 
-  
+
+
 
 
   ########### The next code chunk deals with updating select inputs for all parameter sets]
@@ -141,7 +141,7 @@ shinyServer(function(input, output, session) {
                                               paste0("allData",input$btn_import_expo),
                                               expo_name_df)
   })
-  
+
   observe({
     # print("## 3 ##")
     result_vector <- parameterSets$importAllData
@@ -153,7 +153,7 @@ shinyServer(function(input, output, session) {
                            choices = set_list)
     }
   })
-  
+
   ### Import button current for chemicals only
   # Import a new chemical set from user or main database
    #### Chunk for handling chemical tab
@@ -168,7 +168,7 @@ shinyServer(function(input, output, session) {
      # print("## 5 ##")
      importParameterSetUI(input$btn_import_physio,"physio")
      parameterSets$importdat <- callModule(importParameterSet,input$btn_import_physio,"physio")
-     
+
    })
 
 
@@ -182,8 +182,8 @@ shinyServer(function(input, output, session) {
        set_list <- getAllSetChoices(set_type)
        parameterSets[[set_type]] <- reactiveVal(set_list)
        updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
-       
-       
+
+
        # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
      }
    })
@@ -197,7 +197,7 @@ shinyServer(function(input, output, session) {
     vol_comps <- compartment_list
     perfc <- 1
     total_vol <- sum(unlist(lapply(vol_comps,function(x){input[[vol_ids[x]]]})))
-    
+
     if(abs(total_vol-perfc)>0.03){
 
       error_text <- sprintf("The total volume of all compartments does not add up to %i %%",
@@ -251,7 +251,7 @@ shinyServer(function(input, output, session) {
       set_list <- getAllSetChoices(set_type)
       parameterSets[[set_type]] <- reactiveVal(set_list)
       updateSelectizeInput(session,paste0("sel_",set_type),choices = set_list, selected = set_id)
-      
+
       parameterSets$savedat <- reactiveVal(c("No","",0))
       # updateSelectizeInput(session,paste0("sel_scene_",set_type),choices = set_list)
     }
@@ -330,7 +330,7 @@ shinyServer(function(input, output, session) {
                         tbl_nme,val,id_nme,id,var)
         return(temp)
       },
-      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = T)
+      val_df$Variable,val_df$Current.Value,table_name,id_name,input_id,SIMPLIFY = TRUE)
       lapply(query_list,projectDbUpdate)
 
     }else if (ops_type == "restore"){
@@ -343,17 +343,17 @@ shinyServer(function(input, output, session) {
         name_data <- expo_name_df
       }
       var_type <- sapply(result_vector$Variable,function(var){
-        tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = T)]
+        tempvar <-  name_data$ParamType[which(name_data$Var == var, arr.ind = TRUE)]
         return(tempvar)})
       change_df <- data.frame("Var"=result_vector$Variable,
                               "Val" = result_vector[["Original Value"]],
                               "ParamType"=var_type,
                               row.names = NULL,
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE)
       updateUIInputs(session,change_df)
     }
   })
-  
+
   observeEvent(input$btn_new_varphys,{
     # print("## 15 ##")
     param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
@@ -363,8 +363,8 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
-  
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
+
   observeEvent(input$btn_edit_varphys,{
     # print("## 16 ##")
     param_names <- physio_name_df$Name[which(physio_name_df$Variability == "TRUE")]
@@ -375,8 +375,8 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"physio","edit",
                                        param_vars,input$sel_physio_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
-  
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
+
   observeEvent(input$btn_new_varchem,{
     # print("## 17 ##")
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
@@ -386,8 +386,8 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
-  
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
+
   observeEvent(input$btn_edit_varchem,{
     # print("## 18 ##")
     param_names <- chem_name_df$Name[which(chem_name_df$Variability == "TRUE")]
@@ -398,8 +398,8 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"chem","edit",
                                        param_vars,input$sel_chem_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
-  
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
+
   observeEvent(input$btn_new_varexpo,{
     # print("## 19 ##")
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
@@ -409,8 +409,8 @@ shinyServer(function(input, output, session) {
     newEditVariabilityUI(ns)
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","new",param_vars)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
-  
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
+
   observeEvent(input$btn_edit_varexpo,{
     # print("## 20 ##")
     param_names <- expo_name_df$Name[which(expo_name_df$Variability == "TRUE")]
@@ -421,8 +421,8 @@ shinyServer(function(input, output, session) {
     parameterSets$vardat <- callModule(newEditVariability,ns,"expo","edit",
                                        param_vars,input$sel_expo_var)
     ### Variability Tab
-  },ignoreInit = T, ignoreNULL = T)
-  
+  },ignoreInit = TRUE, ignoreNULL = TRUE)
+
   observe({
     # print("## 21 ##")
     result_vector <- parameterSets$vardat
@@ -438,7 +438,7 @@ shinyServer(function(input, output, session) {
                            selected = as.integer(varid))
     }
   })
-  
+
   observeEvent(input$sel_physio_var,{
     # print("## 22 ##")
     varid <- input$sel_physio_var
@@ -452,9 +452,9 @@ shinyServer(function(input, output, session) {
                                                                       "Lower Bound"=7)
                                                          )
                                            )
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   observeEvent(input$sel_chem_var,{
     # print("## 23 ##")
     varid <- input$sel_chem_var
@@ -467,9 +467,9 @@ shinyServer(function(input, output, session) {
                                                                       "Upper Bound"=6,
                                                                       "Lower Bound"=7)
     ))
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
+
   observeEvent(input$sel_expo_var,{
     # print("## 24 ##")
     varid <- input$sel_expo_var
@@ -482,10 +482,10 @@ shinyServer(function(input, output, session) {
                                                                       "Upper Bound"=6,
                                                                       "Lower Bound"=7)
     ))
-    
+
   },ignoreInit = TRUE, ignoreNULL =  TRUE)
-  
-  
+
+
 
   #update the inputs for the parameter set selected
   observeEvent(input$sel_physio,{
@@ -559,7 +559,7 @@ shinyServer(function(input, output, session) {
                                      physiovarid,chemvarid,
                                      expovarid,
                                      sim_start,sim_dur,dur_units,mc_num),
-                             simplify = T),
+                             simplify = TRUE),
                      sep = " ",collapse = "")
       #print(query)
       projectDbUpdate(query)
@@ -611,7 +611,7 @@ shinyServer(function(input, output, session) {
     result <- projectDbSelect(query)
     expo_name <- result$name
     output$sim_expo <- renderText(expo_name)
-    
+
     #print(output)
     # # get metabolism data.
     # print(paste0("metabid: ", metabid, ", physioid: ", physioid,", chemid:", chemid, ", model: ", model))
@@ -670,7 +670,7 @@ shinyServer(function(input, output, session) {
         tempDF <- runFDPBPK(initial_values,model)
         max_list <- unlist(lapply(mc_vars,function(x,data){
           var_name <- gsub("_max","",x)
- 
+
           return(max(data[var_name]))
         },tempDF$pbpk))
         names(max_list)<- mc_vars
@@ -697,11 +697,11 @@ shinyServer(function(input, output, session) {
       # print("%% m %%")
       results$pbpk<- tempDF$pbpk
       # print("%% n %%")
-      
+
       results$mode <- "FD"
       updateNavbarPage(session,"menu","output")
     }
-    
+
 
 
   })
@@ -713,25 +713,25 @@ current_params <-  reactive({
     temp <- getAllParamValuesForModel(input$sel_sim,model = model)
     # get exposure paramteres
 
-    
+
     expo_params <- data.frame("var" = expo_name_df$Name, "val" = temp$vals[expo_name_df$Var],
-                              stringsAsFactors = F)
+                              stringsAsFactors = FALSE)
     physio_params <- data.frame("var" = physio_name_df$Name, "val" = temp$vals[physio_name_df$Var],
-                              stringsAsFactors = F)
-    current_params <- data.frame("var" = chem_name_df$Name,"val" = temp$vals[chem_name_df$Var],stringsAsFactors = F)
+                              stringsAsFactors = FALSE)
+    current_params <- data.frame("var" = chem_name_df$Name,"val" = temp$vals[chem_name_df$Var],stringsAsFactors = FALSE)
     #current_params <- temp$a
     #current_params <- cbind(gsub("ms_", "",temp$b),current_params)
     return(list("cur" = current_params,"expo" = expo_params,"physio" = physio_params))
   })
 output$chem_params_tble <- DT::renderDT(DT::datatable(current_params()$cur,
-                                                  rownames = F),
+                                                  rownames = FALSE),
                                     colnames=c("Variable names", "Value"))
 output$expo_params_tble <- DT::renderDT(DT::datatable(current_params()$expo,
-                                                  rownames = F,
+                                                  rownames = FALSE,
                                                   colnames=c("Variable names", "Value"))
                                     )
 output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
-                                                         rownames = F,
+                                                         rownames = FALSE,
                                                         colnames=c("Variable names", "Value")))
 
   observeEvent(input$run,{
@@ -986,7 +986,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
 
     result<- as.data.frame(result)
     values <- c()
-    
+
     query <- sprintf("Select model_var,plot_var,name from ResultNames where param_set = 'conc' AND model='%s' AND mode = '%s';",model,mode)
     legend_df <- mainDbSelect(query)
     legend_names <- setNames(legend_df$name,legend_df$model_var)
@@ -1006,14 +1006,14 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "FD"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE)
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE)
       }
     }
-   
+
     # select appropriate variables to plot
     if (dim(result)[1]==0){
       plot_frame["Model not yet run"]<-rep(0,length(x))
@@ -1046,10 +1046,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     units <- input$r_aplt_type
     simid <- results$simid
     mode <- results$mode
-    
+
     if(is.null(simid)){
       mw <- 1000 # to keep the multiplier as 1
-      
+
     }else{
       query <- sprintf("SELECT mc_num,chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
@@ -1075,7 +1075,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     values <- unlist(lapply(plot_vals,function(x){var_names[x]}))
     names(values)<- NULL
 
-    
+
     if (exists("plot_frame")){
       rm(plot_frame)
     }
@@ -1086,14 +1086,14 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       if(mode == "FD"){
         x<- result$time
         plot_frame <- data.frame("time" = result$time,
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE)
       }else{
         x <- 1:nrow(result)
         plot_frame <- data.frame("sample" = 1:nrow(result),
-                                 stringsAsFactors = F)
+                                 stringsAsFactors = FALSE)
       }
     }
-    
+
     # select appropriate variables to plot
     if (dim(result)[1]==0){
       plot_frame["Model not yet run"]<-rep(0,length(x))
@@ -1113,7 +1113,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     }
     return(plot_frame)
   })
-  
+
   #Concentration table data
   amt_tble_data <- reactive({
     mode <- results$mode
@@ -1148,7 +1148,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   # output$concplt <- plotly::renderPlotly(plotly::ggplotly(ggplot()
   #                              +geom_line(data = concData(), aes(x=time,y=value,color = variable))
   #                              +geom_pointrange(data = concDataset(),aes(x = time,y = mean, ymin = mean-sd ,ymax = mean+sd,fill = "Dataset (mg/L)"))
-  # 
+  #
   #                              +labs(x="Time (h)",y="Concentration")
   #                              +theme(axis.text=element_text(size = 15),axis.title=element_text(size = 25),legend.text=element_text(size=15),legend.title=element_blank())))
   concplt <- reactive({
@@ -1167,7 +1167,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
         plotly::layout(xaxis = list(title = ('Time(h)')),
                        yaxis = list(title = (ifelse(input$r_cplt_type=="um",'Concentration (\u00B5M)',
                                                     'Concentration (mg/L)'))))
-      
+
     }else{
       plotly::plot_ly()%>%
         plotly::add_trace(data = concData(),
@@ -1180,7 +1180,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
                        )
     }
   })
-  
+
   amtplt <- reactive({
     if (results$mode == "FD"){
       plotly::plot_ly() %>%
@@ -1286,13 +1286,13 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
     # print("## 34 ##")
     if(input$menu=="stop"){
       shinyWidgets::confirmSweetAlert(session,"close_dialog", "Close Application",
-                                   "Any changes will not be saved. Proceed?",type = "info",danger_mode = T)
+                                   "Any changes will not be saved. Proceed?",type = "info",danger_mode = TRUE)
 
     }else if(input$menu == "save"){
       shinyWidgets::confirmSweetAlert(session,"save_dialog", "Save Project",
-                                      "Unsaved changes will be lost. Proceed?",type = "info",danger_mode = T)
+                                      "Unsaved changes will be lost. Proceed?",type = "info",danger_mode = TRUE)
     }
-    
+
   })
   observeEvent(input$close_dialog,{
     # print("## 35 ##")
@@ -1340,7 +1340,7 @@ calculateInitialValues <- function(params_list){
     tstop <- tstart+sim_dur
     #calculate gut uptake limit
     gul <- ifelse(qc*pbldw > qrpf,qg,qc*pbldw)
-    
+
   })
 
   #function for dosing
@@ -1351,7 +1351,7 @@ calculateInitialValues <- function(params_list){
   cins <- initial_params[["cins"]]
   tstart <- initial_params[["tstart"]]
   tstop <- initial_params[["tstop"]]
-  
+
 
   times <- seq(tstart,tstop,by=0.1)
   eventDat <- list("time"= 0)
@@ -1412,14 +1412,14 @@ fishPBPK_initParms <- function(newParms = NULL) {
     pbldw = 1e10,
     gul = 1,
   )
-  
+
   if (!is.null(newParms)) {
     if (!all(names(newParms) %in% c(names(parms)))) {
       stop("illegal parameter name")
     }
     parms[names(newParms)] <- newParms
   }
-  
+
   parmsfishPBPK <- within(as.list(parms), {
   })
   out <- .C("getParmsfishPBPK",  as.double(parms),
@@ -1446,14 +1446,14 @@ fishPBPK_initStates <- function(parms, newStates = NULL) {
     ains = 0.0,
     insswch = 0.0
   )
-  
+
   if (!is.null(newStates)) {
     if (!all(names(newStates) %in% c(names(Y)))) {
       stop("illegal state variable name in newStates")
     }
     Y[names(newStates)] <- newStates
   }
-  
+
   .C("initStatefishPBPK", as.double(Y));
   Y
 }

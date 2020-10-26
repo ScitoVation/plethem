@@ -8,7 +8,7 @@ importBatchExposureUI <- function(namespace){
     shinyWidgets::useSweetAlert(),
     title= "Import exposure data",
     fileInput(ns("expo_upload"),
-              "Select Exposure file",multiple = F,
+              "Select Exposure file",multiple = FALSE,
               accept = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
               ),
     shinyBS::bsCollapse(
@@ -26,7 +26,7 @@ importBatchExposureUI <- function(namespace){
     # DT::DTOutput(ns("iv_expo")),
     footer = tagList(modalButton("Dismiss"),
                      shinyBS::bsButton(ns("import"),"Import Selected Exposures")),
-    # pickerInput(ns("sel_expo"),multiple = T,label = "Select Exposure",choices = NULL),
+    # pickerInput(ns("sel_expo"),multiple = TRUE,label = "Select Exposure",choices = NULL),
     # DT::DTOutput(ns("expo_tble"))
     # 
     # tabsetPanel(id = ns("expo_box"),type = "tabs",
@@ -93,17 +93,17 @@ importBatchExposure<- function(input,output,session,expo_name_df){
   # 
   # updatePickerInput(session,"sel_expo",choices = expo_choices())
   output$oralDT <- DT::renderDT(DT::datatable(oral_tble(),
-                                                 autoHideNavigation = T,
-                                                 fillContainer = T,rownames = F),server = T)
+                                                 autoHideNavigation = TRUE,
+                                                 fillContainer = TRUE,rownames = FALSE),server = TRUE)
   output$inhDT <- DT::renderDT(DT::datatable(inh_tble(),
-                                                autoHideNavigation = T,
-                                                fillContainer = T,rownames = F),server = T)
+                                                autoHideNavigation = TRUE,
+                                                fillContainer = TRUE,rownames = FALSE),server = TRUE)
   output$dwDT <- DT::renderDT(DT::datatable(dw_tble(),
-                                               autoHideNavigation = T,
-                                               fillContainer = T,rownames = F),server = T)
+                                               autoHideNavigation = TRUE,
+                                               fillContainer = TRUE,rownames = FALSE),server = TRUE)
   output$ivDT <- DT::renderDT(DT::datatable(iv_tble(),
-                                               autoHideNavigation = T,
-                                               fillContainer = T,rownames = F),server = T)
+                                               autoHideNavigation = TRUE,
+                                               fillContainer = TRUE,rownames = FALSE),server = TRUE)
   
   observeEvent(input$import,{
     oral_rows <- input$oralDT_rows_selected
@@ -119,7 +119,7 @@ importBatchExposure<- function(input,output,session,expo_name_df){
       # parse Oral exposures and write to database
       for (i in oral_rows){
         print(i)
-        data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
+        data <- as.data.frame(oral_tble()[i,],stringsAsFactors = FALSE)
         print(data)
         colnames(data)<- c("Name","bdose","blen","breps","brep_flag")
         name <- data$Name
@@ -161,7 +161,7 @@ importBatchExposure<- function(input,output,session,expo_name_df){
       # parse Oral exposures and write to database
       for (i in dw_rows){
       #  print(i)
-        data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
+        data <- as.data.frame(oral_tble()[i,],stringsAsFactors = FALSE)
        # print(data)
         colnames(data)<- c("Name","drdose","dreps","vdw")
         name <- data$Name
@@ -202,7 +202,7 @@ importBatchExposure<- function(input,output,session,expo_name_df){
       # parse Inhalation exposures and write to database
       for (i in inh_rows){
         #print(i)
-        data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
+        data <- as.data.frame(oral_tble()[i,],stringsAsFactors = FALSE)
         #print(data)
         colnames(data)<- c("Name","inhdose","inhtlen","inhdays")
         name <- data$Name
@@ -244,7 +244,7 @@ importBatchExposure<- function(input,output,session,expo_name_df){
       # parse Intravenous exposures and write to database
       for (i in oral_rows){
        # print(i)
-        data <- as.data.frame(oral_tble()[i,],stringsAsFactors = F)
+        data <- as.data.frame(oral_tble()[i,],stringsAsFactors = FALSE)
         #print(data)
         colnames(data)<- c("Name","ivdose","ivlen","ivrep_flag")
         name <- data$Name

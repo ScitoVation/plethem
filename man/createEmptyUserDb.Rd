@@ -13,8 +13,8 @@ createEmptyUserDb(path = NULL)
 The function allows the users to create a new empty user database file that is needed to run plethem.
 }
 \examples{
-\dontrun{
-createEmptyUserDb(),
-createEmptyUserDb("C:/Users/Documents/")
+if(interactive()){
+createEmptyUserDb()
+createEmptyUserDb("DatabaseDirectory/")
 }
 }

@@ -7,6 +7,6 @@
 #' @export
 #' 
 httkParameterPBTK<- function(chem_name,species = "Human"){
-  params <- httk::parameterize_pbtk(chem.name = chem_name,species = species,default.to.human = T)
+  params <- httk::parameterize_pbtk(chem.name = chem_name,species = species,default.to.human = TRUE)
   return(params)
 }

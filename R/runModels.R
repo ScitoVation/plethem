@@ -37,7 +37,7 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
                                events=list(func="event", time=event_times),nout = length(rapidPBPK_Outputs),
                                outnames = rapidPBPK_Outputs)
     
-    dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
+    dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = FALSE)
     result <- list("pbpk"=dfModelOutput)
   }else if(model == "httk_pbtk"){
     params4model <- setNames(as.numeric(initial_values$vals[initial_values$names]),
@@ -99,7 +99,7 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
                                func = "derivsfishPBPK", dllname = "plethem",initfunc= "initmodfishPBPK",parms = initial_params,
                                events=list(func="eventfishPBPK", time=event_times),nout = length(fishPBPK_Outputs),
                                outnames = fishPBPK_Outputs)
-    dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = F)
+    dfModelOutput <- as.data.frame(modelOutput,stringsAsFactors = FALSE)
     result <- list("pbpk"=dfModelOutput)
   }
 
@@ -111,7 +111,7 @@ runFDPBPK<- function(initial_values,model ="rapidPBPK"){
 #' Run HT-IVIVE
 #' @description Launches the HT-IVIVE UI.
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' runHTIVIVE()
 #' }
 #' @export
