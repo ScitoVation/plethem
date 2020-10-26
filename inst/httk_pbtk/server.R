@@ -1326,10 +1326,10 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   # resetParaValueList <- function(session, paraValueList, volumes, ratios){
   #
   #   for(name in names(volumes)){
-  #     paraValueList[name] <<- volumes[[name]]
+  #     paraValueList[name] <- volumes[[name]]
   #   }
   #   for(name in names(ratios)){
-  #     paraValueList[name] <<- ratios[[name]]
+  #     paraValueList[name] <- ratios[[name]]
   #   }
   #
   #   return(paraValueList)
@@ -1338,12 +1338,12 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
   #
   # resetParam_values_list <- function(session, param_values_list, volumes, ratios){
   #   for(name in names(volumes)){
-  #     param_values_list[name] <<- volumes[[name]]
+  #     param_values_list[name] <- volumes[[name]]
   #   }
   #
   #
   #   for(name in names(ratios)){
-  #     param_values_list[name] <<- ratios[[name]]
+  #     param_values_list[name] <- ratios[[name]]
   #   }
   #   return(param_values_list)
   # }

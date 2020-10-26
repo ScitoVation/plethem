@@ -250,7 +250,7 @@ shinyServer(function(input, output,session) {
     # data <- e[['name']]
     # load(rDFile, envir = .GlobalEnv)
     # loadReverseDosimetryProject(rDFile)
-    # simSet <<- SimulationsSet %>%
+    # simSet <- SimulationsSet %>%
     #   filter(
     #     physiovarid > 0 |
     #       chemvarid > 0 |
@@ -526,7 +526,7 @@ shinyServer(function(input, output,session) {
     #print(expoid)
     expotype <- projectDbSelect(sprintf("Select value from Exposure where param = 'expo_sidebar' AND expoid = %f",as.integer(expoid)))
    # print(expotype)
-    # simSet3 <<- simSet %>%
+    # simSet3 <- simSet %>%
     #   filter(
     #     name == input$simulation
     #   )
@@ -535,7 +535,7 @@ shinyServer(function(input, output,session) {
     #     expoid == simSet3$expoid & 
     #       param == 'expo_sidebar'
     #   )
-    # myExpoid <<- exposureType$value[1]
+    # myExpoid <- exposureType$value[1]
     if(expotype == 'oral'){
       mySliderLabel = 'Oral (mg/kg BW/day)'
     } else if(expotype == 'dw'){
