@@ -484,6 +484,7 @@ shinyServer(function(input, output, session) {
     }
     if(sim_details$sim_type != "fd"){
       simulation_settings$mcruns <- sim_details$mcruns
+      simulation_settings$usercores <- sim_details$usercores
     }
     module_namespace <- paste0("newSim",input$btn_edit_sim)
     createSimulationUI(module_namespace,set_list,selected_list)
@@ -1379,6 +1380,7 @@ shinyServer(function(input, output, session) {
     # if the worfklow requires monte carlo analysis, set up the parameter matrices
     if(sim_details$sim_type %in% c("mc","rd","r2r")){
       mcruns <- sim_details$mcruns
+      usercores <- sim_details$usercores
       MC.matrix <- suppressWarnings(
         getAllVariabilityValuesForModel(simid,model_params$vals,mcruns)
       )
@@ -1419,6 +1421,7 @@ shinyServer(function(input, output, session) {
     }#MonteCarlo Mode
     else if(sim_details$sim_type == 'mc'){
       mcruns <- sim_details$mcruns
+      usercores <- sim_details$usercores
       pb <- Progress$new(session,min = 0 , max = mcruns)
       updatePB <- function(value = NULL){
         pb$set(value = value,message = sprintf("Simulating Model %i",value))
@@ -1436,7 +1439,7 @@ shinyServer(function(input, output, session) {
       times_list <- replicate(mcruns,times,F)
       event_times_list <- replicate(mcruns,event_times,F)
       output_list <- replicate(mcruns,output,F)
-      cmax_list <- runMCParallel(mcruns,params_list,states_list,output_list,
+      cmax_list <- runMCParallel(mcruns,usercores,params_list,states_list,output_list,
                                  times_list,event_times_list,updatePB)
       results$pbpk <- cmax_list
       pb$close()
@@ -1517,7 +1520,7 @@ shinyServer(function(input, output, session) {
         times_list <- replicate(mcruns,times,F)
         event_times_list <- replicate(mcruns,event_times,F)
         output_list <- replicate(mcruns,output,F)
-        cmax_list <- runMCParallel(mcruns,params_list,states_list,
+        cmax_list <- runMCParallel(mcruns,usercores,params_list,states_list,
                                    output_list,times_list,event_times_list,updatePB)
         biom_data<- as.data.frame(cmax_list[,"cpls"])
         pb$close()
@@ -1579,7 +1582,7 @@ shinyServer(function(input, output, session) {
         event_times_list <- replicate(mcruns,event_times,F)
         output_list <- replicate(mcruns,output,F)
         # Run MC simulation in parallel
-        cmax_list <- runMCParallel(mcruns,params_list,states_list,output_list,
+        cmax_list <- runMCParallel(mcruns,usercores,params_list,states_list,output_list,
                                    times_list,event_times_list,updatePB)
         modelMCdata[idx]<- cmax_list[,model_var]*multiplier
         params_list <- NULL
@@ -3271,8 +3274,8 @@ updateCoeffs <- function(session, calculatedCoeff){
   }
 }
 
-runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,event_times_list,progressFunc){
-  c1 <- makeCluster(parallel::detectCores()-2, setup_timeout = 0.5)
+runMCParallel <- function(mcruns,usercores,params_list,states_list,output_list,times_list,event_times_list,progressFunc){
+  c1 <- makeCluster(min(parallel::detectCores(), usercores), setup_timeout = 0.5)
   registerDoParallel(c1)
   opts <- list(progress = progressFunc)
   cmax_list <- foreach(idx=seq_len(mcruns),params_list,
@@ -3685,6 +3688,10 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                      column(4,
                                                             numericInput(ns("num_mcruns"),"Number of Monte Carlo Runs",
                                                                          value = 1000)
+                                                     ),
+                                                     column(4,
+                                                            numericInput(ns("num_usercores"),"Number of Cores to Use for Parallel Execution",
+                                                                         value = min(2, parallel::detectCores()-1), min = 1, max = parallel::detectCores()-2)
                                                      )
 
                                                    )
@@ -3722,6 +3729,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
     # set the rest if they are present in the
     if(sim_settings$sim_type != "fd"){
       updateNumericInput(session,"num_mcruns",value = sim_settings$mcruns)
+      updateNumericInput(session,"num_usercores",value = sim_settings$usercores)
     }
     if(sim_settings$sim_type %in% c("rd","r2r")){
       updateNumericRangeInput(session,"numrange_expo",value = sim_settings$expo_range)
@@ -3828,6 +3836,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       physiovarid <- as.integer(input$sel_sim_physiovar)
       admevarid <- as.integer(input$sel_sim_admevar)
       mcruns <- input$num_mcruns
+      usercores <- input$num_usercores
       query <- paste(strwrap(sprintf("Update SimulationsSet SET
                                      expovarid = %i,
                                      chemvarid = %i,
@@ -3839,6 +3848,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                      ifelse(is.na(physiovarid),0,physiovarid),
                                      ifelse(is.na(admevarid),0,admevarid),
                                      mcruns,
+                                     usercores,
                                      simid),
                              simplify = T),
                      sep=" ",collapse = " ")
@@ -3851,16 +3861,18 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       physiovarid <- as.integer(input$sel_sim_physiovar)
       admevarid <- as.integer(input$sel_sim_admevar)
       mcruns <- as.integer(input$num_mcruns)
+      usercores <- as.integer(input$num_usercores)
       biomid <- as.integer(input$sel_biomdata)
       num_expos <- as.integer(input$num_numexpos)
       low_dose_estimate <- input$numrange_expo[1]
       high_dose_estimate <- input$numrange_expo[2]
-      query <-sprintf("Update SimulationsSet SET chemvarid = %i,physiovarid = %i,admevarid = %i,biomid = %i,mcruns = %i,num_expos = %i, low_dose_estimate = %f, high_dose_estimate = %f, expovarid = 0 where simid = %i;",
+      query <-sprintf("Update SimulationsSet SET chemvarid = %i,physiovarid = %i,admevarid = %i,biomid = %i,mcruns = %i, usercores = %i,num_expos = %i, low_dose_estimate = %f, high_dose_estimate = %f, expovarid = 0 where simid = %i;",
                       ifelse(is.na(chemvarid),0,chemvarid),
                       ifelse(is.na(physiovarid),0,physiovarid),
                       ifelse(is.na(admevarid),0,admevarid),
                       biomid,# change to biomoniternig ID once implemented
                       mcruns,
+                      usercores,
                       num_expos,
                       low_dose_estimate,
                       high_dose_estimate,
@@ -3873,16 +3885,18 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       physiovarid <- as.integer(input$sel_sim_physiovar)
       admevarid <- as.integer(input$sel_sim_admevar)
       mcruns <- input$num_mcruns
+      usercores <- as.integer(input$num_usercores)
       extrapolateid <- as.integer(input$sel_r2rExpo)
       num_expos <- as.integer(input$num_numexpos)
       low_dose_estimate <- input$numrange_expo[1]
       high_dose_estimate <- input$numrange_expo[2]
-      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i, extrapolateid = %i, mcruns = %i, num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f,expovarid = 0 where simid = %i;",
+      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i, extrapolateid = %i, mcruns = %i, usercores = %i num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f,expovarid = 0 where simid = %i;",
                        ifelse(is.na(chemvarid),0,chemvarid),
                        ifelse(is.na(physiovarid),0,physiovarid),#,
                        ifelse(is.na(admevarid),0,admevarid),
                        extrapolateid,
                        mcruns,
+                       usercores,
                        num_expos,
                        low_dose_estimate,
                        high_dose_estimate,
