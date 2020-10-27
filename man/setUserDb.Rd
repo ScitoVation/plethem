@@ -15,6 +15,6 @@ The function allows the users to set an existing database as the user database t
 \examples{
 \dontrun{
 setUserDb(),
-setUserDb("C:/Users/Documents/PLETHEMUserDb.sqlite")
+setUserDb(tempdir())
 }
 }

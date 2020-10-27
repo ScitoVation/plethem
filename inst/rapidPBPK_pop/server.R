@@ -111,18 +111,22 @@ shinyServer(function(input, output, session) {
 
 
   # get the parameter table for physiological,exposure, chemical and adme variables.
+  print('Here 1')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';",
                    model)
   physio_name_df <- mainDbSelect(query)
 
+print('Here 2')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';",
                    model)
   expo_name_df <- mainDbSelect(query)
 
+print('Here 3')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE' ;",
                    model)
   chem_name_df <- mainDbSelect(query)
 
+print('Here 4')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Adme' AND UIParams = 'TRUE' ;",
                    model)
   adme_name_df <- mainDbSelect(query)
@@ -484,6 +488,7 @@ shinyServer(function(input, output, session) {
     }
     if(sim_details$sim_type != "fd"){
       simulation_settings$mcruns <- sim_details$mcruns
+      simulation_settings$usercores <- sim_details$usercores
     }
     module_namespace <- paste0("newSim",input$btn_edit_sim)
     createSimulationUI(module_namespace,set_list,selected_list)
@@ -992,6 +997,7 @@ shinyServer(function(input, output, session) {
   # in the ADME tab
   observeEvent(input$sel_expo4adme,{
     expoid <- as.integer(input$sel_expo4adme)
+    print('Here 5')
     query <- sprintf("SELECT value from Exposure where expoid = %i AND param = 'expo_sidebar'",expoid)
     expo_route <- projectDbSelect(query)$value
     toggleElement(id = "ms_pair",condition = (expo_route=="inh"))
@@ -1047,6 +1053,7 @@ shinyServer(function(input, output, session) {
       set_table_name <- "MetabolismSet"
       set_name <- "Metabolism"
       # get the current ID for the parameter set.
+      print('Here 6')
       query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
       id_list <- projectDbSelect(query)
       if (length(id_list[[id_name]])==0){
@@ -1197,6 +1204,7 @@ shinyServer(function(input, output, session) {
       set_table_name <- "MetabolismSet"
       set_name <- "Metabolism"
       # get the current ID for the parameter set.
+      print('Here 7')
       query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
       id_list <- projectDbSelect(query)
       if (length(id_list[[id_name]])==0){
@@ -1325,6 +1333,7 @@ shinyServer(function(input, output, session) {
 
 
     # get chemical name from chem table
+    print('Here 8')
     query <- sprintf("SELECT name from ChemicalSet WHERE chemid = %i ;",
                      chemid)
 
@@ -1333,6 +1342,7 @@ shinyServer(function(input, output, session) {
     output$sim_chem <- renderText(chem_name)
 
     # get exposure name form exposure set table
+    print('Here 9')
     query <- sprintf("SELECT name from ExposureSet WHERE expoid = %i ;",
                      expoid)
 
@@ -1379,6 +1389,7 @@ shinyServer(function(input, output, session) {
     # if the worfklow requires monte carlo analysis, set up the parameter matrices
     if(sim_details$sim_type %in% c("mc","rd","r2r")){
       mcruns <- sim_details$mcruns
+      usercores <- sim_details$usercores
       MC.matrix <- suppressWarnings(
         getAllVariabilityValuesForModel(simid,model_params$vals,mcruns)
       )
@@ -1419,6 +1430,7 @@ shinyServer(function(input, output, session) {
     }#MonteCarlo Mode
     else if(sim_details$sim_type == 'mc'){
       mcruns <- sim_details$mcruns
+      usercores <- sim_details$usercores
       pb <- Progress$new(session,min = 0 , max = mcruns)
       updatePB <- function(value = NULL){
         pb$set(value = value,message = sprintf("Simulating Model %i",value))
@@ -1436,7 +1448,7 @@ shinyServer(function(input, output, session) {
       times_list <- replicate(mcruns,times,F)
       event_times_list <- replicate(mcruns,event_times,F)
       output_list <- replicate(mcruns,output,F)
-      cmax_list <- runMCParallel(mcruns,params_list,states_list,output_list,
+      cmax_list <- runMCParallel(mcruns,usercores,params_list,states_list,output_list,
                                  times_list,event_times_list,updatePB)
       results$pbpk <- cmax_list
       pb$close()
@@ -1517,7 +1529,7 @@ shinyServer(function(input, output, session) {
         times_list <- replicate(mcruns,times,F)
         event_times_list <- replicate(mcruns,event_times,F)
         output_list <- replicate(mcruns,output,F)
-        cmax_list <- runMCParallel(mcruns,params_list,states_list,
+        cmax_list <- runMCParallel(mcruns,usercores,params_list,states_list,
                                    output_list,times_list,event_times_list,updatePB)
         biom_data<- as.data.frame(cmax_list[,"cpls"])
         pb$close()
@@ -1579,7 +1591,7 @@ shinyServer(function(input, output, session) {
         event_times_list <- replicate(mcruns,event_times,F)
         output_list <- replicate(mcruns,output,F)
         # Run MC simulation in parallel
-        cmax_list <- runMCParallel(mcruns,params_list,states_list,output_list,
+        cmax_list <- runMCParallel(mcruns,usercores,params_list,states_list,output_list,
                                    times_list,event_times_list,updatePB)
         modelMCdata[idx]<- cmax_list[,model_var]*multiplier
         params_list <- NULL
@@ -1695,6 +1707,7 @@ shinyServer(function(input, output, session) {
                  chemid <- input$sel_chem4adme
                  qsar_model <- input$sel_qsar4Partition
                  org <- ifelse(input$ms_org=="ha","human","rat")
+                 print('Here 10')
                  query <- sprintf("SELECT param,value FROM Chemical Where chemid = %i",
                                   as.integer(chemid))
                  ret_data <- projectDbSelect(query)
@@ -1791,6 +1804,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       ddose <- 0
       idose <- 0
     }else{
+    print('Here 11')
       query <- sprintf("SELECT expoid FROM SimulationsSet Where simid = %i ;",
                        simid)
       expoid <- projectDbSelect(query)$expoid
@@ -1876,6 +1890,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return(data.frame("time"=c(0),"mean"=c(0),"sd"=c(0)))#data.frame("time"=NULL,"mean"=NULL,"sd"=NULL))
     }else{
       obsid <- input$cplt_data
+      print('Here 12')
       query <- sprintf("SELECT units, obs_tble FROM Observation WHERE obsid = %i",
                        as.integer(obsid))
       obs_data <- projectDbSelect(query)
@@ -1894,6 +1909,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return("No Dataset Selected")#data.frame("time"=NULL,"mean"=NULL,"sd"=NULL))
     }else{
       obsid <- input$cplt_data
+      print('Here 13')
       query <- sprintf("SELECT name FROM ObservationSet WHERE obsid = %i",
                        as.integer(obsid))
       obs_name <- projectDbSelect(query)
@@ -1945,6 +1961,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       mw <- 1000 # to keep the multiplier as 1
 
     }else{
+    print('Here 14')
       query <- sprintf("SELECT chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
       chemid <- projectDbSelect(query)$chemid
@@ -2027,6 +2044,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       mw <- 1000 # to keep the multiplier as 1
 
     }else{
+    print('Here 15')
       query <- sprintf("SELECT chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
       chemid <- projectDbSelect(query)$chemid
@@ -3271,8 +3289,8 @@ updateCoeffs <- function(session, calculatedCoeff){
   }
 }
 
-runMCParallel <- function(mcruns,params_list,states_list,output_list,times_list,event_times_list,progressFunc){
-  c1 <- makeCluster(parallel::detectCores()-2, setup_timeout = 0.5)
+runMCParallel <- function(mcruns,usercores,params_list,states_list,output_list,times_list,event_times_list,progressFunc){
+  c1 <- makeCluster(min(parallel::detectCores(), usercores), setup_timeout = 0.5)
   registerDoParallel(c1)
   opts <- list(progress = progressFunc)
   cmax_list <- foreach(idx=seq_len(mcruns),params_list,
@@ -3685,6 +3703,10 @@ createSimulationUI <- function(namespace,set_list,selected_list){
                                                      column(4,
                                                             numericInput(ns("num_mcruns"),"Number of Monte Carlo Runs",
                                                                          value = 1000)
+                                                     ),
+                                                     column(4,
+                                                            numericInput(ns("num_usercores"),"Number of Cores to Use for Parallel Execution",
+                                                                         value = min(2, parallel::detectCores()-1), min = 1, max = parallel::detectCores()-2)
                                                      )
 
                                                    )
@@ -3722,6 +3744,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
     # set the rest if they are present in the
     if(sim_settings$sim_type != "fd"){
       updateNumericInput(session,"num_mcruns",value = sim_settings$mcruns)
+      updateNumericInput(session,"num_usercores",value = sim_settings$usercores)
     }
     if(sim_settings$sim_type %in% c("rd","r2r")){
       updateNumericRangeInput(session,"numrange_expo",value = sim_settings$expo_range)
@@ -3828,6 +3851,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       physiovarid <- as.integer(input$sel_sim_physiovar)
       admevarid <- as.integer(input$sel_sim_admevar)
       mcruns <- input$num_mcruns
+      usercores <- input$num_usercores
       query <- paste(strwrap(sprintf("Update SimulationsSet SET
                                      expovarid = %i,
                                      chemvarid = %i,
@@ -3839,6 +3863,7 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
                                      ifelse(is.na(physiovarid),0,physiovarid),
                                      ifelse(is.na(admevarid),0,admevarid),
                                      mcruns,
+                                     usercores,
                                      simid),
                              simplify = TRUE),
                      sep=" ",collapse = " ")
@@ -3851,16 +3876,18 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       physiovarid <- as.integer(input$sel_sim_physiovar)
       admevarid <- as.integer(input$sel_sim_admevar)
       mcruns <- as.integer(input$num_mcruns)
+      usercores <- as.integer(input$num_usercores)
       biomid <- as.integer(input$sel_biomdata)
       num_expos <- as.integer(input$num_numexpos)
       low_dose_estimate <- input$numrange_expo[1]
       high_dose_estimate <- input$numrange_expo[2]
-      query <-sprintf("Update SimulationsSet SET chemvarid = %i,physiovarid = %i,admevarid = %i,biomid = %i,mcruns = %i,num_expos = %i, low_dose_estimate = %f, high_dose_estimate = %f, expovarid = 0 where simid = %i;",
+      query <-sprintf("Update SimulationsSet SET chemvarid = %i,physiovarid = %i,admevarid = %i,biomid = %i,mcruns = %i, usercores = %i,num_expos = %i, low_dose_estimate = %f, high_dose_estimate = %f, expovarid = 0 where simid = %i;",
                       ifelse(is.na(chemvarid),0,chemvarid),
                       ifelse(is.na(physiovarid),0,physiovarid),
                       ifelse(is.na(admevarid),0,admevarid),
                       biomid,# change to biomoniternig ID once implemented
                       mcruns,
+                      usercores,
                       num_expos,
                       low_dose_estimate,
                       high_dose_estimate,
@@ -3873,16 +3900,18 @@ createSimulation <- function(input,output,session,type="new",sim_settings){
       physiovarid <- as.integer(input$sel_sim_physiovar)
       admevarid <- as.integer(input$sel_sim_admevar)
       mcruns <- input$num_mcruns
+      usercores <- as.integer(input$num_usercores)
       extrapolateid <- as.integer(input$sel_r2rExpo)
       num_expos <- as.integer(input$num_numexpos)
       low_dose_estimate <- input$numrange_expo[1]
       high_dose_estimate <- input$numrange_expo[2]
-      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i, extrapolateid = %i, mcruns = %i, num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f,expovarid = 0 where simid = %i;",
+      query <- sprintf("Update SimulationsSet SET chemvarid = %i, physiovarid = %i, admevarid = %i, extrapolateid = %i, mcruns = %i, usercores = %i num_expos = %i,low_dose_estimate = %f,high_dose_estimate = %f,expovarid = 0 where simid = %i;",
                        ifelse(is.na(chemvarid),0,chemvarid),
                        ifelse(is.na(physiovarid),0,physiovarid),#,
                        ifelse(is.na(admevarid),0,admevarid),
                        extrapolateid,
                        mcruns,
+                       usercores,
                        num_expos,
                        low_dose_estimate,
                        high_dose_estimate,

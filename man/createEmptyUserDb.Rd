@@ -15,6 +15,6 @@ The function allows the users to create a new empty user database file that is n
 \examples{
 if(interactive()){
 createEmptyUserDb()
-createEmptyUserDb("DatabaseDirectory/")
+createEmptyUserDb(tempdir())
 }
 }
