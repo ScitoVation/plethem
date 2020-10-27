@@ -4,7 +4,7 @@
 #' @examples
 #' \dontrun{
 #' setUserDb(),
-#' setUserDb("C:/Users/Documents/PLETHEMUserDb.sqlite")
+#' setUserDb(tempdir())
 #' }
 #' @export
 setUserDb<- function(path = NULL){
@@ -30,7 +30,7 @@ setUserDb<- function(path = NULL){
 #' @examples
 #' if(interactive()){
 #' createEmptyUserDb()
-#' createEmptyUserDb("DatabaseDirectory/")
+#' createEmptyUserDb(tempdir())
 #' }
 #' @export
 createEmptyUserDb <- function(path = NULL){
