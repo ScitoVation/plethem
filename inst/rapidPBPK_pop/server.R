@@ -971,7 +971,7 @@ print('Here 4')
   ## This code chunk deals with performing IVIVE for the chemical
   observeEvent(input$btn_ivive_chem,{
     performIVIVEUI(input$btn_ivive_chem)
-    dataset$iviveDat <<- callModule(performIVIVE,input$btn_ivive_chem,input$ms_km)
+    dataset$iviveDat <- callModule(performIVIVE,input$btn_ivive_chem,input$ms_km)
   })
 
   observe({
@@ -1107,7 +1107,7 @@ print('Here 4')
     shinyWidgets::updateRadioGroupButtons(session,"metab_type",selected = ret_data[["type"]])
     shinyWidgets::updateAwesomeCheckbox(session,"use_ref",value = as.logical(ret_data[["use_ref"]]))
     updateNumericInput(session,"metab_ref_age",value = ret_data[["ref_age"]])
-    metabolism_dataframe <<- unserialize(charToRaw(ret_data[["metab_tble"]]))
+    metabolism_dataframe <- unserialize(charToRaw(ret_data[["metab_tble"]]))
     DT::replaceData(metab_proxy,metabolism_dataframe,rownames = FALSE)
 
   },ignoreInit = TRUE, ignoreNULL = TRUE)

@@ -193,7 +193,7 @@ newEditVariability <- function(input,output,session,set_type,ops_type,var_params
       }
       
     }
-    data4module$current_list <<- input$param_names
+    data4module$current_list <- input$param_names
 
   })
   # Save the table

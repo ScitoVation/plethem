@@ -396,7 +396,6 @@ shinyServer(function(input, output,session) {
           
           
           results$pbpk <- as.data.frame(mc_results)
-          myResults <<- results$pbpk
           
           # MymcResults <- as.data.frame(mc_results)
           if (input$tissue=="Plasma"){
@@ -422,10 +421,10 @@ shinyServer(function(input, output,session) {
           # mcResults2[n] <- plasmaResults[1]
           if(n==1){#is.null(mcResults)){
             # print('it is null')
-            mcResults <<- plasmaResults
+            mcResults <- plasmaResults
           } else{
             # print('something exists')
-            mcResults <<- cbind(mcResults,plasmaResults)# %>%
+            results$mcResults <- cbind(mcResults,plasmaResults)# %>%
           }
           # mcResults <- mcResults %>% 
           #   rename(
@@ -493,7 +492,7 @@ shinyServer(function(input, output,session) {
       
       output$Plot1 <- renderPlotly({
         p <- plot_ly(
-          stack(mcResults),
+          stack(results$mcResults),
           x = ~ind,
           y = ~values,
           type = "box"
@@ -511,7 +510,7 @@ shinyServer(function(input, output,session) {
           )
       })
       mcvals$exposure <- paste(doseName, ' Concentration (', doseUnits,')', sep = '')
-      mcvals$csvFile <- mcResults
+      mcvals$csvFile <- results$mcResults
       removeModal()
     }
     else{
