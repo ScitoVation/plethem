@@ -80,7 +80,7 @@ shinyServer(function(input, output, session) {
   #master_conn <- RSQLite::dbConnect(RSQLite::SQLite(),db)
 
   # get the parameter table for physiological and exposure variables.
-  print('Here 1')
+  #print('Here 1')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Physiological' AND UIParams = 'TRUE';",
                    model)
   physio_name_df <- mainDbSelect(query)
@@ -88,7 +88,7 @@ shinyServer(function(input, output, session) {
   # physio_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-print('Here 2')
+#print('Here 2')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Exposure' AND UIParams = 'TRUE';",
                    model)
   expo_name_df <- mainDbSelect(query)
@@ -96,7 +96,7 @@ print('Here 2')
   # expo_name_df <- RSQLite::dbFetch(res)
   # RSQLite::dbClearResult(res)
 
-print('Here 3')
+#print('Here 3')
   query <- sprintf("SELECT Name,Var,Units,ParamType,Variability FROM ParamNames Where Model='%s' AND ParamSet = 'Chemical'AND UIParams = 'TRUE';",
                    model)
   chem_name_df <- mainDbSelect(query)
@@ -638,7 +638,7 @@ print('Here 3')
       set_table_name <- "MetabolismSet"
       set_name <- "Metabolism"
       # get the current ID for the parameter set.
-      print('Here 4')
+      #print('Here 4')
       query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
       id_list <- projectDbSelect(query)
       if (length(id_list[[id_name]])==0){
@@ -796,7 +796,7 @@ print('Here 3')
       set_table_name <- "MetabolismSet"
       set_name <- "Metabolism"
       # get the current ID for the parameter set.
-      print('Here 5')
+      #print('Here 5')
       query <- sprintf("SELECT %s FROM %s ;",id_name,set_table_name)
       id_list <- projectDbSelect(query)
       if (length(id_list[[id_name]])==0){
@@ -914,7 +914,7 @@ print('Here 3')
     output$sim_dur <- renderText(as.character(sim_dur))
 
     # get chemical name from chem table
-    print('Here 6')
+    #print('Here 6')
     query <- sprintf("SELECT name from ChemicalSet WHERE chemid = %i ;",
                      chemid)
 
@@ -923,7 +923,7 @@ print('Here 3')
     output$sim_chem <- renderText(chem_name)
 
     # get exposure name form exposure set table
-    print('Here 7')
+    #print('Here 7')
     query <- sprintf("SELECT name from ExposureSet WHERE expoid = %i ;",
                      expoid)
 
@@ -1260,7 +1260,7 @@ observeEvent({input$chemScenFilter},{
                  #chemcas <- input$sel_chem4Partition
                  qsar_model <- input$sel_qsar4Partition
                  org <-input$ms_Org #ifelse(input$ms_org=="ha","human","rat")
-                 print('Here 8')
+                 #print('Here 8')
                  query <- sprintf("SELECT param,value FROM Chemical Where chemid = %i",
                                   as.integer(chemid))
                  ret_data <- projectDbSelect(query)
@@ -1469,7 +1469,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       ddose <- 0
       idose <- 0
     }else{
-    print('Here 9')
+    #print('Here 9')
       query <- sprintf("SELECT expoid FROM SimulationsSet Where simid = %i ;",
                        simid)
       expoid <- projectDbSelect(query)$expoid
@@ -1555,7 +1555,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return(data.frame("time"=c(0),"mean"=c(0),"sd"=c(0)))#data.frame("time"=NULL,"mean"=NULL,"sd"=NULL))
     }else{
       obsid <- input$cplt_data
-      print('Here 10')
+      #print('Here 10')
       query <- sprintf("SELECT units, obs_tble FROM Observation WHERE obsid = %i",
                        as.integer(obsid))
       obs_data <- projectDbSelect(query)
@@ -1574,7 +1574,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       return("No Dataset Selected")#data.frame("time"=NULL,"mean"=NULL,"sd"=NULL))
     }else{
       obsid <- input$cplt_data
-      print('Here 11')
+      #print('Here 11')
       query <- sprintf("SELECT name FROM ObservationSet WHERE obsid = %i",
                        as.integer(obsid))
       obs_name <- projectDbSelect(query)
@@ -1594,7 +1594,7 @@ output$physio_params_tble <- DT::renderDT(DT::datatable(current_params()$physio,
       mw <- 1000 # to keep the multiplier as 1
 
     }else{
-    print('Here 12')
+    #print('Here 12')
       query <- sprintf("SELECT mc_num,chemid FROM SimulationsSet Where simid = %i ;",
                        simid)
       chemid <- projectDbSelect(query)$chemid
