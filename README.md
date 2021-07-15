@@ -4,7 +4,7 @@ A step by step user guide for the current version of PLETHEM can be found under 
 ## PLETHEM INSTALLATION
 
 ### Installing R.
-Installing PLETHEM requires the latest version of 64 bit R-4.0.2 ([link](https://cran.r-project.org/bin/windows/base/)), RStudio ([link](https://www.rstudio.com/)), and Rtools([link](https://cran.r-project.org/bin/windows/Rtools/)).
+Installing PLETHEM requires the latest version of 64 bit R-4.1.0 ([link](https://cran.r-project.org/bin/windows/base/)), RStudio ([link](https://www.rstudio.com/)), and Rtools([link](https://cran.r-project.org/bin/windows/Rtools/)).
 While installing Rtools make sure the box that says "Add Rtools to System Path" is checked.
 
 ### Installing the package
